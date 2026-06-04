@@ -3,7 +3,6 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Http\Middleware\HandleCors;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -12,13 +11,12 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-    ->withMiddleware(function (Middleware $middleware): void {
-        // Add CORS middleware globally
-        $middleware->prepend(HandleCors::class);
-
-        // Use simple token-based auth for API (no CSRF needed)
-        // The sanctum:auth middleware will validate bearer tokens
+    ->withMiddleware(function (Middleware $middleware) {
+        $middleware->statefulApi();
+        $middleware->validateCsrfTokens(except: [
+            'api/track', // allow anonymous tracking
+        ]);
     })
-    ->withExceptions(function (Exceptions $exceptions): void {
+    ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();

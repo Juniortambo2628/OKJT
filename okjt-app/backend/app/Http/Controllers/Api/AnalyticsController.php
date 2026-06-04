@@ -3,210 +3,79 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\PageView;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class AnalyticsController extends Controller
 {
-    public function trackPageVisit(Request $request): JsonResponse
+    // Public — log a page view
+    public function track(Request $request)
     {
-        $validated = $request->validate([
-            'page' => 'required|string|max:255',
+        $request->validate([
+            'path' => 'required|string|max:500',
         ]);
 
-        DB::table('analytics_page_visits')->insert([
-            'page' => $validated['page'],
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
+        PageView::create([
+            'path' => $request->path,
             'referrer' => $request->header('referer'),
-            'session_id' => $request->cookie('session_id') ?? $request->header('X-Session-ID'),
-            'visited_at' => now(),
-            'created_at' => now(),
-            'updated_at' => now(),
+            'user_agent' => substr($request->userAgent() ?? '', 0, 500),
+            'ip' => $request->ip(),
         ]);
 
-        return response()->json(['success' => true]);
+        return response()->json(['ok' => true], 201);
     }
 
-    public function trackClick(Request $request): JsonResponse
+    // Protected — admin summary
+    public function summary(Request $request)
     {
-        $validated = $request->validate([
-            'element_id' => 'required|string|max:255',
-            'element_type' => 'required|string|max:100',
-            'page' => 'required|string|max:255',
-            'x_position' => 'nullable|integer',
-            'y_position' => 'nullable|integer',
-        ]);
+        $now = Carbon::now();
 
-        DB::table('analytics_clicks')->insert([
-            'element_id' => $validated['element_id'],
-            'element_type' => $validated['element_type'],
-            'page' => $validated['page'],
-            'ip_address' => $request->ip(),
-            'session_id' => $request->cookie('session_id') ?? $request->header('X-Session-ID'),
-            'x_position' => $validated['x_position'] ?? null,
-            'y_position' => $validated['y_position'] ?? null,
-            'clicked_at' => now(),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // Total counts
+        $totalViews = PageView::count();
+        $todayViews = PageView::whereDate('created_at', $now->toDateString())->count();
+        $weekViews = PageView::where('created_at', '>=', $now->subDays(7))->count();
+        $monthViews = PageView::where('created_at', '>=', Carbon::now()->subDays(30))->count();
 
-        return response()->json(['success' => true]);
-    }
+        // Unique IPs (proxy for unique visitors)
+        $uniqueVisitors = PageView::where('created_at', '>=', Carbon::now()->subDays(30))
+            ->distinct('ip')->count('ip');
 
-    public function trackFormSubmission(Request $request): JsonResponse
-    {
-        $validated = $request->validate([
-            'form_type' => 'required|string|max:100',
-            'success' => 'required|boolean',
-            'page' => 'nullable|string|max:255',
-        ]);
-
-        DB::table('analytics_form_submissions')->insert([
-            'form_type' => $validated['form_type'],
-            'success' => $validated['success'],
-            'page' => $validated['page'] ?? $request->header('referer') ?? '/',
-            'ip_address' => $request->ip(),
-            'session_id' => $request->cookie('session_id') ?? $request->header('X-Session-ID'),
-            'submitted_at' => now(),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        return response()->json(['success' => true]);
-    }
-
-    public function getDashboardStats(Request $request): JsonResponse
-    {
-        $days = $request->get('days', 30);
-        $startDate = now()->subDays($days);
-
-        // Get total projects
-        $totalProjects = DB::table('portfolio_projects')->count();
-        
-        // Get submissions stats
-        $totalSubmissions = DB::table('contact_submissions')->count();
-        $pendingSubmissions = DB::table('contact_submissions')
-            ->where('status', 'pending')
-            ->count();
-
-        $stats = [
-            'total_projects' => $totalProjects,
-            'total_submissions' => $totalSubmissions,
-            'pending_submissions' => $pendingSubmissions,
-            'page_visits' => DB::table('analytics_page_visits')
-                ->where('visited_at', '>=', $startDate)
-                ->count(),
-            'unique_visitors' => DB::table('analytics_page_visits')
-                ->where('visited_at', '>=', $startDate)
-                ->distinct('ip_address')
-                ->count(),
-            'total_clicks' => DB::table('analytics_clicks')
-                ->where('clicked_at', '>=', $startDate)
-                ->count(),
-            'form_submissions' => DB::table('analytics_form_submissions')
-                ->where('submitted_at', '>=', $startDate)
-                ->where('success', true)
-                ->count(),
-            'top_pages' => DB::table('analytics_page_visits')
-                ->select('page', DB::raw('COUNT(*) as visits'))
-                ->where('visited_at', '>=', $startDate)
-                ->groupBy('page')
-                ->orderByDesc('visits')
-                ->limit(10)
-                ->get(),
-        ];
-
-        return response()->json([
-            'success' => true,
-            'data' => $stats,
-        ]);
-    }
-
-    /**
-     * Get page views over time
-     */
-    public function getPageViews(Request $request): JsonResponse
-    {
-        $period = $request->get('period', '7d');
-        $days = match($period) {
-            '24h' => 1,
-            '7d' => 7,
-            '30d' => 30,
-            '90d' => 90,
-            default => 7,
-        };
-        
-        $startDate = now()->subDays($days);
-
-        $pageViews = DB::table('analytics_page_visits')
-            ->select(DB::raw('DATE(visited_at) as date'), DB::raw('COUNT(*) as views'))
-            ->where('visited_at', '>=', $startDate)
-            ->groupBy('date')
-            ->orderBy('date')
-            ->get();
-
-        return response()->json([
-            'success' => true,
-            'data' => $pageViews,
-        ]);
-    }
-
-    /**
-     * Get popular pages
-     */
-    public function getPopularPages(Request $request): JsonResponse
-    {
-        $limit = $request->get('limit', 10);
-        $days = $request->get('days', 30);
-        $startDate = now()->subDays($days);
-
-        $popularPages = DB::table('analytics_page_visits')
-            ->select('page', DB::raw('COUNT(*) as views'))
-            ->where('visited_at', '>=', $startDate)
-            ->groupBy('page')
+        // Top pages (last 30 days)
+        $topPages = PageView::where('created_at', '>=', Carbon::now()->subDays(30))
+            ->select('path', DB::raw('COUNT(*) as views'))
+            ->groupBy('path')
             ->orderByDesc('views')
-            ->limit($limit)
+            ->limit(10)
             ->get();
 
-        return response()->json([
-            'success' => true,
-            'data' => $popularPages,
-        ]);
-    }
-
-    /**
-     * Get visitor statistics
-     */
-    public function getVisitorStats(Request $request): JsonResponse
-    {
-        $period = $request->get('period', '7d');
-        $days = match($period) {
-            '24h' => 1,
-            '7d' => 7,
-            '30d' => 30,
-            '90d' => 90,
-            default => 7,
-        };
-        
-        $startDate = now()->subDays($days);
-
-        $visitorStats = DB::table('analytics_page_visits')
-            ->select(
-                DB::raw('DATE(visited_at) as date'),
-                DB::raw('COUNT(*) as visitors'),
-                DB::raw('COUNT(DISTINCT ip_address) as unique_visitors')
-            )
-            ->where('visited_at', '>=', $startDate)
+        // Views over time (last 14 days)
+        $viewsOverTime = PageView::where('created_at', '>=', Carbon::now()->subDays(14))
+            ->select(DB::raw('DATE(created_at) as date'), DB::raw('COUNT(*) as views'))
             ->groupBy('date')
             ->orderBy('date')
             ->get();
 
+        // Top referrers
+        $topReferrers = PageView::where('created_at', '>=', Carbon::now()->subDays(30))
+            ->whereNotNull('referrer')
+            ->where('referrer', '!=', '')
+            ->select('referrer', DB::raw('COUNT(*) as count'))
+            ->groupBy('referrer')
+            ->orderByDesc('count')
+            ->limit(5)
+            ->get();
+
         return response()->json([
-            'success' => true,
-            'data' => $visitorStats,
+            'total_views' => $totalViews,
+            'today_views' => $todayViews,
+            'week_views' => $weekViews,
+            'month_views' => $monthViews,
+            'unique_visitors' => $uniqueVisitors,
+            'top_pages' => $topPages,
+            'views_over_time' => $viewsOverTime,
+            'top_referrers' => $topReferrers,
         ]);
     }
 }
-

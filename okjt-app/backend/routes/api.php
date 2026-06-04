@@ -1,172 +1,147 @@
 <?php
 
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\PortfolioController;
-use App\Http\Controllers\Api\ContactController;
-use App\Http\Controllers\Api\AnalyticsController;
-use App\Http\Controllers\Api\ActivityLogController;
-use App\Http\Controllers\Api\ExportController;
-use App\Http\Controllers\Api\CommentController;
-use App\Http\Controllers\Api\SearchController;
-use App\Http\Controllers\Api\BackupController;
-use App\Http\Controllers\Api\HeroSlideController;
-use App\Http\Controllers\Api\SiteSettingsController;
-use App\Http\Controllers\Api\TrustedClientController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ServiceController;
+use App\Http\Controllers\Api\InsightController;
+use App\Http\Controllers\Api\CaseStudyController;
+use App\Http\Controllers\Api\StatController;
+use App\Http\Controllers\Api\SiteSettingController;
+use App\Http\Controllers\Api\TestimonialController;
+use App\Http\Controllers\Api\ClientController;
+use App\Http\Controllers\Api\UploadController;
+use App\Http\Controllers\Api\SearchController;
+use App\Http\Controllers\Api\AnalyticsController;
+use App\Http\Controllers\Api\SubscriberController;
+use App\Http\Controllers\Api\TeamMemberController;
+use App\Http\Controllers\Api\ValueController;
+use App\Http\Controllers\Api\ConsultationRequestController;
+use App\Http\Controllers\Api\PillarController;
+use App\Http\Controllers\Api\InnovationController;
 
 /*
 |--------------------------------------------------------------------------
-| Public API Routes (No Authentication Required)
+| API Routes
 |--------------------------------------------------------------------------
 */
 
-// Portfolio
-Route::prefix('portfolio')->group(function () {
-    Route::get('/', [PortfolioController::class, 'index']);
-    Route::get('/categories', [PortfolioController::class, 'categories']);
-    Route::get('/featured', [PortfolioController::class, 'featured']);
-    Route::get('/{id}', [PortfolioController::class, 'show']);
-});
+// Public routes
+Route::post('/login', [AuthController::class, 'login']);
 
-// Hero Slides (public)
-Route::get('hero-slides', [HeroSlideController::class, 'publicIndex']);
+Route::get('/services', [ServiceController::class, 'index']);
+Route::get('/services/{service:slug}', [ServiceController::class, 'show']);
 
-// Site Settings (public - for social links)
-Route::get('site-settings', [SiteSettingsController::class, 'publicIndex']);
+Route::get('/insights', [InsightController::class, 'index']);
+Route::get('/insights/{insight:slug}', [InsightController::class, 'show']);
 
-// Trusted Clients (public - for carousel)
-Route::get('trusted-clients', [TrustedClientController::class, 'publicIndex']);
+Route::get('/case-studies', [CaseStudyController::class, 'index']);
+Route::get('/case-studies/{caseStudy:slug}', [CaseStudyController::class, 'show']);
 
-// Contact
-Route::prefix('contact')->group(function () {
-    Route::post('/', [ContactController::class, 'store']);
-    Route::get('/available-times', [ContactController::class, 'availableTimes']);
-});
+Route::get('/stats', [StatController::class, 'index']);
+Route::get('/settings', [SiteSettingController::class, 'index']);
+Route::get('/site-settings/maintenance', [SiteSettingController::class, 'getMaintenanceSettings']);
 
-// Analytics (public endpoints)
-Route::prefix('analytics')->group(function () {
-    Route::post('/page-visit', [AnalyticsController::class, 'trackPageVisit']);
-    Route::post('/click', [AnalyticsController::class, 'trackClick']);
-    Route::post('/form-submission', [AnalyticsController::class, 'trackFormSubmission']);
-});
+Route::get('/testimonials', [TestimonialController::class, 'index']);
+Route::get('/clients', [ClientController::class, 'index']);
+Route::get('/team-members', [TeamMemberController::class, 'index']);
+Route::get('/values', [ValueController::class, 'index']);
 
-// Auth (public - token based, no CSRF needed)
-Route::prefix('auth')->group(function () {
-    Route::post('/login', [AuthController::class, 'login']);
-});
+// Pillars public
+Route::get('/pillars', [PillarController::class, 'index']);
+Route::get('/pillars/{slug}', [PillarController::class, 'show']);
 
-/*
-|--------------------------------------------------------------------------
-| Authenticated API Routes
-|--------------------------------------------------------------------------
-*/
+// Innovations public
+Route::get('/innovations', [InnovationController::class, 'index']);
+Route::get('/innovations/{identifier}', [InnovationController::class, 'show']);
 
+// Public — search, tracking, newsletter
+Route::get('/search', [SearchController::class, 'index']);
+Route::post('/track', [AnalyticsController::class, 'track']);
+Route::post('/subscribe', [SubscriberController::class, 'store']);
+Route::post('/consultation-requests', [ConsultationRequestController::class, 'store']);
+Route::post('/rsvps', [\App\Http\Controllers\Api\RsvpController::class, 'store']);
+Route::get('/storage/{path}', [UploadController::class, 'serve'])->where('path', '.*');
+
+// Protected routes
 Route::middleware('auth:sanctum')->group(function () {
-    // Auth
-    Route::prefix('auth')->group(function () {
-        Route::post('/logout', [AuthController::class, 'logout']);
-        Route::get('/user', [AuthController::class, 'user']);
-    });
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/user', [AuthController::class, 'user']);
 
-    // Admin prefix for all admin routes
-    Route::prefix('admin')->group(function () {
-        // Portfolio Management
-        Route::prefix('portfolio')->group(function () {
-            Route::post('/', [PortfolioController::class, 'store']);
-            Route::put('/{id}', [PortfolioController::class, 'update']);
-            Route::patch('/{id}/toggle-featured', [PortfolioController::class, 'toggleFeatured']);
-            Route::delete('/{id}', [PortfolioController::class, 'destroy']);
-            Route::post('/reorder', [PortfolioController::class, 'reorder']);
-            Route::get('/tags/all', [PortfolioController::class, 'getAllTags']);
-                // Media (Image Gallery)
-                Route::get('/{id}/media', [PortfolioController::class, 'media']);
-                Route::post('/{id}/media', [PortfolioController::class, 'uploadMedia']);
-                Route::delete('/{id}/media/{mediaId}', [PortfolioController::class, 'deleteMedia']);
-                Route::post('/{id}/media/{mediaId}/primary', [PortfolioController::class, 'setPrimaryImage']);
-        });
+    // RSVP CRUD (admin)
+    Route::get('/rsvps', [\App\Http\Controllers\Api\RsvpController::class, 'index']);
+    Route::delete('/rsvps/{rsvp}', [\App\Http\Controllers\Api\RsvpController::class, 'destroy']);
 
-        // Contact Submissions Management
-        Route::prefix('submissions')->group(function () {
-            Route::get('/', [ContactController::class, 'index']);
-            Route::get('/recent', [ContactController::class, 'recent']);
-            Route::get('/upcoming', [ContactController::class, 'upcomingAppointments']);
-            Route::get('/{id}', [ContactController::class, 'show']);
-            Route::patch('/{id}/status', [ContactController::class, 'updateStatus']);
-            Route::delete('/{id}', [ContactController::class, 'destroy']);
-            // Comments on submissions
-            Route::get('/{id}/comments', [CommentController::class, 'forSubmission']);
-            Route::post('/{id}/comments', [CommentController::class, 'storeForSubmission']);
-        });
+    // Services CRUD
+    Route::post('/services', [ServiceController::class, 'store']);
+    Route::put('/services/{service}', [ServiceController::class, 'update']);
+    Route::delete('/services/{service}', [ServiceController::class, 'destroy']);
 
-        // Analytics Dashboard
-        Route::prefix('analytics')->group(function () {
-            Route::get('/dashboard', [AnalyticsController::class, 'getDashboardStats']);
-            Route::get('/page-views', [AnalyticsController::class, 'getPageViews']);
-            Route::get('/popular-pages', [AnalyticsController::class, 'getPopularPages']);
-            Route::get('/visitors', [AnalyticsController::class, 'getVisitorStats']);
-        });
+    // Insights CRUD
+    Route::post('/insights', [InsightController::class, 'store']);
+    Route::put('/insights/{insight}', [InsightController::class, 'update']);
+    Route::delete('/insights/{insight}', [InsightController::class, 'destroy']);
 
-        // Notifications
-        Route::prefix('notifications')->group(function () {
-            Route::get('/', [App\Http\Controllers\Api\NotificationController::class, 'index']);
-            Route::get('/unread-count', [App\Http\Controllers\Api\NotificationController::class, 'unreadCount']);
-            Route::patch('/{id}/read', [App\Http\Controllers\Api\NotificationController::class, 'markAsRead']);
-            Route::post('/mark-all-read', [App\Http\Controllers\Api\NotificationController::class, 'markAllAsRead']);
-            Route::delete('/{id}', [App\Http\Controllers\Api\NotificationController::class, 'destroy']);
-        });
+    // Case Studies CRUD
+    Route::post('/case-studies', [CaseStudyController::class, 'store']);
+    Route::put('/case-studies/{caseStudy}', [CaseStudyController::class, 'update']);
+    Route::delete('/case-studies/{caseStudy}', [CaseStudyController::class, 'destroy']);
 
-        // Activity Log
-        Route::prefix('activity-log')->group(function () {
-            Route::get('/', [ActivityLogController::class, 'index']);
-            Route::get('/stats', [ActivityLogController::class, 'getStats']);
-            Route::get('/{id}', [ActivityLogController::class, 'show']);
-        });
+    // Stats CRUD
+    Route::post('/stats', [StatController::class, 'store']);
+    Route::put('/stats/{stat}', [StatController::class, 'update']);
+    Route::delete('/stats/{stat}', [StatController::class, 'destroy']);
 
-        // Export
-        Route::prefix('export')->group(function () {
-            Route::get('/portfolio/excel', [ExportController::class, 'exportPortfolio']);
-            Route::get('/portfolio/csv', [ExportController::class, 'exportPortfolioCsv']);
-            Route::get('/submissions/excel', [ExportController::class, 'exportSubmissions']);
-            Route::get('/submissions/csv', [ExportController::class, 'exportSubmissionsCsv']);
-        });
+    // Settings
+    Route::put('/settings/batch', [SiteSettingController::class, 'batchUpdate']);
+    Route::put('/settings/{siteSetting}', [SiteSettingController::class, 'update']);
 
-        // Comments (generic operations)
-        Route::delete('comments/{id}', [CommentController::class, 'destroy']);
+    // Testimonials CRUD
+    Route::post('/testimonials', [TestimonialController::class, 'store']);
+    Route::put('/testimonials/{testimonial}', [TestimonialController::class, 'update']);
+    Route::delete('/testimonials/{testimonial}', [TestimonialController::class, 'destroy']);
 
-        // Advanced Search
-        Route::get('search', [SearchController::class, 'search']);
+    // Clients CRUD
+    Route::post('/clients', [ClientController::class, 'store']);
+    Route::put('/clients/{client}', [ClientController::class, 'update']);
+    Route::delete('/clients/{client}', [ClientController::class, 'destroy']);
 
-        // Backups
-        Route::post('backups/run', [BackupController::class, 'run']);
-        Route::get('backups/latest', [BackupController::class, 'latest']);
+    // File Upload
+    Route::post('/upload', [UploadController::class, 'store']);
+    Route::delete('/upload', [UploadController::class, 'destroy']);
 
-        // Hero Slides (admin)
-        Route::prefix('hero-slides')->group(function () {
-            Route::get('/', [HeroSlideController::class, 'index']);
-            Route::post('/', [HeroSlideController::class, 'store']);
-            Route::put('/{id}', [HeroSlideController::class, 'update']);
-            Route::delete('/{id}', [HeroSlideController::class, 'destroy']);
-            Route::post('/{id}/background', [HeroSlideController::class, 'uploadBackground']);
-        });
 
-        // Site Settings (admin)
-        Route::prefix('site-settings')->group(function () {
-            Route::get('/', [SiteSettingsController::class, 'index']);
-            Route::put('/', [SiteSettingsController::class, 'update']);
-            Route::post('/portfolio', [SiteSettingsController::class, 'uploadPortfolio']);
-            Route::delete('/portfolio', [SiteSettingsController::class, 'deletePortfolio']);
-            Route::post('/avatar', [SiteSettingsController::class, 'uploadAvatar']);
-        });
+    // Analytics (admin)
+    Route::get('/analytics/summary', [AnalyticsController::class, 'summary']);
 
-        // Trusted Clients (admin)
-        Route::prefix('trusted-clients')->group(function () {
-            Route::get('/', [TrustedClientController::class, 'index']);
-            Route::post('/', [TrustedClientController::class, 'store']);
-            Route::put('/{id}', [TrustedClientController::class, 'update']);
-            Route::delete('/{id}', [TrustedClientController::class, 'destroy']);
-            Route::post('/{id}/logo', [TrustedClientController::class, 'uploadLogo']);
-            Route::post('/reorder', [TrustedClientController::class, 'reorder']);
-        });
-    });
+    // Subscribers (admin)
+    Route::get('/subscribers', [SubscriberController::class, 'index']);
+    Route::delete('/subscribers/{subscriber}', [SubscriberController::class, 'destroy']);
+
+    // Team Members
+    Route::post('/team-members', [TeamMemberController::class, 'store']);
+    Route::put('/team-members/{teamMember}', [TeamMemberController::class, 'update']);
+    Route::delete('/team-members/{teamMember}', [TeamMemberController::class, 'destroy']);
+
+    // Values
+    Route::post('/values', [ValueController::class, 'store']);
+    Route::put('/values/{value}', [ValueController::class, 'update']);
+    Route::delete('/values/{value}', [ValueController::class, 'destroy']);
+
+    // Pillars CRUD
+    Route::post('/pillars', [PillarController::class, 'store']);
+    Route::put('/pillars/{pillar}', [PillarController::class, 'update']);
+    Route::delete('/pillars/{pillar}', [PillarController::class, 'destroy']);
+
+    // Innovations CRUD
+    Route::post('/innovations', [InnovationController::class, 'store']);
+    Route::put('/innovations/{innovation}', [InnovationController::class, 'update']);
+    Route::delete('/innovations/{innovation}', [InnovationController::class, 'destroy']);
+
+    // Consultation Requests
+    Route::get('/consultation-requests', [ConsultationRequestController::class, 'index']);
+    Route::put('/consultation-requests/{consultationRequest}', [ConsultationRequestController::class, 'update']);
+    Route::delete('/consultation-requests/{consultationRequest}', [ConsultationRequestController::class, 'destroy']);
+
+    // Email Templates
+    Route::post('/email-templates/preview', [\App\Http\Controllers\Api\EmailTemplateController::class, 'preview']);
 });

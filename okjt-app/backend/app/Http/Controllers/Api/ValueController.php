@@ -1,0 +1,35 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Traits\HandlesStandardCrud;
+
+class ValueController extends Controller
+{
+    use HandlesStandardCrud;
+
+    protected $orderByField = 'order';
+    protected $orderByDirection = 'asc';
+
+    protected function storeRules(Request $request): array
+    {
+        return [
+            'icon' => 'nullable|string|max:255',
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'order' => 'nullable|integer',
+        ];
+    }
+
+    protected function updateRules(Request $request, $record): array
+    {
+        return [
+            'icon' => 'nullable|string|max:255',
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'order' => 'nullable|integer',
+        ];
+    }
+}

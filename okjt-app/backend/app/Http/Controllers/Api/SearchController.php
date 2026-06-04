@@ -3,61 +3,74 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\ContactSubmission;
-use App\Models\PortfolioProject;
-use Illuminate\Http\JsonResponse;
+use App\Models\Service;
+use App\Models\Insight;
+use App\Models\CaseStudy;
 use Illuminate\Http\Request;
 
 class SearchController extends Controller
 {
-    public function search(Request $request): JsonResponse
+    public function index(Request $request)
     {
-        $request->validate([
-            'q' => 'required|string|max:255',
-            'type' => 'nullable|string|in:all,portfolio,submissions',
-        ]);
+        $q = $request->get('q', '');
+        $type = $request->get('type', 'all'); // all, services, insights, case_studies
 
-        $query = $request->input('q');
-        $type = $request->input('type', 'all');
-
-        $results = [];
-
-        if ($type === 'all' || $type === 'portfolio') {
-            $portfolio = PortfolioProject::search($query)->take(10)->get()->map(function (PortfolioProject $project) {
-                return [
-                    'type' => 'portfolio',
-                    'id' => $project->id,
-                    'title' => $project->title,
-                    'subtitle' => $project->client_name,
-                    'status' => $project->status,
-                    'category' => $project->category,
-                    'featured' => (bool) $project->featured,
-                ];
-            });
-
-            $results = array_merge($results, $portfolio->toArray());
+        if (strlen($q) < 2) {
+            return response()->json(['services' => [], 'insights' => [], 'case_studies' => []]);
         }
 
-        if ($type === 'all' || $type === 'submissions') {
-            $submissions = ContactSubmission::search($query)->take(10)->get()->map(function (ContactSubmission $submission) {
-                return [
-                    'type' => 'submission',
-                    'id' => $submission->id,
-                    'title' => $submission->name,
-                    'subtitle' => $submission->email,
-                    'status' => $submission->status,
-                    'contact_method' => $submission->contact_method,
-                ];
-            });
+        $results = [
+            'services' => [],
+            'insights' => [],
+            'case_studies' => [],
+        ];
 
-            $results = array_merge($results, $submissions->toArray());
+        if ($type === 'all' || $type === 'services') {
+            $results['services'] = Service::where('is_active', true)
+                ->where(function ($query) use ($q) {
+                    $query->where('title', 'like', "%{$q}%")
+                        ->orWhere('description', 'like', "%{$q}%")
+                        ->orWhere('category', 'like', "%{$q}%");
+                })
+                ->orderByRaw("CASE 
+                    WHEN title LIKE ? THEN 1 
+                    WHEN title LIKE ? THEN 2 
+                    ELSE 3 END", ["{$q}", "{$q}%"])
+                ->select('id', 'title', 'slug', 'category', 'description')
+                ->limit(10)
+                ->get();
         }
 
-        return response()->json([
-            'success' => true,
-            'data' => $results,
-        ]);
+        if ($type === 'all' || $type === 'insights') {
+            $results['insights'] = Insight::where('is_published', true)
+                ->where(function ($query) use ($q) {
+                    $query->where('title', 'like', "%{$q}%")
+                        ->orWhere('excerpt', 'like', "%{$q}%")
+                        ->orWhere('category', 'like', "%{$q}%");
+                })
+                ->orderByRaw("CASE 
+                    WHEN title LIKE ? THEN 1 
+                    WHEN title LIKE ? THEN 2 
+                    ELSE 3 END", ["{$q}", "{$q}%"])
+                ->select('id', 'title', 'slug', 'category', 'excerpt')
+                ->limit(10)
+                ->get();
+        }
+
+        if ($type === 'all' || $type === 'case_studies') {
+            $results['case_studies'] = CaseStudy::where(function ($query) use ($q) {
+                    $query->where('title', 'like', "%{$q}%")
+                        ->orWhere('client_name', 'like', "%{$q}%");
+                })
+                ->orderByRaw("CASE 
+                    WHEN title LIKE ? THEN 1 
+                    WHEN title LIKE ? THEN 2 
+                    ELSE 3 END", ["{$q}", "{$q}%"])
+                ->select('id', 'title', 'slug', 'client_name')
+                ->limit(10)
+                ->get();
+        }
+
+        return response()->json($results);
     }
 }
-
-
