@@ -6,6 +6,7 @@ import { useApi } from '@/hooks/use-api'
 import { ArrowRight, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { getMediaUrl } from '@/lib/utils'
 
 const categories = ['All', 'Web Development', 'UI/UX Design', 'Digital Strategy']
 
@@ -40,10 +41,10 @@ const ServicesSection = () => {
     const sectionTitle = getSetting('services_title', 'Explore our technical services')
     
     const dynamicVideos: Record<string, string> = {
-        'All': getSetting('services_video_all', categoryVideos['All']),
-        'Web Development': getSetting('services_video_software', categoryVideos['Web Development']),
-        'UI/UX Design': getSetting('services_video_electronics', categoryVideos['UI/UX Design']),
-        'Digital Strategy': getSetting('services_video_innovation', categoryVideos['Digital Strategy']),
+        'All': getMediaUrl(getSetting('services_video_all', categoryVideos['All'])),
+        'Web Development': getMediaUrl(getSetting('services_video_software', categoryVideos['Web Development'])),
+        'UI/UX Design': getMediaUrl(getSetting('services_video_electronics', categoryVideos['UI/UX Design'])),
+        'Digital Strategy': getMediaUrl(getSetting('services_video_innovation', categoryVideos['Digital Strategy'])),
     }
 
     if (servicesLoading) return <div className="py-20 text-center text-white/40">Loading services...</div>

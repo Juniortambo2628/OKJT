@@ -17,11 +17,11 @@ class EmailTemplateController extends Controller
         ]);
 
         $dummyData = (object)[
-            'first_name' => 'Alexander',
-            'last_name' => 'Hamilton',
-            'email' => 'a.hamilton@treasury.gov',
-            'subject' => 'Strategic Advisory Inquiry',
-            'message' => 'This is a sample message to demonstrate how your email template will look with actual data. Organisation: The Treasury. Objective: Market Entry.',
+            'first_name' => 'Jordan',
+            'last_name' => 'Taylor',
+            'email' => 'jordan.taylor@example.com',
+            'subject' => 'Consultation Request',
+            'message' => 'This is a sample message used to preview how the email template renders with real request data.',
             'status' => 'pending'
         ];
 

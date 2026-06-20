@@ -21,9 +21,8 @@ export default function PortfolioPage() {
     const { data: caseStudies, isLoading } = useApi<CaseStudy[]>('/case-studies')
     const [viewMode, setViewMode] = React.useState<ViewMode>('grid')
 
-    const { videoSrc, bgImage } = usePageHeroMedia({
+    const { videoSrc, bgImage, mediaLoading } = usePageHeroMedia({
         settingsKey: 'hero_case_studies_media',
-        fallback: 'https://cdn.pixabay.com/video/2020/06/05/40063-428753399_large.mp4'
     })
 
     const categories = React.useMemo(() => {
@@ -48,6 +47,7 @@ export default function PortfolioPage() {
                 subtitle="High-performance software and digital engineering with measurable outcomes. Explore our portfolio of technical success."
                 videoSrc={videoSrc}
                 bgImage={bgImage}
+                mediaLoading={mediaLoading}
             />
 
             {/* Case Study Grid */}

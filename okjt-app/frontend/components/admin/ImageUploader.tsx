@@ -1,9 +1,10 @@
 "use client"
 
 import React, { useState, useCallback } from 'react'
-import { useDropzone } from 'react-dropzone'
+import { Accept, useDropzone } from 'react-dropzone'
 import imageCompression from 'browser-image-compression'
-import { Upload, X, Loader2, Image as ImageIcon, Film, File } from 'lucide-react'
+import { AxiosError, AxiosProgressEvent } from 'axios'
+import { Upload, X, Loader2, Film, File } from 'lucide-react'
 import api from '@/lib/api'
 
 interface ImageUploaderProps {
@@ -15,7 +16,12 @@ interface ImageUploaderProps {
     className?: string
 }
 
-const ImageUploader = ({ value, onChange, accept, maxSizeMB = 2, label = 'Upload File', className }: ImageUploaderProps) => {
+interface UploadResponse {
+    path?: string
+    url?: string
+}
+
+const ImageUploader = ({ value, onChange, accept, maxSizeMB = 10, label = 'Upload File', className }: ImageUploaderProps) => {
     const [preview, setPreview] = useState<string | null>(value || null)
     const [isUploading, setIsUploading] = useState(false)
     const [uploadProgress, setUploadProgress] = useState(0)
@@ -31,6 +37,7 @@ const ImageUploader = ({ value, onChange, accept, maxSizeMB = 2, label = 'Upload
 
         try {
             let fileToUpload = file
+            const maxBytes = maxSizeMB * 1024 * 1024
 
             // Compress images (skip videos and SVGs)
             const isImage = file.type.startsWith('image/') && !file.type.includes('svg')
@@ -43,6 +50,12 @@ const ImageUploader = ({ value, onChange, accept, maxSizeMB = 2, label = 'Upload
                     fileType: file.type as string,
                 })
                 setUploadProgress(40)
+            } else if (file.size > maxBytes) {
+                throw new Error(`File must be ${maxSizeMB} MB or smaller.`)
+            }
+
+            if (fileToUpload.size > maxBytes) {
+                throw new Error(`File must be ${maxSizeMB} MB or smaller.`)
             }
 
             // Create preview
@@ -57,16 +70,18 @@ const ImageUploader = ({ value, onChange, accept, maxSizeMB = 2, label = 'Upload
 
             const response = await api.post('/upload', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
-                onUploadProgress: (progressEvent: any) => {
+                onUploadProgress: (progressEvent: AxiosProgressEvent) => {
                     const pct = Math.round((progressEvent.loaded * 50) / (progressEvent.total || 1)) + 50
                     setUploadProgress(pct)
                 },
             })
 
             setUploadProgress(100)
-            onChange(response.data.path)
-        } catch (err: any) {
-            setError(err?.response?.data?.message || 'Upload failed. Please try again.')
+            const data = response.data as UploadResponse
+            onChange(data.url || data.path || '')
+        } catch (err: unknown) {
+            const apiError = err as AxiosError<{ message?: string }>
+            setError(apiError.response?.data?.message || 'Upload failed. Please try again.')
             setPreview(value || null)
         } finally {
             setIsUploading(false)
@@ -76,12 +91,12 @@ const ImageUploader = ({ value, onChange, accept, maxSizeMB = 2, label = 'Upload
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
         accept: accept
-            ? accept.reduce((acc: any, type: string) => {
+            ? accept.reduce<Accept>((acc, type: string) => {
                 if (type.startsWith('.')) {
                     const mimeMap: Record<string, string> = {
                         '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png',
                         '.webp': 'image/webp', '.svg': 'image/svg+xml', '.gif': 'image/gif',
-                        '.mp4': 'video/mp4', '.pdf': 'application/pdf',
+                        '.mp4': 'video/mp4', '.webm': 'video/webm', '.pdf': 'application/pdf',
                     }
                     const mime = mimeMap[type]
                     if (mime) acc[mime] = [type]
@@ -100,7 +115,6 @@ const ImageUploader = ({ value, onChange, accept, maxSizeMB = 2, label = 'Upload
     }
 
     const isVideo = preview?.startsWith('data:video') || value?.toLowerCase().endsWith('.mp4') || value?.toLowerCase().endsWith('.webm')
-    const isImage = preview?.startsWith('data:image') || value?.toLowerCase().match(/\.(jpg|jpeg|png|webp|gif|svg)$/i)
     const isFile = preview?.startsWith('data:application') || value?.toLowerCase().endsWith('.pdf')
 
     return (
@@ -170,7 +184,7 @@ const ImageUploader = ({ value, onChange, accept, maxSizeMB = 2, label = 'Upload
                                     <span className="font-semibold text-foreground">Click to upload</span> or drag and drop
                                 </p>
                                 <p className="text-xs text-muted-foreground mt-1">
-                                    JPG, PNG, WebP, SVG, GIF, MP4 (max {maxSizeMB}MB)
+                                    JPG, PNG, WebP, SVG, GIF, MP4 (max {maxSizeMB} MB)
                                 </p>
                             </>
                         )}

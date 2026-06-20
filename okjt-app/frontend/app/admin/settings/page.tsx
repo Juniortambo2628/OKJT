@@ -5,7 +5,7 @@ import AdminLayout from '@/components/admin/AdminLayout'
 import { useApi } from '@/hooks/use-api'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Save, RefreshCw, Globe, Palette, ShieldCheck, Mail, GripVertical, Plus, Trash2, Layout, Film, Image as ImageIcon, Rocket, ListOrdered } from 'lucide-react'
+import { Save, RefreshCw, Globe, Palette, ShieldCheck, Mail, GripVertical, Plus, Trash2, Layout, Film, Image as ImageIcon, ListOrdered } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
@@ -57,16 +57,31 @@ const AdminSettingsPage = () => {
         { key: 'hero_home_video_2', label: 'Home Hero Video 2', type: 'video' },
         { key: 'hero_home_video_3', label: 'Home Hero Video 3', type: 'video' },
         { key: 'hero_about_media', label: 'About Page Hero', type: 'media' },
+        { key: 'hero_products_media', label: 'Our Approach Hero', type: 'media' },
         { key: 'hero_services_media', label: 'Services Page Hero', type: 'media' },
         { key: 'hero_insights_media', label: 'Insights Page Hero', type: 'media' },
         { key: 'hero_case_studies_media', label: 'Case Studies Hero', type: 'media' },
         { key: 'hero_client_impact_media', label: 'Client Impact Hero', type: 'media' },
         { key: 'hero_contact_media', label: 'Contact Page Hero', type: 'media' },
         { key: 'hero_consultation_media', label: 'Consultation Hero', type: 'media' },
+        { key: 'stats_background', label: 'Stats Section Background', type: 'media' },
+        { key: 'hero_pillar_web_engineering', label: 'Pillar: Web Engineering Hero', type: 'media' },
+        { key: 'hero_pillar_ui_ux_design', label: 'Pillar: UI/UX Design Hero', type: 'media' },
+        { key: 'hero_pillar_digital_strategy', label: 'Pillar: Digital Strategy Hero', type: 'media' },
         { key: 'hero_pillar_energy_advisory', label: 'Pillar: Energy Advisory Hero', type: 'media' },
         { key: 'hero_pillar_fintech', label: 'Pillar: Fintech Hero', type: 'media' },
         { key: 'hero_pillar_international_diplomacy', label: 'Pillar: Diplomacy Hero', type: 'media' },
     ]
+
+    const heroSettingByKey = heroSettingsList.reduce<Record<string, typeof heroSettingsList[number]>>((acc, setting) => {
+        acc[setting.key] = setting
+        return acc
+    }, {})
+
+    const getHeroAccept = (type: string) => {
+        if (type === 'video') return ['.mp4', '.webm']
+        return ['.jpg', '.jpeg', '.png', '.webp', '.mp4', '.webm']
+    }
 
     const handleSaveAll = async () => {
         setIsSavingAll(true)
@@ -80,6 +95,7 @@ const AdminSettingsPage = () => {
 
             const settingsToUpdate = Object.entries(localSettings).map(([key, value]) => {
                 const original = allSettings.find(s => s.key === key)
+                const heroSetting = heroSettingByKey[key]
                 let finalValue = value
                 
                 if (key === 'main_nav_links') {
@@ -89,8 +105,8 @@ const AdminSettingsPage = () => {
                 return {
                     key,
                     value: finalValue,
-                    type: original?.type || 'text',
-                    group: original?.group || 'general'
+                    type: original?.type || (heroSetting?.type === 'video' ? 'video' : heroSetting ? 'image' : 'text'),
+                    group: original?.group || (heroSetting ? 'hero-media' : 'general')
                 }
             })
 
@@ -100,18 +116,19 @@ const AdminSettingsPage = () => {
                 description: "All configuration changes have been updated.",
             })
             mutate()
-        } catch (err: any) {
+        } catch (err: unknown) {
+            const apiError = err as Error & { response?: { data?: { message?: string } } }
             toast({
                 variant: "destructive",
                 title: "Error",
-                description: err.response?.data?.message || err.message || 'Failed to save settings',
+                description: apiError.response?.data?.message || apiError.message || 'Failed to save settings',
             })
         } finally {
             setIsSavingAll(false)
         }
     }
 
-    const groupIcons: Record<string, any> = {
+    const groupIcons: Record<string, React.ElementType> = {
         general: Globe,
         branding: Palette,
         security: ShieldCheck,
@@ -331,7 +348,7 @@ const AdminSettingsPage = () => {
                                                     <ImageUploader 
                                                         value={localSettings[hero.key] || ''}
                                                         onChange={(url) => setLocalSettings(prev => ({ ...prev, [hero.key]: url }))}
-                                                        accept={hero.type === 'video' ? ['.mp4'] : ['.jpg', '.jpeg', '.png', '.webp']}
+                                                        accept={getHeroAccept(hero.type)}
                                                         label=""
                                                         className="w-full"
                                                     />

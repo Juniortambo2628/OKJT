@@ -247,7 +247,7 @@ const AdminContentPage = () => {
                                             value={formValues[field.key] || ''}
                                             onChange={(url) => handleChange(field.key, url)}
                                             accept={(field as any).accept}
-                                            maxSizeMB={(field as any).accept?.includes('.mp4') ? 15 : 2}
+                                            maxSizeMB={10}
                                         />
                                     )}
                                 </div>

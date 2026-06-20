@@ -5,8 +5,8 @@ import { useSettings } from './use-settings'
 interface UsePageHeroMediaOptions {
     /** The settings key to look up (e.g. 'hero_case_studies_media') */
     settingsKey: string
-    /** Fallback URL if no setting is found */
-    fallback: string
+    /** Optional fallback URL if the page has an approved local brand asset */
+    fallback?: string
 }
 
 interface PageHeroMedia {
@@ -14,6 +14,8 @@ interface PageHeroMedia {
     videoSrc?: string
     /** Pass this to PageHero's bgImage prop */
     bgImage?: string
+    /** Pass this to PageHero's mediaLoading prop */
+    mediaLoading: boolean
 }
 
 /**
@@ -23,20 +25,27 @@ interface PageHeroMedia {
  * or an image and returns the appropriate prop for PageHero.
  * 
  * @example
- * const { videoSrc, bgImage } = usePageHeroMedia({
- *   settingsKey: 'hero_case_studies_media',
- *   fallback: 'https://cdn.pixabay.com/video/...'
+ * const { videoSrc, bgImage, mediaLoading } = usePageHeroMedia({
+ *   settingsKey: 'hero_case_studies_media'
  * })
  * <PageHero videoSrc={videoSrc} bgImage={bgImage} ... />
  */
 export function usePageHeroMedia({ settingsKey, fallback }: UsePageHeroMediaOptions): PageHeroMedia {
-    const { getSetting } = useSettings()
+    const { getSetting, isLoading } = useSettings()
+    if (isLoading) {
+        return { mediaLoading: true }
+    }
+
     const heroMedia = getSetting(settingsKey, fallback)
+    if (!heroMedia) {
+        return { mediaLoading: false }
+    }
     
     const isVideo = heroMedia.endsWith('.mp4') || heroMedia.endsWith('.webm')
 
     return {
         videoSrc: isVideo ? heroMedia : undefined,
         bgImage: !isVideo ? heroMedia : undefined,
+        mediaLoading: false,
     }
 }

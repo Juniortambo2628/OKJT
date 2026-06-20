@@ -12,6 +12,8 @@ interface useAdminResourceOptions<T> {
     filterFn: (item: T, searchTerm: string) => boolean
     sortFns?: Record<string, (a: T, b: T) => number>
     statusField?: keyof T // defaults to 'is_active'
+    initialSortBy?: string
+    initialSortOrder?: 'asc' | 'desc'
 }
 
 export function useAdminResource<T extends { id: number, created_at?: string }>({
@@ -20,7 +22,9 @@ export function useAdminResource<T extends { id: number, created_at?: string }>(
     initialForm,
     filterFn,
     sortFns = {},
-    statusField = 'is_active' as keyof T
+    statusField = 'is_active' as keyof T,
+    initialSortBy = 'created_at',
+    initialSortOrder = 'desc',
 }: useAdminResourceOptions<T>) {
     const { data, mutate, isLoading } = useApi<T[]>(endpoint)
     const { toast } = useToast()
@@ -28,8 +32,8 @@ export function useAdminResource<T extends { id: number, created_at?: string }>(
     // Search & Filter State
     const [searchTerm, setSearchTerm] = useState('')
     const [activeFilter, setActiveFilter] = useState<'all' | 'active' | 'inactive'>('all')
-    const [sortBy, setSortBy] = useState<string>('created_at')
-    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+    const [sortBy, setSortBy] = useState<string>(initialSortBy)
+    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>(initialSortOrder)
     
     // Layout State
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')

@@ -90,5 +90,59 @@ class SiteSettingController extends Controller
             'estimatedBack' => $settings->get('maintenance_estimated_back') ?? '',
         ]);
     }
+
+    public function emailTemplates()
+    {
+        return SiteSettingResource::collection(
+            SiteSetting::where('group', 'email')->orderBy('key')->get()
+        );
+    }
+
+    public function storeEmailTemplate(Request $request)
+    {
+        $validated = $request->validate([
+            'key' => 'required|string|unique:site_settings,key',
+            'value' => 'nullable|string',
+            'type' => 'nullable|string',
+        ]);
+
+        $setting = SiteSetting::updateOrCreate(
+            ['key' => $validated['key']],
+            [
+                'value' => $validated['value'] ?? '',
+                'type' => $validated['type'] ?? 'code',
+                'group' => 'email',
+            ]
+        );
+
+        return new SiteSettingResource($setting);
+    }
+
+    public function updateEmailTemplate(Request $request, string $key)
+    {
+        $validated = $request->validate([
+            'value' => 'nullable|string',
+            'type' => 'nullable|string',
+        ]);
+
+        $setting = SiteSetting::updateOrCreate(
+            ['key' => $key],
+            [
+                'value' => $validated['value'] ?? '',
+                'type' => $validated['type'] ?? 'code',
+                'group' => 'email',
+            ]
+        );
+
+        return new SiteSettingResource($setting);
+    }
+
+    public function destroyEmailTemplate(string $key)
+    {
+        $setting = SiteSetting::where('key', $key)->where('group', 'email')->firstOrFail();
+        $setting->delete();
+
+        return response()->json(null, 204);
+    }
 }
 

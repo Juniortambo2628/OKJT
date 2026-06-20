@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useApi } from './use-api'
 import { SiteSetting } from '@/types/api'
 
@@ -16,18 +16,18 @@ export function useSettings() {
     /**
      * Helper to find a specific setting value by key
      */
-    const getSetting = (key: string, defaultValue: string = ''): string => {
+    const getSetting = useCallback((key: string, defaultValue: string = ''): string => {
         const setting = allSettings.find(s => s.key === key)
         return setting?.value || defaultValue
-    }
+    }, [allSettings])
 
     /**
      * Helper to check if a setting is enabled (returns true for 1, true, or on)
      */
-    const isEnabled = (key: string, defaultEnabled: boolean = false): boolean => {
+    const isEnabled = useCallback((key: string, defaultEnabled: boolean = false): boolean => {
         const val = getSetting(key, defaultEnabled ? '1' : '0').toLowerCase()
         return val === '1' || val === 'true' || val === 'on'
-    }
+    }, [getSetting])
 
     // Pre-calculated brand assets for convenience
     const branding = useMemo(() => ({
@@ -35,20 +35,20 @@ export function useSettings() {
         logo_dark: getSetting('logo_dark', '/logos/OKJT-Logos/OKJTechLogo-White_Transparent.png'),
         logo_nobg: getSetting('logo_nobg', '/logos/OKJT-Logos/OKJTStyle_NoBG.png'),
         favicon: getSetting('favicon', '/logos/OKJT-Logos/OKJTechLogo-Black_BG-favicon.png'),
-    }), [allSettings])
+    }), [getSetting])
 
     const contact = useMemo(() => ({
         email: getSetting('contact_email', 'info@okjtech.co.ke'),
         phone: getSetting('contact_phone', '+254 700 000 000'),
         address: getSetting('contact_address', 'Nairobi, Kenya'),
-    }), [allSettings])
+    }), [getSetting])
 
     const socials = useMemo(() => ({
         linkedin: getSetting('social_linkedin', ''),
         twitter: getSetting('social_twitter', ''),
         github: getSetting('social_github', ''),
         facebook: getSetting('social_facebook', ''),
-    }), [allSettings])
+    }), [getSetting])
 
     return {
         settings: allSettings,

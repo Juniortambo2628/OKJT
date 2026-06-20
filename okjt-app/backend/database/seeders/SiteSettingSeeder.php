@@ -52,6 +52,10 @@ class SiteSettingSeeder extends Seeder
             ['key' => 'maintenance_description', 'value' => 'OKJTech is currently undergoing scheduled maintenance to improve our services. We will be back online shortly. Thank you for your patience.', 'type' => 'textarea', 'group' => 'maintenance'],
             ['key' => 'maintenance_estimated_back', 'value' => '2026-06-01 09:00:00', 'type' => 'text', 'group' => 'maintenance'],
 
+            // Shared media
+            ['key' => 'hero_products_media', 'value' => 'https://cdn.pixabay.com/video/2019/04/16/22846-331189709_large.mp4', 'type' => 'video', 'group' => 'hero-media'],
+            ['key' => 'stats_background', 'value' => '/assets/images/hero-workspace.png', 'type' => 'image', 'group' => 'hero-media'],
+
             // Pillar Heros
             ['key' => 'hero_pillar_web_engineering', 'value' => '/assets/images/custom-webdev.png', 'type' => 'image', 'group' => 'hero-media'],
             ['key' => 'hero_pillar_ui_ux_design', 'value' => '/assets/images/uiux-design.png', 'type' => 'image', 'group' => 'hero-media'],

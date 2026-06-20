@@ -20,6 +20,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import ImageUploader from '@/components/admin/ImageUploader'
 import RichTextEditor from '@/components/admin/RichTextEditor'
 import { cn } from '@/lib/utils'
 import AdminPageHeader from '@/components/admin/core/AdminPageHeader'
@@ -54,6 +55,7 @@ const AdminPillarsPage = () => {
             overview: '',
             content: '',
             icon: 'Activity',
+            image: '',
             is_active: true,
         },
         filterFn: (p, term) => p.title.toLowerCase().includes(term.toLowerCase())
@@ -162,6 +164,22 @@ const AdminPillarsPage = () => {
                                 onChange={(content) => setForm({ ...form, content })}
                                 className="min-h-[200px]"
                             />
+                        </div>
+
+                        <div className="space-y-2 md:col-span-2">
+                            <label className="text-sm font-medium text-muted-foreground">
+                                Overview Background Image
+                            </label>
+                            <ImageUploader
+                                value={form.image || ''}
+                                onChange={(image) => setForm({ ...form, image })}
+                                accept={['.jpg', '.jpeg', '.png', '.webp']}
+                                label=""
+                                className="w-full"
+                            />
+                            <p className="text-xs text-muted-foreground">
+                                Used behind this pillar on the Our Approach scrolling overview page.
+                            </p>
                         </div>
 
                         <div className="space-y-4">

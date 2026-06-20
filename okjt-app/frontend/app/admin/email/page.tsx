@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import api from '@/lib/api'
 
 const EmailSettingsPage = () => {
-    const { data: settingsByGroup, mutate, isLoading } = useApi<Record<string, any>>('/settings')
+    const { data: emailTemplates, mutate, isLoading } = useApi<any[]>('/email-templates')
     const [formValues, setFormValues] = useState<Record<string, string>>({
         'email_template_admin': '',
         'email_template_user': ''
@@ -36,10 +36,10 @@ const EmailSettingsPage = () => {
     })
 
     useEffect(() => {
-        if (settingsByGroup) {
+        if (emailTemplates) {
             const flat: Record<string, string> = {}
-            Object.values(settingsByGroup).forEach((group: any) => {
-                group.forEach((s: any) => { flat[s.key] = s.value || '' })
+            emailTemplates.forEach((s: any) => {
+                flat[s.key] = s.value || ''
             })
             setFormValues(prev => ({ ...prev, ...flat }))
             
@@ -61,7 +61,7 @@ const EmailSettingsPage = () => {
                 })
             }
         }
-    }, [settingsByGroup, activeTemplate])
+    }, [emailTemplates, activeTemplate])
 
     const generateBladeFromVisual = () => {
         // This generates the template structure based on the provided layout
@@ -87,11 +87,7 @@ const EmailSettingsPage = () => {
             const templateKey = activeTemplate === 'admin_notification' ? 'email_template_admin' : 'email_template_user'
             const contentToSave = editorMode === 'visual' ? generateBladeFromVisual() : formValues[templateKey]
 
-            const settings = [
-                { key: templateKey, value: contentToSave, group: 'email', type: 'code' },
-            ]
-
-            await api.put('/settings/batch', { settings })
+            await api.put(`/email-templates/${templateKey}`, { value: contentToSave, type: 'code' })
             mutate()
             setSaveSuccess(true)
             setTimeout(() => setSaveSuccess(false), 3000)
@@ -127,6 +123,22 @@ const EmailSettingsPage = () => {
         } else {
             const templateKey = activeTemplate === 'admin_notification' ? 'email_template_admin' : 'email_template_user'
             setFormValues(prev => ({ ...prev, [templateKey]: prev[templateKey] + ' ' + variable }))
+        }
+    }
+
+    const handleDelete = async () => {
+        const templateKey = activeTemplate === 'admin_notification' ? 'email_template_admin' : 'email_template_user'
+        if (!confirm(`Delete the ${activeTemplate === 'admin_notification' ? 'admin' : 'user'} email template?`)) return
+
+        setIsSaving(true)
+        try {
+            await api.delete(`/email-templates/${templateKey}`)
+            setFormValues(prev => ({ ...prev, [templateKey]: '' }))
+            mutate()
+        } catch (err) {
+            alert('Failed to delete email template')
+        } finally {
+            setIsSaving(false)
         }
     }
 
@@ -171,6 +183,14 @@ const EmailSettingsPage = () => {
                         >
                             {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
                             {saveSuccess ? 'Saved!' : 'Save changes'}
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            onClick={handleDelete}
+                            disabled={isSaving}
+                            className="gap-2"
+                        >
+                            Delete
                         </Button>
                     </div>
                 </div>

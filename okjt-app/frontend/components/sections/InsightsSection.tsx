@@ -19,7 +19,7 @@ const InsightsSection = () => {
                     <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}>
                         <span className="text-primary font-bold text-sm uppercase tracking-[0.2em] mb-4 block">Technical Insights</span>
                         <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-8">Latest Articles & News</h2>
-                        <p className="text-muted-foreground">Technical deep-dives and laboratory news coming soon. Subscribe to be notified.</p>
+                        <p className="text-muted-foreground">The latest research notes and advisory updates will appear here as they are published.</p>
                     </motion.div>
                 </div>
             </section>

@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { cn } from '@/lib/utils'
+import { SkeletonBlock, SkeletonText } from './MediaSkeleton'
 
 interface SkeletonCardProps {
     variant?: 'grid' | 'list'
@@ -22,15 +23,13 @@ const SkeletonCard = ({ variant = 'grid', count = 3 }: SkeletonCardProps) => {
                         variant === 'grid' ? "aspect-[16/10]" : "h-64 md:h-80 flex flex-col md:flex-row"
                     )}
                 >
-                    <div className={cn(
-                        "bg-muted/20",
+                    <SkeletonBlock className={cn(
                         variant === 'grid' ? "absolute inset-0" : "h-full md:w-[45%] shrink-0"
                     )} />
                     <div className="flex-1 p-8 space-y-4">
-                        <div className="h-4 w-24 bg-muted/20 rounded-full" />
-                        <div className="h-8 w-64 bg-muted/20 rounded-lg" />
-                        <div className="h-4 w-full bg-muted/10 rounded" />
-                        <div className="h-4 w-3/4 bg-muted/10 rounded" />
+                        <SkeletonBlock className="h-4 w-24 rounded-full" />
+                        <SkeletonBlock className="h-8 w-64 max-w-full rounded-lg" />
+                        <SkeletonText lines={2} />
                     </div>
                 </div>
             ))}

@@ -61,6 +61,10 @@ Route::post('/subscribe', [SubscriberController::class, 'store']);
 Route::post('/consultation-requests', [ConsultationRequestController::class, 'store']);
 Route::post('/rsvps', [\App\Http\Controllers\Api\RsvpController::class, 'store']);
 Route::get('/storage/{path}', [UploadController::class, 'serve'])->where('path', '.*');
+Route::get('/email-templates', [SiteSettingController::class, 'emailTemplates']);
+Route::post('/email-templates', [SiteSettingController::class, 'storeEmailTemplate']);
+Route::put('/email-templates/{key}', [SiteSettingController::class, 'updateEmailTemplate']);
+Route::delete('/email-templates/{key}', [SiteSettingController::class, 'destroyEmailTemplate']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {

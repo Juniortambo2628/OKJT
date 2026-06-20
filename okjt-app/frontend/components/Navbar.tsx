@@ -304,9 +304,9 @@ const Navbar = () => {
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link href="/about" className="block group p-3 -mx-3 rounded-lg hover:bg-secondary/50 transition-colors">
+                                        <Link href="/our-approach" className="block group p-3 -mx-3 rounded-lg hover:bg-secondary/50 transition-colors">
                                             <div className="font-bold text-foreground text-sm mb-1">Our Approach</div>
-                                            <div className="text-muted-foreground text-[12px] leading-snug">Learn about our methodologies and team.</div>
+                                            <div className="text-muted-foreground text-[12px] leading-snug">Explore the interactive pillar overview.</div>
                                         </Link>
                                     </li>
                                 </ul>
@@ -346,6 +346,7 @@ const Navbar = () => {
                             <Link href="/projects" className="block text-muted-foreground text-sm py-1 hover:text-foreground pl-2" onClick={() => setIsMobileMenuOpen(false)}>Solutions</Link>
                             <Link href="/portfolio" className="block text-muted-foreground text-sm py-1 hover:text-foreground pl-2" onClick={() => setIsMobileMenuOpen(false)}>Portfolio</Link>
                             <Link href="/insights" className="block text-muted-foreground text-sm py-1 hover:text-foreground pl-2" onClick={() => setIsMobileMenuOpen(false)}>Insights</Link>
+                            <Link href="/our-approach" className="block text-muted-foreground text-sm py-1 hover:text-foreground pl-2" onClick={() => setIsMobileMenuOpen(false)}>Our Approach</Link>
                         </div>
                     </div>
 

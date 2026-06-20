@@ -24,31 +24,31 @@ const PillarSection = ({ pillar, index }: { pillar: Pillar, index: number }) => 
         restDelta: 0.001
     })
 
-    // High persistence timing: Fades in instantly (0.0 -> 0.08) and remains fully stable until the absolute end (0.92 -> 1.0)
-    const contentOpacity = useTransform(smoothProgress, [0.0, 0.08, 0.92, 1.0], [0, 1, 1, 0])
-    const contentScale = useTransform(smoothProgress, [0.0, 0.08, 0.92, 1.0], [0.99, 1, 1, 0.99])
-    const contentY = useTransform(smoothProgress, [0.0, 0.08, 0.92, 1.0], [10, 0, 0, -10])
+    // Long hold timing: each slide settles quickly, stays pinned, then exits only at the handoff.
+    const contentOpacity = useTransform(smoothProgress, [0.0, 0.04, 0.94, 1.0], [0, 1, 1, 0])
+    const contentScale = useTransform(smoothProgress, [0.0, 0.04, 0.94, 1.0], [0.98, 1, 1, 0.97])
+    const contentY = useTransform(smoothProgress, [0.0, 0.04, 0.94, 1.0], [28, 0, 0, -56])
 
-    // Subtitle (overview) staggered timing: Animates in slightly after the title (0.02 -> 0.12), and exits slightly earlier (0.88 -> 0.98)
-    const subtitleOpacity = useTransform(smoothProgress, [0.0, 0.02, 0.12, 0.88, 0.98, 1.0], [0, 0, 1, 1, 0, 0])
-    const subtitleY = useTransform(smoothProgress, [0.0, 0.02, 0.12, 0.88, 0.98, 1.0], [15, 15, 0, 0, -15, -15])
+    // Subtitle (overview) follows the title but keeps the same long persistence window.
+    const subtitleOpacity = useTransform(smoothProgress, [0.0, 0.02, 0.08, 0.9, 0.98, 1.0], [0, 0, 1, 1, 0, 0])
+    const subtitleY = useTransform(smoothProgress, [0.0, 0.02, 0.08, 0.9, 0.98, 1.0], [24, 24, 0, 0, -40, -40])
 
-    // Detailed content staggered timing: Animates in after the subtitle (0.04 -> 0.16), and exits earlier (0.84 -> 0.96)
-    const detailOpacity = useTransform(smoothProgress, [0.0, 0.04, 0.16, 0.84, 0.96, 1.0], [0, 0, 1, 1, 0, 0])
-    const detailY = useTransform(smoothProgress, [0.0, 0.04, 0.16, 0.84, 0.96, 1.0], [20, 20, 0, 0, -20, -20])
+    // Detailed content enters last and leaves first so the title remains the visual anchor during handoff.
+    const detailOpacity = useTransform(smoothProgress, [0.0, 0.04, 0.12, 0.86, 0.96, 1.0], [0, 0, 1, 1, 0, 0])
+    const detailY = useTransform(smoothProgress, [0.0, 0.04, 0.12, 0.86, 0.96, 1.0], [32, 32, 0, 0, -48, -48])
 
     const bgImage = pillar.image || 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80'
     const isVideo = bgImage.endsWith('.mp4') || bgImage.endsWith('.webm')
 
     return (
-        <div id={`pillar-${pillar.slug}`} ref={sectionRef} className="relative h-[120vh] w-full overflow-hidden">
+        <div id={`pillar-${pillar.slug}`} ref={sectionRef} className="relative min-h-[230vh] w-full overflow-visible">
             <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
                 {/* Background Media */}
                 <motion.div 
                     className="absolute inset-0 z-0"
                     style={{ 
                         scale: useTransform(smoothProgress, [0, 1], [1.02, 1.08]),
-                        opacity: useTransform(smoothProgress, [0, 0.05, 0.95, 1], [0, 1, 1, 0]),
+                        opacity: useTransform(smoothProgress, [0, 0.03, 1], [0, 1, 1]),
                         willChange: 'transform, opacity'
                     }}
                 >
@@ -113,15 +113,6 @@ const PillarSection = ({ pillar, index }: { pillar: Pillar, index: number }) => 
                         )}
                     </div>
                 </motion.div>
-
-                {/* Section Specific Scroll Cue */}
-                <motion.div 
-                    style={{ opacity: useTransform(smoothProgress, [0, 0.05, 0.1], [0.8, 0.8, 0]) }}
-                    className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-                >
-                    <span className="text-white/25 text-[9px] uppercase tracking-[0.4em] font-bold select-none">Scroll down</span>
-                    <div className="w-[1px] h-8 bg-gradient-to-b from-primary/30 to-transparent animate-pulse" />
-                </motion.div>
             </div>
         </div>
     )
@@ -142,7 +133,6 @@ const PillarNav = ({ pillars }: { pillars: Pillar[] }) => {
         const handleScroll = () => {
             const scrollY = window.scrollY
             const viewportHeight = window.innerHeight
-            const scrollPos = scrollY + viewportHeight / 2
 
             let activeIdx = 0
             let activeSecProgress = 0
@@ -150,16 +140,15 @@ const PillarNav = ({ pillars }: { pillars: Pillar[] }) => {
             sectionsRef.current.forEach((section, index) => {
                 if (section) {
                     const startY = section.offsetTop
-                    const endY = startY + section.offsetHeight - viewportHeight
+                    const stickyDistance = Math.max(1, section.offsetHeight - viewportHeight)
+                    const sectionProgress = Math.max(0, Math.min(1, (scrollY - startY) / stickyDistance))
                     
-                    if (scrollY >= startY && scrollY <= endY) {
+                    if (scrollY >= startY && scrollY <= startY + stickyDistance) {
                         activeIdx = index
-                        if (section.offsetHeight > viewportHeight) {
-                            activeSecProgress = Math.max(0, Math.min(1, (scrollY - startY) / (section.offsetHeight - viewportHeight)))
-                        }
-                    } else if (scrollY > endY && index === pillars.length - 1) {
+                        activeSecProgress = sectionProgress
+                    } else if (scrollY > startY + stickyDistance) {
                         activeIdx = index
-                        activeSecProgress = 1
+                        activeSecProgress = index === pillars.length - 1 ? 1 : activeSecProgress
                     }
                 }
             })
@@ -238,7 +227,7 @@ export default function PillarsPage() {
     }
 
     return (
-        <main className="flex min-h-screen flex-col bg-background w-full overflow-x-hidden relative">
+        <main className="flex min-h-screen flex-col bg-background w-full overflow-x-clip relative">
             <Navbar />
 
             {/* Top Page Scroll Progress Bar */}
@@ -258,7 +247,7 @@ export default function PillarsPage() {
 
             {pillars && pillars.length > 0 ? (
                 <>
-                    <div className="bg-black w-full overflow-hidden">
+                    <div className="bg-black w-full overflow-visible">
                         {pillars.map((pillar, index) => (
                             <PillarSection key={pillar.id} pillar={pillar} index={index} />
                         ))}

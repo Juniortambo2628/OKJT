@@ -27,6 +27,10 @@ interface AdminResourceTemplateProps<T extends { id: number, created_at?: string
     filterFn: (item: T, searchTerm: string) => boolean
     sortFns?: Record<string, (a: T, b: T) => number>
     onValidate?: (form: Partial<T>) => string | null
+    initialSortBy?: string
+    initialSortOrder?: 'asc' | 'desc'
+    hideStatusFilter?: boolean
+    sortOptions?: { label: string, value: string }[]
     
     renderGridItem?: (
         item: T, 
@@ -74,6 +78,10 @@ export default function AdminResourceTemplate<T extends { id: number, created_at
     filterFn,
     sortFns = {},
     onValidate,
+    initialSortBy,
+    initialSortOrder,
+    hideStatusFilter,
+    sortOptions,
     renderGridItem,
     renderTableHeaders,
     renderTableRows,
@@ -121,6 +129,8 @@ export default function AdminResourceTemplate<T extends { id: number, created_at
         initialForm,
         filterFn,
         sortFns,
+        initialSortBy,
+        initialSortOrder,
     })
 
     const onSave = async () => {
@@ -148,6 +158,7 @@ export default function AdminResourceTemplate<T extends { id: number, created_at
                     searchTerm={searchTerm}
                     onSearchChange={setSearchTerm}
                     placeholder={filterPlaceholder}
+                    hideStatusFilter={hideStatusFilter}
                     
                     activeFilter={activeFilter}
                     onFilterChange={setActiveFilter}
@@ -158,6 +169,7 @@ export default function AdminResourceTemplate<T extends { id: number, created_at
                     onSortChange={setSortBy}
                     sortOrder={sortOrder}
                     onOrderChange={setSortOrder}
+                    sortOptions={sortOptions}
                     
                     viewMode={viewMode}
                     onViewModeChange={setViewMode}

@@ -160,7 +160,7 @@ const AdminClientsPage = () => {
                         label="Client Logo"
                         value={form.logo || ''}
                         onChange={(url) => setForm({ ...form, logo: url })}
-                        maxSizeMB={2}
+                        maxSizeMB={10}
                     />
 
                     <div className="grid grid-cols-2 gap-4">

@@ -6,21 +6,22 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import PageHero from '@/components/PageHero'
 import { useSettings } from '@/hooks/use-settings'
+import { usePageHeroMedia } from '@/hooks/use-page-hero-media'
 import { motion } from 'framer-motion'
 import { ArrowRight, Clock, Tag } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import ViewToggle, { ViewMode } from '@/components/ViewToggle'
+import SkeletonCard from '@/components/SkeletonCard'
 
 import { Insight } from '@/types/api'
 
 export default function InsightsPage() {
-    const { getSetting } = useSettings()
+    const { isLoading: settingsLoading } = useSettings()
+    const { videoSrc, bgImage, mediaLoading } = usePageHeroMedia({ settingsKey: 'hero_insights_media' })
     const { data: insights, isLoading } = useApi<Insight[]>('/insights')
     const [viewMode, setViewMode] = React.useState<ViewMode>('grid')
-
-    const heroMedia = getSetting('hero_insights_media', 'https://cdn.pixabay.com/video/2021/09/20/89324-609800721_large.mp4')
 
     const categories = React.useMemo(() => {
         if (!insights) return ['All']
@@ -44,8 +45,10 @@ export default function InsightsPage() {
                 tagline="Thought Leadership"
                 title="Insights &amp; Research"
                 subtitle="Analysis, commentary, and research from our advisory team on the trends shaping energy, fintech, and global markets."
-                videoSrc={heroMedia.endsWith('.mp4') ? heroMedia : undefined}
-                bgImage={!heroMedia.endsWith('.mp4') ? heroMedia : undefined}
+                videoSrc={videoSrc}
+                bgImage={bgImage}
+                mediaLoading={mediaLoading}
+                contentLoading={settingsLoading}
             />
 
             {/* Insights Grid */}
@@ -73,7 +76,7 @@ export default function InsightsPage() {
                         <ViewToggle mode={viewMode} onChange={setViewMode} label="Layout" />
                     </div>
 
-                    {isLoading && <div className="text-center py-20 text-muted-foreground/30">Loading insights...</div>}
+                    {isLoading && <SkeletonCard variant={viewMode} count={6} />}
 
                     {!isLoading && (!filtered || filtered.length === 0) && (
                         <div className="text-center py-20 text-muted-foreground/30 border-2 border-dashed border-border rounded-2xl">

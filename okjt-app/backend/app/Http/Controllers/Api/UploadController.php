@@ -18,7 +18,7 @@ class UploadController extends Controller
         $path = $file->store('uploads', 'public');
 
         return response()->json([
-            'url' => Storage::disk('public')->url($path),
+            'url' => url('/api/storage/' . ltrim($path, '/')),
             'path' => $path,
             'filename' => $file->getClientOriginalName(),
             'size' => $file->getSize(),

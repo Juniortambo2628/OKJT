@@ -21,16 +21,17 @@ const getIconComponent = (iconName: string | null) => {
 
 import PageHero from '@/components/PageHero'
 import { useSettings } from '@/hooks/use-settings'
+import { usePageHeroMedia } from '@/hooks/use-page-hero-media'
+import SkeletonCard from '@/components/SkeletonCard'
 
 export default function ServicesIndexPage() {
-    const { getSetting } = useSettings()
+    const { getSetting, isLoading: settingsLoading } = useSettings()
+    const { videoSrc, bgImage, mediaLoading } = usePageHeroMedia({ settingsKey: 'hero_services_media' })
     const { data: services, isLoading } = useApi<Service[]>('/services')
     const [viewMode, setViewMode] = React.useState<ViewMode>('grid')
 
-    const heroMedia = getSetting('hero_services_media', '/NI-Digital-Assets/financial-technology.jpg')
-
-    const servicesTitle = getSetting('services_title', 'Advisory services built for complex markets.')
-    const servicesSubtitle = getSetting('services_subtitle', 'We provide trusted strategic advisory across three core pillars, connecting decision-makers with the intelligence needed to unlock value.')
+    const servicesTitle = getSetting('services_title')
+    const servicesSubtitle = getSetting('services_subtitle')
 
     const groupedServices = React.useMemo(() => {
         if (!services || !Array.isArray(services)) return []
@@ -103,8 +104,10 @@ export default function ServicesIndexPage() {
                 tagline="Our Services"
                 title={servicesTitle}
                 subtitle={servicesSubtitle}
-                videoSrc={heroMedia.endsWith('.mp4') ? heroMedia : undefined}
-                bgImage={!heroMedia.endsWith('.mp4') ? heroMedia : undefined}
+                videoSrc={videoSrc}
+                bgImage={bgImage}
+                mediaLoading={mediaLoading}
+                contentLoading={settingsLoading}
             />
 
             <section className="bg-background py-10 border-b border-white/5">
@@ -116,6 +119,14 @@ export default function ServicesIndexPage() {
             </section>
 
             {/* Category Sections */}
+            {isLoading && (
+                <section className="py-24 bg-background">
+                    <div className="max-w-[1400px] mx-auto px-6">
+                        <SkeletonCard variant={viewMode} count={6} />
+                    </div>
+                </section>
+            )}
+
             {groupedServices.map((group, groupIndex) => {
                 const Icon = group.icon
                 const isEven = groupIndex % 2 === 0

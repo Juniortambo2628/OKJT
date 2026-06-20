@@ -4,6 +4,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import { motion, useInView, useScroll, useTransform } from 'framer-motion'
 import Image from 'next/image'
 import { useApi } from '@/hooks/use-api'
+import { getMediaUrl } from '@/lib/utils'
+import { SiteSetting, Stat } from '@/types/api'
 
 function AnimatedCounter({ target, suffix = '' }: { target: string; suffix?: string }) {
     const ref = useRef<HTMLSpanElement>(null)
@@ -39,15 +41,15 @@ function AnimatedCounter({ target, suffix = '' }: { target: string; suffix?: str
 }
 
 const StatsSection = () => {
-    const { data: stats, isLoading: statsLoading } = useApi('/stats')
-    const { data: settingsByGroup } = useApi('/settings')
+    const { data: stats, isLoading: statsLoading } = useApi<Stat[]>('/stats')
+    const { data: settingsByGroup } = useApi<Record<string, SiteSetting[]>>('/settings')
     const { scrollY } = useScroll()
     const backgroundY = useTransform(scrollY, [0, 3000], [0, -80])
 
     // Helper to get setting value
     const getSetting = (key: string, defaultValue: string) => {
         if (!settingsByGroup) return defaultValue
-        const allSettings = Object.values(settingsByGroup).flat() as any[]
+        const allSettings = Object.values(settingsByGroup).flat()
         const setting = allSettings.find(s => s.key === key)
         return setting?.value || defaultValue
     }
@@ -55,6 +57,8 @@ const StatsSection = () => {
     const sectionTagline = getSetting('stats_tagline', 'Proven Impact')
     const sectionTitle = getSetting('stats_title', 'Numbers that speak for themselves.')
     const sectionImage = getSetting('stats_background', '/assets/videos/services/all-services-video.mp4')
+    const backgroundMedia = getMediaUrl(sectionImage)
+    const isVideoBackground = /\.(mp4|webm|ogg)(\?.*)?$/i.test(backgroundMedia)
 
     if (statsLoading || !stats || stats.length === 0) return null
 
@@ -62,13 +66,25 @@ const StatsSection = () => {
         <section className="w-full relative overflow-hidden">
             {/* Parallax Background Image */}
             <motion.div className="absolute inset-0 z-0" style={{ y: backgroundY }}>
-                <Image
-                    src={sectionImage}
-                    alt="Global data visualization"
-                    fill
-                    sizes="100vw"
-                    className="object-cover scale-110"
-                />
+                {isVideoBackground ? (
+                    <video
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="absolute inset-0 w-full h-full object-cover scale-110"
+                    >
+                        <source src={backgroundMedia} type="video/mp4" />
+                    </video>
+                ) : (
+                    <Image
+                        src={backgroundMedia}
+                        alt="Global data visualization"
+                        fill
+                        sizes="100vw"
+                        className="object-cover scale-110"
+                    />
+                )}
             </motion.div>
             <div className="absolute top-0 left-0 w-full h-full bg-background/85 z-[1]" />
 
@@ -88,7 +104,7 @@ const StatsSection = () => {
                 </motion.div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-0">
-                    {stats.map((stat: any, index: number) => (
+                    {stats.map((stat, index) => (
                         <motion.div
                             key={stat.id}
                             initial={{ opacity: 0, y: 30 }}

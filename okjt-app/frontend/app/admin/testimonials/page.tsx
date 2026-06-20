@@ -174,7 +174,7 @@ const AdminTestimonialsPage = () => {
                         label="Client Avatar"
                         value={form.avatar || ''}
                         onChange={(url) => setForm({ ...form, avatar: url })}
-                        maxSizeMB={2}
+                        maxSizeMB={10}
                     />
 
                     <div className="space-y-2">

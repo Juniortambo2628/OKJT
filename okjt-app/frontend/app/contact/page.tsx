@@ -5,6 +5,7 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import PageHero from '@/components/PageHero'
 import { useSettings } from '@/hooks/use-settings'
+import { usePageHeroMedia } from '@/hooks/use-page-hero-media'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -18,11 +19,10 @@ import { useToast } from '@/hooks/use-toast'
 import api from '@/lib/api'
 
 export default function ContactPage() {
-    const { getSetting } = useSettings()
+    const { getSetting, isLoading: settingsLoading } = useSettings()
+    const { videoSrc, bgImage, mediaLoading } = usePageHeroMedia({ settingsKey: 'hero_contact_media' })
     const { toast } = useToast()
     const [isSubmitting, setIsSubmitting] = React.useState(false)
-
-    const heroMedia = getSetting('hero_contact_media', 'https://cdn.pixabay.com/video/2016/11/28/6355-193847498_large.mp4')
 
     const { data: services } = useApi<Service[]>('/services')
     const sectors = React.useMemo(() => {
@@ -78,8 +78,10 @@ export default function ContactPage() {
                 tagline="Request a Quote"
                 title="Bring your vision <br />to life."
                 subtitle="Discuss your next digital project with our engineering team. From custom software to innovative hardware, we build the future."
-                videoSrc={heroMedia.endsWith('.mp4') ? heroMedia : undefined}
-                bgImage={!heroMedia.endsWith('.mp4') ? heroMedia : undefined}
+                videoSrc={videoSrc}
+                bgImage={bgImage}
+                mediaLoading={mediaLoading}
+                contentLoading={settingsLoading}
             />
 
             <section className="py-24 bg-background">
@@ -123,7 +125,7 @@ export default function ContactPage() {
                                             id="full-name" 
                                             name="full_name"
                                             required
-                                            placeholder="Alexander Hamilton" 
+                                            placeholder="Your full name" 
                                             className="rounded-xl border-border bg-muted/20 h-14 focus:bg-card focus:ring-primary/20 transition-all text-foreground placeholder:text-muted-foreground/60" 
                                         />
                                     </div>
@@ -134,7 +136,7 @@ export default function ContactPage() {
                                             name="email"
                                             type="email" 
                                             required
-                                            placeholder="a.hamilton@treasury.gov" 
+                                            placeholder="you@company.com" 
                                             className="rounded-xl border-border bg-muted/20 h-14 focus:bg-card focus:ring-primary/20 transition-all text-foreground placeholder:text-muted-foreground/60" 
                                         />
                                     </div>
@@ -145,7 +147,7 @@ export default function ContactPage() {
                                             id="company" 
                                             name="company"
                                             required
-                                            placeholder="Entity Name" 
+                                            placeholder="Company or organisation" 
                                             className="rounded-xl border-border bg-muted/20 h-14 focus:bg-card focus:ring-primary/20 transition-all text-foreground placeholder:text-muted-foreground/60" 
                                         />
                                     </div>

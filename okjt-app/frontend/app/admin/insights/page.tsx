@@ -299,7 +299,7 @@ const AdminInsightsPage = () => {
                                 label="Featured Image"
                                 value={form.image || ''}
                                 onChange={(url) => setForm({ ...form, image: url })}
-                                maxSizeMB={2}
+                                maxSizeMB={10}
                             />
                         </div>
 

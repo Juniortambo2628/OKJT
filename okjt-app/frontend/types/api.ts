@@ -86,6 +86,7 @@ export interface Stat {
   id: number;
   label: string;
   value: string;
+  description?: string | null;
   icon: string | null;
   order: number;
 }

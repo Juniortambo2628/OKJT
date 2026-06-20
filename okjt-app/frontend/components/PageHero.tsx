@@ -5,6 +5,8 @@ import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import Breadcrumbs from './Breadcrumbs'
 import Image from 'next/image'
+import { getMediaUrl } from '@/lib/utils'
+import { HeroSkeleton, SkeletonBlock, SkeletonText } from './MediaSkeleton'
 
 interface BreadcrumbItem {
     label: string
@@ -18,6 +20,8 @@ interface PageHeroProps {
     breadcrumbs?: BreadcrumbItem[]
     bgImage?: string
     videoSrc?: string
+    mediaLoading?: boolean
+    contentLoading?: boolean
     className?: string
     centered?: boolean
     children?: React.ReactNode
@@ -30,17 +34,23 @@ const PageHero = ({
     breadcrumbs, 
     bgImage, 
     videoSrc, 
+    mediaLoading = false,
+    contentLoading = false,
     className,
     centered = false,
     children
 }: PageHeroProps) => {
+    const resolvedVideoSrc = getMediaUrl(videoSrc)
+
     return (
         <section className={cn(
             "relative pt-40 pb-20 bg-background overflow-hidden border-b border-border/50 min-h-[50vh] flex flex-col justify-center",
             className
         )}>
             {/* Background Media */}
-            {videoSrc ? (
+            {mediaLoading ? (
+                <HeroSkeleton />
+            ) : resolvedVideoSrc ? (
                 <div className="absolute inset-0 z-0">
                     <video
                         autoPlay
@@ -49,7 +59,7 @@ const PageHero = ({
                         playsInline
                         className="w-full h-full object-cover opacity-20"
                     >
-                        <source src={videoSrc} type="video/mp4" />
+                        <source src={resolvedVideoSrc} type="video/mp4" />
                     </video>
                     <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
                 </div>
@@ -84,7 +94,9 @@ const PageHero = ({
                         />
                     )}
 
-                    {tagline && (
+                    {contentLoading ? (
+                        <SkeletonBlock className={cn("h-4 w-36 rounded-full mb-4", centered && "mx-auto")} />
+                    ) : tagline && (
                         <span className="text-primary font-bold text-sm uppercase tracking-[0.3em] mb-4 block">
                             {tagline}
                         </span>
@@ -95,10 +107,19 @@ const PageHero = ({
                         centered ? "text-5xl md:text-7xl lg:text-8xl" : "text-4xl md:text-6xl lg:text-7xl",
                         "mb-8"
                     )}>
-                        <div dangerouslySetInnerHTML={{ __html: title }} />
+                        {contentLoading ? (
+                            <div className="space-y-4">
+                                <SkeletonBlock className={cn("h-12 md:h-16 w-full max-w-3xl rounded-md", centered && "mx-auto")} />
+                                <SkeletonBlock className={cn("h-12 md:h-16 w-3/4 max-w-2xl rounded-md", centered && "mx-auto")} />
+                            </div>
+                        ) : (
+                            <div dangerouslySetInnerHTML={{ __html: title }} />
+                        )}
                     </h1>
 
-                    {subtitle && (
+                    {contentLoading ? (
+                        <SkeletonText lines={2} className={cn("max-w-2xl", centered && "mx-auto")} />
+                    ) : subtitle && (
                         <p className={cn(
                             "text-muted-foreground leading-relaxed max-w-2xl",
                             centered ? "mx-auto text-xl" : "text-lg",
