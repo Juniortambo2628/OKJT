@@ -17,10 +17,12 @@ class InsightResource extends JsonResource
             'excerpt' => $this->excerpt,
             'content' => $this->content,
             'image' => $this->image,
-            'user' => [
-                'id' => $this->user->id,
-                'name' => $this->user->name,
-            ],
+            'user' => $this->whenLoaded('user', function () {
+                return [
+                    'id' => $this->user->id,
+                    'name' => $this->user->name,
+                ];
+            }),
             'is_published' => (bool) $this->is_published,
             'published_at' => $this->published_at,
             'created_at' => $this->created_at,

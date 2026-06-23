@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\InsightResource;
+use App\Http\Resources\ProjectResource;
+use App\Http\Resources\ServiceResource;
+use App\Models\Project;
 use App\Models\Service;
 use App\Models\Insight;
-use App\Models\CaseStudy;
 use Illuminate\Http\Request;
 
 class SearchController extends Controller
@@ -13,20 +16,20 @@ class SearchController extends Controller
     public function index(Request $request)
     {
         $q = $request->get('q', '');
-        $type = $request->get('type', 'all'); // all, services, insights, case_studies
+        $type = $request->get('type', 'all');
 
         if (strlen($q) < 2) {
-            return response()->json(['services' => [], 'insights' => [], 'case_studies' => []]);
+            return response()->json(['services' => [], 'insights' => [], 'projects' => []]);
         }
 
         $results = [
             'services' => [],
             'insights' => [],
-            'case_studies' => [],
+            'projects' => [],
         ];
 
         if ($type === 'all' || $type === 'services') {
-            $results['services'] = Service::where('is_active', true)
+            $results['services'] = ServiceResource::collection(Service::where('is_active', true)
                 ->where(function ($query) use ($q) {
                     $query->where('title', 'like', "%{$q}%")
                         ->orWhere('description', 'like', "%{$q}%")
@@ -38,11 +41,11 @@ class SearchController extends Controller
                     ELSE 3 END", ["{$q}", "{$q}%"])
                 ->select('id', 'title', 'slug', 'category', 'description')
                 ->limit(10)
-                ->get();
+                ->get());
         }
 
         if ($type === 'all' || $type === 'insights') {
-            $results['insights'] = Insight::where('is_published', true)
+            $results['insights'] = InsightResource::collection(Insight::where('is_published', true)
                 ->where(function ($query) use ($q) {
                     $query->where('title', 'like', "%{$q}%")
                         ->orWhere('excerpt', 'like', "%{$q}%")
@@ -54,21 +57,23 @@ class SearchController extends Controller
                     ELSE 3 END", ["{$q}", "{$q}%"])
                 ->select('id', 'title', 'slug', 'category', 'excerpt')
                 ->limit(10)
-                ->get();
+                ->get());
         }
 
-        if ($type === 'all' || $type === 'case_studies') {
-            $results['case_studies'] = CaseStudy::where(function ($query) use ($q) {
+        if ($type === 'all' || $type === 'projects') {
+            $results['projects'] = ProjectResource::collection(Project::where('is_active', true)
+                ->where(function ($query) use ($q) {
                     $query->where('title', 'like', "%{$q}%")
-                        ->orWhere('client_name', 'like', "%{$q}%");
+                        ->orWhere('client_name', 'like', "%{$q}%")
+                        ->orWhere('category', 'like', "%{$q}%");
                 })
                 ->orderByRaw("CASE 
                     WHEN title LIKE ? THEN 1 
                     WHEN title LIKE ? THEN 2 
                     ELSE 3 END", ["{$q}", "{$q}%"])
-                ->select('id', 'title', 'slug', 'client_name')
+                ->select('id', 'title', 'slug', 'client_name', 'category')
                 ->limit(10)
-                ->get();
+                ->get());
         }
 
         return response()->json($results);

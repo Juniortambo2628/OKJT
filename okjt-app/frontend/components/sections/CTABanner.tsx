@@ -5,25 +5,17 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { ArrowRight, Sparkles, Mail } from 'lucide-react'
 import Link from 'next/link'
-import { useApi } from '@/hooks/use-api'
+import { useSettings } from '@/hooks/use-settings'
 
 
 const CTABanner = () => {
-    const { data: settingsByGroup } = useApi('/settings')
+    const { getSetting } = useSettings()
     const { scrollY } = useScroll()
     const backgroundY = useTransform(scrollY, [0, 5000], [0, -60])
 
-    // Helper to get setting value
-    const getSetting = (key: string, defaultValue: string) => {
-        if (!settingsByGroup) return defaultValue
-        const allSettings = Object.values(settingsByGroup).flat() as any[]
-        const setting = allSettings.find(s => s.key === key)
-        return setting?.value || defaultValue
-    }
-
-    const badgeText = getSetting('cta_badge', 'Currently accepting new projects')
-    const title = getSetting('cta_title', 'Ready to bring your\nnext project to life?')
-    const subtitle = getSetting('cta_subtitle', 'Whether you need a custom web app, a design overhaul, or a scalable digital platform — our engineering team is ready to deliver.')
+    const badgeText = getSetting('cta_badge')
+    const title = getSetting('cta_title')
+    const subtitle = getSetting('cta_subtitle')
 
     return (
         <section className="w-full relative overflow-hidden">
@@ -95,7 +87,7 @@ const CTABanner = () => {
                             className="h-14 px-10 text-base font-bold rounded-none border-primary/30 text-primary hover:bg-primary/10 backdrop-blur-sm transition-all group"
                             asChild
                         >
-                            <Link href="/portfolio">
+                            <Link href="/projects">
                                 View Our Work
                                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                             </Link>

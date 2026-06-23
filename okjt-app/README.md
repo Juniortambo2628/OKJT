@@ -1,6 +1,6 @@
-# OKJTech - React + Laravel Application
+# OKJTech - Next.js + Laravel Application
 
-A modern web application built with React (frontend) and Laravel (backend API), migrated from the legacy PHP site.
+A modern web application built with Next.js (frontend) and Laravel (backend API), migrated from the legacy PHP site.
 
 **Legacy files are backed up in:** `../legacy_bkp/`
 
@@ -24,23 +24,25 @@ npm run dev
 
 ```
 okjt-app/
-├── frontend/          # React + Vite + TypeScript
-│   ├── src/
-│   │   ├── api/       # API client and endpoints
-│   │   ├── components/# React components
-│   │   │   ├── layout/    # Header, Footer, Layout
-│   │   │   ├── hero/      # Hero slider components
-│   │   │   ├── portfolio/ # Portfolio components
-│   │   │   └── contact/   # Contact form components
-│   │   ├── config/    # App configuration
-│   │   ├── pages/     # Page components
-│   │   └── types/     # TypeScript types
-│   └── public/        # Static assets
+├── frontend/          # Next.js + React + TypeScript
+│   ├── app/           # App Router pages
+│   │   ├── (public)/  # Public routes (services, insights, projects, about, contact)
+│   │   ├── admin/     # Admin dashboard
+│   │   └── api/       # ISR revalidation endpoint
+│   ├── components/    # React components
+│   │   ├── admin/     # Admin CRUD components (AdminResourceTemplate)
+│   │   ├── sections/  # Public page sections
+│   │   └── ui/        # Shared UI primitives
+│   ├── hooks/         # SWR data hooks
+│   ├── lib/           # Server/client API fetchers
+│   └── types/         # TypeScript types
 │
 └── backend/           # Laravel 12 API
     ├── app/
     │   ├── Http/Controllers/Api/  # API controllers
-    │   └── Models/                # Eloquent models
+    │   ├── Models/                # Eloquent models
+    │   ├── Services/              # RevalidationService
+    │   └── Observers/             # CMS model observers (ISR triggers)
     ├── database/migrations/       # Database migrations
     └── routes/api.php             # API routes
 ```
@@ -49,14 +51,13 @@ okjt-app/
 
 ### Frontend
 
-- **React 18** - UI library
+- **Next.js 16** - React framework (App Router, ISR)
+- **React 19** - UI library
 - **TypeScript** - Type safety
-- **Vite** - Build tool
 - **Tailwind CSS** - Styling
+- **SWR** - Data fetching with caching/revalidation
 - **Framer Motion** - Animations
-- **GSAP** - Advanced animations
-- **React Router** - Routing
-- **Axios** - API client
+- **Radix UI** - Accessible primitives
 - **Lucide React** - Icons
 
 ### Backend
@@ -64,6 +65,7 @@ okjt-app/
 - **Laravel 12** - PHP framework
 - **Laravel Sanctum** - API authentication
 - **MySQL** - Database
+- **Intervention Image** - Auto WebP optimization
 
 ## Getting Started
 
@@ -93,11 +95,12 @@ php artisan key:generate
 # DB_USERNAME=root
 # DB_PASSWORD=
 
-# Run migrations
-php artisan migrate
+# Configure ISR in .env
+# NEXT_URL=http://localhost:3000
+# NEXT_REVALIDATION_SECRET=your-secret-here
 
-# Seed sample data (optional)
-php artisan db:seed
+# Run migrations
+php artisan migrate:fresh --seed
 
 # Start development server
 php artisan serve
@@ -112,7 +115,10 @@ cd frontend
 npm install
 
 # Create environment file
-echo "VITE_API_URL=http://localhost:8000/api" > .env
+cat > .env << EOF
+NEXT_PUBLIC_API_URL=http://localhost:8000/api
+NEXT_REVALIDATION_SECRET=your-secret-here
+EOF
 
 # Start development server
 npm run dev
@@ -122,48 +128,64 @@ npm run dev
 
 ### Public Endpoints
 
-| Method | Endpoint                                         | Description                      |
-| ------ | ------------------------------------------------ | -------------------------------- |
-| GET    | `/api/portfolio`                               | Get all portfolio projects       |
-| GET    | `/api/portfolio/categories`                    | Get project categories           |
-| GET    | `/api/portfolio/featured`                      | Get featured projects            |
-| GET    | `/api/portfolio/{id}`                          | Get single project               |
-| POST   | `/api/contact`                                 | Submit contact form              |
-| GET    | `/api/contact/available-times?date=YYYY-MM-DD` | Get available consultation times |
+| Method | Endpoint                          | Description               |
+| ------ | --------------------------------- | ------------------------- |
+| GET    | `/api/services`                   | Get all services          |
+| GET    | `/api/services/{slug}`            | Get service by slug       |
+| GET    | `/api/insights`                   | Get all insights          |
+| GET    | `/api/insights/{slug}`            | Get insight by slug       |
+| GET    | `/api/projects`                   | Get all projects          |
+| GET    | `/api/projects?type=client`       | Get client projects       |
+| GET    | `/api/projects?type=flagship`     | Get flagship projects     |
+| GET    | `/api/projects/{slug}`            | Get project by slug       |
+| GET    | `/api/pillars`                    | Get brand pillars         |
+| GET    | `/api/pillars/{slug}`             | Get pillar by slug        |
+| GET    | `/api/team-members`               | Get team members          |
+| GET    | `/api/stats`                      | Get stats                 |
+| GET    | `/api/testimonials`               | Get testimonials          |
+| GET    | `/api/clients`                    | Get clients               |
+| GET    | `/api/settings`                   | Get site settings         |
+| GET    | `/api/search?q=...`               | Search across content     |
+| POST   | `/api/subscribers`                | Subscribe to newsletter   |
+| POST   | `/api/rsvps`                      | Submit RSVP/early access  |
+| POST   | `/api/contact`                    | Submit contact form       |
 
 ### Protected Endpoints (require authentication)
 
 | Method | Endpoint                         | Description              |
 | ------ | -------------------------------- | ------------------------ |
-| POST   | `/api/portfolio`               | Create new project       |
-| PUT    | `/api/portfolio/{id}`          | Update project           |
-| DELETE | `/api/portfolio/{id}`          | Delete project           |
-| GET    | `/api/submissions`             | Get contact submissions  |
-| PUT    | `/api/submissions/{id}/status` | Update submission status |
-| GET    | `/api/analytics/dashboard`     | Get analytics stats      |
+| POST   | `/api/projects`                  | Create project           |
+| PUT    | `/api/projects/{id}`             | Update project           |
+| DELETE | `/api/projects/{id}`             | Delete project           |
+| POST   | `/api/services`                  | Create service           |
+| PUT    | `/api/services/{id}`             | Update service           |
+| DELETE | `/api/services/{id}`             | Delete service           |
+| POST   | `/api/insights`                  | Create insight           |
+| PUT    | `/api/insights/{id}`             | Update insight           |
+| DELETE | `/api/insights/{id}`             | Delete insight           |
+| POST   | `/api/upload/image`              | Upload & optimize image  |
+| POST   | `/api/revalidate`                | Trigger ISR revalidation |
 
 ## Features
 
-### Hero Section
+### ISR (Incremental Static Regeneration)
 
-- Scroll-driven navigation
-- Typewriter text animation
-- Progress indicator
-- Slide chips for direct navigation
+- All public pages use server-side data fetching with 60s revalidation
+- Backend CMS model changes trigger webhook-based cache invalidation
+- SWR fallback pattern for instant page loads
 
-### Portfolio
+### Admin Dashboard
 
-- Category filtering
-- Search functionality
-- Responsive grid layout
-- Project detail cards
+- Unified `AdminResourceTemplate` for all CRUD pages
+- Image auto-optimization (WebP conversion at 80% quality)
+- Client-side compression before upload (10 MB max)
 
-### Contact Form
+### Public Pages
 
-- Form validation
-- Consultation booking
-- Country code selection
-- Success/error feedback
+- ISR-enabled with skeleton loading states
+- Hero video/image with WebP optimization
+- Responsive grid/table layouts
+- Search across all content types
 
 ## Development
 
@@ -173,7 +195,8 @@ npm run dev
 cd frontend
 npm run dev      # Start dev server
 npm run build    # Build for production
-npm run preview  # Preview production build
+npm run start    # Start production server
+npm run lint     # Run ESLint
 ```
 
 ### Backend Development
@@ -190,13 +213,13 @@ php artisan test            # Run tests
 ### Frontend (Vercel/Netlify)
 
 1. Build: `npm run build`
-2. Deploy `dist/` folder
+2. Deploy `.next/` folder
 
 ### Backend (Traditional Hosting)
 
 1. Upload files to server
 2. Configure `.env` with production settings
-3. Run `php artisan migrate`
+3. Run `php artisan migrate:fresh --seed`
 4. Configure web server to point to `public/`
 
 ## Environment Variables
@@ -204,7 +227,8 @@ php artisan test            # Run tests
 ### Frontend (.env)
 
 ```
-VITE_API_URL=https://api.okjtech.co.ke/api
+NEXT_PUBLIC_API_URL=http://localhost:8000/api
+NEXT_REVALIDATION_SECRET=your-secret-here
 ```
 
 ### Backend (.env)
@@ -220,6 +244,9 @@ DB_HOST=localhost
 DB_DATABASE=okjtech_db
 DB_USERNAME=your_username
 DB_PASSWORD=your_password
+
+NEXT_URL=https://okjtech.co.ke
+NEXT_REVALIDATION_SECRET=your-secret-here
 ```
 
 ## License

@@ -7,11 +7,12 @@ import { useApi } from '@/hooks/use-api'
 import { ArrowRight, ArrowUpRight, Clock, Tag } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { SectionSkeleton } from '@/components/MediaSkeleton'
 
 const InsightsSection = () => {
     const { data: insights, isLoading, isError } = useApi('/insights')
 
-    if (isLoading) return <div className="py-20 text-center text-white/40">Loading insights...</div>
+    if (isLoading) return <SectionSkeleton />
     if (isError || !insights || insights.length === 0) {
         return (
             <section id="insights" className="w-full py-32 bg-secondary/20 relative">

@@ -16,10 +16,9 @@ class DatabaseSeeder extends Seeder
             PillarSeeder::class,
             ServiceSeeder::class,
             SiteSettingSeeder::class,
-            ContentSeeder::class,
+            ProjectSeeder::class,
             TestimonialClientSeeder::class,
             AdvancedSettingsSeeder::class,
-            CaseStudySeeder::class,
         ]);
     }
 }

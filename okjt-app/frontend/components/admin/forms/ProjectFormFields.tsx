@@ -4,19 +4,30 @@ import React from 'react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
-import { CaseStudy } from '@/types/api'
+import { Project } from '@/types/api'
 import RichTextEditor from '@/components/admin/RichTextEditor'
 import ImageUploader from '@/components/admin/ImageUploader'
 
-interface CaseStudyFormFieldsProps {
-    form: Partial<CaseStudy>
-    setForm: (form: Partial<CaseStudy>) => void
+interface ProjectFormFieldsProps {
+    form: Partial<Project>
+    setForm: (form: Partial<Project>) => void
 }
 
-export default function CaseStudyFormFields({ form, setForm }: CaseStudyFormFieldsProps) {
+export default function ProjectFormFields({ form, setForm }: ProjectFormFieldsProps) {
     return (
         <div className="space-y-6 py-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                    <Label className="text-muted-foreground">Project Type</Label>
+                    <select
+                        className="bg-background border border-border text-foreground rounded-md px-3 py-2 text-sm w-full"
+                        value={form.type || 'client'}
+                        onChange={(e) => setForm({ ...form, type: e.target.value as 'client' | 'flagship' })}
+                    >
+                        <option value="client">Client</option>
+                        <option value="flagship">Flagship</option>
+                    </select>
+                </div>
                 <div className="space-y-2">
                     <Label className="text-muted-foreground">Title</Label>
                     <Input className="bg-background border-border text-foreground" value={form.title || ''} onChange={(e) => setForm({ ...form, title: e.target.value })} required />
@@ -111,7 +122,7 @@ export default function CaseStudyFormFields({ form, setForm }: CaseStudyFormFiel
                     onCheckedChange={(checked) => setForm({ ...form, is_featured: !!checked })} 
                     className="border-border"
                 />
-                <Label htmlFor="is_featured_modal" className="text-muted-foreground">Featured Case Study</Label>
+                <Label htmlFor="is_featured_modal" className="text-muted-foreground">Featured Project</Label>
             </div>
         </div>
     )

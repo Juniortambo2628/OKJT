@@ -16,7 +16,7 @@ const Navbar = () => {
     const { theme } = useTheme()
     const { branding, getSetting, isLoading: isSettingsLoading } = useSettings()
     const { data: services } = useApi('/services')
-    const { data: innovations } = useApi('/innovations')
+    const { data: projects } = useApi('/projects')
     const [isScrolled, setIsScrolled] = useState(false)
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [activeMegaMenu, setActiveMegaMenu] = useState<'services' | 'work' | null>(null)
@@ -97,19 +97,19 @@ const Navbar = () => {
         })
 
         // Add Flagship Projects to megamenu if available
-        if (innovations && Array.isArray(innovations) && innovations.length > 0) {
+        if (projects && Array.isArray(projects) && projects.length > 0) {
             result.unshift({
                 title: 'Flagship Projects',
-                href: '/projects',
-                items: innovations.filter((i: any) => i.is_active).slice(0, 5).map((i: any) => ({
-                    name: i.title,
-                    href: `/projects#${i.slug}` // Or just the projects page
+                href: '/projects?type=flagship',
+                items: projects.filter((p: any) => p.type === 'flagship' && p.is_active).slice(0, 5).map((p: any) => ({
+                    name: p.title,
+                    href: `/projects/${p.slug}`
                 }))
             })
         }
 
         return result
-    }, [services, innovations])
+    }, [services, projects])
 
     useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 20)
@@ -221,9 +221,9 @@ const Navbar = () => {
                                 <p className="text-muted-foreground text-sm mb-8 leading-relaxed">Speak directly with an experienced engineer about your project.</p>
                             </div>
                             <Button className="w-full bg-[#14110b] text-white hover:bg-[#14110b]/90 rounded-xl py-6 flex items-center justify-start gap-3">
-                                <div className="h-8 w-8 rounded-full bg-primary overflow-hidden relative shrink-0">
-                                    <Image src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=100&auto=format&fit=crop" fill className="object-cover" alt="Engineer" />
-                                </div>
+                                    <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                                        <Briefcase className="h-4 w-4 text-primary" />
+                                    </div>
                                 <span className="font-semibold text-sm">Speak with an Expert</span>
                             </Button>
                         </div>
@@ -263,14 +263,14 @@ const Navbar = () => {
                             <div>
                                 <BookOpen className="h-6 w-6 text-primary mb-6" />
                                 <h3 className="text-2xl font-bold tracking-tight text-foreground mb-4">Ready to start a project?</h3>
-                                <p className="text-muted-foreground text-sm mb-8 leading-relaxed">View our case studies and see how we've helped other businesses scale.</p>
+                                <p className="text-muted-foreground text-sm mb-8 leading-relaxed">View our projects and see how we've helped other businesses scale.</p>
                             </div>
                             <Button className="w-full bg-[#14110b] text-white hover:bg-[#14110b]/90 rounded-xl py-6 flex items-center justify-start gap-3" asChild>
-                                <Link href="/portfolio">
-                                    <div className="h-8 w-8 rounded-full bg-primary overflow-hidden relative shrink-0">
-                                        <Image src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=100&auto=format&fit=crop" fill className="object-cover" alt="Portfolio" />
+                                <Link href="/projects">
+                                    <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                                        <BookOpen className="h-4 w-4 text-primary" />
                                     </div>
-                                    <span className="font-semibold text-sm">View Case Studies</span>
+                                    <span className="font-semibold text-sm">View Projects</span>
                                 </Link>
                             </Button>
                         </div>
@@ -278,18 +278,18 @@ const Navbar = () => {
                         {/* Right Columns (Links) */}
                         <div className="w-[65%] p-8 grid grid-cols-2 gap-x-8 gap-y-10">
                             <div>
-                                <h4 className="text-[10px] font-bold text-primary uppercase tracking-widest mb-4">OUR PORTFOLIO</h4>
+                                <h4 className="text-[10px] font-bold text-primary uppercase tracking-widest mb-4">OUR PROJECTS</h4>
                                 <ul className="space-y-1">
                                     <li>
-                                        <Link href="/projects" className="block group p-3 -mx-3 rounded-lg hover:bg-secondary/50 transition-colors">
+                                        <Link href="/projects?type=flagship" className="block group p-3 -mx-3 rounded-lg hover:bg-secondary/50 transition-colors">
                                             <div className="font-bold text-foreground text-sm mb-1">Solutions</div>
                                             <div className="text-muted-foreground text-[12px] leading-snug">Explore our flagship projects and innovative solutions.</div>
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link href="/portfolio" className="block group p-3 -mx-3 rounded-lg hover:bg-secondary/50 transition-colors">
+                                        <Link href="/projects?type=client" className="block group p-3 -mx-3 rounded-lg hover:bg-secondary/50 transition-colors">
                                             <div className="font-bold text-foreground text-sm mb-1">Client Work</div>
-                                            <div className="text-muted-foreground text-[12px] leading-snug">Browse our complete portfolio of case studies.</div>
+                                            <div className="text-muted-foreground text-[12px] leading-snug">Browse our complete portfolio of projects.</div>
                                         </Link>
                                     </li>
                                 </ul>
@@ -344,7 +344,7 @@ const Navbar = () => {
                         <h3 className="text-primary font-bold text-[13px] uppercase tracking-wider mb-3">Our Work</h3>
                         <div className="pl-2 border-l-2 border-border/50 flex flex-col gap-2">
                             <Link href="/projects" className="block text-muted-foreground text-sm py-1 hover:text-foreground pl-2" onClick={() => setIsMobileMenuOpen(false)}>Solutions</Link>
-                            <Link href="/portfolio" className="block text-muted-foreground text-sm py-1 hover:text-foreground pl-2" onClick={() => setIsMobileMenuOpen(false)}>Portfolio</Link>
+                            <Link href="/projects" className="block text-muted-foreground text-sm py-1 hover:text-foreground pl-2" onClick={() => setIsMobileMenuOpen(false)}>Projects</Link>
                             <Link href="/insights" className="block text-muted-foreground text-sm py-1 hover:text-foreground pl-2" onClick={() => setIsMobileMenuOpen(false)}>Insights</Link>
                             <Link href="/our-approach" className="block text-muted-foreground text-sm py-1 hover:text-foreground pl-2" onClick={() => setIsMobileMenuOpen(false)}>Our Approach</Link>
                         </div>

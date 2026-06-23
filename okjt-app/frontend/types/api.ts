@@ -50,24 +50,29 @@ export interface Insight {
   updated_at: string;
 }
 
-export interface CaseStudy {
+export interface Project {
   id: number;
+  type: 'client' | 'flagship';
   title: string;
   slug: string;
-  client_name: string;
+  client_name: string | null;
+  tagline: string | null;
   category: string | null;
   technologies: string[] | null;
+  significant_figure: string | null;
   description: string | null;
-  significant_figure: string;
-  problem: string;
-  methodology: string;
-  outcome: string;
+  problem: string | null;
+  methodology: string | null;
+  outcome: string | null;
   testimonial_quote: string | null;
   testimonial_author: string | null;
   image: string | null;
   gallery: string[] | null;
   website_url: string | null;
+  url: string | null;
+  is_active: boolean;
   is_featured: boolean;
+  order: number;
   created_at: string;
   updated_at: string;
 }
@@ -97,30 +102,6 @@ export interface SiteSetting {
   value: string;
   type: string;
   group: string;
-}
-
-export interface Innovation {
-  id: number;
-  title: string;
-  slug: string;
-  tagline?: string;
-  description?: string;
-  image?: string | null;
-  url?: string | null;
-  category: string | null;
-  technologies: string[] | null;
-  significant_figure: string | null;
-  problem: string | null;
-  methodology: string | null;
-  outcome: string | null;
-  testimonial_quote: string | null;
-  testimonial_author: string | null;
-  gallery: string[] | null;
-  is_active: boolean;
-  is_featured: boolean;
-  order: number;
-  created_at: string;
-  updated_at: string;
 }
 
 export interface Testimonial {

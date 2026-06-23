@@ -4,7 +4,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import { motion, useInView, useScroll, useTransform } from 'framer-motion'
 import Image from 'next/image'
 import { useApi } from '@/hooks/use-api'
-import { getMediaUrl } from '@/lib/utils'
+import { getMediaUrl, cn } from '@/lib/utils'
+import { useSettings } from '@/hooks/use-settings'
 import { SiteSetting, Stat } from '@/types/api'
 
 function AnimatedCounter({ target, suffix = '' }: { target: string; suffix?: string }) {
@@ -42,51 +43,68 @@ function AnimatedCounter({ target, suffix = '' }: { target: string; suffix?: str
 
 const StatsSection = () => {
     const { data: stats, isLoading: statsLoading } = useApi<Stat[]>('/stats')
-    const { data: settingsByGroup } = useApi<Record<string, SiteSetting[]>>('/settings')
+    const { getSetting } = useSettings()
     const { scrollY } = useScroll()
     const backgroundY = useTransform(scrollY, [0, 3000], [0, -80])
 
-    // Helper to get setting value
-    const getSetting = (key: string, defaultValue: string) => {
-        if (!settingsByGroup) return defaultValue
-        const allSettings = Object.values(settingsByGroup).flat()
-        const setting = allSettings.find(s => s.key === key)
-        return setting?.value || defaultValue
+    const sectionTagline = getSetting('stats_tagline')
+    const sectionTitle = getSetting('stats_title')
+    const sectionImage = getSetting('stats_background')
+    const backgroundMedia = getMediaUrl(sectionImage)
+    const hasBackground = !!backgroundMedia
+    const isVideoBackground = hasBackground && /\.(mp4|webm|ogg)(\?.*)?$/i.test(backgroundMedia)
+
+    if (statsLoading) {
+        return (
+            <section className="w-full py-32 bg-background">
+                <div className="max-w-[1400px] mx-auto px-6">
+                    <div className="text-center mb-20">
+                        <div className="h-4 w-36 bg-secondary/20 rounded-full mx-auto mb-5 animate-pulse" />
+                        <div className="h-10 md:h-14 w-full max-w-lg bg-secondary/20 rounded-md mx-auto mb-6 animate-pulse" />
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-0">
+                        {Array.from({ length: 4 }).map((_, i) => (
+                            <div key={i} className="text-center p-8 md:p-10 border-r border-border/50">
+                                <div className="h-16 w-24 bg-secondary/20 rounded-md mx-auto mb-4 animate-pulse" />
+                                <div className="h-4 w-20 bg-secondary/20 rounded-full mx-auto mb-3 animate-pulse" />
+                                <div className="h-3 w-32 bg-secondary/20 rounded-full mx-auto animate-pulse" />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+        )
     }
 
-    const sectionTagline = getSetting('stats_tagline', 'Proven Impact')
-    const sectionTitle = getSetting('stats_title', 'Numbers that speak for themselves.')
-    const sectionImage = getSetting('stats_background', '/assets/videos/services/all-services-video.mp4')
-    const backgroundMedia = getMediaUrl(sectionImage)
-    const isVideoBackground = /\.(mp4|webm|ogg)(\?.*)?$/i.test(backgroundMedia)
-
-    if (statsLoading || !stats || stats.length === 0) return null
+    if (!stats || stats.length === 0) return null
 
     return (
         <section className="w-full relative overflow-hidden">
             {/* Parallax Background Image */}
-            <motion.div className="absolute inset-0 z-0" style={{ y: backgroundY }}>
-                {isVideoBackground ? (
-                    <video
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        className="absolute inset-0 w-full h-full object-cover scale-110"
-                    >
-                        <source src={backgroundMedia} type="video/mp4" />
-                    </video>
-                ) : (
-                    <Image
-                        src={backgroundMedia}
-                        alt="Global data visualization"
-                        fill
-                        sizes="100vw"
-                        className="object-cover scale-110"
-                    />
-                )}
-            </motion.div>
-            <div className="absolute top-0 left-0 w-full h-full bg-background/85 z-[1]" />
+            {hasBackground && (
+                <motion.div className="absolute inset-0 z-0" style={{ y: backgroundY }}>
+                    {isVideoBackground ? (
+                        <video
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            className="absolute inset-0 w-full h-full object-cover scale-110"
+                        >
+                            <source src={backgroundMedia} type="video/mp4" />
+                        </video>
+                    ) : (
+                        <Image
+                            src={backgroundMedia}
+                            alt="Global data visualization"
+                            fill
+                            sizes="100vw"
+                            className="object-cover scale-110"
+                        />
+                    )}
+                </motion.div>
+            )}
+            <div className={cn("absolute top-0 left-0 w-full h-full z-[1]", hasBackground ? "bg-background/85" : "bg-background")} />
 
             <div className="max-w-[1400px] mx-auto px-6 py-32 relative z-10">
                 <motion.div

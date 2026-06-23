@@ -1,123 +1,194 @@
 "use client"
 
-import React, { useState } from 'react'
-import AdminLayout from '@/components/admin/AdminLayout'
-import { useApi } from '@/hooks/use-api'
+import React from 'react'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Trash2, Search, Mail, Calendar, User, ExternalLink } from 'lucide-react'
 import { Input } from '@/components/ui/input'
-import api from '@/lib/api'
+import { Switch } from '@/components/ui/switch'
+import { Card, CardContent } from '@/components/ui/card'
+import { Trash2, Mail, User, Calendar } from 'lucide-react'
 import { Subscriber } from '@/types/api'
-import { useToast } from '@/hooks/use-toast'
+import AdminResourceTemplate from '@/components/admin/core/AdminResourceTemplate'
+
+const sourceColors: Record<string, string> = {
+    footer: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+    form: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
+    admin: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
+    rsvp: 'bg-primary/10 text-primary border-primary/20',
+}
 
 const AdminSubscribersPage = () => {
-    const { data: subscribers, mutate, isLoading } = useApi<Subscriber[]>('/subscribers')
-    const { toast } = useToast()
-    const [searchTerm, setSearchTerm] = useState('')
-
-    const handleDelete = async (id: number) => {
-        if (confirm('Are you sure you want to remove this subscriber?')) {
-            try {
-                await api.delete(`/subscribers/${id}`)
-                toast({
-                    title: "Deleted",
-                    description: "Subscriber has been removed.",
-                })
-                mutate()
-            } catch (err: any) {
-                toast({
-                    variant: "destructive",
-                    title: "Error",
-                    description: err.response?.data?.message || 'Failed to delete subscriber',
-                })
-            }
-        }
-    }
-
-    const filteredSubscribers = subscribers?.filter((s) => 
-        s.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (s.name && s.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    )
-
-
     return (
-        <AdminLayout>
-            <div className="space-y-8">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Newsletter Subscribers</h1>
-                        <p className="text-muted-foreground">Manage your mailing list and track subscription sources.</p>
-                    </div>
-                    <div className="bg-primary/10 px-4 py-2 rounded-lg border border-primary/20">
-                        <span className="text-sm font-bold text-primary">{subscribers?.length || 0} Total Subscribers</span>
-                    </div>
-                </div>
-
-                <div className="flex items-center gap-4 max-w-sm">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
-                        <Input 
-                            placeholder="Search by email or name..." 
-                            className="pl-10 bg-secondary/5"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
+        <AdminResourceTemplate<Subscriber>
+            endpoint="/subscribers"
+            resourceName="Subscriber"
+            title="Subscribers"
+            description="Manage your mailing list and track subscription sources."
+            actionLabel="Add Subscriber"
+            statusField="is_active"
+            initialForm={{ email: '', name: '', source: 'footer', is_active: true } as Partial<Subscriber>}
+            hideStatusFilter
+            filterPlaceholder="Search by email, name, or source..."
+            filterFn={(item, term) =>
+                item.email.toLowerCase().includes(term.toLowerCase()) ||
+                (item.name && item.name.toLowerCase().includes(term.toLowerCase())) ||
+                (item.source && item.source.toLowerCase().includes(term.toLowerCase()))
+            }
+            sortOptions={[
+                { label: 'Date', value: 'created_at' },
+                { label: 'Email', value: 'email' },
+                { label: 'Name', value: 'name' },
+            ]}
+            onValidate={(form) => {
+                if (!form.email) return 'Email is required.'
+                return null
+            }}
+            renderGridItem={(item, selectedIds, toggleSelect, onEdit, onDelete) => (
+                <Card
+                    key={item.id}
+                    className="bg-secondary/10 border-border/50 hover:bg-secondary/20 transition-all cursor-pointer"
+                    onClick={() => onEdit(item)}
+                >
+                    <CardContent className="p-4 flex items-center justify-between">
+                        <div className="flex items-center gap-6">
+                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                <Mail size={20} />
+                            </div>
+                            <div>
+                                <div className="flex items-center gap-2">
+                                    <h3 className="font-bold text-lg">{item.email}</h3>
+                                    {item.source && (
+                                        <Badge variant="outline" className={`text-[10px] px-1.5 h-4 ${sourceColors[item.source] || ''}`}>
+                                            {item.source}
+                                        </Badge>
+                                    )}
+                                    {!item.is_active && (
+                                        <Badge variant="outline" className="text-[10px] px-1.5 h-4 bg-slate-500/10 text-slate-500 border-slate-500/20">
+                                            inactive
+                                        </Badge>
+                                    )}
+                                </div>
+                                <div className="flex items-center gap-4 mt-1">
+                                    <span className="text-sm text-muted-foreground flex items-center gap-1">
+                                        <User size={14} /> {item.name || 'Anonymous'}
+                                    </span>
+                                    <span className="text-sm text-muted-foreground flex items-center gap-1">
+                                        <Calendar size={14} /> {new Date(item.created_at).toLocaleDateString()}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-destructive hover:bg-destructive/10"
+                            onClick={(e) => { e.stopPropagation(); onDelete(item.id) }}
+                        >
+                            <Trash2 size={18} />
+                        </Button>
+                    </CardContent>
+                </Card>
+            )}
+            renderTableHeaders={(items, selectedIds, selectAll) => (
+                <tr>
+                    <th className="p-4 px-6 w-10">
+                        <Checkbox
+                            checked={selectedIds.length === items.length && items.length > 0}
+                            onCheckedChange={(checked: boolean) => {
+                                if (checked) selectAll(items.map(i => i.id))
+                                else selectAll([])
+                            }}
+                        />
+                    </th>
+                    <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground">Email</th>
+                    <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground">Name</th>
+                    <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground">Source</th>
+                    <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground">Status</th>
+                    <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground">Created</th>
+                    <th className="p-4 text-right"></th>
+                </tr>
+            )}
+            renderTableRows={(items, selectedIds, toggleSelect, onEdit, onDelete) => (
+                items.map((item) => (
+                    <tr
+                        key={item.id}
+                        className="hover:bg-primary/5 transition-colors cursor-pointer"
+                        onClick={() => onEdit(item)}
+                    >
+                        <td className="p-4 px-6" onClick={(e) => e.stopPropagation()}>
+                            <Checkbox
+                                checked={selectedIds.includes(item.id)}
+                                onCheckedChange={() => toggleSelect(item.id)}
+                            />
+                        </td>
+                        <td className="p-4 font-medium">{item.email}</td>
+                        <td className="p-4 text-muted-foreground">{item.name || '—'}</td>
+                        <td className="p-4">
+                            {item.source && (
+                                <Badge variant="outline" className={`text-[10px] px-1.5 h-4 ${sourceColors[item.source] || ''}`}>
+                                    {item.source}
+                                </Badge>
+                            )}
+                        </td>
+                        <td className="p-4">
+                            <Badge variant="outline" className={`text-[10px] px-1.5 h-4 ${item.is_active ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20'}`}>
+                                {item.is_active ? 'Active' : 'Inactive'}
+                            </Badge>
+                        </td>
+                        <td className="p-4 text-xs text-muted-foreground whitespace-nowrap">
+                            {new Date(item.created_at).toLocaleDateString()}
+                        </td>
+                        <td className="p-4 text-right" onClick={(e) => e.stopPropagation()}>
+                            <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" onClick={() => onDelete(item.id)}>
+                                <Trash2 size={16} />
+                            </Button>
+                        </td>
+                    </tr>
+                ))
+            )}
+            renderFormFields={(form, setForm) => (
+                <>
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium">Email <span className="text-destructive">*</span></label>
+                        <Input
+                            type="email"
+                            value={(form as Subscriber).email || ''}
+                            onChange={(e) => setForm({ ...form, email: e.target.value } as Partial<Subscriber>)}
+                            placeholder="subscriber@example.com"
                         />
                     </div>
-                </div>
-
-                <div className="grid grid-cols-1 gap-4">
-                    {isLoading ? (
-                        [1, 2, 3].map((i) => (
-                            <div key={i} className="h-20 bg-secondary/10 border border-border/50 rounded-xl animate-pulse" />
-                        ))
-                    ) : filteredSubscribers?.map((sub: Subscriber) => (
-                        <Card key={sub.id} className="bg-secondary/10 border-border/50 hover:bg-secondary/20 transition-all">
-
-                            <CardContent className="p-4 flex items-center justify-between">
-                                <div className="flex items-center gap-6">
-                                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                                        <Mail size={20} />
-                                    </div>
-                                    <div>
-                                        <div className="flex items-center gap-2">
-                                            <h3 className="font-bold text-lg">{sub.email}</h3>
-                                            {sub.source && (
-                                                <span className="text-[10px] bg-secondary px-2 py-0.5 rounded text-muted-foreground uppercase tracking-widest font-bold">
-                                                    Source: {sub.source}
-                                                </span>
-                                            )}
-                                        </div>
-                                        <div className="flex items-center gap-4 mt-1">
-                                            <span className="text-sm text-muted-foreground flex items-center gap-1">
-                                                <User size={14} /> {sub.name || 'Anonymous'}
-                                            </span>
-                                            <span className="text-sm text-muted-foreground flex items-center gap-1">
-                                                <Calendar size={14} /> {new Date(sub.created_at).toLocaleDateString()}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <Button 
-                                    variant="ghost" 
-                                    size="icon" 
-                                    className="text-destructive hover:bg-destructive/10"
-                                    onClick={() => handleDelete(sub.id)}
-                                >
-                                    <Trash2 size={18} />
-                                </Button>
-                            </CardContent>
-                        </Card>
-                    ))}
-                    
-                    {filteredSubscribers?.length === 0 && (
-                        <div className="py-20 text-center border-2 border-dashed rounded-xl opacity-50">
-                            No subscribers found.
-                        </div>
-                    )}
-                </div>
-            </div>
-        </AdminLayout>
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium">Name</label>
+                        <Input
+                            value={(form as Subscriber).name || ''}
+                            onChange={(e) => setForm({ ...form, name: e.target.value } as Partial<Subscriber>)}
+                            placeholder="Subscriber name"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium">Source</label>
+                        <select
+                            className="flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                            value={(form as Subscriber).source || 'footer'}
+                            onChange={(e) => setForm({ ...form, source: e.target.value } as Partial<Subscriber>)}
+                        >
+                            <option value="footer">Footer</option>
+                            <option value="form">Form</option>
+                            <option value="admin">Admin</option>
+                            <option value="rsvp">RSVP</option>
+                        </select>
+                    </div>
+                    <div className="flex items-center justify-between">
+                        <label className="text-sm font-medium">Active</label>
+                        <Switch
+                            checked={(form as Subscriber).is_active ?? true}
+                            onCheckedChange={(checked) => setForm({ ...form, is_active: checked } as Partial<Subscriber>)}
+                        />
+                    </div>
+                </>
+            )}
+        />
     )
 }
 

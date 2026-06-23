@@ -5,19 +5,21 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useApi } from '@/hooks/use-api'
 import Image from 'next/image'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
-
-
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { SectionSkeleton } from '@/components/MediaSkeleton'
 
-const CaseStudiesPreview = () => {
-    const { data: caseStudies, isLoading, isError } = useApi('/case-studies')
+const ProjectsPreview = () => {
+    const { data: projects, isLoading, isError } = useApi('/projects')
     const [activeIndex, setActiveIndex] = useState(0)
 
-    if (isLoading) return <div className="py-20 text-center text-slate-400">Loading case studies...</div>
-    if (isError || !caseStudies || caseStudies.length === 0) return null
+    if (isLoading) return <SectionSkeleton />
+    if (isError || !projects || projects.length === 0) return null
 
-    const activeCS = caseStudies[activeIndex]
+    const clientProjects = projects.filter((p: any) => p.type === 'client')
+    if (clientProjects.length === 0) return null
+
+    const activeProject = clientProjects[activeIndex]
 
     return (
         <section className="w-full py-32 bg-background relative overflow-hidden">
@@ -37,19 +39,19 @@ const CaseStudiesPreview = () => {
                         </h2>
                     </div>
                     <Button variant="outline" className="rounded-none border-border text-muted-foreground font-bold hover:border-primary hover:text-primary" asChild>
-                        <Link href="/portfolio">
-                            View Full Portfolio <ArrowRight className="ml-2 h-4 w-4" />
+                        <Link href="/projects">
+                            View All Projects <ArrowRight className="ml-2 h-4 w-4" />
                         </Link>
                     </Button>
                 </motion.div>
 
-                {/* Interactive Layout: Tabs + Featured Case Study */}
+                {/* Interactive Layout: Tabs + Featured Project */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                     {/* Tab List */}
                     <div className="lg:col-span-4 space-y-4">
-                        {caseStudies.map((cs: any, index: number) => (
+                        {clientProjects.map((p: any, index: number) => (
                             <motion.button
-                                key={cs.id}
+                                key={p.id}
                                 onClick={() => setActiveIndex(index)}
                                 initial={{ opacity: 0, x: -20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
@@ -63,22 +65,22 @@ const CaseStudiesPreview = () => {
                                 <span className={`text-[10px] font-bold uppercase tracking-widest block mb-2 ${
                                     activeIndex === index ? 'text-primary' : 'text-slate-400'
                                 }`}>
-                                    {cs.significant_figure || 'Case Study'}
+                                    {p.significant_figure || 'Project'}
                                 </span>
                                 <h3 className={`font-bold text-base ${
                                     activeIndex === index ? 'text-foreground' : 'text-muted-foreground'
                                 }`}>
-                                    {cs.title}
+                                    {p.title}
                                 </h3>
                             </motion.button>
                         ))}
                     </div>
 
-                    {/* Featured Case Study */}
+                    {/* Featured Project */}
                     <div className="lg:col-span-8">
                         <AnimatePresence mode="wait">
                             <motion.div
-                                key={activeCS.id}
+                                key={activeProject.id}
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: -20 }}
@@ -87,10 +89,10 @@ const CaseStudiesPreview = () => {
                             >
                                 <div className="relative h-full min-h-[500px] group overflow-hidden">
                                     {/* Image */}
-                                    {activeCS.image ? (
+                                    {activeProject.image ? (
                                         <Image
-                                            src={activeCS.image}
-                                            alt={activeCS.title}
+                                            src={activeProject.image}
+                                            alt={activeProject.title}
                                             fill
                                             sizes="(max-width: 1024px) 100vw, 66vw"
                                             className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -105,25 +107,25 @@ const CaseStudiesPreview = () => {
                                     {/* Content Overlay */}
                                     <div className="absolute inset-x-0 bottom-0 p-10 z-10">
                                         <span className="text-primary/80 text-xs font-bold uppercase tracking-widest mb-2 block">
-                                            {activeCS.client_name}
+                                            {activeProject.client_name}
                                         </span>
                                         <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
-                                            {activeCS.title}
+                                            {activeProject.title}
                                         </h3>
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                                             <div>
                                                 <span className="text-primary/80 text-[10px] font-bold uppercase tracking-widest block mb-1">Challenge</span>
-                                                <p className="text-white/60 text-sm leading-relaxed line-clamp-3">{activeCS.problem}</p>
+                                                <p className="text-white/60 text-sm leading-relaxed line-clamp-3">{activeProject.problem}</p>
                                             </div>
                                             <div className="bg-emerald-500/10 border border-emerald-400/20 p-4">
                                                 <span className="text-emerald-400 text-[10px] font-bold uppercase tracking-widest block mb-1">Outcome</span>
-                                                <p className="text-emerald-200 text-sm leading-relaxed">{activeCS.outcome}</p>
+                                                <p className="text-emerald-200 text-sm leading-relaxed">{activeProject.outcome}</p>
                                             </div>
                                         </div>
 
                                         <Link
-                                            href={`/portfolio/${activeCS.slug}`}
+                                            href={`/projects/${activeProject.slug}`}
                                             className="text-white font-bold text-sm uppercase tracking-wider flex items-center gap-2 group/link hover:text-primary transition-colors"
                                         >
                                             Explore Innovation
@@ -141,4 +143,4 @@ const CaseStudiesPreview = () => {
 }
 
 
-export default CaseStudiesPreview
+export default ProjectsPreview

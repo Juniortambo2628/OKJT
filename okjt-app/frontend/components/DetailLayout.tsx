@@ -23,7 +23,7 @@ interface DetailLayoutProps {
     tagline: string
     title: string
     breadcrumbs: { label: string; href?: string }[]
-    socialShareType: "case-studies" | "projects"
+    socialShareType: "projects" | "insights"
     slug: string
     
     // Overview metrics

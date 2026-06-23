@@ -39,6 +39,18 @@ const Hero = () => {
         getSetting('hero_home_video_3')
     ].filter(Boolean).map(getMediaUrl)
 
+    // Preload the first hero video
+    useEffect(() => {
+        if (videos[0]) {
+            const link = document.createElement('link');
+            link.rel = 'preload';
+            link.as = 'fetch';
+            link.href = videos[0];
+            document.head.appendChild(link);
+            return () => document.head.removeChild(link);
+        }
+    }, [videos]);
+
     const handleVideoEnd = () => {
         setVideoIndex((prev) => (prev + 1) % videos.length)
     }
@@ -179,8 +191,8 @@ const Hero = () => {
                             className="h-14 px-10 text-base font-bold rounded-none bg-primary hover:bg-primary/90 text-[#14110b] border-none transition-all hover:scale-[1.03] active:scale-[0.98] group shadow-xl shadow-primary/20"
                             asChild
                         >
-                            <Link href="/portfolio">
-                                Explore Our Portfolio
+                            <Link href="/projects">
+                                Explore Our Projects
                                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                             </Link>
                         </Button>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ClientResource;
 use Illuminate\Http\Request;
 use App\Traits\HandlesStandardCrud;
 
@@ -12,6 +13,38 @@ class ClientController extends Controller
 
     protected $orderByField = 'order';
     protected $orderByDirection = 'asc';
+
+    public function index()
+    {
+        $model = $this->getModelClass();
+        $relations = property_exists($this, 'withRelations') ? $this->withRelations : [];
+        $orderBy = property_exists($this, 'orderByField') ? $this->orderByField : 'id';
+        $orderDir = property_exists($this, 'orderByDirection') ? $this->orderByDirection : 'asc';
+
+        $query = $model::with($relations);
+
+        if (method_exists($this, 'indexQuery')) {
+            $query = $this->indexQuery($query);
+        } else {
+            $query = $query->orderBy($orderBy, $orderDir);
+        }
+
+        return ClientResource::collection($query->get());
+    }
+
+    public function show($id)
+    {
+        $model = $this->getModelClass();
+        $relations = property_exists($this, 'withRelations') ? $this->withRelations : [];
+
+        if (!is_numeric($id) && in_array('slug', (new $model)->getFillable())) {
+            $record = $model::with($relations)->where('slug', $id)->firstOrFail();
+        } else {
+            $record = $model::with($relations)->findOrFail($id);
+        }
+
+        return new ClientResource($record);
+    }
 
     public function indexQuery($query)
     {

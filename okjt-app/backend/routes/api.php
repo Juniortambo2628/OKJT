@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\InsightController;
-use App\Http\Controllers\Api\CaseStudyController;
+use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\StatController;
 use App\Http\Controllers\Api\SiteSettingController;
 use App\Http\Controllers\Api\TestimonialController;
@@ -17,7 +17,6 @@ use App\Http\Controllers\Api\TeamMemberController;
 use App\Http\Controllers\Api\ValueController;
 use App\Http\Controllers\Api\ConsultationRequestController;
 use App\Http\Controllers\Api\PillarController;
-use App\Http\Controllers\Api\InnovationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,8 +33,8 @@ Route::get('/services/{service:slug}', [ServiceController::class, 'show']);
 Route::get('/insights', [InsightController::class, 'index']);
 Route::get('/insights/{insight:slug}', [InsightController::class, 'show']);
 
-Route::get('/case-studies', [CaseStudyController::class, 'index']);
-Route::get('/case-studies/{caseStudy:slug}', [CaseStudyController::class, 'show']);
+Route::get('/projects', [ProjectController::class, 'index']);
+Route::get('/projects/{identifier}', [ProjectController::class, 'show']);
 
 Route::get('/stats', [StatController::class, 'index']);
 Route::get('/settings', [SiteSettingController::class, 'index']);
@@ -50,10 +49,6 @@ Route::get('/values', [ValueController::class, 'index']);
 Route::get('/pillars', [PillarController::class, 'index']);
 Route::get('/pillars/{slug}', [PillarController::class, 'show']);
 
-// Innovations public
-Route::get('/innovations', [InnovationController::class, 'index']);
-Route::get('/innovations/{identifier}', [InnovationController::class, 'show']);
-
 // Public — search, tracking, newsletter
 Route::get('/search', [SearchController::class, 'index']);
 Route::post('/track', [AnalyticsController::class, 'track']);
@@ -61,10 +56,6 @@ Route::post('/subscribe', [SubscriberController::class, 'store']);
 Route::post('/consultation-requests', [ConsultationRequestController::class, 'store']);
 Route::post('/rsvps', [\App\Http\Controllers\Api\RsvpController::class, 'store']);
 Route::get('/storage/{path}', [UploadController::class, 'serve'])->where('path', '.*');
-Route::get('/email-templates', [SiteSettingController::class, 'emailTemplates']);
-Route::post('/email-templates', [SiteSettingController::class, 'storeEmailTemplate']);
-Route::put('/email-templates/{key}', [SiteSettingController::class, 'updateEmailTemplate']);
-Route::delete('/email-templates/{key}', [SiteSettingController::class, 'destroyEmailTemplate']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -73,6 +64,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // RSVP CRUD (admin)
     Route::get('/rsvps', [\App\Http\Controllers\Api\RsvpController::class, 'index']);
+    Route::get('/rsvps/{rsvp}', [\App\Http\Controllers\Api\RsvpController::class, 'show']);
+    Route::put('/rsvps/{rsvp}', [\App\Http\Controllers\Api\RsvpController::class, 'update']);
     Route::delete('/rsvps/{rsvp}', [\App\Http\Controllers\Api\RsvpController::class, 'destroy']);
 
     // Services CRUD
@@ -85,10 +78,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/insights/{insight}', [InsightController::class, 'update']);
     Route::delete('/insights/{insight}', [InsightController::class, 'destroy']);
 
-    // Case Studies CRUD
-    Route::post('/case-studies', [CaseStudyController::class, 'store']);
-    Route::put('/case-studies/{caseStudy}', [CaseStudyController::class, 'update']);
-    Route::delete('/case-studies/{caseStudy}', [CaseStudyController::class, 'destroy']);
+    // Projects CRUD
+    Route::post('/projects', [ProjectController::class, 'store']);
+    Route::put('/projects/{project}', [ProjectController::class, 'update']);
+    Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
 
     // Stats CRUD
     Route::post('/stats', [StatController::class, 'store']);
@@ -100,6 +93,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/settings/{siteSetting}', [SiteSettingController::class, 'update']);
 
     // Testimonials CRUD
+    Route::get('/testimonials/{testimonial}', [TestimonialController::class, 'show']);
     Route::post('/testimonials', [TestimonialController::class, 'store']);
     Route::put('/testimonials/{testimonial}', [TestimonialController::class, 'update']);
     Route::delete('/testimonials/{testimonial}', [TestimonialController::class, 'destroy']);
@@ -113,12 +107,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/upload', [UploadController::class, 'store']);
     Route::delete('/upload', [UploadController::class, 'destroy']);
 
-
     // Analytics (admin)
     Route::get('/analytics/summary', [AnalyticsController::class, 'summary']);
 
     // Subscribers (admin)
     Route::get('/subscribers', [SubscriberController::class, 'index']);
+    Route::put('/subscribers/{subscriber}', [SubscriberController::class, 'update']);
     Route::delete('/subscribers/{subscriber}', [SubscriberController::class, 'destroy']);
 
     // Team Members
@@ -136,16 +130,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/pillars/{pillar}', [PillarController::class, 'update']);
     Route::delete('/pillars/{pillar}', [PillarController::class, 'destroy']);
 
-    // Innovations CRUD
-    Route::post('/innovations', [InnovationController::class, 'store']);
-    Route::put('/innovations/{innovation}', [InnovationController::class, 'update']);
-    Route::delete('/innovations/{innovation}', [InnovationController::class, 'destroy']);
-
     // Consultation Requests
     Route::get('/consultation-requests', [ConsultationRequestController::class, 'index']);
+    Route::get('/consultation-requests/{consultationRequest}', [ConsultationRequestController::class, 'show']);
     Route::put('/consultation-requests/{consultationRequest}', [ConsultationRequestController::class, 'update']);
     Route::delete('/consultation-requests/{consultationRequest}', [ConsultationRequestController::class, 'destroy']);
 
-    // Email Templates
+    // Email Templates (admin only)
+    Route::get('/email-templates', [SiteSettingController::class, 'emailTemplates']);
+    Route::post('/email-templates', [SiteSettingController::class, 'storeEmailTemplate']);
+    Route::put('/email-templates/{key}', [SiteSettingController::class, 'updateEmailTemplate']);
+    Route::delete('/email-templates/{key}', [SiteSettingController::class, 'destroyEmailTemplate']);
     Route::post('/email-templates/preview', [\App\Http\Controllers\Api\EmailTemplateController::class, 'preview']);
 });

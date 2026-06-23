@@ -61,10 +61,9 @@ const AdminSidebar = () => {
     const menuItems = [
         { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
         { name: 'Services', href: '/admin/services', icon: Briefcase },
-        { name: 'Innovations', href: '/admin/innovations', icon: Rocket },
         { name: 'Brand Pillars', href: '/admin/pillars', icon: Globe },
         { name: 'Insights', href: '/admin/insights', icon: FileText },
-        { name: 'Portfolio', href: '/admin/case-studies', icon: FolderOpen },
+        { name: 'Projects', href: '/admin/projects', icon: FolderOpen },
         { name: 'Team', href: '/admin/team', icon: UserCircle },
         { name: 'Widgets', href: '/admin/widgets', icon: Zap },
         { name: 'Requests', href: '/admin/requests', icon: MessageSquare },

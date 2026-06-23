@@ -60,7 +60,7 @@ const AdminSettingsPage = () => {
         { key: 'hero_products_media', label: 'Our Approach Hero', type: 'media' },
         { key: 'hero_services_media', label: 'Services Page Hero', type: 'media' },
         { key: 'hero_insights_media', label: 'Insights Page Hero', type: 'media' },
-        { key: 'hero_case_studies_media', label: 'Case Studies Hero', type: 'media' },
+        { key: 'hero_projects_media', label: 'Projects Hero', type: 'media' },
         { key: 'hero_client_impact_media', label: 'Client Impact Hero', type: 'media' },
         { key: 'hero_contact_media', label: 'Contact Page Hero', type: 'media' },
         { key: 'hero_consultation_media', label: 'Consultation Hero', type: 'media' },
@@ -410,7 +410,7 @@ const AdminSettingsPage = () => {
                                                             <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Link Destination</Label>
                                                             <div className="flex gap-2">
                                                                 <Select
-                                                                    value={['/', '/services', '/insights', '/case-studies', '/about', '/contact'].includes(link.href) ? link.href : 'custom'}
+                                                                    value={['/', '/services', '/insights', '/projects', '/about', '/contact'].includes(link.href) ? link.href : 'custom'}
                                                                     onValueChange={(val) => {
                                                                         const newLinks = [...navLinks]
                                                                         if (val !== 'custom') {
@@ -426,14 +426,14 @@ const AdminSettingsPage = () => {
                                                                         <SelectItem value="/">Home Page</SelectItem>
                                                                         <SelectItem value="/services">Services Page</SelectItem>
                                                                         <SelectItem value="/insights">Insights Page</SelectItem>
-                                                                        <SelectItem value="/case-studies">Case Studies Page</SelectItem>
+                                                                        <SelectItem value="/projects">Projects Page</SelectItem>
                                                                         <SelectItem value="/about">About Us Page</SelectItem>
                                                                         <SelectItem value="/contact">Contact Page</SelectItem>
                                                                         <SelectItem value="custom">Custom Path...</SelectItem>
                                                                     </SelectContent>
                                                                 </Select>
                                                                 
-                                                                {(!['/', '/services', '/insights', '/case-studies', '/about', '/contact'].includes(link.href)) && (
+                                                                {(!['/', '/services', '/insights', '/projects', '/about', '/contact'].includes(link.href)) && (
                                                                     <Input 
                                                                         value={link.href} 
                                                                         onChange={(e) => {

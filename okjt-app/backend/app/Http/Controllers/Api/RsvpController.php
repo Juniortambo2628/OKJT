@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\RsvpResource;
 use App\Models\Rsvp;
 use Illuminate\Http\Request;
 use App\Mail\RsvpConfirmation;
@@ -12,7 +13,7 @@ class RsvpController extends Controller
 {
     public function index()
     {
-        return Rsvp::orderBy('created_at', 'desc')->get();
+        return RsvpResource::collection(Rsvp::orderBy('created_at', 'desc')->get());
     }
 
     public function store(Request $request)
@@ -33,21 +34,29 @@ class RsvpController extends Controller
         $rsvp = Rsvp::create($validated);
 
         try {
-            // Send confirmation email asynchronously
             Mail::to($rsvp->email)->queue(new RsvpConfirmation($rsvp));
         } catch (\Exception $e) {
             logger()->error("Failed to send RSVP confirmation mail: " . $e->getMessage());
         }
 
-        return response()->json([
-            'message' => 'Successfully registered for the RSVP.',
-            'data' => $rsvp
-        ], 201);
+        return new RsvpResource($rsvp);
     }
 
     public function show(Rsvp $rsvp)
     {
-        return response()->json($rsvp);
+        return new RsvpResource($rsvp);
+    }
+
+    public function update(Request $request, Rsvp $rsvp)
+    {
+        $validated = $request->validate([
+            'attendance' => 'nullable|string|max:255',
+            'type' => 'nullable|string|in:rsvp,early_access',
+        ]);
+
+        $rsvp->update($validated);
+
+        return new RsvpResource($rsvp);
     }
 
     public function destroy(Rsvp $rsvp)

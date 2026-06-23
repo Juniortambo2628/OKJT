@@ -13,7 +13,7 @@ class ContentUpdateNotification extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $typeLabel; // Insight or Case Study
+    public $typeLabel; // Insight or Project
     public $categoryLabel;
     public $title;
     public $excerpt;

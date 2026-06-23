@@ -10,6 +10,7 @@ class Client extends Model
         'name',
         'logo',
         'website',
+        'category',
         'is_active',
         'order',
     ];

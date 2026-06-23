@@ -3,25 +3,34 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\CaseStudyResource;
-use App\Models\CaseStudy;
+use App\Http\Resources\ProjectResource;
+use App\Models\Project;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
-class CaseStudyController extends Controller
+class ProjectController extends Controller
 {
     use \App\Traits\HasUniqueSlug;
 
-    public function index()
+    public function index(Request $request)
     {
-        return CaseStudyResource::collection(CaseStudy::all());
+        $query = Project::query();
+
+        if ($request->has('type')) {
+            $query->where('type', $request->get('type'));
+        }
+
+        return ProjectResource::collection(
+            $query->orderBy('order')->orderBy('created_at', 'desc')->get()
+        );
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'type' => 'required|string|in:client,flagship',
             'title' => 'required|string|max:255',
             'client_name' => 'nullable|string',
+            'tagline' => 'nullable|string|max:255',
             'category' => 'nullable|string',
             'technologies' => 'nullable|array',
             'description' => 'nullable|string',
@@ -34,24 +43,33 @@ class CaseStudyController extends Controller
             'image' => 'nullable|string',
             'gallery' => 'nullable|array',
             'website_url' => 'nullable|string',
+            'url' => 'nullable|string',
+            'is_active' => 'boolean',
             'is_featured' => 'boolean',
+            'order' => 'integer',
         ]);
 
         $validated['slug'] = $this->generateUniqueSlug($validated['title']);
-        $caseStudy = CaseStudy::create($validated);
-        return new CaseStudyResource($caseStudy);
+        $project = Project::create($validated);
+        return new ProjectResource($project);
     }
 
-    public function show(CaseStudy $caseStudy)
+    public function show($identifier)
     {
-        return new CaseStudyResource($caseStudy);
+        $project = Project::where('id', $identifier)
+            ->orWhere('slug', $identifier)
+            ->firstOrFail();
+
+        return new ProjectResource($project);
     }
 
-    public function update(Request $request, CaseStudy $caseStudy)
+    public function update(Request $request, Project $project)
     {
         $validated = $request->validate([
+            'type' => 'string|in:client,flagship',
             'title' => 'string|max:255',
             'client_name' => 'nullable|string',
+            'tagline' => 'nullable|string|max:255',
             'category' => 'nullable|string',
             'technologies' => 'nullable|array',
             'description' => 'nullable|string',
@@ -64,21 +82,23 @@ class CaseStudyController extends Controller
             'image' => 'nullable|string',
             'gallery' => 'nullable|array',
             'website_url' => 'nullable|string',
+            'url' => 'nullable|string',
+            'is_active' => 'boolean',
             'is_featured' => 'boolean',
+            'order' => 'integer',
         ]);
 
-        if (isset($validated['title']) && $validated['title'] !== $caseStudy->title) {
-            $validated['slug'] = $this->generateUniqueSlug($validated['title'], $caseStudy->id);
+        if (isset($validated['title']) && $validated['title'] !== $project->title) {
+            $validated['slug'] = $this->generateUniqueSlug($validated['title'], $project->id);
         }
 
-        $caseStudy->update($validated);
-        return new CaseStudyResource($caseStudy);
+        $project->update($validated);
+        return new ProjectResource($project);
     }
 
-    public function destroy(CaseStudy $caseStudy)
+    public function destroy(Project $project)
     {
-        $caseStudy->delete();
+        $project->delete();
         return response()->json(null, 204);
     }
 }
-

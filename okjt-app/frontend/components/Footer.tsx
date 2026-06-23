@@ -4,7 +4,6 @@ import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowRight, Linkedin, Twitter, Github, Facebook } from 'lucide-react'
-import NewsletterSignup from './NewsletterSignup'
 import { useApi } from '@/hooks/use-api'
 import { useSettings } from '@/hooks/use-settings'
 import { useTheme } from 'next-themes'
@@ -12,6 +11,9 @@ import { useTheme } from 'next-themes'
 const Footer = () => {
     const { theme } = useTheme()
     const [mounted, setMounted] = React.useState(false)
+    const [email, setEmail] = React.useState('')
+    const [subscribed, setSubscribed] = React.useState(false)
+    const [subscribing, setSubscribing] = React.useState(false)
     const { branding, contact, getSetting, socials: socialLinks } = useSettings()
     const { data: services } = useApi('/services')
  
@@ -38,7 +40,7 @@ const Footer = () => {
 
     const companyLinks = [
         { name: 'About Us', href: '/about' },
-        { name: 'Portfolio', href: '/portfolio' },
+        { name: 'Projects', href: '/projects' },
         { name: 'Our Approach', href: '/our-approach' },
         { name: 'Contact', href: '/contact' },
     ]
@@ -64,6 +66,7 @@ const Footer = () => {
                                     fill
                                     sizes="240px"
                                     className="object-contain"
+                                    priority
                                 />
                             ) : (
                                 <div className="h-full w-full animate-pulse bg-muted/20 rounded" />
@@ -73,7 +76,41 @@ const Footer = () => {
                             {getSetting('company_tagline', 'Design-led web engineering — crafting fast, responsive, and visually stunning digital experiences that drive results for ambitious brands.')}
                         </p>
 
-                        <NewsletterSignup />
+                        {subscribed ? (
+                            <p className="text-primary text-sm font-medium">Thanks for subscribing!</p>
+                        ) : (
+                            <form onSubmit={async (e) => {
+                                e.preventDefault()
+                                if (!email) return
+                                setSubscribing(true)
+                                try {
+                                    await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/subscribe`, {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ email, source: 'footer' }),
+                                    })
+                                    setSubscribed(true)
+                                    setEmail('')
+                                } catch {}
+                                setSubscribing(false)
+                            }} className="flex gap-2">
+                                <input
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="Your email"
+                                    required
+                                    className="flex-1 bg-muted/50 border border-border/50 rounded px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary"
+                                />
+                                <button
+                                    type="submit"
+                                    disabled={subscribing}
+                                    className="bg-primary text-primary-foreground px-4 py-2 rounded text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
+                                >
+                                    {subscribing ? '...' : 'Subscribe'}
+                                </button>
+                            </form>
+                        )}
                     </div>
 
                     {/* Column 2: Services */}

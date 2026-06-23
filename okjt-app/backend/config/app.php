@@ -56,6 +56,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Next.js Frontend URL
+    |--------------------------------------------------------------------------
+    |
+    | The URL of the Next.js frontend, used for ISR cache revalidation
+    | when CMS content is updated.
+    |
+    */
+
+    'next_url' => env('NEXT_URL', 'http://localhost:3000'),
+    'next_revalidation_secret' => env('NEXT_REVALIDATION_SECRET', 'okjt-webhook-secret-change-me-in-production'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |

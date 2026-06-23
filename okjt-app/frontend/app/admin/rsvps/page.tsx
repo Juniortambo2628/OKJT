@@ -1,360 +1,267 @@
 "use client"
 
-import React, { useState } from 'react'
-import AdminLayout from '@/components/admin/AdminLayout'
-import { cn } from '@/lib/utils'
-import { useApi } from '@/hooks/use-api'
+import React from 'react'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { Checkbox } from '@/components/ui/checkbox'
+import { Switch } from '@/components/ui/switch'
+import { Trash2, Mail, MoreVertical } from 'lucide-react'
+import { Rsvp } from '@/types/api'
+import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
-import api from '@/lib/api'
-import { useToast } from '@/hooks/use-toast'
-import { Search, Download, RefreshCw, Rocket, Trash2, Mail, MoreVertical, LayoutGrid, List } from 'lucide-react'
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Rsvp } from '@/types/api'
+import AdminResourceTemplate from '@/components/admin/core/AdminResourceTemplate'
+
+const typeColors: Record<string, string> = {
+    rsvp: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+    early_access: 'bg-primary/10 text-primary border-primary/20',
+}
+
+const attendanceColors: Record<string, string> = {
+    accept: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
+    decline: 'bg-destructive/10 text-destructive border-destructive/20',
+}
 
 export default function AdminRsvpsPage() {
-    const { data: rsvps, isLoading, mutate } = useApi<Rsvp[]>('/rsvps')
-    const { toast } = useToast()
-    const [searchQuery, setSearchQuery] = useState('')
-    const [viewMode, setViewMode] = useState<'grid' | 'list'>('list')
-    const [selectedIds, setSelectedIds] = useState<number[]>([])
-    const [typeFilter, setTypeFilter] = useState<string>('all')
-    const [attendanceFilter, setAttendanceFilter] = useState<string>('all')
-
-    const typeColors: Record<string, string> = {
-        rsvp: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-        early_access: 'bg-primary/10 text-primary border-primary/20',
-    }
-
-    const attendanceColors: Record<string, string> = {
-        accept: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
-        decline: 'bg-destructive/10 text-destructive border-destructive/20',
-    }
-
-    const handleDelete = async (id: number) => {
-        if (!confirm('Permanently delete this RSVP?')) return
-        try {
-            await api.delete(`/rsvps/${id}`)
-            toast({ title: "Deleted", description: "RSVP removed successfully." })
-            mutate()
-        } catch (err) {
-            toast({ variant: "destructive", title: "Error", description: "Failed to delete RSVP." })
-        }
-    }
-
-    const handleBulkDelete = async () => {
-        if (!confirm(`Delete ${selectedIds.length} RSVPs?`)) return
-        try {
-            await Promise.all(selectedIds.map(id => api.delete(`/rsvps/${id}`)))
-            toast({ title: "Success", description: "Selected RSVPs deleted." })
-            setSelectedIds([])
-            mutate()
-        } catch (err) {
-            toast({ variant: "destructive", title: "Error", description: "Bulk action failed." })
-        }
-    }
-
-    const toggleSelect = (id: number) => {
-        setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id])
-    }
-
-    const filteredRsvps = rsvps?.filter(rsvp => {
-        const query = searchQuery.toLowerCase()
-        const matchesSearch = 
-            rsvp.name.toLowerCase().includes(query) || 
-            rsvp.email.toLowerCase().includes(query) ||
-            (rsvp.company && rsvp.company.toLowerCase().includes(query)) ||
-            (rsvp.job_title && rsvp.job_title.toLowerCase().includes(query))
-
-        const matchesType = typeFilter === 'all' || rsvp.type === typeFilter
-        const matchesAttendance = attendanceFilter === 'all' || rsvp.attendance === attendanceFilter
-
-        return matchesSearch && matchesType && matchesAttendance
-    })
-
-    const handleExport = () => {
-        if (!rsvps) return
-        
-        const headers = ['Type', 'Attendance', 'Name', 'Email', 'Organization', 'Role', 'Sector', 'Interest', 'Newsletter', 'Date Registered']
-        const csvContent = [
-            headers.join(','),
-            ...rsvps.map(r => [
-                `"${r.type === 'rsvp' ? 'Dinner RSVP' : 'Early Access'}"`,
-                `"${r.type === 'rsvp' ? (r.attendance || 'Pending') : 'N/A'}"`,
-                `"${r.name}"`,
-                `"${r.email}"`,
-                `"${r.company || ''}"`,
-                `"${r.job_title || ''}"`,
-                `"${r.sector || ''}"`,
-                `"${r.interest || ''}"`,
-                `"${r.newsletter ? 'Yes' : 'No'}"`,
-                `"${format(new Date(r.created_at), 'yyyy-MM-dd HH:mm')}"`
-            ].join(','))
-        ].join('\n')
-
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-        const link = document.createElement('a')
-        const url = URL.createObjectURL(blob)
-        link.setAttribute('href', url)
-        link.setAttribute('download', `okjtech-launch-rsvps-${format(new Date(), 'yyyy-MM-dd')}.csv`)
-        link.style.visibility = 'hidden'
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-    }
-
     return (
-        <AdminLayout>
-            <div className="space-y-8 font-inter">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent flex items-center gap-2">
-                            <Rocket className="text-primary h-8 w-8" />
-                            Launch RSVPs
-                        </h1>
-                        <p className="text-muted-foreground mt-1">Manage RSVP and early access registrations for the platform launch.</p>
+        <AdminResourceTemplate<Rsvp>
+            endpoint="/rsvps"
+            resourceName="Rsvp"
+            title="RSVPs & Early Access"
+            description="Manage RSVP and early access registrations."
+            actionLabel="Add RSVP"
+            statusField="type"
+            initialForm={{ name: '', email: '', company: '', job_title: '', sector: '', interest: '', consent: false, newsletter: false, type: 'early_access', attendance: null } as Partial<Rsvp>}
+            hideStatusFilter
+            filterPlaceholder="Search by name, email, or company..."
+            filterFn={(item, term) =>
+                item.name.toLowerCase().includes(term.toLowerCase()) ||
+                item.email.toLowerCase().includes(term.toLowerCase()) ||
+                (item.company && item.company.toLowerCase().includes(term.toLowerCase()))
+            }
+            sortOptions={[
+                { label: 'Date', value: 'created_at' },
+                { label: 'Name', value: 'name' },
+                { label: 'Type', value: 'type' },
+            ]}
+            onValidate={(form) => {
+                const f = form as Partial<Rsvp>
+                if (!f.name) return 'Name is required.'
+                if (!f.email) return 'Email is required.'
+                return null
+            }}
+            renderGridItem={(item, selectedIds, toggleSelect, onEdit, onDelete) => (
+                <div
+                    key={item.id}
+                    className="bg-secondary/10 border border-border/50 p-6 space-y-4 hover:border-primary/40 transition-all group relative cursor-pointer"
+                    onClick={() => onEdit(item)}
+                >
+                    <Checkbox
+                        checked={selectedIds.includes(item.id)}
+                        onCheckedChange={() => toggleSelect(item.id)}
+                        className="absolute top-4 left-4"
+                        onClick={(e) => e.stopPropagation()}
+                    />
+                    <div className="absolute top-4 right-4 text-xs text-muted-foreground">
+                        {format(new Date(item.created_at), 'MMM dd')}
                     </div>
-                    <div className="flex items-center gap-3">
-                        <Button variant="outline" onClick={() => mutate()} disabled={isLoading} className="gap-2">
-                            <RefreshCw size={16} className={isLoading ? "animate-spin" : ""} />
-                            Refresh
-                        </Button>
-                        <Button onClick={handleExport} disabled={!rsvps?.length} className="gap-2">
-                            <Download size={16} />
-                            Export CSV
+
+                    <div className="flex items-center gap-3 pt-4">
+                        <div className="flex flex-col">
+                            <div className="font-bold text-lg">{item.name}</div>
+                            <div className="flex gap-1.5 mt-1">
+                                <Badge variant="outline" className={cn("text-[10px] px-1.5 h-4", typeColors[item.type])}>
+                                    {item.type === 'rsvp' ? 'Dinner' : 'Early Access'}
+                                </Badge>
+                                {item.type === 'rsvp' && item.attendance && (
+                                    <Badge variant="outline" className={cn("text-[10px] px-1.5 h-4", attendanceColors[item.attendance])}>
+                                        {item.attendance === 'accept' ? 'Accepted' : 'Declined'}
+                                    </Badge>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="p-4 bg-background/30 rounded border border-white/5 space-y-2 text-sm text-muted-foreground">
+                        <div><span className="font-medium text-foreground">Email:</span> {item.email}</div>
+                        <div><span className="font-medium text-foreground">Company:</span> {item.company || '-'}</div>
+                        <div><span className="font-medium text-foreground">Sector:</span> <span className="capitalize">{item.sector || '-'}</span></div>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-2">
+                        <a href={`mailto:${item.email}`} className="text-xs text-primary hover:underline font-bold flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+                            <Mail size={14} /> Reply
+                        </a>
+                        <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); onDelete(item.id) }} className="text-destructive hover:bg-destructive/10 hover:text-destructive h-8 px-2">
+                            <Trash2 size={14} className="mr-1" /> Delete
                         </Button>
                     </div>
                 </div>
-
-                <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-secondary/10 p-4 border border-border/50 rounded-lg">
-                    <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-                        <div className="relative w-full md:w-80">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
-                            <Input 
-                                placeholder="Search RSVPs..." 
-                                className="pl-10 bg-background/50 border-border/50"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
+            )}
+            renderTableHeaders={(items, selectedIds, selectAll) => (
+                <tr>
+                    <th className="p-4 px-6 w-10">
+                        <Checkbox
+                            checked={selectedIds.length === items.length && items.length > 0}
+                            onCheckedChange={(checked: boolean) => {
+                                if (checked) selectAll(items.map(i => i.id))
+                                else selectAll([])
+                            }}
+                        />
+                    </th>
+                    <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground">Name</th>
+                    <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground">Email</th>
+                    <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground">Company</th>
+                    <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground">Type</th>
+                    <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground">Attendance</th>
+                    <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground text-right">Registered</th>
+                    <th className="p-4 text-right"></th>
+                </tr>
+            )}
+            renderTableRows={(items, selectedIds, toggleSelect, onEdit, onDelete) => (
+                items.map((item) => (
+                    <tr key={item.id} className="hover:bg-primary/5 transition-colors cursor-pointer" onClick={() => onEdit(item)}>
+                        <td className="p-4 px-6" onClick={(e) => e.stopPropagation()}>
+                            <Checkbox
+                                checked={selectedIds.includes(item.id)}
+                                onCheckedChange={() => toggleSelect(item.id)}
                             />
-                        </div>
-
-                        <div className="flex bg-secondary/20 p-1 rounded-lg border border-border/50">
+                        </td>
+                        <td className="p-4 font-bold text-foreground">{item.name}</td>
+                        <td className="p-4">
+                            <a href={`mailto:${item.email}`} className="text-sm text-primary hover:underline underline-offset-4 flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+                                <Mail size={12} /> {item.email}
+                            </a>
+                        </td>
+                        <td className="p-4 text-muted-foreground text-sm">{item.company || '—'}</td>
+                        <td className="p-4">
+                            <Badge variant="outline" className={cn("text-[10px] px-1.5 h-4", typeColors[item.type])}>
+                                {item.type === 'rsvp' ? 'Dinner' : 'Early Access'}
+                            </Badge>
+                        </td>
+                        <td className="p-4">
+                            {item.attendance ? (
+                                <Badge variant="outline" className={cn("text-[10px] px-1.5 h-4", attendanceColors[item.attendance])}>
+                                    {item.attendance === 'accept' ? 'Accepted' : 'Declined'}
+                                </Badge>
+                            ) : (
+                                <span className="text-xs text-muted-foreground">—</span>
+                            )}
+                        </td>
+                        <td className="p-4 text-right text-muted-foreground whitespace-nowrap text-xs">
+                            {format(new Date(item.created_at), 'MMM dd, yyyy')}
+                        </td>
+                        <td className="p-4 text-right" onClick={(e) => e.stopPropagation()}>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="sm" className="h-8 gap-1 px-2">
-                                        Type: {typeFilter === 'all' ? 'All' : typeFilter === 'rsvp' ? 'Dinner' : 'Early Access'}
-                                    </Button>
+                                    <Button variant="ghost" size="sm"><MoreVertical size={16} /></Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                    <DropdownMenuItem onClick={() => setTypeFilter('all')}>All Types</DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => setTypeFilter('rsvp')}>Dinner RSVP</DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => setTypeFilter('early_access')}>Early Access</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => onDelete(item.id)} className="text-destructive">
+                                        <Trash2 size={14} className="mr-2" /> Delete
+                                    </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
-
-                            <hr className="mx-1 border-white/10 h-6 my-auto" />
-
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="sm" className="h-8 gap-1 px-2">
-                                        Attendance: {attendanceFilter === 'all' ? 'All' : attendanceFilter === 'accept' ? 'Accept' : 'Decline'}
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    <DropdownMenuItem onClick={() => setAttendanceFilter('all')}>All Attendance</DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => setAttendanceFilter('accept')}>Accepted</DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => setAttendanceFilter('decline')}>Declined</DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        </div>
+                        </td>
+                    </tr>
+                ))
+            )}
+            renderFormFields={(form, setForm) => (
+                <>
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium">Name <span className="text-destructive">*</span></label>
+                        <Input
+                            value={(form as Rsvp).name || ''}
+                            onChange={(e) => setForm({ ...form, name: e.target.value } as Partial<Rsvp>)}
+                            placeholder="Full name"
+                        />
                     </div>
-
-                    <div className="flex items-center gap-3 w-full md:w-auto justify-end">
-                        {selectedIds.length > 0 && (
-                            <div className="flex items-center gap-4 bg-primary/10 px-4 py-2 rounded-lg border border-primary/20">
-                                <span className="text-sm font-medium text-primary">{selectedIds.length} selected</span>
-                                <Button variant="destructive" size="sm" onClick={handleBulkDelete}>Delete Selected</Button>
-                            </div>
-                        )}
-
-                        <div className="flex bg-secondary/20 p-1 rounded-lg border border-border/50">
-                            <Button 
-                                variant={viewMode === 'grid' ? 'secondary' : 'ghost'} 
-                                size="sm" 
-                                className="h-8 w-8 p-0"
-                                onClick={() => setViewMode('grid')}
-                            >
-                                <LayoutGrid size={16} />
-                            </Button>
-                            <Button 
-                                variant={viewMode === 'list' ? 'secondary' : 'ghost'} 
-                                size="sm" 
-                                className="h-8 w-8 p-0"
-                                onClick={() => setViewMode('list')}
-                            >
-                                <List size={16} />
-                            </Button>
-                        </div>
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium">Email <span className="text-destructive">*</span></label>
+                        <Input
+                            type="email"
+                            value={(form as Rsvp).email || ''}
+                            onChange={(e) => setForm({ ...form, email: e.target.value } as Partial<Rsvp>)}
+                            placeholder="email@example.com"
+                        />
                     </div>
-                </div>
-
-                {isLoading ? (
-                    <div className="space-y-4">
-                        {[1, 2, 3].map(i => <div key={i} className="h-24 bg-secondary/20 animate-pulse rounded-lg" />)}
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium">Company</label>
+                        <Input
+                            value={(form as Rsvp).company || ''}
+                            onChange={(e) => setForm({ ...form, company: e.target.value } as Partial<Rsvp>)}
+                            placeholder="Company name"
+                        />
                     </div>
-                ) : (
-                    <>
-                        {viewMode === 'list' ? (
-                            <div className="bg-secondary/10 border border-border/50 overflow-hidden rounded-lg">
-                                <div className="overflow-x-auto">
-                                    <table className="w-full text-left">
-                                        <thead className="bg-secondary/20 border-b border-border/50">
-                                            <tr>
-                                                <th className="p-4 px-6 w-10">
-                                                    <Checkbox 
-                                                        checked={selectedIds.length === filteredRsvps?.length && filteredRsvps?.length > 0}
-                                                        onCheckedChange={(checked: boolean) => {
-                                                            if (checked) setSelectedIds(filteredRsvps?.map(r => r.id) || [])
-                                                            else setSelectedIds([])
-                                                        }}
-                                                    />
-                                                </th>
-                                                <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground">Type</th>
-                                                <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground">Name / Attendance</th>
-                                                <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground">Email</th>
-                                                <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground hidden md:table-cell">Organization</th>
-                                                <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground hidden lg:table-cell">Role</th>
-                                                <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground hidden xl:table-cell">Sector/Interest</th>
-                                                <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground text-right">Registered</th>
-                                                <th className="p-4 text-right"></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-border/50 font-inter">
-                                            {filteredRsvps?.map((rsvp) => (
-                                                <tr key={rsvp.id} className="hover:bg-primary/5 transition-colors group">
-                                                    <td className="p-4 px-6">
-                                                        <Checkbox 
-                                                            checked={selectedIds.includes(rsvp.id)}
-                                                            onCheckedChange={() => toggleSelect(rsvp.id)}
-                                                        />
-                                                    </td>
-                                                    <td className="p-4">
-                                                        <Badge variant="outline" className={typeColors[rsvp.type]}>
-                                                            {rsvp.type === 'rsvp' ? 'Dinner' : 'Access'}
-                                                        </Badge>
-                                                    </td>
-                                                    <td className="p-4">
-                                                        <div className="font-bold text-foreground">{rsvp.name}</div>
-                                                        {rsvp.type === 'rsvp' && rsvp.attendance && (
-                                                            <div className="text-[10px] mt-0.5">
-                                                                <Badge variant="outline" className={cn("text-[9px] font-bold px-1 py-0 h-4 uppercase", attendanceColors[rsvp.attendance])}>
-                                                                    {rsvp.attendance === 'accept' ? '• Accepted' : '• Declined'}
-                                                                </Badge>
-                                                            </div>
-                                                        )}
-                                                    </td>
-                                                    <td className="p-4">
-                                                        <a href={`mailto:${rsvp.email}`} className="text-sm text-primary hover:underline underline-offset-4 flex items-center gap-1.5">
-                                                            <Mail size={12} /> {rsvp.email}
-                                                        </a>
-                                                    </td>
-                                                    <td className="p-4 text-muted-foreground hidden md:table-cell text-sm">{rsvp.company || '-'}</td>
-                                                    <td className="p-4 text-muted-foreground hidden lg:table-cell text-sm">{rsvp.job_title || '-'}</td>
-                                                    <td className="p-4 text-muted-foreground hidden xl:table-cell text-sm">
-                                                        <div className="flex flex-col">
-                                                            <span className="capitalize">{rsvp.sector || '-'}</span>
-                                                            <span className="text-[10px] text-muted-foreground capitalize">
-                                                                {rsvp.interest ? rsvp.interest.replace(/_/g, ' ') : '-'}
-                                                            </span>
-                                                        </div>
-                                                    </td>
-                                                    <td className="p-4 text-right text-muted-foreground whitespace-nowrap text-xs">
-                                                        {format(new Date(rsvp.created_at), 'MMM dd, yyyy')}
-                                                    </td>
-                                                    <td className="p-4 text-right">
-                                                        <DropdownMenu>
-                                                            <DropdownMenuTrigger asChild>
-                                                                <Button variant="ghost" size="sm"><MoreVertical size={16} /></Button>
-                                                            </DropdownMenuTrigger>
-                                                            <DropdownMenuContent align="end">
-                                                                <DropdownMenuItem onClick={() => handleDelete(rsvp.id)} className="text-destructive">
-                                                                    <Trash2 size={14} className="mr-2" /> Delete
-                                                                </DropdownMenuItem>
-                                                            </DropdownMenuContent>
-                                                        </DropdownMenu>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {filteredRsvps?.map((rsvp) => (
-                                    <div key={rsvp.id} className="bg-secondary/10 border border-border/50 p-6 space-y-4 hover:border-primary/40 transition-all group relative rounded-lg">
-                                        <Checkbox 
-                                            checked={selectedIds.includes(rsvp.id)}
-                                            onCheckedChange={() => toggleSelect(rsvp.id)}
-                                            className="absolute top-4 left-4"
-                                        />
-                                        <div className="absolute top-4 right-4 text-xs text-muted-foreground">
-                                            {format(new Date(rsvp.created_at), 'MMM dd')}
-                                        </div>
-                                        
-                                        <div className="flex items-center gap-3 pt-4">
-                                            <div className="flex flex-col">
-                                                <div className="font-bold text-lg">{rsvp.name}</div>
-                                                <div className="flex gap-1.5 mt-1">
-                                                    <Badge variant="outline" className={cn("text-[10px] px-1.5 h-4", typeColors[rsvp.type])}>
-                                                        {rsvp.type === 'rsvp' ? 'Dinner' : 'Early Access'}
-                                                    </Badge>
-                                                    {rsvp.type === 'rsvp' && rsvp.attendance && (
-                                                        <Badge variant="outline" className={cn("text-[10px] px-1.5 h-4", attendanceColors[rsvp.attendance])}>
-                                                            {rsvp.attendance === 'accept' ? 'Accepted' : 'Declined'}
-                                                        </Badge>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="p-4 bg-background/30 rounded border border-white/5 space-y-2 text-sm text-muted-foreground">
-                                            <div><span className="font-medium text-foreground">Organization:</span> {rsvp.company || '-'}</div>
-                                            <div><span className="font-medium text-foreground">Role:</span> {rsvp.job_title || '-'}</div>
-                                            <div><span className="font-medium text-foreground">Sector:</span> <span className="capitalize">{rsvp.sector || '-'}</span></div>
-                                            <div><span className="font-medium text-foreground">Interest:</span> <span className="capitalize">{rsvp.interest ? rsvp.interest.replace(/_/g, ' ') : '-'}</span></div>
-                                            <div><span className="font-medium text-foreground">Newsletter:</span> {rsvp.newsletter ? 'Yes' : 'No'}</div>
-                                        </div>
-
-                                        <div className="flex items-center justify-between pt-2">
-                                            <a href={`mailto:${rsvp.email}`} className="text-xs text-primary hover:underline font-bold flex items-center gap-1.5">
-                                                <Mail size={14} /> Reply
-                                            </a>
-                                            <Button variant="ghost" size="sm" onClick={() => handleDelete(rsvp.id)} className="text-destructive hover:bg-destructive/10 hover:text-destructive h-8 px-2">
-                                                <Trash2 size={14} className="mr-1" /> Delete
-                                            </Button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                        
-                        {filteredRsvps?.length === 0 && (
-                            <div className="py-20 text-center border-2 border-dashed border-border/50 rounded-lg">
-                                <p className="text-muted-foreground">No launch RSVPs found.</p>
-                            </div>
-                        )}
-                    </>
-                )}
-            </div>
-        </AdminLayout>
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium">Job Title</label>
+                        <Input
+                            value={(form as Rsvp).job_title || ''}
+                            onChange={(e) => setForm({ ...form, job_title: e.target.value } as Partial<Rsvp>)}
+                            placeholder="Job title"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium">Sector</label>
+                        <Input
+                            value={(form as Rsvp).sector || ''}
+                            onChange={(e) => setForm({ ...form, sector: e.target.value } as Partial<Rsvp>)}
+                            placeholder="Industry sector"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium">Interest</label>
+                        <Input
+                            value={(form as Rsvp).interest || ''}
+                            onChange={(e) => setForm({ ...form, interest: e.target.value } as Partial<Rsvp>)}
+                            placeholder="Area of interest"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium">Type</label>
+                        <select
+                            className="flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                            value={(form as Rsvp).type || 'early_access'}
+                            onChange={(e) => setForm({ ...form, type: e.target.value as Rsvp['type'] } as Partial<Rsvp>)}
+                        >
+                            <option value="early_access">Early Access</option>
+                            <option value="rsvp">RSVP</option>
+                        </select>
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium">Attendance</label>
+                        <select
+                            className="flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                            value={(form as Rsvp).attendance ?? ''}
+                            onChange={(e) => setForm({ ...form, attendance: e.target.value === '' ? null : e.target.value as Rsvp['attendance'] } as Partial<Rsvp>)}
+                        >
+                            <option value="">Not set</option>
+                            <option value="accept">Accept</option>
+                            <option value="decline">Decline</option>
+                        </select>
+                    </div>
+                    <div className="flex items-center justify-between">
+                        <label className="text-sm font-medium">Consent</label>
+                        <Switch
+                            checked={(form as Rsvp).consent ?? false}
+                            onCheckedChange={(checked) => setForm({ ...form, consent: checked } as Partial<Rsvp>)}
+                        />
+                    </div>
+                    <div className="flex items-center justify-between">
+                        <label className="text-sm font-medium">Newsletter</label>
+                        <Switch
+                            checked={(form as Rsvp).newsletter ?? false}
+                            onCheckedChange={(checked) => setForm({ ...form, newsletter: checked } as Partial<Rsvp>)}
+                        />
+                    </div>
+                </>
+            )}
+        />
     )
 }

@@ -7,7 +7,7 @@ import { useState } from 'react'
 interface SocialShareProps {
     title: string
     slug: string
-    type: 'insights' | 'case-studies' | 'projects'
+    type: 'insights' | 'projects'
 }
 
 const SocialShare = ({ title, slug, type }: SocialShareProps) => {

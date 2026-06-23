@@ -5,7 +5,7 @@ import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, Code2, Palette, LineChart } from 'lucide-react'
-import { useApi } from '@/hooks/use-api'
+import { useSettings } from '@/hooks/use-settings'
 
 const containerVariants = {
     hidden: {},
@@ -24,51 +24,43 @@ const cardVariants = {
 }
 
 const ValueProposition = () => {
-    const { data: settingsByGroup } = useApi('/settings')
+    const { getSetting } = useSettings()
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
     const { scrollY } = useScroll()
     const sectionScale = useTransform(scrollY, [200, 900], [0.95, 1])
     const sectionOpacity = useTransform(scrollY, [200, 600], [0.7, 1])
 
-    // Helper to get setting value
-    const getSetting = (key: string, defaultValue: string) => {
-        if (!settingsByGroup) return defaultValue
-        const allSettings = Object.values(settingsByGroup).flat() as any[]
-        const setting = allSettings.find(s => s.key === key)
-        return setting?.value || defaultValue
-    }
-
-    const tagline = getSetting('vp_section_tagline', 'What We Do')
-    const title = getSetting('vp_section_title', 'Three Pillars of\nDigital Craftsmanship')
-    const subtitle = getSetting('vp_section_subtitle', 'We design, build, and ship production-grade web experiences — from first pixel to final deploy.')
+    const tagline = getSetting('vp_section_tagline')
+    const title = getSetting('vp_section_title')
+    const subtitle = getSetting('vp_section_subtitle')
 
     const pillars = [
         {
-            title: getSetting('vp_pillar1_title', 'Custom Web Development'),
-            description: getSetting('vp_pillar1_description', 'Full-stack web applications, e-commerce platforms, CMS solutions, and SaaS products — architected with Next.js, Laravel, and modern frameworks for performance at scale.'),
+            title: getSetting('vp_pillar1_title'),
+            description: getSetting('vp_pillar1_description'),
             icon: Code2,
-            image: '/assets/images/custom-webdev.png',
+            image: getSetting('vp_pillar1_image'),
             href: '/services',
-            stats: getSetting('vp_pillar1_stats', '30+ Projects Delivered'),
-            tag: getSetting('vp_pillar1_tag', 'Core Expertise'),
+            stats: getSetting('vp_pillar1_stats'),
+            tag: getSetting('vp_pillar1_tag'),
         },
         {
-            title: getSetting('vp_pillar2_title', 'UI/UX Design'),
-            description: getSetting('vp_pillar2_description', 'Design-led interfaces that delight users — from wireframes and prototypes to polished production design systems. We prioritize clarity, accessibility, and visual impact.'),
+            title: getSetting('vp_pillar2_title'),
+            description: getSetting('vp_pillar2_description'),
             icon: Palette,
-            image: '/assets/images/uiux-design.png',
+            image: getSetting('vp_pillar2_image'),
             href: '/services',
-            stats: getSetting('vp_pillar2_stats', 'Pixel-perfect Delivery'),
-            tag: getSetting('vp_pillar2_tag', 'Core Expertise'),
+            stats: getSetting('vp_pillar2_stats'),
+            tag: getSetting('vp_pillar2_tag'),
         },
         {
-            title: getSetting('vp_pillar3_title', 'Digital Strategy'),
-            description: getSetting('vp_pillar3_description', 'Technical consulting, architecture reviews, performance audits, and digital transformation roadmaps — helping businesses make confident technology decisions.'),
+            title: getSetting('vp_pillar3_title'),
+            description: getSetting('vp_pillar3_description'),
             icon: LineChart,
-            image: '/assets/images/digital-strategy.png',
+            image: getSetting('vp_pillar3_image'),
             href: '/services',
-            stats: getSetting('vp_pillar3_stats', 'End-to-end Planning'),
-            tag: getSetting('vp_pillar3_tag', 'Core Expertise'),
+            stats: getSetting('vp_pillar3_stats'),
+            tag: getSetting('vp_pillar3_tag'),
         },
     ]
 
@@ -118,7 +110,7 @@ const ValueProposition = () => {
                     const Icon = pillar.icon
                     return (
                         <motion.div
-                            key={pillar.title}
+                            key={`pillar-${index}`}
                             variants={cardVariants}
                             className="relative group cursor-pointer overflow-hidden"
                             onMouseEnter={() => setHoveredIndex(index)}
@@ -126,13 +118,17 @@ const ValueProposition = () => {
                         >
                             <Link href={pillar.href} className="block relative h-full min-h-[450px] md:min-h-[500px]">
                                 {/* Background Image */}
-                                <Image
-                                    src={pillar.image}
-                                    alt={pillar.title}
-                                    fill
-                                    sizes="(max-width: 768px) 100vw, 33vw"
-                                    className="object-cover transition-transform duration-700 group-hover:scale-110"
-                                />
+                                {pillar.image ? (
+                                    <Image
+                                        src={pillar.image}
+                                        alt={pillar.title}
+                                        fill
+                                        sizes="(max-width: 768px) 100vw, 33vw"
+                                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                                    />
+                                ) : (
+                                    <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-background" />
+                                )}
 
                                 {/* Gradient Overlays */}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20 transition-all duration-500" />

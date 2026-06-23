@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ConsultationRequestResource;
 use App\Models\ConsultationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -13,7 +14,7 @@ class ConsultationRequestController extends Controller
 {
     public function index()
     {
-        return response()->json(ConsultationRequest::latest()->get());
+        return ConsultationRequestResource::collection(ConsultationRequest::latest()->get());
     }
 
     public function store(Request $request)
@@ -41,12 +42,12 @@ class ConsultationRequestController extends Controller
             \Illuminate\Support\Facades\Log::error('Failed to send consultation emails: ' . $e->getMessage());
         }
 
-        return response()->json($consultationRequest, 201);
+        return new ConsultationRequestResource($consultationRequest);
     }
 
     public function show(ConsultationRequest $consultationRequest)
     {
-        return response()->json($consultationRequest);
+        return new ConsultationRequestResource($consultationRequest);
     }
 
     public function update(Request $request, ConsultationRequest $consultationRequest)
@@ -57,7 +58,7 @@ class ConsultationRequestController extends Controller
 
         $consultationRequest->update($validated);
 
-        return response()->json($consultationRequest);
+        return new ConsultationRequestResource($consultationRequest);
     }
 
     public function destroy(ConsultationRequest $consultationRequest)

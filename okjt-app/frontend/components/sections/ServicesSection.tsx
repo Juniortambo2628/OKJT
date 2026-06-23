@@ -7,47 +7,34 @@ import { ArrowRight, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { getMediaUrl } from '@/lib/utils'
+import { useSettings } from '@/hooks/use-settings'
+import { SectionSkeleton, SkeletonBlock } from '@/components/MediaSkeleton'
+import CategoryFilter from '@/components/ui/CategoryFilter'
 
 const categories = ['All', 'Web Development', 'UI/UX Design', 'Digital Strategy']
-
-// Free stock videos from Pixabay CDN (no API key required)
-const categoryVideos: Record<string, string> = {
-    'All': '/assets/videos/services/all-services-video.mp4',
-    'Web Development': '/assets/videos/services/fintech-video.mp4', 
-    'UI/UX Design': '/assets/videos/services/energy-advisory.mp4',
-    'Digital Strategy': '/assets/videos/services/international-diplomacy-video.mp4',
-}
 
 const MAX_SERVICES_SHOWN = 7
 
 const ServicesSection = () => {
     const { data: services, isLoading: servicesLoading, isError: servicesError } = useApi('/services')
-    const { data: settingsByGroup } = useApi('/settings')
+    const { getSetting, isLoading: settingsLoading } = useSettings()
     
     const [activeCategory, setActiveCategory] = useState('All')
     const [expandedService, setExpandedService] = useState<number | null>(null)
     const { scrollY } = useScroll()
     const sectionScale = useTransform(scrollY, [0, 4000], [0.98, 1])
 
-    // Helper to get setting value
-    const getSetting = (key: string, defaultValue: string) => {
-        if (!settingsByGroup) return defaultValue
-        const allSettings = Object.values(settingsByGroup).flat() as any[]
-        const setting = allSettings.find(s => s.key === key)
-        return setting?.value || defaultValue
-    }
-
-    const sectionTagline = getSetting('services_tagline', 'Our Expertise')
-    const sectionTitle = getSetting('services_title', 'Explore our technical services')
+    const sectionTagline = getSetting('services_tagline')
+    const sectionTitle = getSetting('services_title')
     
     const dynamicVideos: Record<string, string> = {
-        'All': getMediaUrl(getSetting('services_video_all', categoryVideos['All'])),
-        'Web Development': getMediaUrl(getSetting('services_video_software', categoryVideos['Web Development'])),
-        'UI/UX Design': getMediaUrl(getSetting('services_video_electronics', categoryVideos['UI/UX Design'])),
-        'Digital Strategy': getMediaUrl(getSetting('services_video_innovation', categoryVideos['Digital Strategy'])),
+        'All': getMediaUrl(getSetting('services_video_all')),
+        'Web Development': getMediaUrl(getSetting('services_video_software')),
+        'UI/UX Design': getMediaUrl(getSetting('services_video_electronics')),
+        'Digital Strategy': getMediaUrl(getSetting('services_video_innovation')),
     }
 
-    if (servicesLoading) return <div className="py-20 text-center text-white/40">Loading services...</div>
+    if (servicesLoading || settingsLoading) return <SectionSkeleton />
     if (servicesError) return null
 
     const filteredServices = activeCategory === 'All'
@@ -83,21 +70,11 @@ const ServicesSection = () => {
                         </h2>
 
                         {/* Category Tabs */}
-                        <div className="flex flex-wrap gap-2">
-                            {categories.map((cat) => (
-                                <button
-                                    key={cat}
-                                    onClick={() => { setActiveCategory(cat); setExpandedService(null); }}
-                                    className={`text-xs font-bold uppercase tracking-wider px-5 py-2.5 transition-all border ${
-                                        activeCategory === cat
-                                            ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20'
-                                            : 'bg-transparent text-muted-foreground border-border hover:border-primary/50 hover:text-foreground'
-                                    }`}
-                                >
-                                    {cat}
-                                </button>
-                            ))}
-                        </div>
+                        <CategoryFilter
+                            categories={categories}
+                            activeCategory={activeCategory}
+                            onCategoryChange={(cat) => { setActiveCategory(cat); setExpandedService(null); }}
+                        />
                     </div>
                 </motion.div>
 
@@ -115,16 +92,20 @@ const ServicesSection = () => {
                                     transition={{ duration: 0.4 }}
                                     className="relative aspect-[3/4] overflow-hidden bg-card"
                                 >
-                                    <video
-                                        key={activeCategory}
-                                        autoPlay
-                                        muted
-                                        loop
-                                        playsInline
-                                        className="absolute inset-0 w-full h-full object-cover"
-                                    >
-                                        <source src={dynamicVideos[activeCategory] || dynamicVideos['All']} type="video/mp4" />
-                                    </video>
+                                    {dynamicVideos[activeCategory] || dynamicVideos['All'] ? (
+                                        <video
+                                            key={activeCategory}
+                                            autoPlay
+                                            muted
+                                            loop
+                                            playsInline
+                                            className="absolute inset-0 w-full h-full object-cover"
+                                        >
+                                            <source src={dynamicVideos[activeCategory] || dynamicVideos['All']} type="video/mp4" />
+                                        </video>
+                                    ) : (
+                                        <SkeletonBlock className="absolute inset-0" />
+                                    )}
                                     <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent" />
                                     <div className="absolute bottom-6 left-6 right-6">
                                         <span className="text-primary font-bold text-xs uppercase tracking-widest">{activeCategory}</span>

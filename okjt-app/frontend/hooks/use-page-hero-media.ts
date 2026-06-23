@@ -3,7 +3,7 @@
 import { useSettings } from './use-settings'
 
 interface UsePageHeroMediaOptions {
-    /** The settings key to look up (e.g. 'hero_case_studies_media') */
+    /** The settings key to look up (e.g. 'hero_projects_media') */
     settingsKey: string
     /** Optional fallback URL if the page has an approved local brand asset */
     fallback?: string
@@ -26,7 +26,7 @@ interface PageHeroMedia {
  * 
  * @example
  * const { videoSrc, bgImage, mediaLoading } = usePageHeroMedia({
- *   settingsKey: 'hero_case_studies_media'
+ *   settingsKey: 'hero_projects_media'
  * })
  * <PageHero videoSrc={videoSrc} bgImage={bgImage} ... />
  */

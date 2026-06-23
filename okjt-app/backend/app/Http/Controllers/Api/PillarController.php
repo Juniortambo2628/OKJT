@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PillarResource;
 use App\Models\Pillar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -13,7 +14,7 @@ class PillarController extends Controller
 
     public function index()
     {
-        return Pillar::with('services')->get();
+        return PillarResource::collection(Pillar::with('services')->get());
     }
 
     public function store(Request $request)
@@ -30,13 +31,13 @@ class PillarController extends Controller
         $validated['slug'] = $this->generateUniqueSlug($validated['title']);
 
         $pillar = Pillar::create($validated);
-        return response()->json($pillar, 201);
+        return new PillarResource($pillar);
     }
 
     public function show($slug)
     {
         $pillar = Pillar::with('services')->where('slug', $slug)->firstOrFail();
-        return response()->json($pillar);
+        return new PillarResource($pillar);
     }
 
     public function update(Request $request, Pillar $pillar)
@@ -55,7 +56,7 @@ class PillarController extends Controller
         }
 
         $pillar->update($validated);
-        return response()->json($pillar);
+        return new PillarResource($pillar);
     }
 
     public function destroy(Pillar $pillar)

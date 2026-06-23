@@ -16,6 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'api/track', // allow anonymous tracking
         ]);
+        $middleware->api(prepend: [
+            \App\Http\Middleware\AddCacheHeaders::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

@@ -45,7 +45,14 @@ const LoginPage = () => {
             <Card className="w-full max-w-md bg-secondary/10 border-border/50">
                 <CardHeader className="text-center">
                         <div className="flex justify-center mb-6">
-                            <h2 className="text-2xl font-black tracking-tighter text-primary italic">OKJT<span className="text-white">ECH</span></h2>
+                            <Image
+                                src={logo}
+                                alt="OKJTech Logo"
+                                width={200}
+                                height={56}
+                                className="h-14 w-auto"
+                                priority
+                            />
                         </div>
                         <CardTitle className="text-2xl font-bold">Admin Portal</CardTitle>
                         <CardDescription>Enter your credentials to manage OKJTech.</CardDescription>
