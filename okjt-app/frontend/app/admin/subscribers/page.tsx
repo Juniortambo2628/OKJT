@@ -32,8 +32,8 @@ const AdminSubscribersPage = () => {
             filterPlaceholder="Search by email, name, or source..."
             filterFn={(item, term) =>
                 item.email.toLowerCase().includes(term.toLowerCase()) ||
-                (item.name && item.name.toLowerCase().includes(term.toLowerCase())) ||
-                (item.source && item.source.toLowerCase().includes(term.toLowerCase()))
+                !!(item.name && item.name.toLowerCase().includes(term.toLowerCase())) ||
+                !!(item.source && item.source.toLowerCase().includes(term.toLowerCase()))
             }
             sortOptions={[
                 { label: 'Date', value: 'created_at' },

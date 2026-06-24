@@ -13,125 +13,113 @@ import { Project } from '@/types/api'
 import SkeletonCard from '@/components/SkeletonCard'
 import { Button } from '@/components/ui/button'
 import { getMediaUrl } from '@/lib/utils'
+import ParallaxSection from '@/components/ParallaxSection'
+import ParallaxNav from '@/components/ParallaxNav'
 
 export default function ProjectsContent() {
     const { data: projects, isLoading } = useApi<Project[]>('/projects')
     
     const featured = projects?.filter(p => p.type === 'flagship' && p.is_active) || []
 
+    const navSections = React.useMemo(() => {
+        const sections = [{ id: 'hero', label: 'Intro' }]
+        featured.forEach((item, index) => {
+            sections.push({
+                id: `project-${index}`,
+                label: item.title.split(' ')[0] // first word of title
+            })
+        })
+        return sections
+    }, [featured])
+
     return (
-        <main className="flex min-h-screen flex-col bg-background">
+        <main className="flex min-h-screen flex-col bg-background w-full overflow-x-hidden">
             <Navbar />
 
             <PageHero
+                id="hero"
                 centered
                 tagline="Flagship Innovations"
                 title="Engineering the <br />Future of Digital."
                 subtitle="Explore our bespoke flagship projects—highly specialized digital products built for scale, performance, and maximum impact."
             />
 
-            <section className="py-24 relative overflow-hidden">
-                {/* Background Decor */}
-                <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-20">
-                    <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[120px]" />
-                    <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[120px]" />
-                </div>
+            {isLoading && (
+                <section className="py-24 bg-background">
+                    <div className="max-w-[1400px] mx-auto px-6">
+                        <SkeletonCard variant="grid" count={2} />
+                    </div>
+                </section>
+            )}
 
-                <div className="max-w-[1400px] mx-auto px-6 relative z-10">
-                    {isLoading && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                            <SkeletonCard variant="grid" count={2} />
-                        </div>
-                    )}
+            {!isLoading && featured.length === 0 && (
+                <section className="py-24 bg-background">
+                    <div className="max-w-[1400px] mx-auto px-6 text-center py-40 border border-white/5 rounded-3xl bg-black/40 backdrop-blur-md">
+                        <p className="text-white/60 text-xl">Our flagship projects are currently being synchronized.</p>
+                    </div>
+                </section>
+            )}
 
-                    {!isLoading && featured.length === 0 && (
-                        <div className="text-center py-40 border-2 border-dashed border-border rounded-3xl">
-                            <p className="text-muted-foreground text-xl">Our flagship projects are currently being synchronized.</p>
-                        </div>
-                    )}
-
-                    <div className="grid grid-cols-1 gap-24">
-                        {featured.map((item, index) => (
-                            <motion.div
-                                key={item.id}
-                                initial={{ opacity: 0, y: 50 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.8, delay: index * 0.1 }}
-                                className={`flex flex-col ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} gap-12 md:gap-20 items-center`}
-                            >
-                                {/* Media Container */}
-                                <div className="w-full md:w-1/2 relative group">
-                                    <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-white/10 shadow-2xl">
-                                        {item.image ? (
-                                            <Image
-                                                src={getMediaUrl(item.image)}
-                                                alt={item.title}
-                                                fill
-                                                className="object-cover transition-transform duration-700 group-hover:scale-110"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full bg-secondary/30 flex items-center justify-center">
-                                                <Star size={64} className="text-primary/20" />
-                                            </div>
-                                        )}
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
-                                    </div>
-                                    
-                                    {/* Project Number */}
-                                    <div className="absolute -top-6 -left-6 md:-left-12 text-[10rem] font-bold text-primary/5 select-none pointer-events-none">
-                                        0{index + 1}
-                                    </div>
-                                </div>
-
-                                {/* Content Container */}
-                                <div className="w-full md:w-1/2 space-y-6">
-                                    <div className="flex items-center gap-3">
+            <div className="w-full bg-black overflow-visible">
+                {featured.map((item, index) => (
+                    <ParallaxSection
+                        key={item.id}
+                        id={`project-${index}`}
+                        bgMedia={item.image ? getMediaUrl(item.image) : "/assets/videos/services/all-services-video.mp4"}
+                        heightClass="min-h-[220vh]"
+                        contentMaxWidth="max-w-[1400px]"
+                    >
+                        <div className="w-full border border-white/5 bg-black/50 backdrop-blur-md rounded-3xl p-8 md:p-12 text-center md:text-left">
+                            <div className="space-y-6">
+                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                    <div className="flex items-center justify-center md:justify-start gap-3">
                                         {item.is_featured && (
                                             <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 border border-primary/20">
                                                 <Star size={10} className="fill-primary" /> Featured
                                             </span>
                                         )}
-                                        <span className="text-primary font-mono text-xs font-bold uppercase tracking-[0.3em]">Flagship Project</span>
+                                        <span className="text-primary font-mono text-xs font-bold uppercase tracking-[0.3em]">Flagship Innovation</span>
                                     </div>
-                                    
-                                    <h2 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground leading-[1.1]">
-                                        {item.title}
-                                    </h2>
-                                    
-                                    {item.tagline && (
-                                        <p className="text-xl font-bold text-primary/80 italic">
-                                            "{item.tagline}"
-                                        </p>
-                                    )}
-
-                                    <div 
-                                        className="text-muted-foreground text-lg leading-relaxed prose prose-invert"
-                                        dangerouslySetInnerHTML={{ __html: item.description || '' }}
-                                    />
-
-                                    <div className="flex flex-wrap items-center gap-6 pt-6">
-                                        {item.url && (
-                                            <Button size="lg" className="bg-primary hover:bg-primary/90 text-[#14110b] font-bold h-14 px-8 rounded-none transition-all hover:scale-105 active:scale-95" asChild>
-                                                <a href={item.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
-                                                    Launch Product <ExternalLink size={18} />
-                                                </a>
-                                            </Button>
-                                        )}
-                                        <Button variant="link" className="text-foreground hover:text-primary p-0 h-auto font-bold uppercase tracking-widest text-xs group" asChild>
-                                            <Link href={`/projects/${item.slug}`}>
-                                                Full Case Study
-                                                <ArrowRight size={14} className="ml-2 transition-transform group-hover:translate-x-2" />
-                                            </Link>
-                                        </Button>
-                                    </div>
+                                    <span className="text-white/20 font-bold font-mono text-2xl hidden md:inline">0{index + 1}</span>
                                 </div>
-                            </motion.div>
-                        ))}
-                    </div>
-                </div>
-            </section>
+                                
+                                <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
+                                    {item.title}
+                                </h2>
+                                
+                                {item.tagline && (
+                                    <p className="text-lg md:text-xl font-bold text-primary/80 italic">
+                                        "{item.tagline}"
+                                    </p>
+                                )}
 
+                                <div 
+                                    className="text-white/70 text-sm md:text-base leading-relaxed prose prose-invert max-w-none text-center md:text-left prose-p:leading-relaxed prose-p:text-white/70"
+                                    dangerouslySetInnerHTML={{ __html: item.description || '' }}
+                                />
+
+                                <div className="flex flex-wrap items-center justify-center md:justify-start gap-6 pt-6">
+                                    {item.url && (
+                                        <Button size="lg" className="bg-primary hover:bg-primary/90 text-[#14110b] font-bold h-14 px-8 rounded-none transition-all hover:scale-105 active:scale-95" asChild>
+                                            <a href={item.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                                                Launch Product <ExternalLink size={18} />
+                                            </a>
+                                        </Button>
+                                    )}
+                                    <Button variant="link" className="text-white hover:text-primary p-0 h-auto font-bold uppercase tracking-widest text-xs group" asChild>
+                                        <Link href={`/projects/${item.slug}`}>
+                                            Full Case Study
+                                            <ArrowRight size={14} className="ml-2 transition-transform group-hover:translate-x-2" />
+                                        </Link>
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    </ParallaxSection>
+                ))}
+            </div>
+
+            <ParallaxNav sections={navSections} />
             <Footer />
         </main>
     )

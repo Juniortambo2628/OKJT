@@ -43,7 +43,7 @@ export default function AdminRsvpsPage() {
             filterFn={(item, term) =>
                 item.name.toLowerCase().includes(term.toLowerCase()) ||
                 item.email.toLowerCase().includes(term.toLowerCase()) ||
-                (item.company && item.company.toLowerCase().includes(term.toLowerCase()))
+                !!(item.company && item.company.toLowerCase().includes(term.toLowerCase()))
             }
             sortOptions={[
                 { label: 'Date', value: 'created_at' },

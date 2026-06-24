@@ -12,7 +12,7 @@ export function getMediaUrl(path: string | undefined | null) {
   if (path.startsWith('data:')) return path
 
   if (path.startsWith('http')) {
-    const storageMatch = path.match(/^https?:\/\/[^/]+\/storage\/(.+)$/)
+    const storageMatch = path.match(/^https?:\/\/[^/]+(?:\/api)?\/storage\/(.+)$/)
     if (storageMatch) {
       return `${apiBase}/storage/${storageMatch[1]}`
     }

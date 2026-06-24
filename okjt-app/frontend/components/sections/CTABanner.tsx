@@ -1,48 +1,28 @@
 "use client"
 
 import React from 'react'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { ArrowRight, Sparkles, Mail } from 'lucide-react'
 import Link from 'next/link'
 import { useSettings } from '@/hooks/use-settings'
-
+import ParallaxSection from '@/components/ParallaxSection'
 
 const CTABanner = () => {
     const { getSetting } = useSettings()
-    const { scrollY } = useScroll()
-    const backgroundY = useTransform(scrollY, [0, 5000], [0, -60])
 
     const badgeText = getSetting('cta_badge')
     const title = getSetting('cta_title')
     const subtitle = getSetting('cta_subtitle')
 
     return (
-        <section className="w-full relative overflow-hidden">
-            {/* Abstract Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[#14110b] via-[#262115] to-[#14110b] z-0" />
-
-            {/* Animated gold accent orbs */}
+        <ParallaxSection
+            id="cta"
+            bgMedia="/assets/videos/services/international-diplomacy-video.mp4"
+            heightClass="min-h-[170vh]"
+            contentMaxWidth="max-w-[1400px]"
+        >
             <motion.div
-                className="absolute top-1/4 left-1/4 w-[400px] h-[400px] rounded-full bg-primary/5 blur-3xl"
-                animate={{ x: [0, 50, 0], y: [0, -30, 0] }}
-                transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-            />
-            <motion.div
-                className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] rounded-full bg-primary/8 blur-3xl"
-                animate={{ x: [0, -40, 0], y: [0, 40, 0] }}
-                transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-            />
-
-            {/* Dot Pattern */}
-            <div className="absolute top-0 left-0 w-full h-full z-[1] opacity-10"
-                style={{
-                    backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(235,200,130,0.5) 1px, transparent 0)',
-                    backgroundSize: '32px 32px',
-                }} />
-
-            <div className="max-w-[1400px] mx-auto px-6 py-28 relative z-10">
-                <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ type: "spring", stiffness: 50, damping: 20 }}
@@ -105,10 +85,8 @@ const CTABanner = () => {
                         </Button>
                     </motion.div>
                 </motion.div>
-            </div>
-        </section>
+        </ParallaxSection>
     )
 }
-
 
 export default CTABanner

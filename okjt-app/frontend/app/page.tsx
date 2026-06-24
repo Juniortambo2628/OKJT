@@ -8,6 +8,7 @@ import CTABanner from "@/components/sections/CTABanner";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SWRProvider from '@/components/SWRProvider';
+import ParallaxNav from '@/components/ParallaxNav';
 import { getSettings, getServices, getInsights, getProjects, getStats, getTestimonials, getClients, getValues, getTeamMembers, getPillars } from '@/lib/server/api';
 
 export const revalidate = 60;
@@ -37,6 +38,15 @@ export default async function Home() {
     getPillars(),
   ]);
 
+  const navSections = [
+    { id: 'hero', label: 'Intro' },
+    { id: 'value-proposition', label: 'Core Values' },
+    { id: 'stats', label: 'Impact Metrics' },
+    { id: 'services', label: 'Our Services' },
+    { id: 'insights', label: 'Advisory Notes' },
+    { id: 'cta', label: 'Get Started' }
+  ];
+
   return (
     <SWRProvider fallback={{
       '/settings': settings,
@@ -50,14 +60,17 @@ export default async function Home() {
       '/team-members': teamMembers,
       '/pillars': pillars,
     }}>
-      <main className="flex min-h-screen flex-col relative bg-background">
+      <main className="flex min-h-screen flex-col relative bg-background w-full overflow-x-hidden">
         <Navbar />
         <Hero />
-        <ValueProposition />
-        <StatsSection />
-        <ServicesSection />
-        <InsightsSection />
-        <CTABanner />
+        <div className="bg-black w-full overflow-visible">
+          <ValueProposition />
+          <StatsSection />
+          <ServicesSection />
+          <InsightsSection />
+          <CTABanner />
+        </div>
+        <ParallaxNav sections={navSections} />
         <Footer />
       </main>
     </SWRProvider>

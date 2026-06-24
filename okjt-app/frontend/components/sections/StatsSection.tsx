@@ -7,6 +7,7 @@ import { useApi } from '@/hooks/use-api'
 import { getMediaUrl, cn } from '@/lib/utils'
 import { useSettings } from '@/hooks/use-settings'
 import { SiteSetting, Stat } from '@/types/api'
+import ParallaxSection from '@/components/ParallaxSection'
 
 function AnimatedCounter({ target, suffix = '' }: { target: string; suffix?: string }) {
     const ref = useRef<HTMLSpanElement>(null)
@@ -79,77 +80,42 @@ const StatsSection = () => {
     if (!stats || stats.length === 0) return null
 
     return (
-        <section className="w-full relative overflow-hidden">
-            {/* Parallax Background Image */}
-            {hasBackground && (
-                <motion.div className="absolute inset-0 z-0" style={{ y: backgroundY }}>
-                    {isVideoBackground ? (
-                        <video
-                            autoPlay
-                            loop
-                            muted
-                            playsInline
-                            className="absolute inset-0 w-full h-full object-cover scale-110"
-                        >
-                            <source src={backgroundMedia} type="video/mp4" />
-                        </video>
-                    ) : (
-                        <Image
-                            src={backgroundMedia}
-                            alt="Global data visualization"
-                            fill
-                            sizes="100vw"
-                            className="object-cover scale-110"
-                        />
-                    )}
-                </motion.div>
-            )}
-            <div className={cn("absolute top-0 left-0 w-full h-full z-[1]", hasBackground ? "bg-background/85" : "bg-background")} />
+        <ParallaxSection
+            id="stats"
+            bgMedia={backgroundMedia || "/assets/videos/hero/02-fintech.mp4"}
+            heightClass="min-h-[210vh]"
+            badgeText={sectionTagline || "KEY PERFORMANCE METRICS"}
+            title={sectionTitle}
+            contentMaxWidth="max-w-[1400px]"
+        >
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-0 w-full mt-8 border border-white/5 bg-black/40 backdrop-blur-md rounded-2xl overflow-hidden divide-x divide-y md:divide-y-0 divide-white/5">
+                {stats.map((stat, index) => (
+                    <motion.div
+                        key={stat.id}
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.15 }}
+                        className="text-center p-8 md:p-10 relative group border-white/5"
+                    >
+                        {/* Hover glow */}
+                        <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-all duration-500" />
 
-            <div className="max-w-[1400px] mx-auto px-6 py-32 relative z-10">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    className="text-center mb-20"
-                >
-                    <span className="text-primary font-bold text-sm uppercase tracking-[0.2em] mb-4 block">
-                        {sectionTagline}
-                    </span>
-                    <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
-                        {sectionTitle}
-                    </h2>
-                    <div className="w-20 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent mx-auto" />
-                </motion.div>
-
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-0">
-                    {stats.map((stat, index) => (
-                        <motion.div
-                            key={stat.id}
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.15 }}
-                            className="text-center p-8 md:p-10 border-r border-border/50 last:border-r-0 relative group"
-                        >
-                            {/* Hover glow */}
-                            <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-all duration-500" />
-
-                            <div className="relative z-10">
-                                <div className="text-primary font-bold text-6xl md:text-7xl mb-4 tracking-tight">
-                                    <AnimatedCounter target={stat.value} />
-                                </div>
-                                <div className="w-8 h-[2px] bg-primary/40 mx-auto mb-4" />
-                                <div className="text-foreground text-sm font-bold uppercase tracking-[0.2em] mb-3">
-                                    {stat.label}
-                                </div>
-                                <div className="text-muted-foreground text-sm max-w-[200px] mx-auto leading-relaxed">
-                                    {stat.description || 'Delivering results through design-led engineering.'}
-                                </div>
+                        <div className="relative z-10">
+                            <div className="text-primary font-bold text-5xl md:text-6xl mb-4 tracking-tight">
+                                <AnimatedCounter target={stat.value} />
                             </div>
-                        </motion.div>
-                    ))}
-                </div>
+                            <div className="w-8 h-[2px] bg-primary/40 mx-auto mb-4" />
+                            <div className="text-foreground text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] mb-3">
+                                {stat.label}
+                            </div>
+                            <div className="text-muted-foreground text-xs max-w-[200px] mx-auto leading-relaxed">
+                                {stat.description || 'Delivering results through design-led engineering.'}
+                            </div>
+                        </div>
+                    </motion.div>
+                ))}
             </div>
-        </section>
+        </ParallaxSection>
     )
 }
 

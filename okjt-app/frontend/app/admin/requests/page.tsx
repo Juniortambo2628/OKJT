@@ -40,7 +40,7 @@ export default function AdminRequestsPage() {
                 item.first_name.toLowerCase().includes(term.toLowerCase()) ||
                 item.last_name.toLowerCase().includes(term.toLowerCase()) ||
                 item.email.toLowerCase().includes(term.toLowerCase()) ||
-                (item.subject && item.subject.toLowerCase().includes(term.toLowerCase()))
+                !!(item.subject && item.subject.toLowerCase().includes(term.toLowerCase()))
             }
             sortOptions={[
                 { label: 'Date', value: 'created_at' },

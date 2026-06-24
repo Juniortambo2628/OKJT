@@ -47,7 +47,7 @@ const Hero = () => {
             link.as = 'fetch';
             link.href = videos[0];
             document.head.appendChild(link);
-            return () => document.head.removeChild(link);
+            return () => { document.head.removeChild(link); };
         }
     }, [videos]);
 
@@ -70,19 +70,19 @@ const Hero = () => {
     }, [rotatingWords.length])
 
     return (
-        <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
+        <section id="hero" className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
             {/* Full-screen Background Video with Parallax + Zoom on Scroll */}
             <motion.div className="absolute inset-0 z-0" style={{ y, scale }}>
-                {isLoading || videos.length === 0 ? (
+                {isLoading ? (
                     <HeroSkeleton />
-                ) : (
-                    <AnimatePresence mode="wait">
+                ) : videos.length > 0 ? (
+                    <AnimatePresence>
                         <motion.video
                             key={videoIndex}
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            transition={{ duration: 1.5, ease: "easeInOut" }}
+                            transition={{ duration: 2, ease: "easeInOut" }}
                             autoPlay
                             muted
                             playsInline
@@ -92,7 +92,7 @@ const Hero = () => {
                             <source src={videos[videoIndex % videos.length]} type="video/mp4" />
                         </motion.video>
                     </AnimatePresence>
-                )}
+                ) : null}
                 {/* Overlays for depth and readability */}
                 <div className="absolute inset-0 bg-gradient-to-b from-primary/20 via-background/60 to-background" />
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(235,200,130,0.15)_0%,transparent_80%)]" />

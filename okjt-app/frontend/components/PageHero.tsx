@@ -14,6 +14,7 @@ interface BreadcrumbItem {
 }
 
 interface PageHeroProps {
+    id?: string
     tagline?: string
     title: string
     subtitle?: string
@@ -28,6 +29,7 @@ interface PageHeroProps {
 }
 
 const PageHero = ({ 
+    id,
     tagline, 
     title, 
     subtitle, 
@@ -43,7 +45,7 @@ const PageHero = ({
     const resolvedVideoSrc = getMediaUrl(videoSrc)
 
     return (
-        <section className={cn(
+        <section id={id} className={cn(
             "relative pt-40 pb-20 bg-background overflow-hidden border-b border-border/50 min-h-[50vh] flex flex-col justify-center",
             className
         )}>

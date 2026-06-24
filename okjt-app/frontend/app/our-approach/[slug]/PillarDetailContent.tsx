@@ -11,9 +11,11 @@ import Link from 'next/link'
 import PageHero from '@/components/PageHero'
 import { SectionSkeleton } from '@/components/MediaSkeleton'
 
+import { Pillar } from '@/types/api'
+
 export default function PillarDetailContent({ slug }: { slug: string }) {
     const { getSetting } = useSettings()
-    const { data: pillar, isLoading } = useApi(`/pillars/${slug}`)
+    const { data: pillar, isLoading } = useApi<Pillar>(`/pillars/${slug}`)
 
     const heroMedia = React.useMemo(() => {
         if (!pillar) return ''
