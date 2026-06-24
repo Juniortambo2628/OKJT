@@ -17,7 +17,8 @@ const geistMono = Geist_Mono({
 
 export async function generateMetadata() {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+    const apiUrl = baseUrl.replace('localhost', '127.0.0.1');
     const response = await fetch(`${apiUrl}/settings`, { next: { revalidate: 60 } });
     const settingsByGroup = await response.json();
     const allSettings = Object.values(settingsByGroup).flat() as any[];
@@ -63,7 +64,8 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   let maintenanceSettings = null;
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+    const apiUrl = baseUrl.replace('localhost', '127.0.0.1');
     const response = await fetch(`${apiUrl}/site-settings/maintenance`, { next: { revalidate: 60 } });
     if (response.ok && response.headers.get('content-type')?.includes('application/json')) {
       maintenanceSettings = await response.json();

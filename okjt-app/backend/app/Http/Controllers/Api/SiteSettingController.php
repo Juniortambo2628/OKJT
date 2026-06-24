@@ -6,12 +6,22 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\SiteSettingResource;
 use App\Models\SiteSetting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class SiteSettingController extends Controller
 {
+    private function clearCache()
+    {
+        Cache::forget('site_settings_grouped');
+        Cache::forget('site_settings_maintenance');
+        Cache::forget('site_settings_email');
+    }
+
     public function index()
     {
-        $settings = SiteSetting::all()->groupBy('group');
+        $settings = Cache::rememberForever('site_settings_grouped', function () {
+            return SiteSetting::all()->groupBy('group');
+        });
         
         return $settings->map(function ($group) {
             return SiteSettingResource::collection($group);
@@ -28,6 +38,7 @@ class SiteSettingController extends Controller
         ]);
 
         $setting = SiteSetting::create($validated);
+        $this->clearCache();
         return new SiteSettingResource($setting);
     }
 
@@ -43,12 +54,14 @@ class SiteSettingController extends Controller
         ]);
 
         $siteSetting->update($validated);
+        $this->clearCache();
         return new SiteSettingResource($siteSetting);
     }
 
     public function destroy(SiteSetting $siteSetting)
     {
         $siteSetting->delete();
+        $this->clearCache();
         return response()->json(null, 204);
     }
 
@@ -73,6 +86,8 @@ class SiteSettingController extends Controller
             );
         }
 
+        $this->clearCache();
+
         $settings = SiteSetting::all()->groupBy('group');
         return $settings->map(function ($group) {
             return SiteSettingResource::collection($group);
@@ -81,7 +96,9 @@ class SiteSettingController extends Controller
 
     public function getMaintenanceSettings()
     {
-        $settings = SiteSetting::where('group', 'maintenance')->get()->pluck('value', 'key');
+        $settings = Cache::rememberForever('site_settings_maintenance', function () {
+            return SiteSetting::where('group', 'maintenance')->get()->pluck('value', 'key');
+        });
         
         return response()->json([
             'isActive' => filter_var($settings->get('maintenance_active') ?? '0', FILTER_VALIDATE_BOOLEAN),
@@ -94,7 +111,9 @@ class SiteSettingController extends Controller
     public function emailTemplates()
     {
         return SiteSettingResource::collection(
-            SiteSetting::where('group', 'email')->orderBy('key')->get()
+            Cache::rememberForever('site_settings_email', function () {
+                return SiteSetting::where('group', 'email')->orderBy('key')->get();
+            })
         );
     }
 
@@ -115,6 +134,7 @@ class SiteSettingController extends Controller
             ]
         );
 
+        $this->clearCache();
         return new SiteSettingResource($setting);
     }
 
@@ -134,6 +154,7 @@ class SiteSettingController extends Controller
             ]
         );
 
+        $this->clearCache();
         return new SiteSettingResource($setting);
     }
 
@@ -141,6 +162,7 @@ class SiteSettingController extends Controller
     {
         $setting = SiteSetting::where('key', $key)->where('group', 'email')->firstOrFail();
         $setting->delete();
+        $this->clearCache();
 
         return response()->json(null, 204);
     }

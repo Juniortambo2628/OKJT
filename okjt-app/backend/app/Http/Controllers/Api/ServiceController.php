@@ -7,14 +7,22 @@ use App\Http\Resources\ServiceResource;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 
 class ServiceController extends Controller
 {
     use \App\Traits\HasUniqueSlug;
 
+    private function clearCache()
+    {
+        Cache::forget('all_services');
+    }
+
     public function index()
     {
-        $services = Service::with('pillar')->orderBy('created_at', 'desc')->get();
+        $services = Cache::rememberForever('all_services', function () {
+            return Service::with('pillar')->orderBy('created_at', 'desc')->get();
+        });
         return ServiceResource::collection($services);
     }
 
@@ -32,6 +40,7 @@ class ServiceController extends Controller
 
         $validated['slug'] = $this->generateUniqueSlug($validated['title']);
         $service = Service::create($validated);
+        $this->clearCache();
         return new ServiceResource($service);
     }
 
@@ -58,12 +67,14 @@ class ServiceController extends Controller
         }
 
         $service->update($validated);
+        $this->clearCache();
         return new ServiceResource($service);
     }
 
     public function destroy(Service $service)
     {
         $service->delete();
+        $this->clearCache();
         return response()->json(null, 204);
     }
 }

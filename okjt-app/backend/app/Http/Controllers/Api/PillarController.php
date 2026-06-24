@@ -7,14 +7,23 @@ use App\Http\Resources\PillarResource;
 use App\Models\Pillar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 
 class PillarController extends Controller
 {
     use \App\Traits\HasUniqueSlug;
 
+    private function clearCache()
+    {
+        Cache::forget('all_pillars');
+    }
+
     public function index()
     {
-        return PillarResource::collection(Pillar::with('services')->get());
+        $pillars = Cache::rememberForever('all_pillars', function () {
+            return Pillar::with('services')->get();
+        });
+        return PillarResource::collection($pillars);
     }
 
     public function store(Request $request)
@@ -31,6 +40,7 @@ class PillarController extends Controller
         $validated['slug'] = $this->generateUniqueSlug($validated['title']);
 
         $pillar = Pillar::create($validated);
+        $this->clearCache();
         return new PillarResource($pillar);
     }
 
@@ -56,12 +66,14 @@ class PillarController extends Controller
         }
 
         $pillar->update($validated);
+        $this->clearCache();
         return new PillarResource($pillar);
     }
 
     public function destroy(Pillar $pillar)
     {
         $pillar->delete();
+        $this->clearCache();
         return response()->json(null, 204);
     }
 }

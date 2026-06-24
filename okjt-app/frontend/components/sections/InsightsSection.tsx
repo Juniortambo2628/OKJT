@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { SectionSkeleton } from '@/components/MediaSkeleton'
 
+import { Card } from '@/components/ui/card'
+
 const InsightsSection = () => {
     const { data: insights, isLoading, isError } = useApi('/insights')
 
@@ -62,7 +64,7 @@ const InsightsSection = () => {
                         whileInView={{ opacity: 1, y: 0 }}
                     >
                         <Link href={`/insights/${featured.slug}`} className="block group h-full">
-                            <div className="relative h-full min-h-[500px] overflow-hidden bg-card border border-border/50">
+                            <Card className="relative h-full min-h-[500px] overflow-hidden border-none rounded-[1.8rem]">
                                 {featured.image && (
                                     <Image
                                         src={featured.image}
@@ -100,7 +102,7 @@ const InsightsSection = () => {
                                         Read More <ArrowUpRight className="h-4 w-4" />
                                     </span>
                                 </div>
-                            </div>
+                            </Card>
                         </Link>
                     </motion.div>
 
@@ -115,9 +117,9 @@ const InsightsSection = () => {
                                 className="flex-1"
                             >
                                 <Link href={`/insights/${insight.slug}`} className="block group h-full">
-                                    <div className="flex gap-6 bg-card border border-border/50 p-5 h-full hover:shadow-lg hover:border-primary/20 transition-all">
+                                    <Card className="flex gap-6 p-5 h-full hover:shadow-lg hover:border-primary/20 transition-all">
                                         {insight.image && (
-                                            <div className="relative w-32 h-auto shrink-0 overflow-hidden hidden sm:block">
+                                            <div className="relative w-32 h-auto shrink-0 overflow-hidden rounded-xl hidden sm:block">
                                                 <Image
                                                     src={insight.image}
                                                     alt={insight.title}
@@ -143,7 +145,7 @@ const InsightsSection = () => {
                                                 {insight.excerpt || insight.content?.substring(0, 100)}
                                             </p>
                                         </div>
-                                    </div>
+                                    </Card>
                                 </Link>
                             </motion.div>
                         ))}

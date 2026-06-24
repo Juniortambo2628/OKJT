@@ -21,7 +21,7 @@ interface UploadResponse {
     url?: string
 }
 
-const ImageUploader = ({ value, onChange, accept, maxSizeMB = 10, label = 'Upload File', className }: ImageUploaderProps) => {
+const ImageUploader = ({ value, onChange, accept, maxSizeMB = 20, label = 'Upload File', className }: ImageUploaderProps) => {
     const [preview, setPreview] = useState<string | null>(value || null)
     const [isUploading, setIsUploading] = useState(false)
     const [uploadProgress, setUploadProgress] = useState(0)

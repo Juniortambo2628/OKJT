@@ -12,6 +12,7 @@ import RichTextEditor from '@/components/admin/RichTextEditor'
 import ImageUploader from '@/components/admin/ImageUploader'
 import { useApi } from '@/hooks/use-api'
 import AdminResourceTemplate from '@/components/admin/core/AdminResourceTemplate'
+import { Card } from '@/components/ui/card'
 
 const iconMap: Record<string, React.ElementType> = {
     Activity,
@@ -62,47 +63,47 @@ export default function AdminServicesPage() {
                 const IconNode = iconMap[service.icon || 'Activity'] || Activity
 
                 return (
-                    <div key={service.id} className="group relative bg-secondary/10 border border-border p-6 overflow-hidden hover:border-primary/40 transition-all flex flex-col shadow-sm">
-                        <div className="absolute top-4 left-4 z-10">
-                            <Checkbox 
-                                checked={selectedIds.includes(service.id)}
-                                onCheckedChange={() => toggleSelect(service.id)}
-                                className="border-border bg-background/50"
-                            />
-                        </div>
-                        <div className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <div className="flex items-center gap-1">
-                                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground/40 bg-background/50 backdrop-blur-sm border border-border" onClick={() => handleEdit(service)}>
-                                    <Pencil size={14} />
-                                </Button>
-                                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive/40 bg-background/50 backdrop-blur-sm border border-border hover:text-destructive" onClick={() => handleDelete(service.id)}>
-                                    <Trash2 size={14} />
-                                </Button>
-                            </div>
-                        </div>
+                     <Card key={service.id} className="group relative border border-border p-5 overflow-hidden hover:border-primary/40 transition-all flex flex-col shadow-sm">
+                         <div className="absolute top-4 left-4 z-10">
+                             <Checkbox 
+                                 checked={selectedIds.includes(service.id)}
+                                 onCheckedChange={() => toggleSelect(service.id)}
+                                 className="border-border bg-background/50"
+                             />
+                         </div>
+                         <div className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                             <div className="flex items-center gap-1">
+                                 <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground/40 bg-background/50 backdrop-blur-sm border border-border" onClick={() => handleEdit(service)}>
+                                     <Pencil size={14} />
+                                 </Button>
+                                 <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive/40 bg-background/50 backdrop-blur-sm border border-border hover:text-destructive" onClick={() => handleDelete(service.id)}>
+                                     <Trash2 size={14} />
+                                 </Button>
+                             </div>
+                         </div>
 
-                        <div className="mb-6 w-14 h-14 bg-primary/10 text-primary flex items-center justify-center rounded-xl ring-1 ring-primary/20 group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                            <IconNode size={32} />
-                        </div>
+                         <div className="mb-5 w-12 h-12 bg-primary/10 text-primary flex items-center justify-center rounded-xl ring-1 ring-primary/20 group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                             <IconNode size={26} />
+                         </div>
 
-                        <div className="space-y-3 flex-1">
-                            <div className="flex items-center gap-2">
-                                <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider">{service.category || 'Advisory'}</span>
-                                {!service.is_active && <span className="text-[10px] font-bold text-amber-500 uppercase tracking-widest bg-amber-500/10 px-2 py-0.5">Inactive</span>}
-                            </div>
-                            <h3 className="font-bold text-xl leading-tight text-foreground">{service.title}</h3>
-                            <p className="text-sm text-muted-foreground line-clamp-3">{service.description}</p>
-                        </div>
+                         <div className="space-y-2 flex-1">
+                             <div className="flex items-center gap-2">
+                                 <span className="px-2 py-0.5 bg-primary/10 text-primary text-[9px] font-bold uppercase tracking-wider">{service.category || 'Advisory'}</span>
+                                 {!service.is_active && <span className="text-[9px] font-bold text-amber-500 uppercase tracking-widest bg-amber-500/10 px-2 py-0.5">Inactive</span>}
+                             </div>
+                             <h3 className="font-bold text-lg leading-tight text-foreground">{service.title}</h3>
+                             <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed">{service.description}</p>
+                         </div>
 
-                        <div className="mt-6 pt-6 border-t border-border flex items-center justify-between">
-                            <Button variant="ghost" size="sm" className="h-8 text-xs font-bold text-muted-foreground hover:text-foreground" onClick={() => handleEdit(service)}>
-                                Update details
-                            </Button>
-                            <a href={`/services#${service.slug}`} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
-                                <ExternalLink size={16} />
-                            </a>
-                        </div>
-                    </div>
+                         <div className="mt-5 pt-4 border-t border-border flex items-center justify-between">
+                             <Button variant="ghost" size="sm" className="h-8 text-xs font-bold text-muted-foreground hover:text-foreground" onClick={() => handleEdit(service)}>
+                                 Update details
+                             </Button>
+                             <a href={`/services#${service.slug}`} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+                                 <ExternalLink size={16} />
+                             </a>
+                         </div>
+                     </Card>
                 )
             }}
             renderTableHeaders={(filteredServices, selectedIds, selectAll) => (

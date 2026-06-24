@@ -5,14 +5,13 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\ImageManagerStatic as Image;
 
 class UploadController extends Controller
 {
     public function store(Request $request)
     {
         $request->validate([
-            'file' => 'required|file|mimes:jpg,jpeg,png,webp,svg,mp4,gif|max:10240',
+            'file' => 'required|file|mimes:jpg,jpeg,png,webp,svg,mp4,gif|max:20480',
         ]);
 
         $file = $request->file('file');
@@ -20,10 +19,15 @@ class UploadController extends Controller
         $isImage = str_starts_with($mime, 'image/');
 
         if ($isImage && $mime !== 'image/svg+xml') {
-            // Optimize image: convert to WebP, compress to 80% quality
-            $image = Image::make($file)->encode('webp', 80);
-            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '.webp';
-            $path = Storage::disk('public')->put('uploads', $image->stream(), 'public');
+            // Optimize image: resize to max 1920x1920, convert to WebP, compress to 80% quality
+            $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+            $image = $manager->read($file);
+            $image->scaleDown(width: 1920, height: 1920);
+            $encoded = $image->toWebp(80);
+                
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '_' . uniqid() . '.webp';
+            $path = 'uploads/' . $filename;
+            Storage::disk('public')->put($path, (string) $encoded);
             
             return response()->json([
                 'url' => url('/api/storage/' . ltrim($path, '/')),

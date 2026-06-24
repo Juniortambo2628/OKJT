@@ -8,6 +8,7 @@ import { Project } from '@/types/api'
 import { getMediaUrl } from '@/lib/utils'
 import AdminResourceTemplate from '@/components/admin/core/AdminResourceTemplate'
 import ProjectFormFields from '@/components/admin/forms/ProjectFormFields'
+import { Card } from '@/components/ui/card'
 
 const AdminProjectsPage = () => {
     return (
@@ -63,7 +64,7 @@ const AdminProjectsPage = () => {
                 <ProjectFormFields form={form} setForm={setForm} />
             )}
             renderGridItem={(item, selectedIds, toggleSelect, onEdit, onDelete) => (
-                <div key={item.id} className="group relative bg-secondary/10 border border-border overflow-hidden hover:border-primary/40 transition-all flex flex-col shadow-sm">
+                <Card key={item.id} className="group relative border border-border overflow-hidden hover:border-primary/40 transition-all flex flex-col shadow-sm">
                     <div className="absolute top-3 left-3 z-10">
                         <Checkbox
                             checked={selectedIds.includes(item.id)}
@@ -89,21 +90,21 @@ const AdminProjectsPage = () => {
 
                     <div className="p-5 flex-1 flex flex-col">
                         <div className="flex items-center gap-2 mb-3 flex-wrap">
-                            <span className={`px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                            <span className={`px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider ${
                                 item.type === 'flagship'
-                                    ? 'bg-violet-500/10 text-violet-500'
-                                    : 'bg-primary/10 text-primary'
+                                     ? 'bg-violet-500/10 text-violet-500'
+                                     : 'bg-primary/10 text-primary'
                             }`}>
                                 {item.type}
                             </span>
                             {item.category && (
-                                <span className="px-2 py-0.5 bg-secondary/50 text-muted-foreground text-[10px] font-bold uppercase tracking-wider">
+                                <span className="px-2 py-0.5 bg-secondary/50 text-muted-foreground text-[9px] font-bold uppercase tracking-wider">
                                     {item.category}
                                 </span>
                             )}
                         </div>
                         <h3
-                            className="font-bold text-lg leading-tight mb-2 line-clamp-2 text-foreground group-hover:text-primary transition-colors cursor-pointer"
+                            className="font-bold text-base leading-tight mb-2 line-clamp-2 text-foreground group-hover:text-primary transition-colors cursor-pointer"
                             onClick={() => onEdit(item)}
                         >
                             {item.title}
@@ -142,7 +143,7 @@ const AdminProjectsPage = () => {
                             </Button>
                         </div>
                     </div>
-                </div>
+                </Card>
             )}
             renderTableHeaders={(items, selectedIds, selectAll) => (
                 <tr>

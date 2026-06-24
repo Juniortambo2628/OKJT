@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { SectionSkeleton } from '@/components/MediaSkeleton'
 
+import { Card } from '@/components/ui/card'
+
 const ProjectsPreview = () => {
     const { data: projects, isLoading, isError } = useApi('/projects')
     const [activeIndex, setActiveIndex] = useState(0)
@@ -56,22 +58,24 @@ const ProjectsPreview = () => {
                                 initial={{ opacity: 0, x: -20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.1 }}
-                                className={`w-full text-left p-6 border transition-all ${
+                                className="w-full block"
+                            >
+                                <Card className={`text-left p-5 transition-all duration-300 border ${
                                     activeIndex === index
                                         ? 'border-primary bg-primary/5 shadow-lg shadow-primary/5'
-                                        : 'border-border/50 hover:border-primary/30 bg-card'
-                                }`}
-                            >
-                                <span className={`text-[10px] font-bold uppercase tracking-widest block mb-2 ${
-                                    activeIndex === index ? 'text-primary' : 'text-slate-400'
+                                        : 'border-border/50 hover:border-primary/30'
                                 }`}>
-                                    {p.significant_figure || 'Project'}
-                                </span>
-                                <h3 className={`font-bold text-base ${
-                                    activeIndex === index ? 'text-foreground' : 'text-muted-foreground'
-                                }`}>
-                                    {p.title}
-                                </h3>
+                                    <span className={`text-[9px] font-bold uppercase tracking-widest block mb-2 ${
+                                        activeIndex === index ? 'text-primary' : 'text-slate-400'
+                                    }`}>
+                                        {p.significant_figure || 'Project'}
+                                    </span>
+                                    <h3 className={`font-bold text-base ${
+                                        activeIndex === index ? 'text-foreground' : 'text-muted-foreground'
+                                    }`}>
+                                        {p.title}
+                                    </h3>
+                                </Card>
                             </motion.button>
                         ))}
                     </div>
@@ -87,7 +91,7 @@ const ProjectsPreview = () => {
                                 transition={{ duration: 0.4 }}
                                 className="h-full"
                             >
-                                <div className="relative h-full min-h-[500px] group overflow-hidden">
+                                <Card className="relative h-full min-h-[500px] group overflow-hidden border-none rounded-[1.8rem]">
                                     {/* Image */}
                                     {activeProject.image ? (
                                         <Image
@@ -105,7 +109,7 @@ const ProjectsPreview = () => {
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
 
                                     {/* Content Overlay */}
-                                    <div className="absolute inset-x-0 bottom-0 p-10 z-10">
+                                    <div className="absolute inset-x-0 bottom-0 p-8 z-10">
                                         <span className="text-primary/80 text-xs font-bold uppercase tracking-widest mb-2 block">
                                             {activeProject.client_name}
                                         </span>
@@ -118,7 +122,7 @@ const ProjectsPreview = () => {
                                                 <span className="text-primary/80 text-[10px] font-bold uppercase tracking-widest block mb-1">Challenge</span>
                                                 <p className="text-white/60 text-sm leading-relaxed line-clamp-3">{activeProject.problem}</p>
                                             </div>
-                                            <div className="bg-emerald-500/10 border border-emerald-400/20 p-4">
+                                            <div className="bg-emerald-500/10 border border-emerald-400/20 p-4 rounded-xl">
                                                 <span className="text-emerald-400 text-[10px] font-bold uppercase tracking-widest block mb-1">Outcome</span>
                                                 <p className="text-emerald-200 text-sm leading-relaxed">{activeProject.outcome}</p>
                                             </div>
@@ -132,7 +136,7 @@ const ProjectsPreview = () => {
                                             <ArrowUpRight className="h-4 w-4 transition-transform group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5" />
                                         </Link>
                                     </div>
-                                </div>
+                                </Card>
                             </motion.div>
                         </AnimatePresence>
                     </div>
@@ -141,6 +145,5 @@ const ProjectsPreview = () => {
         </section>
     )
 }
-
 
 export default ProjectsPreview

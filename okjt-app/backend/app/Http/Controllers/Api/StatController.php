@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\StatResource;
 use Illuminate\Http\Request;
 use App\Traits\HandlesStandardCrud;
+use Illuminate\Support\Facades\Cache;
 
 class StatController extends Controller
 {
@@ -14,22 +15,30 @@ class StatController extends Controller
     protected $orderByField = 'order';
     protected $orderByDirection = 'asc';
 
+    private function clearCache()
+    {
+        Cache::forget('all_stats');
+    }
+
     public function index()
     {
-        $model = $this->getModelClass();
-        $relations = property_exists($this, 'withRelations') ? $this->withRelations : [];
-        $orderBy = property_exists($this, 'orderByField') ? $this->orderByField : 'id';
-        $orderDir = property_exists($this, 'orderByDirection') ? $this->orderByDirection : 'asc';
+        $stats = Cache::rememberForever('all_stats', function () {
+            $model = $this->getModelClass();
+            $relations = property_exists($this, 'withRelations') ? $this->withRelations : [];
+            $orderBy = property_exists($this, 'orderByField') ? $this->orderByField : 'id';
+            $orderDir = property_exists($this, 'orderByDirection') ? $this->orderByDirection : 'asc';
 
-        $query = $model::with($relations);
+            $query = $model::with($relations);
 
-        if (method_exists($this, 'indexQuery')) {
-            $query = $this->indexQuery($query);
-        } else {
-            $query = $query->orderBy($orderBy, $orderDir);
-        }
+            if (method_exists($this, 'indexQuery')) {
+                $query = $this->indexQuery($query);
+            } else {
+                $query = $query->orderBy($orderBy, $orderDir);
+            }
+            return $query->get();
+        });
 
-        return StatResource::collection($query->get());
+        return StatResource::collection($stats);
     }
 
     public function show($id)
@@ -44,6 +53,23 @@ class StatController extends Controller
         }
 
         return new StatResource($record);
+    }
+
+    protected function afterStore($record, $validated, $request)
+    {
+        $this->clearCache();
+        return $record;
+    }
+
+    protected function afterUpdate($record, $validated, $request)
+    {
+        $this->clearCache();
+        return $record;
+    }
+
+    protected function beforeDelete($record)
+    {
+        $this->clearCache();
     }
 
     protected function storeRules(Request $request): array

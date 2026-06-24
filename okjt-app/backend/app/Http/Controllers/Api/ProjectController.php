@@ -6,22 +6,33 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ProjectResource;
 use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ProjectController extends Controller
 {
     use \App\Traits\HasUniqueSlug;
 
+    private function clearCache()
+    {
+        Cache::forget('projects_all');
+        Cache::forget('projects_client');
+        Cache::forget('projects_flagship');
+    }
+
     public function index(Request $request)
     {
-        $query = Project::query();
+        $type = $request->get('type');
+        $cacheKey = $type ? 'projects_' . $type : 'projects_all';
 
-        if ($request->has('type')) {
-            $query->where('type', $request->get('type'));
-        }
+        $projects = Cache::rememberForever($cacheKey, function () use ($type) {
+            $query = Project::query();
+            if ($type) {
+                $query->where('type', $type);
+            }
+            return $query->orderBy('order')->orderBy('created_at', 'desc')->get();
+        });
 
-        return ProjectResource::collection(
-            $query->orderBy('order')->orderBy('created_at', 'desc')->get()
-        );
+        return ProjectResource::collection($projects);
     }
 
     public function store(Request $request)
@@ -51,6 +62,7 @@ class ProjectController extends Controller
 
         $validated['slug'] = $this->generateUniqueSlug($validated['title']);
         $project = Project::create($validated);
+        $this->clearCache();
         return new ProjectResource($project);
     }
 
@@ -93,12 +105,14 @@ class ProjectController extends Controller
         }
 
         $project->update($validated);
+        $this->clearCache();
         return new ProjectResource($project);
     }
 
     public function destroy(Project $project)
     {
         $project->delete();
+        $this->clearCache();
         return response()->json(null, 204);
     }
 }

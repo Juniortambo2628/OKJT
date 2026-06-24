@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ClientResource;
 use Illuminate\Http\Request;
 use App\Traits\HandlesStandardCrud;
+use Illuminate\Support\Facades\Cache;
 
 class ClientController extends Controller
 {
@@ -14,22 +15,34 @@ class ClientController extends Controller
     protected $orderByField = 'order';
     protected $orderByDirection = 'asc';
 
+    private function clearCache()
+    {
+        Cache::forget('clients_public');
+        Cache::forget('clients_admin');
+    }
+
     public function index()
     {
-        $model = $this->getModelClass();
-        $relations = property_exists($this, 'withRelations') ? $this->withRelations : [];
-        $orderBy = property_exists($this, 'orderByField') ? $this->orderByField : 'id';
-        $orderDir = property_exists($this, 'orderByDirection') ? $this->orderByDirection : 'asc';
+        $isAdmin = request()->user('sanctum') ? true : false;
+        $cacheKey = $isAdmin ? 'clients_admin' : 'clients_public';
 
-        $query = $model::with($relations);
+        $clients = Cache::rememberForever($cacheKey, function () {
+            $model = $this->getModelClass();
+            $relations = property_exists($this, 'withRelations') ? $this->withRelations : [];
+            $orderBy = property_exists($this, 'orderByField') ? $this->orderByField : 'id';
+            $orderDir = property_exists($this, 'orderByDirection') ? $this->orderByDirection : 'asc';
 
-        if (method_exists($this, 'indexQuery')) {
-            $query = $this->indexQuery($query);
-        } else {
-            $query = $query->orderBy($orderBy, $orderDir);
-        }
+            $query = $model::with($relations);
 
-        return ClientResource::collection($query->get());
+            if (method_exists($this, 'indexQuery')) {
+                $query = $this->indexQuery($query);
+            } else {
+                $query = $query->orderBy($orderBy, $orderDir);
+            }
+            return $query->get();
+        });
+
+        return ClientResource::collection($clients);
     }
 
     public function show($id)
@@ -52,6 +65,23 @@ class ClientController extends Controller
             return $query->orderBy('order');
         }
         return $query->where('is_active', true)->orderBy('order');
+    }
+
+    protected function afterStore($record, $validated, $request)
+    {
+        $this->clearCache();
+        return $record;
+    }
+
+    protected function afterUpdate($record, $validated, $request)
+    {
+        $this->clearCache();
+        return $record;
+    }
+
+    protected function beforeDelete($record)
+    {
+        $this->clearCache();
     }
 
     protected function storeRules(Request $request): array

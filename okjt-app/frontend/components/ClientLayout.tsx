@@ -10,6 +10,8 @@ import WhatsAppButton from '@/components/WhatsAppButton'
 import { usePageView } from '@/hooks/usePageView'
 import CustomCursor from '@/components/animations/CustomCursor'
 import PageTransition from '@/components/animations/PageTransition'
+import LoadingScreen from '@/components/LoadingScreen'
+import { useSettings } from '@/hooks/use-settings'
 
 function AnalyticsTracker() {
     usePageView()
@@ -19,9 +21,11 @@ function AnalyticsTracker() {
 const ClientLayout = ({ children }: { children: React.ReactNode }) => {
     const pathname = usePathname()
     const isAdmin = pathname?.startsWith('/admin')
+    const { isLoading } = useSettings()
 
     return (
         <CookieConsentProvider>
+            {!isAdmin && <LoadingScreen isLoading={isLoading} />}
             <AnalyticsTracker />
             <CustomCursor />
             <PageTransition>

@@ -7,17 +7,25 @@ use App\Http\Resources\InsightResource;
 use App\Models\Insight;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 
 class InsightController extends Controller
 {
     use \App\Traits\HasUniqueSlug;
 
+    private function clearCache()
+    {
+        Cache::forget('published_insights');
+    }
+
     public function index()
     {
-        $insights = Insight::with('user')
-            ->where('is_published', true)
-            ->orderBy('published_at', 'desc')
-            ->get();
+        $insights = Cache::rememberForever('published_insights', function () {
+            return Insight::with('user')
+                ->where('is_published', true)
+                ->orderBy('published_at', 'desc')
+                ->get();
+        });
             
         return InsightResource::collection($insights);
     }
@@ -41,6 +49,7 @@ class InsightController extends Controller
         }
 
         $insight = Insight::create($validated);
+        $this->clearCache();
         return new InsightResource($insight);
     }
 
@@ -69,12 +78,14 @@ class InsightController extends Controller
         }
 
         $insight->update($validated);
+        $this->clearCache();
         return new InsightResource($insight->load('user'));
     }
 
     public function destroy(Insight $insight)
     {
         $insight->delete();
+        $this->clearCache();
         return response()->json(null, 204);
     }
 }
