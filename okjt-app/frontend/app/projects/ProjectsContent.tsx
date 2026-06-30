@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button'
 import { getMediaUrl } from '@/lib/utils'
 import ParallaxSection from '@/components/ParallaxSection'
 import ParallaxNav from '@/components/ParallaxNav'
+import { SectionCard } from '@/components/ui/SectionCard'
 
 export default function ProjectsContent() {
     const { data: projects, isLoading } = useApi<Project[]>('/projects')
@@ -33,7 +34,7 @@ export default function ProjectsContent() {
     }, [featured])
 
     return (
-        <main className="flex min-h-screen flex-col bg-background w-full overflow-x-hidden">
+        <main className="flex min-h-screen flex-col bg-background w-full overflow-x-clip">
             <Navbar />
 
             <PageHero
@@ -60,7 +61,7 @@ export default function ProjectsContent() {
                 </section>
             )}
 
-            <div className="w-full bg-black overflow-visible">
+            <div className="relative w-full bg-black overflow-visible">
                 {featured.map((item, index) => (
                     <ParallaxSection
                         key={item.id}
@@ -69,7 +70,7 @@ export default function ProjectsContent() {
                         heightClass="min-h-[220vh]"
                         contentMaxWidth="max-w-[1400px]"
                     >
-                        <div className="w-full border border-white/5 bg-black/50 backdrop-blur-md rounded-3xl p-8 md:p-12 text-center md:text-left">
+                        <SectionCard className="text-center md:text-left">
                             <div className="space-y-6">
                                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                     <div className="flex items-center justify-center md:justify-start gap-3">
@@ -114,7 +115,7 @@ export default function ProjectsContent() {
                                     </Button>
                                 </div>
                             </div>
-                        </div>
+                        </SectionCard>
                     </ParallaxSection>
                 ))}
             </div>

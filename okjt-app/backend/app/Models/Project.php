@@ -26,7 +26,6 @@ class Project extends Model
         'testimonial_author',
         'image',
         'gallery',
-        'website_url',
         'url',
         'is_active',
         'is_featured',

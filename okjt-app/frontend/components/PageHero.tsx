@@ -50,9 +50,7 @@ const PageHero = ({
             className
         )}>
             {/* Background Media */}
-            {mediaLoading ? (
-                <HeroSkeleton />
-            ) : resolvedVideoSrc ? (
+            {mediaLoading ? null : resolvedVideoSrc ? (
                 <div className="absolute inset-0 z-0">
                     <video
                         autoPlay

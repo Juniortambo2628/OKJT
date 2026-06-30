@@ -8,6 +8,7 @@ import { getMediaUrl, cn } from '@/lib/utils'
 import { useSettings } from '@/hooks/use-settings'
 import { SiteSetting, Stat } from '@/types/api'
 import ParallaxSection from '@/components/ParallaxSection'
+import { SectionCard } from '@/components/ui/SectionCard'
 
 function AnimatedCounter({ target, suffix = '' }: { target: string; suffix?: string }) {
     const ref = useRef<HTMLSpanElement>(null)
@@ -82,39 +83,41 @@ const StatsSection = () => {
     return (
         <ParallaxSection
             id="stats"
-            bgMedia={backgroundMedia || "/assets/videos/hero/02-fintech.mp4"}
-            heightClass="min-h-[210vh]"
+            bgMedia={backgroundMedia || getSetting('bg_home_stats', '/assets/videos/services/all-services-video.mp4')}
+            heightClass="min-h-[230vh]"
             badgeText={sectionTagline || "KEY PERFORMANCE METRICS"}
             title={sectionTitle}
             contentMaxWidth="max-w-[1400px]"
         >
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-0 w-full mt-8 border border-white/5 bg-black/40 backdrop-blur-md rounded-2xl overflow-hidden divide-x divide-y md:divide-y-0 divide-white/5">
-                {stats.map((stat, index) => (
-                    <motion.div
-                        key={stat.id}
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.15 }}
-                        className="text-center p-8 md:p-10 relative group border-white/5"
-                    >
-                        {/* Hover glow */}
-                        <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-all duration-500" />
+            <SectionCard className="p-0 sm:p-0 md:p-0 overflow-hidden">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-0 w-full h-full divide-x divide-y md:divide-y-0 divide-foreground/10">
+                    {stats.map((stat, index) => (
+                        <motion.div
+                            key={stat.id}
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.15 }}
+                            className="text-center p-6 md:p-10 relative group"
+                        >
+                            {/* Hover glow */}
+                            <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-all duration-500" />
 
-                        <div className="relative z-10">
-                            <div className="text-primary font-bold text-5xl md:text-6xl mb-4 tracking-tight">
-                                <AnimatedCounter target={stat.value} />
+                            <div className="relative z-10">
+                                <div className="text-primary font-bold text-4xl sm:text-5xl md:text-6xl mb-4 tracking-tight">
+                                    <AnimatedCounter target={stat.value} />
+                                </div>
+                                <div className="w-8 h-[2px] bg-primary/40 mx-auto mb-4" />
+                                <div className="text-foreground text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] mb-3">
+                                    {stat.label}
+                                </div>
+                                <div className="text-foreground/60 text-xs max-w-[200px] mx-auto leading-relaxed">
+                                    {stat.description || 'Delivering results through design-led engineering.'}
+                                </div>
                             </div>
-                            <div className="w-8 h-[2px] bg-primary/40 mx-auto mb-4" />
-                            <div className="text-foreground text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] mb-3">
-                                {stat.label}
-                            </div>
-                            <div className="text-muted-foreground text-xs max-w-[200px] mx-auto leading-relaxed">
-                                {stat.description || 'Delivering results through design-led engineering.'}
-                            </div>
-                        </div>
-                    </motion.div>
-                ))}
-            </div>
+                        </motion.div>
+                    ))}
+                </div>
+            </SectionCard>
         </ParallaxSection>
     )
 }

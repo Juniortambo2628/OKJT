@@ -6,29 +6,20 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ServiceResource;
 use App\Models\Service;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Cache;
+use App\Traits\HandlesStandardCrud;
+use App\Traits\HasUniqueSlug;
 
 class ServiceController extends Controller
 {
-    use \App\Traits\HasUniqueSlug;
+    use HandlesStandardCrud, HasUniqueSlug;
 
-    private function clearCache()
-    {
-        Cache::forget('all_services');
-    }
+    protected $withRelations = ['pillar'];
+    protected $cacheKey = 'all_services';
+    protected $resourceClass = ServiceResource::class;
 
-    public function index()
+    protected function storeRules(): array
     {
-        $services = Cache::rememberForever('all_services', function () {
-            return Service::with('pillar')->orderBy('created_at', 'desc')->get();
-        });
-        return ServiceResource::collection($services);
-    }
-
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
+        return [
             'title' => 'required|string|max:255',
             'category' => 'required|string',
             'description' => 'required|string',
@@ -36,22 +27,12 @@ class ServiceController extends Controller
             'icon' => 'nullable|string',
             'image' => 'nullable|string',
             'pillar_id' => 'nullable|exists:pillars,id',
-        ]);
-
-        $validated['slug'] = $this->generateUniqueSlug($validated['title']);
-        $service = Service::create($validated);
-        $this->clearCache();
-        return new ServiceResource($service);
+        ];
     }
 
-    public function show(Service $service)
+    protected function updateRules(Request $request, $record): array
     {
-        return new ServiceResource($service);
-    }
-
-    public function update(Request $request, Service $service)
-    {
-        $validated = $request->validate([
+        return [
             'title' => 'string|max:255',
             'category' => 'string',
             'description' => 'string',
@@ -60,22 +41,25 @@ class ServiceController extends Controller
             'image' => 'nullable|string',
             'is_active' => 'boolean',
             'pillar_id' => 'nullable|exists:pillars,id',
-        ]);
-
-        if (isset($validated['title']) && $validated['title'] !== $service->title) {
-            $validated['slug'] = $this->generateUniqueSlug($validated['title'], $service->id);
-        }
-
-        $service->update($validated);
-        $this->clearCache();
-        return new ServiceResource($service);
+        ];
     }
 
-    public function destroy(Service $service)
+    protected function beforeStore(array $validated, Request $request): array
     {
-        $service->delete();
-        $this->clearCache();
-        return response()->json(null, 204);
+        $validated['slug'] = $this->generateUniqueSlug($validated['title']);
+        return $validated;
+    }
+
+    protected function beforeUpdate($record, array $validated, Request $request): array
+    {
+        if (isset($validated['title']) && $validated['title'] !== $record->title) {
+            $validated['slug'] = $this->generateUniqueSlug($validated['title'], $record->id);
+        }
+        return $validated;
+    }
+
+    public function show(Service $service)
+    {
+        return new ServiceResource($service->load('pillar'));
     }
 }
-

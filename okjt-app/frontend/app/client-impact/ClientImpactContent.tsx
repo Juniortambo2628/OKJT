@@ -11,11 +11,19 @@ import { usePageHeroMedia } from "@/hooks/use-page-hero-media"
 import ProjectsPreview from "@/components/sections/ProjectsPreview"
 import ParallaxSection from "@/components/ParallaxSection"
 import ParallaxNav from "@/components/ParallaxNav"
+import { SectionCard } from "@/components/ui/SectionCard"
+import { useSettings } from "@/hooks/use-settings"
 
 export default function ClientImpactContent() {
     const { videoSrc, bgImage } = usePageHeroMedia({
         settingsKey: 'hero_client_impact_media',
     })
+    
+    const { getSetting } = useSettings()
+    
+    const bgProjects = getSetting('bg_projects_featured', '/assets/videos/services/all-services-video.mp4')
+    const bgTestimonials = getSetting('bg_client_impact_testimonials', '/assets/videos/services/all-services-video.mp4')
+    const bgClients = getSetting('bg_client_impact_clients', '/assets/videos/services/all-services-video.mp4')
 
     const navSections = [
         { id: 'impact-hero', label: 'Intro' },
@@ -38,44 +46,50 @@ export default function ClientImpactContent() {
                 bgImage={bgImage}
             />
 
-            <div className="bg-black w-full overflow-visible">
+            <div className="relative bg-black w-full overflow-visible">
                 {/* Projects Section wrapped in parallax */}
                 <ParallaxSection
                     id="impact-projects"
-                    bgMedia="/assets/videos/services/all-services-video.mp4"
+                    bgMedia={bgProjects}
                     heightClass="min-h-[220vh]"
                     overlayOpacity={0.7}
                     contentMaxWidth="max-w-[1400px]"
                 >
-                    <div className="w-full pointer-events-auto">
-                        <ProjectsPreview />
-                    </div>
+                    <SectionCard className="p-0 sm:p-0 md:p-0 overflow-hidden">
+                        <div className="w-full pointer-events-auto h-full flex">
+                            <ProjectsPreview />
+                        </div>
+                    </SectionCard>
                 </ParallaxSection>
 
                 {/* Testimonials Section wrapped in parallax */}
                 <ParallaxSection
                     id="impact-testimonials"
-                    bgMedia="/assets/videos/services/fintech-video.mp4"
+                    bgMedia={bgTestimonials}
                     heightClass="min-h-[200vh]"
                     overlayOpacity={0.75}
                     contentMaxWidth="max-w-[1400px]"
                 >
-                    <div className="w-full pointer-events-auto">
-                        <TestimonialsSection />
-                    </div>
+                    <SectionCard className="p-0 sm:p-0 md:p-0 overflow-hidden">
+                        <div className="w-full pointer-events-auto h-full flex">
+                            <TestimonialsSection />
+                        </div>
+                    </SectionCard>
                 </ParallaxSection>
 
                 {/* Clients Section wrapped in parallax */}
                 <ParallaxSection
                     id="impact-clients"
-                    bgMedia="/assets/videos/services/energy-advisory.mp4"
+                    bgMedia={bgClients}
                     heightClass="min-h-[170vh]"
                     overlayOpacity={0.7}
                     contentMaxWidth="max-w-[1400px]"
                 >
-                    <div className="w-full pointer-events-auto">
-                        <ClientsSection />
-                    </div>
+                    <SectionCard className="p-0 sm:p-0 md:p-0 overflow-hidden bg-background/50">
+                        <div className="w-full pointer-events-auto h-full flex">
+                            <ClientsSection />
+                        </div>
+                    </SectionCard>
                 </ParallaxSection>
 
                 <CTABanner />

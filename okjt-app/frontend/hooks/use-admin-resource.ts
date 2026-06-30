@@ -57,6 +57,18 @@ export function useAdminResource<T extends { id: number, created_at?: string }>(
         setShowForm(true)
     }, [])
 
+    const triggerRevalidation = useCallback(async () => {
+        try {
+            await fetch('/api/revalidate', { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tags: ['okjt-content'] })
+            })
+        } catch (e) {
+            console.error('Failed to trigger revalidation', e)
+        }
+    }, [])
+
     const handleSave = async (customFormData?: Partial<T>) => {
         const payload = customFormData || form;
         
@@ -72,6 +84,7 @@ export function useAdminResource<T extends { id: number, created_at?: string }>(
                 description: `${resourceName} ${editingId ? 'updated' : 'created'} successfully.` 
             })
             mutate()
+            triggerRevalidation()
             resetForm()
         } catch (err: any) {
             toast({ 
@@ -91,6 +104,7 @@ export function useAdminResource<T extends { id: number, created_at?: string }>(
             await api.delete(`${endpoint}/${id}`)
             toast({ title: "Deleted", description: `${resourceName} removed.` })
             mutate()
+            triggerRevalidation()
             setSelectedIds(prev => prev.filter(i => i !== id))
         } catch (err: any) {
             toast({ variant: "destructive", title: "Error", description: `Failed to delete ${resourceName.toLowerCase()}` })
@@ -106,6 +120,7 @@ export function useAdminResource<T extends { id: number, created_at?: string }>(
             toast({ title: "Success", description: `${selectedIds.length} resources deleted.` })
             setSelectedIds([])
             mutate()
+            triggerRevalidation()
         } catch (err) {
             toast({ variant: "destructive", title: "Error", description: "Bulk delete failed." })
         }

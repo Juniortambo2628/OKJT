@@ -6,30 +6,22 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\SubscriberResource;
 use App\Models\Subscriber;
 use Illuminate\Http\Request;
+use App\Traits\HandlesStandardCrud;
 
 class SubscriberController extends Controller
 {
-    public function store(Request $request)
+    use HandlesStandardCrud;
+
+    protected $orderByField = 'created_at';
+    protected $orderByDirection = 'desc';
+    protected $resourceClass = SubscriberResource::class;
+
+    protected function storeRules(): array
     {
-        $validated = $request->validate([
+        return [
             'email' => 'required|email|unique:subscribers,email',
             'name' => 'nullable|string|max:255',
             'source' => 'nullable|string|max:100',
-        ]);
-
-        $subscriber = Subscriber::create($validated);
-        return new SubscriberResource($subscriber);
-    }
-
-    public function index()
-    {
-        return SubscriberResource::collection(Subscriber::orderByDesc('created_at')->get());
-    }
-
-    public function destroy(Subscriber $subscriber)
-    {
-        $subscriber->delete();
-        return response()->json(null, 204);
+        ];
     }
 }
-

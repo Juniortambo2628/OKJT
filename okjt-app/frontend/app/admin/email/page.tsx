@@ -5,12 +5,13 @@ import AdminLayout from '@/components/admin/AdminLayout'
 import { useApi } from '@/hooks/use-api'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Save, Loader2, Mail, Eye, Code, CheckCircle2, AlertCircle, Sparkles, Layout, Info } from 'lucide-react'
+import { Mail, Eye, Code, CheckCircle2, AlertCircle, Sparkles, Layout, Loader2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import api from '@/lib/api'
+import SettingsHeader from '@/components/admin/core/SettingsHeader'
 
 const EmailSettingsPage = () => {
     const { data: emailTemplates, mutate, isLoading } = useApi<any[]>('/email-templates')
@@ -158,42 +159,26 @@ const EmailSettingsPage = () => {
     return (
         <AdminLayout>
             <div className="space-y-8">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-3">
-                            Email Configuration
-                            <span className="bg-primary/20 text-primary text-[10px] uppercase tracking-widest px-2 py-1 rounded">Smart Editor</span>
-                        </h1>
-                        <p className="text-muted-foreground text-sm">Customize automated emails with a user-friendly visual editor.</p>
-                    </div>
-                    <div className="flex gap-4">
-                        <Button 
-                            variant="outline"
-                            onClick={handlePreview}
-                            disabled={isPreviewLoading}
-                            className="gap-2 bg-background border-border text-foreground hover:bg-secondary"
-                        >
-                            {isPreviewLoading ? <Loader2 size={16} className="animate-spin" /> : <Eye size={16} />}
-                            Live Preview
-                        </Button>
-                        <Button
-                            onClick={handleSave}
-                            disabled={isSaving}
-                            className={`gap-2 px-8 font-bold shadow-xl transition-all ${saveSuccess ? 'bg-emerald-600 hover:bg-emerald-700' : 'shadow-primary/20 bg-primary hover:bg-primary/90 text-white'}`}
-                        >
-                            {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-                            {saveSuccess ? 'Saved!' : 'Save changes'}
-                        </Button>
-                        <Button
-                            variant="destructive"
-                            onClick={handleDelete}
-                            disabled={isSaving}
-                            className="gap-2"
-                        >
-                            Delete
-                        </Button>
-                    </div>
-                </div>
+                <SettingsHeader
+                    title="Email Configuration"
+                    description="Customize automated emails with a user-friendly visual editor."
+                    onSave={handleSave}
+                    onDelete={handleDelete}
+                    isSaving={isSaving}
+                    isLoading={false}
+                    deleteLabel="Delete"
+                    deleteDisabled={isSaving}
+                >
+                    <Button
+                        variant="outline"
+                        onClick={handlePreview}
+                        disabled={isPreviewLoading}
+                        className="gap-2 bg-background border-border text-foreground hover:bg-secondary"
+                    >
+                        {isPreviewLoading ? <span className="animate-spin">⏳</span> : <Eye size={16} />}
+                        Live Preview
+                    </Button>
+                </SettingsHeader>
 
                 <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
                     {/* Left Panel: Controls */}

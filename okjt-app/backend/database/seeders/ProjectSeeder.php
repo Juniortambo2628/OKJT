@@ -27,7 +27,7 @@ class ProjectSeeder extends Seeder
             ],
             [
                 'type' => 'client',
-                'title' => 'South Ring Autos Garage Workspace System',
+                'title' => 'South Ring Autos Garage Workspace Management System',
                 'client_name' => 'South Ring Autos',
                 'category' => 'Automotive & Logistics',
                 'technologies' => ['PHP', 'React', 'MySQL', 'Payment Gateways'],
@@ -97,7 +97,7 @@ class ProjectSeeder extends Seeder
             ],
             [
                 'type' => 'client',
-                'title' => 'OKJStyle & Creative Brand Portfolio',
+                'title' => 'OKJTechnologies Creative Brand Portfolio',
                 'client_name' => 'OKJTechnologies',
                 'category' => 'Creative Services & Web Agency',
                 'technologies' => ['React', 'Scroll-Animations', 'Reservation State Machines'],
@@ -111,7 +111,7 @@ class ProjectSeeder extends Seeder
             ],
             [
                 'type' => 'client',
-                'title' => 'Dickson Gitonga Legal Practice Automation',
+                'title' => 'Dickson Gitonga Legal Practice Automation System',
                 'client_name' => 'Dickson Gitonga Advocates',
                 'category' => 'LegalTech & Corporate Portals',
                 'technologies' => ['PHP', 'React', 'Web-Scraping', 'RBAC'],
@@ -167,7 +167,7 @@ class ProjectSeeder extends Seeder
             ],
             [
                 'type' => 'client',
-                'title' => 'Najenga Collaborative Construction Web App',
+                'title' => 'Najenga Collaborative Construction Management Web App',
                 'client_name' => 'Najenga',
                 'category' => 'PropTech / Collaborative Software',
                 'technologies' => ['HTML5 Canvas API', 'Interactive Timelines', 'Document Systems'],

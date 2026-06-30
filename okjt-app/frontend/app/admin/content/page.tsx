@@ -1,19 +1,14 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import AdminLayout from '@/components/admin/AdminLayout'
-import { useApi } from '@/hooks/use-api'
-import { Button } from '@/components/ui/button'
+import { useSiteSettings } from '@/hooks/use-site-settings'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Save, Loader2, Layout, Zap, BarChart3, Image as ImageIcon, Film, FileText, Mail, Briefcase } from 'lucide-react'
+import { Layout, Zap, BarChart3, FileText, Mail, Briefcase } from 'lucide-react'
+import SettingsHeader from '@/components/admin/core/SettingsHeader'
+import SettingsFieldInput, { SettingsFieldConfig } from '@/components/admin/core/SettingsField'
 
-import ImageUploader from '@/components/admin/ImageUploader'
-import api from '@/lib/api'
-
-// Section configuration — defines which fields are editable for each section
-const sectionConfig = [
+const sectionConfig: { id: string; title: string; description: string; icon: React.ElementType; fields: SettingsFieldConfig[] }[] = [
     {
         id: 'hero',
         title: 'Hero Section',
@@ -36,9 +31,6 @@ const sectionConfig = [
             { key: 'vp_section_tagline', label: 'Section Tagline', type: 'text', placeholder: 'e.g. What We Do' },
             { key: 'vp_section_title', label: 'Section Title', type: 'text', placeholder: 'e.g. Three Pillars of Trusted Intelligence' },
             { key: 'vp_section_subtitle', label: 'Section Subtitle', type: 'textarea', placeholder: 'We connect decision-makers...' },
-            { key: 'vp_energy_image', label: 'Energy Advisory Background Image', type: 'image' },
-            { key: 'vp_fintech_image', label: 'Fintech Background Image', type: 'image' },
-            { key: 'vp_diplomacy_image', label: 'International Diplomacy Background Image', type: 'image' },
         ],
     },
     {
@@ -89,82 +81,38 @@ const sectionConfig = [
         fields: [
             { key: 'services_tagline', label: 'Section Tagline', type: 'text', placeholder: 'Our Services' },
             { key: 'services_title', label: 'Section Title', type: 'text', placeholder: 'Explore our portfolio' },
-            { key: 'services_video_energy', label: 'Video: Energy Advisory', type: 'image', accept: ['.mp4'] },
-            { key: 'services_video_fintech', label: 'Video: Fintech', type: 'image', accept: ['.mp4'] },
-            { key: 'services_video_diplomacy', label: 'Video: International Diplomacy', type: 'image', accept: ['.mp4'] },
         ],
     },
 ]
 
-
 const AdminContentPage = () => {
-    const { data: settingsByGroup, mutate, isLoading } = useApi('/settings')
-    const [formValues, setFormValues] = useState<Record<string, string>>({})
-    const [isSaving, setIsSaving] = useState(false)
-    const [saveSuccess, setSaveSuccess] = useState(false)
+    const { localSettings, updateSetting, handleSave, isLoading, isSaving } = useSiteSettings()
     const [activeTab, setActiveTab] = useState('hero')
 
-    // Flatten grouped settings into a key-value map
-    useEffect(() => {
-        if (settingsByGroup) {
-            const flat: Record<string, string> = {}
-            Object.values(settingsByGroup).forEach((group: any) => {
-                group.forEach((s: any) => { flat[s.key] = s.value || '' })
-            })
-            setFormValues(flat)
-        }
-    }, [settingsByGroup])
-
-    const handleChange = (key: string, value: string) => {
-        setFormValues((prev) => ({ ...prev, [key]: value }))
-    }
-
-    const handleSave = async () => {
-        setIsSaving(true)
-        setSaveSuccess(false)
-        try {
-            const activeSection = sectionConfig.find((s) => s.id === activeTab)
-            if (!activeSection) return
-
-            const settings = activeSection.fields.map((f) => ({
-                key: f.key,
-                value: formValues[f.key] || '',
-                type: f.type === 'image' ? 'image' : 'text',
-                group: activeSection.id,
-            }))
-
-            await api.put('/settings/batch', { settings })
-            mutate()
-            setSaveSuccess(true)
-            setTimeout(() => setSaveSuccess(false), 3000)
-        } catch {
-            alert('Failed to save settings')
-        } finally {
-            setIsSaving(false)
-        }
-    }
-
     const activeSection = sectionConfig.find((s) => s.id === activeTab)
+
+    const handleSaveSection = async () => {
+        if (!activeSection) return
+        await handleSave((settings, local) => {
+            const updated = { ...local }
+            activeSection.fields.forEach(f => {
+                if (!(f.key in updated)) updated[f.key] = ''
+            })
+            return updated
+        })
+    }
 
     return (
         <AdminLayout>
             <div className="space-y-8">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Content Manager</h1>
-                        <p className="text-muted-foreground">Edit homepage section text, images, and hero backgrounds.</p>
-                    </div>
-                    <Button
-                        onClick={handleSave}
-                        disabled={isSaving}
-                        className={`gap-2 px-8 font-bold shadow-xl ${saveSuccess ? 'bg-emerald-600 hover:bg-emerald-700' : 'shadow-primary/20'}`}
-                    >
-                        {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-                        {saveSuccess ? 'Saved!' : 'Save Changes'}
-                    </Button>
-                </div>
+                <SettingsHeader
+                    title="Content Manager"
+                    description="Edit homepage section text, images, and hero backgrounds."
+                    onSave={handleSaveSection}
+                    isSaving={isSaving}
+                    isLoading={isLoading}
+                />
 
-                {/* Section Tabs */}
                 <div className="flex gap-2 border-b border-border/50 pb-0">
                     {sectionConfig.map((section) => {
                         const Icon = section.icon
@@ -185,7 +133,6 @@ const AdminContentPage = () => {
                     })}
                 </div>
 
-                {/* Active Section Editor */}
                 {isLoading ? (
                     <div className="space-y-6 animate-pulse">
                         <div className="bg-secondary/10 border border-border/50 rounded-xl h-[500px] flex flex-col">
@@ -218,39 +165,12 @@ const AdminContentPage = () => {
                         </CardHeader>
                         <CardContent className="p-6 space-y-6">
                             {activeSection.fields.map((field) => (
-                                <div key={field.key}>
-                                    {field.type === 'text' && (
-                                        <div className="space-y-2">
-                                            <Label className="text-sm font-semibold text-foreground/80">{field.label}</Label>
-                                            <Input
-                                                value={formValues[field.key] || ''}
-                                                onChange={(e) => handleChange(field.key, e.target.value)}
-                                                placeholder={field.placeholder}
-                                                className="bg-background/50"
-                                            />
-                                        </div>
-                                    )}
-                                    {field.type === 'textarea' && (
-                                        <div className="space-y-2">
-                                            <Label className="text-sm font-semibold text-foreground/80">{field.label}</Label>
-                                            <textarea
-                                                value={formValues[field.key] || ''}
-                                                onChange={(e) => handleChange(field.key, e.target.value)}
-                                                placeholder={field.placeholder}
-                                                className="w-full min-h-[100px] px-3 py-2 rounded-md border border-input bg-background/50 text-sm resize-y"
-                                            />
-                                        </div>
-                                    )}
-                                    {field.type === 'image' && (
-                                        <ImageUploader
-                                            label={field.label}
-                                            value={formValues[field.key] || ''}
-                                            onChange={(url) => handleChange(field.key, url)}
-                                            accept={(field as any).accept}
-                                            maxSizeMB={10}
-                                        />
-                                    )}
-                                </div>
+                                <SettingsFieldInput
+                                    key={field.key}
+                                    config={field}
+                                    value={localSettings[field.key] || ''}
+                                    onChange={updateSetting}
+                                />
                             ))}
                         </CardContent>
                     </Card>

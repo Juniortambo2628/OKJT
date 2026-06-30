@@ -1,14 +1,15 @@
 "use client"
 
 import React from 'react'
-import { Button } from '@/components/ui/button'
-import { Edit2, Trash2, Shield, Globe, Zap, Landmark, Star, Award, Heart } from 'lucide-react'
+import { Shield, Globe, Zap, Landmark, Star, Award, Heart } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
-import { cn } from '@/lib/utils'
 import AdminResourceTemplate from '@/components/admin/core/AdminResourceTemplate'
+import { ResourceCard } from '@/components/admin/ResourceCard'
+import { ResourceTableRow } from '@/components/admin/ResourceTableRow'
+import { IconPicker } from '@/components/admin/IconPicker'
 
 const availableIcons = {
     Shield, Globe, Zap, Landmark, Star, Award, Heart
@@ -49,27 +50,26 @@ export default function AdminValuesPage() {
                 const IconComp = (availableIcons as any)[val.icon] || Shield
 
                 return (
-                    <div key={val.id} className="group relative bg-secondary/10 border border-border/50 p-6 flex flex-col hover:border-primary/40 transition-all">
-                        <Checkbox 
-                            checked={selectedIds.includes(val.id)}
-                            onCheckedChange={() => toggleSelect(val.id)}
-                            className="absolute top-4 left-4 border-white/20"
-                        />
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="p-3 bg-primary/10 text-primary border border-primary/20 ml-8">
-                                <IconComp size={24} />
+                    <ResourceCard
+                        item={val}
+                        selectedIds={selectedIds}
+                        onToggleSelect={toggleSelect}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                    >
+                        <div className="p-6 flex flex-col">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="p-3 bg-primary/10 text-primary border border-primary/20 ml-8">
+                                    <IconComp size={24} />
+                                </div>
                             </div>
-                            <div className="flex items-center gap-1">
-                                <Button variant="ghost" size="sm" onClick={() => handleEdit(val)}><Edit2 size={14} /></Button>
-                                <Button variant="ghost" size="sm" onClick={() => handleDelete(val.id)} className="text-destructive"><Trash2 size={14} /></Button>
+                            <h3 className="font-bold text-lg mb-2">{val.title}</h3>
+                            <p className="text-muted-foreground text-sm flex-1">{val.description}</p>
+                            <div className="mt-4 pt-4 border-t border-white/5 text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
+                                Order: {val.order}
                             </div>
                         </div>
-                        <h3 className="font-bold text-lg mb-2">{val.title}</h3>
-                        <p className="text-muted-foreground text-sm flex-1">{val.description}</p>
-                        <div className="mt-4 pt-4 border-t border-white/5 text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
-                            Order: {val.order}
-                        </div>
-                    </div>
+                    </ResourceCard>
                 )
             }}
             renderTableHeaders={(filteredValues, selectedIds, selectAll) => (
@@ -96,14 +96,14 @@ export default function AdminValuesPage() {
                         const IconComp = (availableIcons as any)[val.icon] || Shield
 
                         return (
-                            <tr key={val.id} className="hover:bg-primary/5 transition-colors group">
-                                <td className="p-4 px-6">
-                                    <Checkbox 
-                                        checked={selectedIds.includes(val.id)}
-                                        onCheckedChange={() => toggleSelect(val.id)}
-                                        className="border-white/20"
-                                    />
-                                </td>
+                            <ResourceTableRow
+                                key={val.id}
+                                item={val}
+                                selectedIds={selectedIds}
+                                onToggleSelect={toggleSelect}
+                                onEdit={handleEdit}
+                                onDelete={handleDelete}
+                            >
                                 <td className="p-4">
                                     <div className="flex items-center gap-3">
                                         <div className="p-2 bg-primary/10 text-primary border border-primary/20 shrink-0">
@@ -114,13 +114,7 @@ export default function AdminValuesPage() {
                                 </td>
                                 <td className="p-4 text-xs text-muted-foreground max-w-xs">{val.description}</td>
                                 <td className="p-4 text-xs font-bold text-primary">{val.order}</td>
-                                <td className="p-4 text-right">
-                                    <div className="flex items-center justify-end gap-2">
-                                        <Button variant="ghost" size="sm" onClick={() => handleEdit(val)}><Edit2 size={14} /></Button>
-                                        <Button variant="ghost" size="sm" onClick={() => handleDelete(val.id)} className="text-destructive"><Trash2 size={14} /></Button>
-                                    </div>
-                                </td>
-                            </tr>
+                            </ResourceTableRow>
                         )
                     })}
                 </>
@@ -129,24 +123,11 @@ export default function AdminValuesPage() {
                 <>
                     <div className="space-y-2">
                         <Label>Icon</Label>
-                        <div className="grid grid-cols-7 gap-2">
-                            {Object.keys(availableIcons).map((iconName) => {
-                                const Icon = (availableIcons as any)[iconName]
-                                return (
-                                    <button
-                                        key={iconName}
-                                        type="button"
-                                        onClick={() => setFormData({...formData, icon: iconName})}
-                                        className={cn(
-                                            "p-2 border transition-all hover:bg-primary/20",
-                                            formData.icon === iconName ? "border-primary bg-primary/20" : "border-white/5 bg-white/5"
-                                        )}
-                                    >
-                                        <Icon size={20} className={cn(formData.icon === iconName ? "text-primary" : "text-white/40")} />
-                                    </button>
-                                )
-                            })}
-                        </div>
+                        <IconPicker
+                            selectedIcon={formData.icon || 'Shield'}
+                            onSelect={(iconName) => setFormData({...formData, icon: iconName})}
+                            icons={availableIcons}
+                        />
                     </div>
                     <div className="space-y-2">
                         <Label>Title</Label>

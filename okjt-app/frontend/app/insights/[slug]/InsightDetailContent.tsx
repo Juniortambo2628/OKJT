@@ -15,10 +15,16 @@ import PageHero from '@/components/PageHero'
 import { SectionSkeleton } from '@/components/MediaSkeleton'
 import ParallaxSection from '@/components/ParallaxSection'
 import ParallaxNav from '@/components/ParallaxNav'
+import { SectionCard } from '@/components/ui/SectionCard'
+import { useSettings } from '@/hooks/use-settings'
 
 export default function InsightDetailContent({ slug }: { slug: string }) {
+    const { getSetting } = useSettings()
     const { data: insight, isLoading, isError } = useApi(`/insights/${slug}`)
     const { data: allInsights } = useApi('/insights')
+
+    const bgContent = getSetting('bg_insight_content', '/assets/videos/services/all-services-video.mp4')
+    const bgRelated = getSetting('bg_insight_related', '/assets/videos/services/all-services-video.mp4')
 
     const relatedInsights = allInsights?.filter((i: any) => i.slug !== slug && i.category === insight?.category).slice(0, 3)
 
@@ -92,12 +98,13 @@ export default function InsightDetailContent({ slug }: { slug: string }) {
             {/* Content */}
             <ParallaxSection
                 id="insight-content"
-                bgMedia="/assets/videos/services/fintech-video.mp4"
+                bgMedia={bgContent}
                 heightClass="min-h-[250vh]"
                 overlayOpacity={0.8}
                 contentMaxWidth="max-w-[900px]"
             >
-                    <div className="bg-black/40 backdrop-blur-md border border-white/5 rounded-2xl p-8 md:p-12 w-full">
+                <SectionCard>
+                    <div className="bg-black/20 border border-white/5 rounded-2xl p-8 md:p-12 w-full">
                         <div className="prose prose-slate dark:prose-invert prose-lg max-w-none prose-headings:text-white prose-p:text-white/80 prose-strong:text-white prose-a:text-primary">
                             <div dangerouslySetInnerHTML={{ __html: insight.content || '' }} />
                         </div>
@@ -112,48 +119,51 @@ export default function InsightDetailContent({ slug }: { slug: string }) {
                             </Button>
                         </div>
                     </div>
+                </SectionCard>
             </ParallaxSection>
 
             {/* Related Content */}
             {relatedInsights && relatedInsights.length > 0 && (
                 <ParallaxSection
                     id="insight-related"
-                    bgMedia="/assets/videos/services/energy-advisory.mp4"
+                    bgMedia={bgRelated}
                     heightClass="min-h-[200vh]"
                     badgeText="EXPLORE MORE"
                     title="Related Insights"
                     contentMaxWidth="max-w-[1400px]"
                 >
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full mt-8">
-                        {relatedInsights.map((ri: any) => (
-                            <motion.div
-                                key={ri.id}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                            >
-                                <Link href={`/insights/${ri.slug}`} className="group block">
-                                    <div className="relative h-48 mb-6 overflow-hidden border border-white/10 group-hover:border-primary/40 transition-colors bg-black/30 backdrop-blur-sm rounded-xl">
-                                        {ri.image ? (
-                                            <Image src={ri.image} alt={ri.title} fill className="object-cover opacity-80 group-hover:opacity-100 transition-all group-hover:scale-105" />
-                                        ) : (
-                                            <div className="w-full h-full bg-white/5 flex items-center justify-center text-white/20">NI</div>
-                                        )}
-                                    </div>
-                                    <h3 className="text-lg font-bold text-white group-hover:text-primary transition-colors line-clamp-2 mb-2">
-                                        {ri.title}
-                                    </h3>
-                                    <p className="text-white/60 text-sm line-clamp-2">{ri.excerpt?.replace(/<[^>]*>?/gm, '')}</p>
+                    <SectionCard>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
+                            {relatedInsights.map((ri: any) => (
+                                <motion.div
+                                    key={ri.id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                >
+                                    <Link href={`/insights/${ri.slug}`} className="group block h-full">
+                                        <div className="relative h-48 mb-6 overflow-hidden border border-white/10 group-hover:border-primary/40 transition-colors bg-black/20 rounded-xl">
+                                            {ri.image ? (
+                                                <Image src={ri.image} alt={ri.title} fill className="object-cover opacity-80 group-hover:opacity-100 transition-all group-hover:scale-105" />
+                                            ) : (
+                                                <div className="w-full h-full bg-white/5 flex items-center justify-center text-white/20">NI</div>
+                                            )}
+                                        </div>
+                                        <h3 className="text-lg font-bold text-white group-hover:text-primary transition-colors line-clamp-2 mb-2">
+                                            {ri.title}
+                                        </h3>
+                                        <p className="text-white/60 text-sm line-clamp-2">{ri.excerpt?.replace(/<[^>]*>?/gm, '')}</p>
+                                    </Link>
+                                </motion.div>
+                            ))}
+                        </div>
+                        <div className="mt-10">
+                            <Button variant="outline" className="rounded-none border-primary/30 text-primary hover:bg-primary/10" asChild>
+                                <Link href="/insights">
+                                    View Full Library <ArrowRight className="ml-2 h-4 w-4" />
                                 </Link>
-                            </motion.div>
-                        ))}
-                    </div>
-                    <div className="mt-10">
-                        <Button variant="outline" className="rounded-none border-primary/30 text-primary hover:bg-primary/10" asChild>
-                            <Link href="/insights">
-                                View Full Library <ArrowRight className="ml-2 h-4 w-4" />
-                            </Link>
-                        </Button>
-                    </div>
+                            </Button>
+                        </div>
+                    </SectionCard>
                 </ParallaxSection>
             )}
             </div>

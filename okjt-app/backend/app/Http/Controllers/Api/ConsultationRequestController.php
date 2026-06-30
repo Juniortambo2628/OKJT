@@ -9,62 +9,46 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ConsultationRequestAdminNotification;
 use App\Mail\ConsultationRequestUserReceipt;
+use App\Traits\HandlesStandardCrud;
 
 class ConsultationRequestController extends Controller
 {
-    public function index()
-    {
-        return ConsultationRequestResource::collection(ConsultationRequest::latest()->get());
-    }
+    use HandlesStandardCrud;
 
-    public function store(Request $request)
+    protected $orderByField = 'created_at';
+    protected $orderByDirection = 'desc';
+    protected $resourceClass = ConsultationRequestResource::class;
+
+    protected function storeRules(): array
     {
-        $validated = $request->validate([
+        return [
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'subject' => 'nullable|string|max:255',
             'message' => 'required|string',
-        ]);
+        ];
+    }
 
-        $consultationRequest = ConsultationRequest::create($validated);
+    protected function updateRules(Request $request, $record): array
+    {
+        return [
+            'status' => 'required|string|in:pending,contacted,resolved,archived',
+        ];
+    }
 
-        // Send Emails
+    protected function afterStore($record, $validated, $request)
+    {
         try {
-            // To Admin
             Mail::to(config('mail.from.address', 'admin@okjtech.co.ke'))
-                ->send(new ConsultationRequestAdminNotification($consultationRequest));
-            
-            // To User
-            Mail::to($consultationRequest->email)
-                ->send(new ConsultationRequestUserReceipt($consultationRequest));
+                ->send(new ConsultationRequestAdminNotification($record));
+
+            Mail::to($record->email)
+                ->send(new ConsultationRequestUserReceipt($record));
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('Failed to send consultation emails: ' . $e->getMessage());
         }
 
-        return new ConsultationRequestResource($consultationRequest);
-    }
-
-    public function show(ConsultationRequest $consultationRequest)
-    {
-        return new ConsultationRequestResource($consultationRequest);
-    }
-
-    public function update(Request $request, ConsultationRequest $consultationRequest)
-    {
-        $validated = $request->validate([
-            'status' => 'required|string|in:pending,contacted,resolved,archived',
-        ]);
-
-        $consultationRequest->update($validated);
-
-        return new ConsultationRequestResource($consultationRequest);
-    }
-
-    public function destroy(ConsultationRequest $consultationRequest)
-    {
-        $consultationRequest->delete();
-
-        return response()->json(null, 204);
+        return $record;
     }
 }

@@ -6,74 +6,77 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\PillarResource;
 use App\Models\Pillar;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Cache;
+use App\Traits\HandlesStandardCrud;
+use App\Traits\HasUniqueSlug;
+use Illuminate\Database\Eloquent\Builder;
 
 class PillarController extends Controller
 {
-    use \App\Traits\HasUniqueSlug;
+    use HandlesStandardCrud, HasUniqueSlug;
 
-    private function clearCache()
+    protected $withRelations = ['services'];
+    protected $resourceClass = PillarResource::class;
+
+    protected function getCacheKey(): ?string
     {
-        Cache::forget('all_pillars');
+        return request()->user('sanctum') ? 'all_pillars_admin' : 'all_pillars';
     }
 
-    public function index()
+    protected function clearCache(): void
     {
-        $pillars = Cache::rememberForever('all_pillars', function () {
-            return Pillar::with('services')->get();
-        });
-        return PillarResource::collection($pillars);
+        \Illuminate\Support\Facades\Cache::forget('all_pillars');
+        \Illuminate\Support\Facades\Cache::forget('all_pillars_admin');
     }
 
-    public function store(Request $request)
+    protected function indexQuery(Builder $query): Builder
     {
-        $validated = $request->validate([
+        if (!request()->user('sanctum')) {
+            $query->where('is_active', true);
+        }
+        return $query->orderBy('created_at', 'desc');
+    }
+
+    protected function storeRules(): array
+    {
+        return [
             'title' => 'required|string|max:255',
             'overview' => 'nullable|string',
             'content' => 'nullable|string',
             'icon' => 'nullable|string',
             'image' => 'nullable|string',
             'is_active' => 'boolean',
-        ]);
-
-        $validated['slug'] = $this->generateUniqueSlug($validated['title']);
-
-        $pillar = Pillar::create($validated);
-        $this->clearCache();
-        return new PillarResource($pillar);
+        ];
     }
 
-    public function show($slug)
+    protected function updateRules(Request $request, $record): array
     {
-        $pillar = Pillar::with('services')->where('slug', $slug)->firstOrFail();
-        return new PillarResource($pillar);
-    }
-
-    public function update(Request $request, Pillar $pillar)
-    {
-        $validated = $request->validate([
+        return [
             'title' => 'string|max:255',
             'overview' => 'nullable|string',
             'content' => 'nullable|string',
             'icon' => 'nullable|string',
             'image' => 'nullable|string',
             'is_active' => 'boolean',
-        ]);
-
-        if (isset($validated['title']) && $validated['title'] !== $pillar->title) {
-            $validated['slug'] = $this->generateUniqueSlug($validated['title'], $pillar->id);
-        }
-
-        $pillar->update($validated);
-        $this->clearCache();
-        return new PillarResource($pillar);
+        ];
     }
 
-    public function destroy(Pillar $pillar)
+    protected function beforeStore(array $validated, Request $request): array
     {
-        $pillar->delete();
-        $this->clearCache();
-        return response()->json(null, 204);
+        $validated['slug'] = $this->generateUniqueSlug($validated['title']);
+        return $validated;
+    }
+
+    protected function beforeUpdate($record, array $validated, Request $request): array
+    {
+        if (isset($validated['title']) && $validated['title'] !== $record->title) {
+            $validated['slug'] = $this->generateUniqueSlug($validated['title'], $record->id);
+        }
+        return $validated;
+    }
+
+    protected function resolveRouteBinding($value, $field = null)
+    {
+        $field = $field ?? 'slug';
+        return parent::resolveRouteBinding($value, $field);
     }
 }

@@ -10,6 +10,8 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Trash2, Mail, User, Calendar } from 'lucide-react'
 import { Subscriber } from '@/types/api'
 import AdminResourceTemplate from '@/components/admin/core/AdminResourceTemplate'
+import { ResourceTableRow } from '@/components/admin/ResourceTableRow'
+import { StatusBadge } from '@/components/admin/StatusBadge'
 
 const sourceColors: Record<string, string> = {
     footer: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
@@ -106,22 +108,19 @@ const AdminSubscribersPage = () => {
                     <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground">Source</th>
                     <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground">Status</th>
                     <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground">Created</th>
-                    <th className="p-4 text-right"></th>
+                    <th className="p-4 text-right"><span className="sr-only">Actions</span></th>
                 </tr>
             )}
             renderTableRows={(items, selectedIds, toggleSelect, onEdit, onDelete) => (
                 items.map((item) => (
-                    <tr
+                    <ResourceTableRow
                         key={item.id}
-                        className="hover:bg-primary/5 transition-colors cursor-pointer"
-                        onClick={() => onEdit(item)}
+                        item={item}
+                        selectedIds={selectedIds}
+                        onToggleSelect={toggleSelect}
+                        onEdit={onEdit}
+                        onDelete={onDelete}
                     >
-                        <td className="p-4 px-6" onClick={(e) => e.stopPropagation()}>
-                            <Checkbox
-                                checked={selectedIds.includes(item.id)}
-                                onCheckedChange={() => toggleSelect(item.id)}
-                            />
-                        </td>
                         <td className="p-4 font-medium">{item.email}</td>
                         <td className="p-4 text-muted-foreground">{item.name || '—'}</td>
                         <td className="p-4">
@@ -132,19 +131,12 @@ const AdminSubscribersPage = () => {
                             )}
                         </td>
                         <td className="p-4">
-                            <Badge variant="outline" className={`text-[10px] px-1.5 h-4 ${item.is_active ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20'}`}>
-                                {item.is_active ? 'Active' : 'Inactive'}
-                            </Badge>
+                            <StatusBadge isActive={!!item.is_active} />
                         </td>
                         <td className="p-4 text-xs text-muted-foreground whitespace-nowrap">
                             {new Date(item.created_at).toLocaleDateString()}
                         </td>
-                        <td className="p-4 text-right" onClick={(e) => e.stopPropagation()}>
-                            <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" onClick={() => onDelete(item.id)}>
-                                <Trash2 size={16} />
-                            </Button>
-                        </td>
-                    </tr>
+                    </ResourceTableRow>
                 ))
             )}
             renderFormFields={(form, setForm) => (

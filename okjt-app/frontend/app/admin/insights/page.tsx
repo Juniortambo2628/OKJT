@@ -1,14 +1,16 @@
 "use client"
 
 import React from 'react'
-import { Button } from '@/components/ui/button'
-import { Pencil, Trash2, ExternalLink, ImageIcon, User } from 'lucide-react'
+import { ExternalLink, ImageIcon, User } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Insight } from '@/types/api'
 import ImageUploader from '@/components/admin/ImageUploader'
 import RichTextEditor from '@/components/admin/RichTextEditor'
 import AdminResourceTemplate from '@/components/admin/core/AdminResourceTemplate'
+import { ResourceCard } from '@/components/admin/ResourceCard'
+import { ResourceTableRow } from '@/components/admin/ResourceTableRow'
+import { StatusBadge } from '@/components/admin/StatusBadge'
 
 const AdminInsightsPage = () => {
     return (
@@ -16,7 +18,7 @@ const AdminInsightsPage = () => {
             endpoint="/insights"
             resourceName="Insight"
             title="Market Insights"
-            description="Manage your energy intelligence and articles."
+            description="Manage your insights, advisories, and articles."
             actionLabel="Create Insight"
             statusField="is_published"
             dialogSizeClass="max-w-4xl"
@@ -45,28 +47,13 @@ const AdminInsightsPage = () => {
                 return null
             }}
             renderGridItem={(insight, selectedIds, toggleSelect, handleEdit, handleDelete) => (
-                <div key={insight.id} className="group relative bg-secondary/10 border border-border overflow-hidden hover:border-primary/40 transition-all flex flex-col shadow-sm">
-                    <div className="absolute top-3 left-3 z-10">
-                        <Checkbox
-                            checked={selectedIds.includes(insight.id)}
-                            onCheckedChange={() => toggleSelect(insight.id)}
-                            className="border-border bg-background/50"
-                        />
-                    </div>
-                    <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div className="flex items-center gap-1">
-                            <Button variant="secondary" size="icon" className="h-8 w-8 p-0 bg-background/80 border border-border/50" onClick={() => handleEdit(insight)}>
-                                <Pencil size={14} />
-                            </Button>
-                            <a href={`/insights/${insight.slug}`} target="_blank" className="inline-flex items-center justify-center h-8 w-8 rounded-md bg-background/80 border border-border/50 text-muted-foreground hover:text-primary transition-colors">
-                                <ExternalLink size={14} />
-                            </a>
-                            <Button variant="secondary" size="icon" className="h-8 w-8 p-0 bg-background/80 border border-border/50 text-destructive/60 hover:text-destructive" onClick={() => handleDelete(insight.id)}>
-                                <Trash2 size={14} />
-                            </Button>
-                        </div>
-                    </div>
-
+                <ResourceCard
+                    item={insight}
+                    selectedIds={selectedIds}
+                    onToggleSelect={toggleSelect}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                >
                     <div className="aspect-video relative overflow-hidden bg-secondary/30">
                         {insight.image ? (
                             <img src={insight.image} alt={insight.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -86,7 +73,7 @@ const AdminInsightsPage = () => {
                             <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider">{insight.category || 'General'}</span>
                             <span className="text-[10px] text-muted-foreground uppercase">{new Date(insight.created_at).toLocaleDateString()}</span>
                         </div>
-                        <h3 className="font-bold text-lg leading-tight mb-2 line-clamp-2 text-foreground group-hover:text-primary transition-colors cursor-pointer" onClick={() => handleEdit(insight)}>{insight.title}</h3>
+                        <h3 className="font-bold text-lg leading-tight mb-2 line-clamp-2 text-foreground group-hover:text-primary transition-colors cursor-pointer">{insight.title}</h3>
                         <p className="text-xs text-muted-foreground line-clamp-2 mb-4 flex-1">
                             {insight.excerpt?.replace(/<[^>]*>?/gm, '')}
                         </p>
@@ -94,12 +81,9 @@ const AdminInsightsPage = () => {
                             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                 <User size={12} className="text-primary/60" /> {insight.user?.name || 'Admin'}
                             </div>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground/40 hover:text-destructive bg-background/50 backdrop-blur-sm border border-border" onClick={() => handleDelete(insight.id)}>
-                                <Trash2 size={14} />
-                            </Button>
                         </div>
                     </div>
-                </div>
+                </ResourceCard>
             )}
             renderTableHeaders={(items, selectedIds, selectAll) => (
                 <tr>
@@ -113,48 +97,43 @@ const AdminInsightsPage = () => {
                     <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground">Category</th>
                     <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground">Status</th>
                     <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground">Date</th>
-                    <th className="p-4 text-right"></th>
+                    <th className="p-4 text-right"><span className="sr-only">Actions</span></th>
                 </tr>
             )}
             renderTableRows={(items, selectedIds, toggleSelect, handleEdit, handleDelete) => (
                 <>
                     {items?.map((insight) => (
-                        <tr key={insight.id} className="hover:bg-primary/5 transition-colors group">
-                            <td className="p-4 px-6">
-                                <Checkbox
-                                    checked={selectedIds.includes(insight.id)}
-                                    onCheckedChange={() => toggleSelect(insight.id)}
-                                    className="border-border"
-                                />
-                            </td>
+                        <ResourceTableRow
+                            key={insight.id}
+                            item={insight}
+                            selectedIds={selectedIds}
+                            onToggleSelect={toggleSelect}
+                            onEdit={handleEdit}
+                            onDelete={handleDelete}
+                        >
                             <td className="p-4">
                                 <div className="flex items-center gap-4">
                                     <div className="w-10 h-10 rounded bg-secondary overflow-hidden shrink-0 border border-border/50">
-                                        {insight.image ? <img src={insight.image} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-primary/40"><ImageIcon size={16} /></div>}
+                                        {insight.image ? <img src={insight.image} alt={insight.title} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-primary/40"><ImageIcon size={16} /></div>}
                                     </div>
-                                    <div className="font-bold line-clamp-1 group-hover:text-primary transition-colors cursor-pointer" onClick={() => handleEdit(insight)}>{insight.title}</div>
+                                    <div className="font-bold line-clamp-1 group-hover:text-primary transition-colors cursor-pointer">{insight.title}</div>
                                 </div>
                             </td>
                             <td className="p-4">
                                 <span className="text-xs font-medium text-muted-foreground">{insight.category || '—'}</span>
                             </td>
                             <td className="p-4">
-                                {insight.is_published ? (
-                                    <span className="text-[10px] font-bold text-emerald-500 uppercase flex items-center gap-1.5"><div className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Live</span>
-                                ) : (
-                                    <span className="text-[10px] font-bold text-amber-500 uppercase flex items-center gap-1.5"><div className="h-1.5 w-1.5 rounded-full bg-amber-500" /> Draft</span>
-                                )}
+                                <StatusBadge
+                                    isActive={!!insight.is_published}
+                                    activeLabel="Live"
+                                    inactiveLabel="Draft"
+                                    variant="published"
+                                />
                             </td>
                             <td className="p-4 text-xs text-muted-foreground">
                                 {new Date(insight.created_at).toLocaleDateString()}
                             </td>
-                            <td className="p-4 text-right">
-                                <div className="flex items-center justify-end gap-2">
-                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => handleEdit(insight)}><Pencil size={14} /></Button>
-                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-destructive/40 hover:text-destructive" onClick={() => handleDelete(insight.id)}><Trash2 size={14} /></Button>
-                                </div>
-                            </td>
-                        </tr>
+                        </ResourceTableRow>
                     ))}
                 </>
             )}

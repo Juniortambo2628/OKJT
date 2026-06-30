@@ -3,12 +3,12 @@
 namespace App\Traits;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 trait HandlesStandardCrud
 {
-    /**
-     * Get the model class name.
-     */
     protected function getModelClass(): string
     {
         if (property_exists($this, 'modelClass')) {
@@ -20,10 +20,41 @@ trait HandlesStandardCrud
         return 'App\\Models\\' . $modelName;
     }
 
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    protected function getResourceClass(): ?string
+    {
+        if (property_exists($this, 'resourceClass')) {
+            return $this->resourceClass;
+        }
+        return null;
+    }
+
+    protected function getCacheKey(): ?string
+    {
+        if (property_exists($this, 'cacheKey')) {
+            return $this->cacheKey;
+        }
+        return null;
+    }
+
+    protected function clearCache(): void
+    {
+        $key = $this->getCacheKey();
+        if ($key) {
+            Cache::forget($key);
+        }
+    }
+
+    protected function resolveRouteBinding($value, $field = null)
+    {
+        $model = $this->getModelClass();
+        $relations = property_exists($this, 'withRelations') ? $this->withRelations : [];
+        
+        $field = $field ?? 'id';
+        
+        return $model::with($relations)->where($field, $value)->firstOrFail();
+    }
+
+    protected function buildIndexQuery(): Builder
     {
         $model = $this->getModelClass();
         $relations = property_exists($this, 'withRelations') ? $this->withRelations : [];
@@ -38,12 +69,27 @@ trait HandlesStandardCrud
             $query = $query->orderBy($orderBy, $orderDir);
         }
 
-        return response()->json($query->get());
+        return $query;
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    public function index()
+    {
+        $cacheKey = $this->getCacheKey();
+
+        if ($cacheKey) {
+            $results = Cache::rememberForever($cacheKey, fn () => $this->buildIndexQuery()->get());
+        } else {
+            $results = $this->buildIndexQuery()->get();
+        }
+
+        $resourceClass = $this->getResourceClass();
+        if ($resourceClass) {
+            return $resourceClass::collection($results);
+        }
+
+        return response()->json($results);
+    }
+
     public function store(Request $request)
     {
         $rules = method_exists($this, 'storeRules') ? $this->storeRules($request) : (property_exists($this, 'storeRules') ? $this->storeRules : []);
@@ -60,30 +106,33 @@ trait HandlesStandardCrud
             $record = $this->afterStore($record, $validated, $request);
         }
 
+        $this->clearCache();
+
+        $resourceClass = $this->getResourceClass();
+        if ($resourceClass) {
+            return new $resourceClass($record);
+        }
+
         return response()->json($record, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show($id)
     {
         $model = $this->getModelClass();
         $relations = property_exists($this, 'withRelations') ? $this->withRelations : [];
+        
+        $field = property_exists($this, 'routeBindingField') ? $this->routeBindingField : 'id';
+        
+        $record = $model::with($relations)->where($field, $id)->firstOrFail();
 
-        // Support both ID and Slug lookup
-        if (!is_numeric($id) && in_array('slug', (new $model)->getFillable())) {
-            $record = $model::with($relations)->where('slug', $id)->firstOrFail();
-        } else {
-            $record = $model::with($relations)->findOrFail($id);
+        $resourceClass = $this->getResourceClass();
+        if ($resourceClass) {
+            return new $resourceClass($record);
         }
 
         return response()->json($record);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id)
     {
         $model = $this->getModelClass();
@@ -102,12 +151,16 @@ trait HandlesStandardCrud
             $record = $this->afterUpdate($record, $validated, $request);
         }
 
+        $this->clearCache();
+
+        $resourceClass = $this->getResourceClass();
+        if ($resourceClass) {
+            return new $resourceClass($record);
+        }
+
         return response()->json($record);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($id)
     {
         $model = $this->getModelClass();
@@ -118,6 +171,7 @@ trait HandlesStandardCrud
         }
 
         $record->delete();
+        $this->clearCache();
 
         return response()->json(null, 204);
     }

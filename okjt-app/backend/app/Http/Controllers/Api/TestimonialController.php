@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\TestimonialResource;
 use App\Traits\HandlesStandardCrud;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Cache;
 
 class TestimonialController extends Controller
 {
@@ -14,63 +13,8 @@ class TestimonialController extends Controller
 
     protected $orderByField = 'order';
     protected $orderByDirection = 'asc';
-
-    private function clearCache()
-    {
-        Cache::forget('all_testimonials');
-    }
-
-    public function index()
-    {
-        $testimonials = Cache::rememberForever('all_testimonials', function () {
-            $model = $this->getModelClass();
-            $relations = property_exists($this, 'withRelations') ? $this->withRelations : [];
-            $orderBy = property_exists($this, 'orderByField') ? $this->orderByField : 'id';
-            $orderDir = property_exists($this, 'orderByDirection') ? $this->orderByDirection : 'asc';
-
-            $query = $model::with($relations);
-
-            if (method_exists($this, 'indexQuery')) {
-                $query = $this->indexQuery($query);
-            } else {
-                $query = $query->orderBy($orderBy, $orderDir);
-            }
-            return $query->get();
-        });
-
-        return TestimonialResource::collection($testimonials);
-    }
-
-    public function show($id)
-    {
-        $model = $this->getModelClass();
-        $relations = property_exists($this, 'withRelations') ? $this->withRelations : [];
-
-        if (!is_numeric($id) && in_array('slug', (new $model)->getFillable())) {
-            $record = $model::with($relations)->where('slug', $id)->firstOrFail();
-        } else {
-            $record = $model::with($relations)->findOrFail($id);
-        }
-
-        return new TestimonialResource($record);
-    }
-
-    protected function afterStore($record, $validated, $request)
-    {
-        $this->clearCache();
-        return $record;
-    }
-
-    protected function afterUpdate($record, $validated, $request)
-    {
-        $this->clearCache();
-        return $record;
-    }
-
-    protected function beforeDelete($record)
-    {
-        $this->clearCache();
-    }
+    protected $cacheKey = 'all_testimonials';
+    protected $resourceClass = TestimonialResource::class;
 
     protected function indexQuery(Builder $query): Builder
     {

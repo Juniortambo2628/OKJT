@@ -12,4 +12,8 @@ class Subscriber extends Model
         'source',
         'is_active',
     ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
 }

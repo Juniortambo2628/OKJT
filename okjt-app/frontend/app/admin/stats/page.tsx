@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Pencil, Trash2, ArrowUpDown } from 'lucide-react'
 import { Input } from '@/components/ui/input'
+import { Checkbox } from '@/components/ui/checkbox'
 import AdminResourceTemplate from '@/components/admin/core/AdminResourceTemplate'
 
 const AdminStatsPage = () => {
@@ -36,11 +37,10 @@ const AdminStatsPage = () => {
             renderGridItem={(stat, selectedIds, toggleSelect, handleEdit, handleDelete) => (
                 <Card className="bg-secondary/10 border-border/50 hover:bg-secondary/20 transition-all relative">
                     <div className="absolute top-4 left-4 z-10">
-                        <input 
-                            type="checkbox"
+                        <Checkbox
                             checked={selectedIds.includes(stat.id)}
-                            onChange={() => toggleSelect(stat.id)}
-                            className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
+                            onCheckedChange={() => toggleSelect(stat.id)}
+                            className="border-border bg-background/50"
                         />
                     </div>
                     <CardContent className="p-6 pt-10">
@@ -82,11 +82,9 @@ const AdminStatsPage = () => {
             renderTableHeaders={(filteredStats, selectedIds, selectAll) => (
                 <tr>
                     <th className="p-4 px-6 w-10">
-                        <input 
-                            type="checkbox"
+                        <Checkbox
                             checked={selectedIds.length === filteredStats?.length && filteredStats?.length > 0}
-                            onChange={() => selectAll(filteredStats?.map(i => i.id) || [])}
-                            className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
+                            onCheckedChange={() => selectAll(filteredStats?.map(i => i.id) || [])}
                         />
                     </th>
                     <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground">Value</th>
@@ -102,11 +100,10 @@ const AdminStatsPage = () => {
                     {filteredStats?.map((stat: any) => (
                         <tr key={stat.id} className="hover:bg-primary/5 transition-colors group">
                             <td className="p-4 px-6">
-                                <input 
-                                    type="checkbox"
+                                <Checkbox
                                     checked={selectedIds.includes(stat.id)}
-                                    onChange={() => toggleSelect(stat.id)}
-                                    className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
+                                    onCheckedChange={() => toggleSelect(stat.id)}
+                                    className="border-border"
                                 />
                             </td>
                             <td className="p-4 font-bold text-sm text-primary">

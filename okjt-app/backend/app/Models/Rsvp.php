@@ -22,5 +22,7 @@ class Rsvp extends Model
     protected $casts = [
         'consent' => 'boolean',
         'newsletter' => 'boolean',
+        'type' => 'string',
+        'attendance' => 'string',
     ];
 }

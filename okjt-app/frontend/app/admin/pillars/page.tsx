@@ -1,19 +1,18 @@
 "use client"
 
 import React from 'react'
-import { Button } from '@/components/ui/button'
-import { Pencil, Trash2, ExternalLink, Activity, Shield, Zap, TrendingUp, BarChart, Globe, Mail, Users, Settings } from 'lucide-react'
+import { ExternalLink, Activity } from 'lucide-react'
+import { iconMap } from '@/components/admin/constants'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Pillar } from '@/types/api'
-import { cn } from '@/lib/utils'
 import ImageUploader from '@/components/admin/ImageUploader'
 import RichTextEditor from '@/components/admin/RichTextEditor'
 import AdminResourceTemplate from '@/components/admin/core/AdminResourceTemplate'
-
-const iconMap: Record<string, React.ElementType> = {
-    Activity, Shield, Zap, TrendingUp, BarChart, Globe, Mail, Users, Settings,
-}
+import { ResourceCard } from '@/components/admin/ResourceCard'
+import { ResourceTableRow } from '@/components/admin/ResourceTableRow'
+import { StatusBadge } from '@/components/admin/StatusBadge'
+import { IconPicker } from '@/components/admin/IconPicker'
 
 const AdminPillarsPage = () => {
     return (
@@ -48,47 +47,37 @@ const AdminPillarsPage = () => {
                 const IconNode = iconMap[pillar.icon || 'Activity'] || Activity
 
                 return (
-                    <div key={pillar.id} className="group relative bg-secondary/10 border border-border p-6 overflow-hidden hover:border-primary/40 transition-all flex flex-col shadow-sm">
-                        <div className="absolute top-4 left-4 z-10">
-                            <Checkbox
-                                checked={selectedIds.includes(pillar.id)}
-                                onCheckedChange={() => toggleSelect(pillar.id)}
-                                className="border-border bg-background/50"
-                            />
-                        </div>
-                        <div className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <div className="flex items-center gap-1">
-                                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground/40 bg-background/50 backdrop-blur-sm border border-border" onClick={() => handleEdit(pillar)}>
-                                    <Pencil size={14} />
-                                </Button>
-                                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive/40 bg-background/50 backdrop-blur-sm border border-border hover:text-destructive" onClick={() => handleDelete(pillar.id)}>
-                                    <Trash2 size={14} />
-                                </Button>
+                    <ResourceCard
+                        item={pillar}
+                        selectedIds={selectedIds}
+                        onToggleSelect={toggleSelect}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                    >
+                        <div className="p-6">
+                            <div className="mb-6 w-14 h-14 bg-primary/10 text-primary flex items-center justify-center rounded-xl ring-1 ring-primary/20 group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                                <IconNode size={32} />
+                            </div>
+
+                            <div className="space-y-3 flex-1">
+                                <div className="flex items-center gap-2">
+                                    <StatusBadge isActive={!!pillar.is_active} />
+                                </div>
+                                <h3 className="font-bold text-xl leading-tight text-foreground">{pillar.title}</h3>
+                                <p className="text-sm text-muted-foreground line-clamp-3">
+                                    {pillar.overview}
+                                </p>
+                                <div className="pt-2 text-[10px] uppercase tracking-widest font-bold text-primary/60">
+                                    {pillar.services?.length || 0} Associated Services
+                                </div>
+                            </div>
+
+                            <div className="mt-6 pt-6 border-t border-border flex items-center justify-between">
+                                <span className="text-xs font-bold text-muted-foreground">Manage Pillar</span>
+                                <a href={`/our-approach/${pillar.slug}`} target="_blank" className="text-muted-foreground hover:text-primary transition-colors"><ExternalLink size={16} /></a>
                             </div>
                         </div>
-
-                        <div className="mb-6 w-14 h-14 bg-primary/10 text-primary flex items-center justify-center rounded-xl ring-1 ring-primary/20 group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                            <IconNode size={32} />
-                        </div>
-
-                        <div className="space-y-3 flex-1">
-                            <div className="flex items-center gap-2">
-                                {!pillar.is_active && <span className="text-[10px] font-bold text-amber-500 uppercase tracking-widest bg-amber-500/10 px-2 py-0.5">Inactive</span>}
-                            </div>
-                            <h3 className="font-bold text-xl leading-tight text-foreground">{pillar.title}</h3>
-                            <p className="text-sm text-muted-foreground line-clamp-3">
-                                {pillar.overview}
-                            </p>
-                            <div className="pt-2 text-[10px] uppercase tracking-widest font-bold text-primary/60">
-                                {pillar.services?.length || 0} Associated Services
-                            </div>
-                        </div>
-
-                        <div className="mt-6 pt-6 border-t border-border flex items-center justify-between">
-                            <Button variant="ghost" size="sm" className="h-8 text-xs font-bold text-muted-foreground hover:text-foreground" onClick={() => handleEdit(pillar)}>Manage Pillar</Button>
-                            <a href={`/our-approach/${pillar.slug}`} target="_blank" className="text-muted-foreground hover:text-primary transition-colors"><ExternalLink size={16} /></a>
-                        </div>
-                    </div>
+                    </ResourceCard>
                 )
             }}
             renderTableHeaders={(items, selectedIds, selectAll) => (
@@ -112,14 +101,14 @@ const AdminPillarsPage = () => {
                         const IconNode = iconMap[pillar.icon || 'Activity'] || Activity
 
                         return (
-                            <tr key={pillar.id} className="hover:bg-primary/5 transition-colors group">
-                                <td className="p-4 px-6">
-                                    <Checkbox
-                                        checked={selectedIds.includes(pillar.id)}
-                                        onCheckedChange={() => toggleSelect(pillar.id)}
-                                        className="border-border"
-                                    />
-                                </td>
+                            <ResourceTableRow
+                                key={pillar.id}
+                                item={pillar}
+                                selectedIds={selectedIds}
+                                onToggleSelect={toggleSelect}
+                                onEdit={handleEdit}
+                                onDelete={handleDelete}
+                            >
                                 <td className="p-4">
                                     <div className="flex items-center gap-4">
                                         {pillar.image ? (
@@ -131,7 +120,7 @@ const AdminPillarsPage = () => {
                                                 <IconNode size={17} />
                                             </div>
                                         )}
-                                        <div className="font-bold text-sm group-hover:text-primary transition-colors cursor-pointer" onClick={() => handleEdit(pillar)}>{pillar.title}</div>
+                                        <div className="font-bold text-sm group-hover:text-primary transition-colors cursor-pointer">{pillar.title}</div>
                                     </div>
                                 </td>
                                 <td className="p-4">
@@ -140,22 +129,12 @@ const AdminPillarsPage = () => {
                                     </div>
                                 </td>
                                 <td className="p-4">
-                                    {pillar.is_active ? (
-                                        <span className="text-[10px] font-bold text-emerald-500 uppercase">Active</span>
-                                    ) : (
-                                        <span className="text-[10px] font-bold text-amber-500 uppercase">Inactive</span>
-                                    )}
+                                    <StatusBadge isActive={!!pillar.is_active} />
                                 </td>
                                 <td className="p-4 text-xs text-muted-foreground">
                                     {pillar.created_at ? new Date(pillar.created_at).toLocaleDateString() : '—'}
                                 </td>
-                                <td className="p-4 text-right pr-6">
-                                    <div className="flex items-center justify-end gap-2">
-                                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => handleEdit(pillar)}><Pencil size={14} /></Button>
-                                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-destructive/40 hover:text-destructive" onClick={() => handleDelete(pillar.id)}><Trash2 size={14} /></Button>
-                                    </div>
-                                </td>
-                            </tr>
+                            </ResourceTableRow>
                         )
                     })}
                 </>
@@ -197,19 +176,11 @@ const AdminPillarsPage = () => {
 
                         <div className="space-y-4">
                             <label className="text-sm font-medium block text-muted-foreground">Icon Selection</label>
-                            <div className="grid grid-cols-5 gap-2">
-                                {Object.keys(iconMap).map(iconName => (
-                                    <Button
-                                        key={iconName}
-                                        type="button"
-                                        variant={form.icon === iconName ? 'secondary' : 'ghost'}
-                                        className={cn("h-10 w-10 p-0", form.icon === iconName && "ring-1 ring-primary")}
-                                        onClick={() => setForm({ ...form, icon: iconName })}
-                                    >
-                                        {React.createElement(iconMap[iconName] as React.ElementType, { size: 18 })}
-                                    </Button>
-                                ))}
-                            </div>
+                            <IconPicker
+                                selectedIcon={form.icon || 'Activity'}
+                                onSelect={(iconName) => setForm({ ...form, icon: iconName })}
+                                icons={iconMap}
+                            />
                         </div>
 
                         <div className="flex items-center gap-2 pt-8">

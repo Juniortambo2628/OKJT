@@ -8,17 +8,19 @@ use App\Models\Rsvp;
 use Illuminate\Http\Request;
 use App\Mail\RsvpConfirmation;
 use Illuminate\Support\Facades\Mail;
+use App\Traits\HandlesStandardCrud;
 
 class RsvpController extends Controller
 {
-    public function index()
-    {
-        return RsvpResource::collection(Rsvp::orderBy('created_at', 'desc')->get());
-    }
+    use HandlesStandardCrud;
 
-    public function store(Request $request)
+    protected $orderByField = 'created_at';
+    protected $orderByDirection = 'desc';
+    protected $resourceClass = RsvpResource::class;
+
+    protected function storeRules(): array
     {
-        $validated = $request->validate([
+        return [
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:rsvps,email',
             'company' => 'nullable|string|max:255',
@@ -29,39 +31,25 @@ class RsvpController extends Controller
             'newsletter' => 'boolean',
             'attendance' => 'nullable|string|max:255',
             'type' => 'nullable|string|in:rsvp,early_access',
-        ]);
+        ];
+    }
 
-        $rsvp = Rsvp::create($validated);
+    protected function updateRules(Request $request, $record): array
+    {
+        return [
+            'attendance' => 'nullable|string|max:255',
+            'type' => 'nullable|string|in:rsvp,early_access',
+        ];
+    }
 
+    protected function afterStore($record, $validated, $request)
+    {
         try {
-            Mail::to($rsvp->email)->queue(new RsvpConfirmation($rsvp));
+            Mail::to($record->email)->queue(new RsvpConfirmation($record));
         } catch (\Exception $e) {
             logger()->error("Failed to send RSVP confirmation mail: " . $e->getMessage());
         }
 
-        return new RsvpResource($rsvp);
-    }
-
-    public function show(Rsvp $rsvp)
-    {
-        return new RsvpResource($rsvp);
-    }
-
-    public function update(Request $request, Rsvp $rsvp)
-    {
-        $validated = $request->validate([
-            'attendance' => 'nullable|string|max:255',
-            'type' => 'nullable|string|in:rsvp,early_access',
-        ]);
-
-        $rsvp->update($validated);
-
-        return new RsvpResource($rsvp);
-    }
-
-    public function destroy(Rsvp $rsvp)
-    {
-        $rsvp->delete();
-        return response()->json(null, 204);
+        return $record;
     }
 }

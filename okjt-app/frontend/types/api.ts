@@ -184,3 +184,30 @@ export interface Rsvp {
   created_at: string;
   updated_at: string;
 }
+
+export interface RegisterRequest {
+  name: string;
+  email: string;
+  password: string;
+  password_confirmation: string;
+}
+
+export interface PasswordResetRequest {
+  email: string;
+}
+
+export interface PasswordResetConfirmRequest {
+  token: string;
+  email: string;
+  password: string;
+  password_confirmation: string;
+}
+
+export interface AuthResponse {
+  user: User;
+  token: string;
+}
+
+export interface PasswordResetResponse {
+  message: string;
+}

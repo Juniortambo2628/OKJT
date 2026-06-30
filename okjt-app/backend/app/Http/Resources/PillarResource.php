@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\ServiceResource;
 
 class PillarResource extends JsonResource
 {
@@ -18,6 +19,7 @@ class PillarResource extends JsonResource
             'icon' => $this->icon,
             'image' => $this->image,
             'is_active' => (bool) $this->is_active,
+            'services' => ServiceResource::collection($this->whenLoaded('services')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

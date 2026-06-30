@@ -117,6 +117,12 @@ class SiteSettingController extends Controller
         );
     }
 
+    public function showEmailTemplate(string $key)
+    {
+        $setting = SiteSetting::where('key', $key)->where('group', 'email')->firstOrFail();
+        return new SiteSettingResource($setting);
+    }
+
     public function storeEmailTemplate(Request $request)
     {
         $validated = $request->validate([

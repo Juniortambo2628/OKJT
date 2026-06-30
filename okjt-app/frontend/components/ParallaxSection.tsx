@@ -18,16 +18,18 @@ interface ParallaxSectionProps {
 }
 
 /**
- * ParallaxSection — a 1:1 refactor of the OurApproach PillarSection.
+ * ParallaxSection — scroll-driven reveal with title→content crossfade.
  *
- * Behaviour (identical to PillarSection):
- * - The outer `div` is tall (min-h-[230vh]) so there is plenty of scroll runway.
- * - Inside it, a `sticky top-0 h-screen` container pins the viewport.
- * - Background media scales subtly and NEVER fades out (stays persistent).
- * - Content fades in quickly (0→4%), stays visible ~90%, fades out (94→100%).
- * - Subtitle and children cascade in/out with staggered timings.
- * - Adjacent sections transition seamlessly: as one section's content
- *   fades out, the next section's content fades in — no dead scroll space.
+ * Animation sequence (when both title/subtitle AND children are present):
+ *   0%–5%   : Title + badge slide in, become visible
+ *   5%–12%  : Subtitle cascades in below the title
+ *   12%–20% : Title & subtitle crossfade OUT while children crossfade IN
+ *   20%–85% : Only children content is visible (full viewport space)
+ *   85%–95% : Children fade out
+ *   95%–100%: Dead zone for seamless transition to next section
+ *
+ * When there are NO children, the title/subtitle persist throughout
+ * the section (legacy behavior for CTA-style sections).
  */
 export default function ParallaxSection({
     bgMedia,
@@ -55,24 +57,92 @@ export default function ParallaxSection({
         restDelta: 0.001
     })
 
-    // ── Timing: exact replica of PillarSection ──
+    const hasTitle = !!(title || badgeText || subtitle)
+    const hasChildren = !!children
+    const hasCrossfade = hasTitle && hasChildren
 
-    // Main content container: enters quickly, stays completely visible, fades out at the very end
-    const contentOpacity = useTransform(smoothProgress, [0.0, 0.05, 0.95, 1.0], [0, 1, 1, 0])
-    const contentScale  = useTransform(smoothProgress, [0.0, 0.05, 0.95, 1.0], [0.99, 1, 1, 0.98])
-    const contentY      = useTransform(smoothProgress, [0.0, 0.05, 0.95, 1.0], [20, 0, 0, -40])
-
-    // Subtitle: cascades in slightly after title, stays persistent
-    const subtitleOpacity = useTransform(smoothProgress, [0.0, 0.03, 0.09, 0.91, 0.97, 1.0], [0, 0, 1, 1, 0, 0])
-    const subtitleY       = useTransform(smoothProgress, [0.0, 0.03, 0.09, 0.91, 0.97, 1.0], [16, 16, 0, 0, -30, -30])
-
-    // Children / detail: cascades in after subtitle, stays persistent
-    const detailOpacity = useTransform(smoothProgress, [0.0, 0.05, 0.12, 0.88, 0.95, 1.0], [0, 0, 1, 1, 0, 0])
-    const detailY       = useTransform(smoothProgress, [0.0, 0.05, 0.12, 0.88, 0.95, 1.0], [24, 24, 0, 0, -35, -35])
-
-    // Background: persistent parallax scale, never fades out
+    // ── Background: persistent parallax, never fades out ──
     const bgScale   = useTransform(smoothProgress, [0, 1], [1.01, 1.06])
     const bgOpacity = useTransform(smoothProgress, [0, 0.02, 1], [0, 1, 1])
+
+    // ── Outer content wrapper (shared for both title layer and children layer) ──
+    const wrapperOpacity = useTransform(smoothProgress, [0.0, 0.03, 0.90, 1.0], [0, 1, 1, 0])
+    const wrapperScale   = useTransform(smoothProgress, [0.0, 0.03, 0.90, 1.0], [0.99, 1, 1, 0.98])
+
+    // ── CROSSFADE MODE: title slides in first, then fades out as children replace it ──
+
+    // Title block: fades in at start, fades out between 30%–40%
+    const titleOpacity = useTransform(
+        smoothProgress,
+        hasCrossfade
+            ? [0.0, 0.03, 0.30, 0.40, 0.90, 1.0]
+            : [0.0, 0.03, 0.90, 1.0, 1.0, 1.0],
+        hasCrossfade
+            ? [0,   1,    1,    0,    0,   0]
+            : [0,   1,    1,    0,    0,   0]
+    )
+    const titleY = useTransform(
+        smoothProgress,
+        hasCrossfade
+            ? [0.0, 0.03, 0.30, 0.40]
+            : [0.0, 0.03, 0.90, 1.0],
+        hasCrossfade
+            ? [30,  0,    0,    -40]
+            : [30,  0,    0,    -40]
+    )
+    const titleScale = useTransform(
+        smoothProgress,
+        hasCrossfade
+            ? [0.0, 0.03, 0.30, 0.40]
+            : [0.0, 0.03, 0.90, 1.0],
+        hasCrossfade
+            ? [0.95, 1,   1,    0.92]
+            : [0.95, 1,   1,    0.92]
+    )
+
+    // Subtitle: cascades in slightly after title, fades out with title
+    const subtitleOpacity = useTransform(
+        smoothProgress,
+        hasCrossfade
+            ? [0.0, 0.05, 0.10, 0.32, 0.42]
+            : [0.0, 0.05, 0.10, 0.88, 0.95],
+        hasCrossfade
+            ? [0,   0,    1,    1,    0]
+            : [0,   0,    1,    1,    0]
+    )
+    const subtitleY = useTransform(
+        smoothProgress,
+        hasCrossfade
+            ? [0.0, 0.05, 0.10, 0.32, 0.42]
+            : [0.0, 0.05, 0.10, 0.88, 0.95],
+        hasCrossfade
+            ? [20,  20,   0,    0,    -30]
+            : [20,  20,   0,    0,    -30]
+    )
+
+    // Children: fade in as title fades out, stay visible, then fade out at end
+    const childrenOpacity = useTransform(
+        smoothProgress,
+        [0.0, 0.32, 0.42, 0.85, 0.94, 1.0],
+        [0,   0,    1,    1,    0,    0]
+    )
+    const childrenY = useTransform(
+        smoothProgress,
+        [0.0, 0.32, 0.42, 0.85, 0.94, 1.0],
+        [40,  40,   0,    0,    -35,  -35]
+    )
+
+    // ── NON-CROSSFADE: children-only sections (no title) ──
+    const childrenOnlyOpacity = useTransform(
+        smoothProgress,
+        [0.0, 0.05, 0.12, 0.88, 0.95, 1.0],
+        [0,   0,    1,    1,    0,    0]
+    )
+    const childrenOnlyY = useTransform(
+        smoothProgress,
+        [0.0, 0.05, 0.12, 0.88, 0.95, 1.0],
+        [24,  24,   0,    0,    -35,  -35]
+    )
 
     const isVideo = bgMedia?.endsWith('.mp4') || bgMedia?.endsWith('.webm')
 
@@ -82,7 +152,7 @@ export default function ParallaxSection({
             ref={sectionRef} 
             className={`relative w-full overflow-visible ${heightClass}`}
         >
-            <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
+            <div className="sticky top-0 h-screen w-full flex flex-col justify-end pb-32 md:pb-40 lg:pb-44 overflow-hidden">
                 {/* Background Media — persistent, never fades out */}
                 <motion.div 
                     className="absolute inset-0 z-0"
@@ -100,68 +170,88 @@ export default function ParallaxSection({
                         ) : (
                             <img src={bgMedia} alt="" className="w-full h-full object-cover" />
                         )
-                    ) : (
-                        <SkeletonBlock className="h-full w-full" />
-                    )}
+                    ) : null}
                     <div className="absolute inset-0 bg-black" style={{ opacity: overlayOpacity }} />
                     <div className="absolute inset-0 bg-gradient-to-b from-black/90 via-transparent to-black/90" />
                     <div className="absolute inset-0 bg-primary/6 mix-blend-overlay" />
                 </motion.div>
 
-                {/* Content — sticky, persistent, with staggered cascading reveals */}
-                <motion.div 
-                    style={{ 
-                        opacity: contentOpacity, 
-                        scale: contentScale,
-                        y: contentY,
+                {/* Content area — positioned relative for stacking */}
+                <motion.div
+                    style={{
+                        opacity: wrapperOpacity,
+                        scale: wrapperScale,
                         willChange: 'transform, opacity'
                     }}
-                    className={`relative z-10 w-full ${contentMaxWidth} px-6 flex items-center justify-center pointer-events-auto max-h-[85vh] overflow-y-auto`}
+                    className={`relative z-10 w-full ${contentMaxWidth} mx-auto px-6 pointer-events-auto`}
                 >
-                    <div className="w-full text-center flex flex-col items-center justify-center space-y-4 md:space-y-6 select-none py-4">
-                        {/* Badge */}
-                        {badgeText && (
-                            <span className="inline-block bg-white/10 backdrop-blur-md border border-white/10 px-6 py-2.5 rounded-full text-primary font-bold tracking-[0.25em] uppercase text-[10px] sm:text-xs shadow-sm select-none">
-                                {badgeText} {typeof index === 'number' ? `0${index + 1}` : ''}
-                            </span>
-                        )}
-                        
-                        {/* Title */}
-                        {title && (
-                            <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold text-white tracking-tight leading-tight max-w-3xl drop-shadow-2xl">
-                                {title}
-                            </h2>
-                        )}
+                    <div className="relative w-full">
 
-                        {title && <div className="w-20 h-[1.5px] bg-gradient-to-r from-transparent via-primary/50 to-transparent" />}
-
-                        {/* Subtitle — staggered cascade */}
-                        {subtitle && (
-                            <motion.p 
-                                style={{ 
-                                    opacity: subtitleOpacity, 
-                                    y: subtitleY,
-                                    willChange: 'transform, opacity'
+                        {/* ═══ LAYER 1: Title + Badge + Subtitle (slides in first, then fades out) ═══ */}
+                        {hasTitle && (
+                            <motion.div
+                                style={{
+                                    opacity: titleOpacity,
+                                    y: titleY,
+                                    scale: titleScale,
+                                    willChange: 'transform, opacity',
+                                    // When crossfading, position absolutely so children can occupy same space
+                                    ...(hasCrossfade ? { position: 'absolute' as const, bottom: 0, left: 0, right: 0 } : {})
                                 }}
-                                className="text-sm sm:text-base md:text-lg lg:text-xl text-white/95 font-medium leading-relaxed max-w-2xl drop-shadow-lg"
+                                className={`w-full flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 lg:gap-16 text-left select-none ${hasCrossfade ? '' : 'py-4'}`}
                             >
-                                {subtitle}
-                            </motion.p>
-                        )}
+                                {/* Left column — Pill badge + Headline */}
+                                <div className="lg:max-w-[60%] xl:max-w-[55%] flex flex-col items-start space-y-6">
+                                    {/* Badge */}
+                                    {badgeText && (
+                                        <span className="inline-flex items-center gap-2.5 bg-foreground/10 backdrop-blur-md border border-foreground/15 rounded-full px-5 py-2 text-foreground/80 text-sm font-medium shadow-sm select-none">
+                                            {badgeText} {typeof index === 'number' ? `0${index + 1}` : ''}
+                                        </span>
+                                    )}
+                                    
+                                    {/* Title */}
+                                    {title && (
+                                        <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-[4.5rem] xl:text-[5rem] font-bold text-white tracking-tight leading-[1.05] drop-shadow-2xl">
+                                            {title}
+                                        </h2>
+                                    )}
+                                </div>
 
-                        {/* Children / detail content — staggered cascade after subtitle */}
-                        {children && (
-                            <motion.div 
-                                style={{ 
-                                    opacity: detailOpacity, 
-                                    y: detailY,
-                                    willChange: 'transform, opacity'
-                                }}
-                                className="w-full"
-                            >
-                                {children}
+                                {/* Right column — Description */}
+                                <div className="lg:max-w-[35%] xl:max-w-[30%] lg:pb-2 flex flex-col items-start space-y-6">
+                                    {/* Subtitle */}
+                                    {subtitle && (
+                                        <motion.p 
+                                            style={{ 
+                                                opacity: subtitleOpacity, 
+                                                y: subtitleY,
+                                                willChange: 'transform, opacity'
+                                            }}
+                                            className="text-base md:text-lg text-white/70 font-medium leading-relaxed drop-shadow-lg"
+                                        >
+                                            {subtitle}
+                                        </motion.p>
+                                    )}
+                                </div>
                             </motion.div>
                         )}
+
+                        {/* ═══ LAYER 2: Children content (fades in as title fades out) ═══ */}
+                        {hasChildren && (
+                            <motion.div 
+                                style={{
+                                    opacity: hasCrossfade ? childrenOpacity : childrenOnlyOpacity,
+                                    y: hasCrossfade ? childrenY : childrenOnlyY,
+                                    willChange: 'transform, opacity'
+                                }}
+                                className="w-full max-h-[85vh] overflow-y-auto py-4 flex flex-col justify-end"
+                            >
+                                <div className="w-full select-none">
+                                    {children}
+                                </div>
+                            </motion.div>
+                        )}
+
                     </div>
                 </motion.div>
             </div>

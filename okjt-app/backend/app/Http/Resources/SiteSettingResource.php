@@ -15,6 +15,8 @@ class SiteSettingResource extends JsonResource
             'value' => $this->value,
             'type' => $this->type,
             'group' => $this->group,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

@@ -1,14 +1,15 @@
 "use client"
 
 import React from 'react'
-import { Button } from '@/components/ui/button'
-import { Pencil, Trash2, User, Linkedin } from 'lucide-react'
+import { User, Linkedin } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { TeamMember } from '@/types/api'
 import ImageUploader from '@/components/admin/ImageUploader'
 import AdminResourceTemplate from '@/components/admin/core/AdminResourceTemplate'
+import { ResourceCard } from '@/components/admin/ResourceCard'
+import { ResourceTableRow } from '@/components/admin/ResourceTableRow'
 
 export default function AdminTeamPage() {
     return (
@@ -46,43 +47,33 @@ export default function AdminTeamPage() {
                 return null
             }}
             renderGridItem={(member, selectedIds, toggleSelect, handleEdit, handleDelete) => (
-                <div key={member.id} className="group relative bg-secondary/10 border border-border/50 hover:border-primary/40 transition-all p-6 text-center">
-                    <div className="absolute top-4 left-4 z-10">
-                        <Checkbox
-                            checked={selectedIds.includes(member.id)}
-                            onCheckedChange={() => toggleSelect(member.id)}
-                            className="border-white/20"
-                        />
-                    </div>
-                    <div className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div className="flex items-center gap-1">
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground/40 bg-background/50 backdrop-blur-sm border border-border" onClick={() => handleEdit(member)}>
-                                <Pencil size={14} />
-                            </Button>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive/40 bg-background/50 backdrop-blur-sm border border-border hover:text-destructive" onClick={() => handleDelete(member.id)}>
-                                <Trash2 size={14} />
-                            </Button>
+                <ResourceCard
+                    item={member}
+                    selectedIds={selectedIds}
+                    onToggleSelect={toggleSelect}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                >
+                    <div className="p-6 text-center">
+                        <div className="w-24 h-24 rounded-full bg-primary/10 mx-auto mb-4 overflow-hidden border border-primary/20">
+                            {member.image ? (
+                                <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                    <User size={40} className="text-primary/40" />
+                                </div>
+                            )}
                         </div>
-                    </div>
-
-                    <div className="w-24 h-24 rounded-full bg-primary/10 mx-auto mb-4 overflow-hidden border border-primary/20">
-                        {member.image ? (
-                            <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
-                        ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                                <User size={40} className="text-primary/40" />
-                            </div>
+                        <h3 className="font-bold text-lg">{member.name}</h3>
+                        <p className="text-primary text-xs font-bold uppercase tracking-wider mb-3">{member.role}</p>
+                        <p className="text-muted-foreground text-xs line-clamp-3 mb-4">{member.bio}</p>
+                        {member.linkedin && (
+                            <a href={member.linkedin} target="_blank" className="text-primary hover:underline flex items-center justify-center gap-1.5 text-xs font-bold">
+                                <Linkedin size={12} /> LinkedIn
+                            </a>
                         )}
                     </div>
-                    <h3 className="font-bold text-lg">{member.name}</h3>
-                    <p className="text-primary text-xs font-bold uppercase tracking-wider mb-3">{member.role}</p>
-                    <p className="text-muted-foreground text-xs line-clamp-3 mb-4">{member.bio}</p>
-                    {member.linkedin && (
-                        <a href={member.linkedin} target="_blank" className="text-primary hover:underline flex items-center justify-center gap-1.5 text-xs font-bold">
-                            <Linkedin size={12} /> LinkedIn
-                        </a>
-                    )}
-                </div>
+                </ResourceCard>
             )}
             renderTableHeaders={(items, selectedIds, selectAll) => (
                 <tr>
@@ -101,14 +92,14 @@ export default function AdminTeamPage() {
             renderTableRows={(items, selectedIds, toggleSelect, handleEdit, handleDelete) => (
                 <>
                     {items?.map((member) => (
-                        <tr key={member.id} className="hover:bg-primary/5 transition-colors group">
-                            <td className="p-4 px-6">
-                                <Checkbox
-                                    checked={selectedIds.includes(member.id)}
-                                    onCheckedChange={() => toggleSelect(member.id)}
-                                    className="border-white/20"
-                                />
-                            </td>
+                        <ResourceTableRow
+                            key={member.id}
+                            item={member}
+                            selectedIds={selectedIds}
+                            onToggleSelect={toggleSelect}
+                            onEdit={handleEdit}
+                            onDelete={handleDelete}
+                        >
                             <td className="p-4">
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-full bg-primary/10 overflow-hidden border border-primary/20 shrink-0">
@@ -123,13 +114,7 @@ export default function AdminTeamPage() {
                             <td className="p-4">
                                 <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded font-medium">{member.role}</span>
                             </td>
-                            <td className="p-4 text-right">
-                                <div className="flex items-center justify-end gap-2">
-                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => handleEdit(member)}><Pencil size={14} /></Button>
-                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-destructive/40 hover:text-destructive" onClick={() => handleDelete(member.id)}><Trash2 size={14} /></Button>
-                                </div>
-                            </td>
-                        </tr>
+                        </ResourceTableRow>
                     ))}
                 </>
             )}

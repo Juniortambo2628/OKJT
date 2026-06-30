@@ -57,6 +57,11 @@ Route::post('/consultation-requests', [ConsultationRequestController::class, 'st
 Route::post('/rsvps', [\App\Http\Controllers\Api\RsvpController::class, 'store']);
 Route::get('/storage/{path}', [UploadController::class, 'serve'])->where('path', '.*');
 
+// Auth routes
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/password/reset', [AuthController::class, 'sendResetLink']);
+Route::post('/password/reset/confirm', [AuthController::class, 'resetPassword']);
+
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -112,6 +117,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Subscribers (admin)
     Route::get('/subscribers', [SubscriberController::class, 'index']);
+    Route::get('/subscribers/{subscriber}', [SubscriberController::class, 'show']);
     Route::put('/subscribers/{subscriber}', [SubscriberController::class, 'update']);
     Route::delete('/subscribers/{subscriber}', [SubscriberController::class, 'destroy']);
 
@@ -138,6 +144,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Email Templates (admin only)
     Route::get('/email-templates', [SiteSettingController::class, 'emailTemplates']);
+    Route::get('/email-templates/{key}', [SiteSettingController::class, 'showEmailTemplate']);
     Route::post('/email-templates', [SiteSettingController::class, 'storeEmailTemplate']);
     Route::put('/email-templates/{key}', [SiteSettingController::class, 'updateEmailTemplate']);
     Route::delete('/email-templates/{key}', [SiteSettingController::class, 'destroyEmailTemplate']);

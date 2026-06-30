@@ -19,6 +19,11 @@ class DatabaseSeeder extends Seeder
             ProjectSeeder::class,
             TestimonialClientSeeder::class,
             AdvancedSettingsSeeder::class,
+            ValueSeeder::class,
+            StatSeeder::class,
+            TeamMemberSeeder::class,
+            InsightSeeder::class,
+            AnalyticsDataSeeder::class,
         ]);
     }
 }

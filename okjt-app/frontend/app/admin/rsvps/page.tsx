@@ -17,6 +17,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import AdminResourceTemplate from '@/components/admin/core/AdminResourceTemplate'
+import { ResourceTableRow } from '@/components/admin/ResourceTableRow'
 
 const typeColors: Record<string, string> = {
     rsvp: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
@@ -121,21 +122,22 @@ export default function AdminRsvpsPage() {
                     <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground">Type</th>
                     <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground">Attendance</th>
                     <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground text-right">Registered</th>
-                    <th className="p-4 text-right"></th>
+                    <th className="p-4 text-right"><span className="sr-only">Actions</span></th>
                 </tr>
             )}
             renderTableRows={(items, selectedIds, toggleSelect, onEdit, onDelete) => (
                 items.map((item) => (
-                    <tr key={item.id} className="hover:bg-primary/5 transition-colors cursor-pointer" onClick={() => onEdit(item)}>
-                        <td className="p-4 px-6" onClick={(e) => e.stopPropagation()}>
-                            <Checkbox
-                                checked={selectedIds.includes(item.id)}
-                                onCheckedChange={() => toggleSelect(item.id)}
-                            />
-                        </td>
+                    <ResourceTableRow
+                        key={item.id}
+                        item={item}
+                        selectedIds={selectedIds}
+                        onToggleSelect={toggleSelect}
+                        onEdit={onEdit}
+                        onDelete={onDelete}
+                    >
                         <td className="p-4 font-bold text-foreground">{item.name}</td>
                         <td className="p-4">
-                            <a href={`mailto:${item.email}`} className="text-sm text-primary hover:underline underline-offset-4 flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+                            <a href={`mailto:${item.email}`} className="text-sm text-primary hover:underline underline-offset-4 flex items-center gap-1.5">
                                 <Mail size={12} /> {item.email}
                             </a>
                         </td>
@@ -157,19 +159,7 @@ export default function AdminRsvpsPage() {
                         <td className="p-4 text-right text-muted-foreground whitespace-nowrap text-xs">
                             {format(new Date(item.created_at), 'MMM dd, yyyy')}
                         </td>
-                        <td className="p-4 text-right" onClick={(e) => e.stopPropagation()}>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="sm"><MoreVertical size={16} /></Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    <DropdownMenuItem onClick={() => onDelete(item.id)} className="text-destructive">
-                                        <Trash2 size={14} className="mr-2" /> Delete
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        </td>
-                    </tr>
+                    </ResourceTableRow>
                 ))
             )}
             renderFormFields={(form, setForm) => (

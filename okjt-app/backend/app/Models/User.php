@@ -52,6 +52,11 @@ class User extends Authenticatable
      * @param  string  $token
      * @return void
      */
+    public function insights()
+    {
+        return $this->hasMany(Insight::class);
+    }
+
     public function sendPasswordResetNotification($token)
     {
         $url = config('app.frontend_url') . '/admin/reset-password?token=' . $token . '&email=' . urlencode($this->email);

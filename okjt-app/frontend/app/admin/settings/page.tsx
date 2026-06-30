@@ -2,10 +2,10 @@
 
 import React, { useState } from 'react'
 import AdminLayout from '@/components/admin/AdminLayout'
-import { useApi } from '@/hooks/use-api'
-import { Button } from '@/components/ui/button'
+import { useSiteSettings } from '@/hooks/use-site-settings'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Save, RefreshCw, Globe, Palette, ShieldCheck, Mail, GripVertical, Plus, Trash2, Layout, Film, Image as ImageIcon, ListOrdered } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Globe, Palette, ShieldCheck, Mail, GripVertical, Plus, Trash2, Layout, Film, Image as ImageIcon, ListOrdered, RefreshCw } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
@@ -18,37 +18,30 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import api from '@/lib/api'
 import ImageUploader from '@/components/admin/ImageUploader'
 import { SiteSetting } from '@/types/api'
 import { useToast } from '@/hooks/use-toast'
 import { Reorder } from 'framer-motion'
 import { getMediaUrl } from '@/lib/utils'
+import SettingsHeader from '@/components/admin/core/SettingsHeader'
 
 const AdminSettingsPage = () => {
-    const { data: settingsByGroup, mutate, isLoading } = useApi<Record<string, SiteSetting[]>>('/settings')
+    const { settingsByGroup, localSettings, updateSetting, handleSave, isLoading, isSaving, mutate } = useSiteSettings()
     const { toast } = useToast()
-    const [localSettings, setLocalSettings] = useState<Record<string, string>>({})
     const [navLinks, setNavLinks] = useState<{name: string, href: string}[]>([])
-    const [isSavingAll, setIsSavingAll] = useState(false)
 
-    // Sync local state when data loads
+    // Sync nav links when data loads
     React.useEffect(() => {
         if (settingsByGroup) {
-            const flat: Record<string, string> = {}
-            Object.values(settingsByGroup).forEach((group) => {
-                group.forEach((s) => {
-                    flat[s.key] = s.value || ''
-                    if (s.key === 'main_nav_links') {
-                        try {
-                            setNavLinks(JSON.parse(s.value || '[]'))
-                        } catch (e) {
-                            console.error("Failed to parse local nav links", e)
-                        }
+            Object.values(settingsByGroup).flat().forEach((s) => {
+                if (s.key === 'main_nav_links') {
+                    try {
+                        setNavLinks(JSON.parse(s.value || '[]'))
+                    } catch (e) {
+                        console.error("Failed to parse local nav links", e)
                     }
-                })
+                }
             })
-            setLocalSettings(flat)
         }
     }, [settingsByGroup])
 
@@ -65,12 +58,9 @@ const AdminSettingsPage = () => {
         { key: 'hero_contact_media', label: 'Contact Page Hero', type: 'media' },
         { key: 'hero_consultation_media', label: 'Consultation Hero', type: 'media' },
         { key: 'stats_background', label: 'Stats Section Background', type: 'media' },
-        { key: 'hero_pillar_web_engineering', label: 'Pillar: Web Engineering Hero', type: 'media' },
+        { key: 'hero_pillar_web_development', label: 'Pillar: Web Development Hero', type: 'media' },
         { key: 'hero_pillar_ui_ux_design', label: 'Pillar: UI/UX Design Hero', type: 'media' },
         { key: 'hero_pillar_digital_strategy', label: 'Pillar: Digital Strategy Hero', type: 'media' },
-        { key: 'hero_pillar_energy_advisory', label: 'Pillar: Energy Advisory Hero', type: 'media' },
-        { key: 'hero_pillar_fintech', label: 'Pillar: Fintech Hero', type: 'media' },
-        { key: 'hero_pillar_international_diplomacy', label: 'Pillar: Diplomacy Hero', type: 'media' },
     ]
 
     const heroSettingByKey = heroSettingsList.reduce<Record<string, typeof heroSettingsList[number]>>((acc, setting) => {
@@ -84,48 +74,11 @@ const AdminSettingsPage = () => {
     }
 
     const handleSaveAll = async () => {
-        setIsSavingAll(true)
-        try {
-            const allSettings: SiteSetting[] = []
-            if (settingsByGroup) {
-                Object.values(settingsByGroup).forEach(group => {
-                    allSettings.push(...group)
-                })
-            }
-
-            const settingsToUpdate = Object.entries(localSettings).map(([key, value]) => {
-                const original = allSettings.find(s => s.key === key)
-                const heroSetting = heroSettingByKey[key]
-                let finalValue = value
-                
-                if (key === 'main_nav_links') {
-                    finalValue = JSON.stringify(navLinks)
-                }
-
-                return {
-                    key,
-                    value: finalValue,
-                    type: original?.type || (heroSetting?.type === 'video' ? 'video' : heroSetting ? 'image' : 'text'),
-                    group: original?.group || (heroSetting ? 'hero-media' : 'general')
-                }
-            })
-
-            await api.put('/settings/batch', { settings: settingsToUpdate })
-            toast({
-                title: "Settings Saved",
-                description: "All configuration changes have been updated.",
-            })
-            mutate()
-        } catch (err: unknown) {
-            const apiError = err as Error & { response?: { data?: { message?: string } } }
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: apiError.response?.data?.message || apiError.message || 'Failed to save settings',
-            })
-        } finally {
-            setIsSavingAll(false)
-        }
+        await handleSave((settings, local) => {
+            const updated = { ...local }
+            updated.main_nav_links = JSON.stringify(navLinks)
+            return updated
+        })
     }
 
     const groupIcons: Record<string, React.ElementType> = {
@@ -153,7 +106,7 @@ const AdminSettingsPage = () => {
                 {setting.type === 'image' || setting.type === 'file' || setting.key.includes('logo') || setting.key.includes('favicon') || setting.key.includes('image') ? (
                     <ImageUploader 
                         value={getMediaUrl(localSettings[setting.key] ?? setting.value ?? '')}
-                        onChange={(url) => setLocalSettings((prev) => ({ ...prev, [setting.key]: url }))}
+                        onChange={(url) => updateSetting(setting.key, url)}
                         accept={setting.type === 'file' ? ['.pdf'] : undefined}
                         className="w-full"
                         label=""
@@ -162,7 +115,7 @@ const AdminSettingsPage = () => {
                     <Textarea 
                         id={setting.key}
                         value={localSettings[setting.key] ?? setting.value ?? ''}
-                        onChange={(e) => setLocalSettings((prev) => ({ ...prev, [setting.key]: e.target.value }))}
+                        onChange={(e) => updateSetting(setting.key, e.target.value)}
                         className="bg-background/50 min-h-[100px]"
                     />
                 ) : setting.type === 'boolean' || setting.type === 'switch' ? (
@@ -170,7 +123,7 @@ const AdminSettingsPage = () => {
                         <Switch 
                             id={setting.key}
                             checked={localSettings[setting.key] === '1' || localSettings[setting.key] === 'true'}
-                            onCheckedChange={(checked: boolean) => setLocalSettings((prev) => ({ ...prev, [setting.key]: checked ? '1' : '0' }))}
+                            onCheckedChange={(checked: boolean) => updateSetting(setting.key, checked ? '1' : '0')}
                         />
                         <span className="text-xs text-muted-foreground">
                             {localSettings[setting.key] === '1' || localSettings[setting.key] === 'true' ? 'Enabled' : 'Disabled'}
@@ -180,7 +133,7 @@ const AdminSettingsPage = () => {
                     <Input 
                         id={setting.key}
                         value={localSettings[setting.key] ?? setting.value ?? ''}
-                        onChange={(e) => setLocalSettings((prev) => ({ ...prev, [setting.key]: e.target.value }))}
+                        onChange={(e) => updateSetting(setting.key, e.target.value)}
                         className="bg-background/50"
                     />
                 )}
@@ -191,30 +144,15 @@ const AdminSettingsPage = () => {
     return (
         <AdminLayout>
             <div className="space-y-8">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight text-foreground">Site Settings</h1>
-                        <p className="text-muted-foreground text-sm">Configure global variables, branding, and launch modes.</p>
-                    </div>
-                    <div className="flex gap-3">
-                        <Button 
-                            variant="outline" 
-                            className="bg-transparent border-border hover:bg-secondary text-foreground" 
-                            onClick={() => mutate()} 
-                            disabled={isLoading}
-                        >
-                            <RefreshCw size={18} className={isLoading ? "animate-spin" : ""} />
-                        </Button>
-                        <Button 
-                            onClick={handleSaveAll}
-                            disabled={isSavingAll || isLoading}
-                            className="gap-2 bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20"
-                        >
-                            {isSavingAll ? <RefreshCw size={18} className="animate-spin" /> : <Save size={18} />}
-                            Save All Changes
-                        </Button>
-                    </div>
-                </div>
+                <SettingsHeader
+                    title="Site Settings"
+                    description="Configure global variables, branding, and launch modes."
+                    onSave={handleSaveAll}
+                    onRefresh={() => mutate()}
+                    isSaving={isSaving}
+                    isLoading={isLoading}
+                    isRefreshing={isLoading}
+                />
 
                 <Tabs defaultValue="general" className="w-full">
                     <TabsList className="bg-secondary/10 border border-border p-1 mb-8 overflow-x-auto justify-start h-auto">
@@ -222,6 +160,7 @@ const AdminSettingsPage = () => {
                         <TabsTrigger value="branding" className="gap-2 px-6 py-2 text-foreground"><Palette size={14} /> Branding</TabsTrigger>
                         <TabsTrigger value="maintenance" className="gap-2 px-6 py-2 text-foreground"><ShieldCheck size={14} /> Maintenance</TabsTrigger>
                         <TabsTrigger value="hero-media" className="gap-2 px-6 py-2 text-foreground"><Layout size={14} /> Page Hero Media</TabsTrigger>
+                        <TabsTrigger value="section-media" className="gap-2 px-6 py-2 text-foreground"><ImageIcon size={14} /> Section Backgrounds</TabsTrigger>
                         <TabsTrigger value="navigation" className="gap-2 px-6 py-2 text-foreground"><ListOrdered size={14} /> Navigation</TabsTrigger>
                     </TabsList>
 
@@ -347,8 +286,65 @@ const AdminSettingsPage = () => {
                                                     </div>
                                                     <ImageUploader 
                                                         value={localSettings[hero.key] || ''}
-                                                        onChange={(url) => setLocalSettings(prev => ({ ...prev, [hero.key]: url }))}
+                                                        onChange={(url) => updateSetting(hero.key, url)}
                                                         accept={getHeroAccept(hero.type)}
+                                                        label=""
+                                                        className="w-full"
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </TabsContent>
+
+                            <TabsContent value="section-media" className="focus-visible:outline-none focus-visible:ring-0">
+                                <Card className="bg-secondary/5 border-border">
+                                    <CardHeader className="bg-secondary/10 border-b border-border">
+                                        <div className="flex items-center gap-3">
+                                            <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+                                                <Layout size={20} />
+                                            </div>
+                                            <div>
+                                                <CardTitle className="text-foreground">Section Background Media</CardTitle>
+                                                <CardDescription className="text-muted-foreground">Customize background media for the scrollable sections across the site.</CardDescription>
+                                            </div>
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent className="p-6">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {[
+                                                { key: 'bg_home_value_proposition', label: 'Home: Core Values Background' },
+                                                { key: 'bg_home_stats', label: 'Home: Stats Background' },
+                                                { key: 'bg_home_services', label: 'Home: Services Background' },
+                                                { key: 'bg_home_insights', label: 'Home: Insights Background' },
+                                                { key: 'bg_home_cta', label: 'Home: CTA Background' },
+                                                { key: 'bg_about_mission', label: 'About: Mission Background' },
+                                                { key: 'bg_about_values', label: 'About: Values Background' },
+                                                { key: 'bg_about_team', label: 'About: Team Background' },
+                                                { key: 'bg_about_cta', label: 'About: CTA Background' },
+                                                { key: 'bg_services_web_development', label: 'Services: Web Dev Background' },
+                                                { key: 'bg_services_ui_ux_design', label: 'Services: UI/UX Background' },
+                                                { key: 'bg_services_digital_strategy', label: 'Services: Strategy Background' },
+                                                { key: 'bg_client_impact_intro', label: 'Client Impact: Intro Background' },
+                                                { key: 'bg_client_impact_testimonials', label: 'Client Impact: Testimonials Background' },
+                                                { key: 'bg_client_impact_case_studies', label: 'Client Impact: Case Studies Background' },
+                                                { key: 'bg_contact_form', label: 'Contact: Form Background' },
+                                                { key: 'bg_contact_offices', label: 'Contact: Offices Background' },
+                                                { key: 'bg_insights_featured', label: 'Insights: Featured Background' },
+                                                { key: 'bg_insights_grid', label: 'Insights: Grid Background' },
+                                                { key: 'bg_projects_featured', label: 'Projects: Featured Background' },
+                                                { key: 'bg_projects_grid', label: 'Projects: Grid Background' },
+                                            ].map((section) => (
+                                                <div key={section.key} className="space-y-3">
+                                                    <div className="flex items-center justify-between">
+                                                        <Label className="text-xs font-bold text-muted-foreground uppercase tracking-tighter">{section.label}</Label>
+                                                        <ImageIcon size={14} className="text-muted-foreground/30" />
+                                                    </div>
+                                                    <ImageUploader 
+                                                        value={localSettings[section.key] || ''}
+                                                        onChange={(url) => updateSetting(section.key, url)}
+                                                        accept={['.jpg', '.jpeg', '.png', '.webp', '.mp4', '.webm']}
                                                         label=""
                                                         className="w-full"
                                                     />

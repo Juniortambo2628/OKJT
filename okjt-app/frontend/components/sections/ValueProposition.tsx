@@ -1,40 +1,25 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, Code2, Palette, LineChart } from 'lucide-react'
 import { useSettings } from '@/hooks/use-settings'
 import ParallaxSection from '@/components/ParallaxSection'
-
-const containerVariants = {
-    hidden: {},
-    visible: {
-        transition: { staggerChildren: 0.2 }
-    }
-}
-
-const cardVariants = {
-    hidden: { opacity: 0, y: 40 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: { type: "spring" as const, stiffness: 80, damping: 20 }
-    }
-}
+import { SectionCard } from '@/components/ui/SectionCard'
 
 const ValueProposition = () => {
     const { getSetting } = useSettings()
-    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
 
-    const tagline = getSetting('vp_section_tagline')
+    const tagline = getSetting('vp_section_tagline') || "VALUE PROPOSITION"
     const title = getSetting('vp_section_title')
     const subtitle = getSetting('vp_section_subtitle')
 
     const pillars = [
         {
-            title: getSetting('vp_pillar1_title'),
+            id: 'pillar-1',
+            title: getSetting('vp_pillar1_title') || 'Technology',
             description: getSetting('vp_pillar1_description'),
             icon: Code2,
             image: getSetting('vp_pillar1_image'),
@@ -43,7 +28,8 @@ const ValueProposition = () => {
             tag: getSetting('vp_pillar1_tag'),
         },
         {
-            title: getSetting('vp_pillar2_title'),
+            id: 'pillar-2',
+            title: getSetting('vp_pillar2_title') || 'Design',
             description: getSetting('vp_pillar2_description'),
             icon: Palette,
             image: getSetting('vp_pillar2_image'),
@@ -52,7 +38,8 @@ const ValueProposition = () => {
             tag: getSetting('vp_pillar2_tag'),
         },
         {
-            title: getSetting('vp_pillar3_title'),
+            id: 'pillar-3',
+            title: getSetting('vp_pillar3_title') || 'Strategy',
             description: getSetting('vp_pillar3_description'),
             icon: LineChart,
             image: getSetting('vp_pillar3_image'),
@@ -62,110 +49,93 @@ const ValueProposition = () => {
         },
     ]
 
+    const [activeTabTitle, setActiveTabTitle] = useState(pillars[0].title)
+    
+    // Fallback if settings load asynchronously
+    useEffect(() => {
+        if (!pillars.some(p => p.title === activeTabTitle)) {
+            setActiveTabTitle(pillars[0].title)
+        }
+    }, [pillars, activeTabTitle])
+
+    const activePillar = pillars.find(p => p.title === activeTabTitle) || pillars[0]
+    const Icon = activePillar.icon
+
+    const bgMedia = getSetting('bg_home_value_proposition', '/assets/videos/services/all-services-video.mp4')
+
     return (
         <ParallaxSection
             id="value-proposition"
-            bgMedia="/assets/videos/hero/01-energy.mp4"
-            heightClass="min-h-[220vh]"
-            badgeText={tagline || "VALUE PROPOSITION"}
+            bgMedia={bgMedia}
+            heightClass="min-h-[230vh]"
+            badgeText={tagline}
             title={title}
             subtitle={subtitle}
             contentMaxWidth="max-w-[1400px]"
         >
-            {/* Pillar Cards */}
-            <motion.div
-                variants={containerVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: "-100px" }}
-                className="grid grid-cols-1 md:grid-cols-3 min-h-[500px] w-full gap-4 mt-8"
+            <SectionCard
+                toolbarTitle="Core Values"
+                tabs={pillars.map(p => p.title)}
+                activeTab={activeTabTitle}
+                onTabChange={setActiveTabTitle}
             >
-                {pillars.map((pillar, index) => {
-                    const Icon = pillar.icon
-                    return (
-                        <motion.div
-                            key={`pillar-${index}`}
-                            variants={cardVariants}
-                            className="relative group cursor-pointer overflow-hidden border border-white/5 rounded-2xl bg-black/40 backdrop-blur-md"
-                            onMouseEnter={() => setHoveredIndex(index)}
-                            onMouseLeave={() => setHoveredIndex(null)}
-                        >
-                            <Link href={pillar.href} className="block relative h-full min-h-[450px] md:min-h-[500px]">
-                                {/* Background Image */}
-                                {pillar.image ? (
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={activePillar.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.4 }}
+                        className="flex flex-col lg:flex-row gap-8 lg:gap-16 pt-4"
+                    >
+                        {/* Text Content */}
+                        <div className="flex-1 flex flex-col justify-center items-start text-left">
+                            <Icon className="h-12 w-12 text-primary mb-6 drop-shadow-lg" />
+                            {activePillar.tag && (
+                                <span className="inline-block px-4 py-1.5 rounded-full bg-foreground/10 border border-foreground/10 text-foreground/80 text-xs font-bold uppercase tracking-widest mb-6">
+                                    {activePillar.tag}
+                                </span>
+                            )}
+                            <h3 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
+                                {activePillar.title}
+                            </h3>
+                            <p className="text-foreground/70 text-base md:text-lg leading-relaxed mb-8">
+                                {activePillar.description}
+                            </p>
+                            
+                            {activePillar.stats && (
+                                <div className="text-primary font-bold text-xl mb-8">
+                                    {activePillar.stats}
+                                </div>
+                            )}
+
+                            <Link 
+                                href={activePillar.href} 
+                                className="inline-flex items-center gap-2 text-foreground font-bold uppercase tracking-wider text-sm hover:text-primary transition-colors group"
+                            >
+                                Learn More
+                                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                            </Link>
+                        </div>
+
+                        {/* Image Content */}
+                        <div className="flex-1">
+                            <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl border border-foreground/10 bg-foreground/5">
+                                {activePillar.image ? (
                                     <Image
-                                        src={pillar.image}
-                                        alt={pillar.title}
+                                        src={activePillar.image}
+                                        alt={activePillar.title}
                                         fill
-                                        sizes="(max-width: 768px) 100vw, 33vw"
-                                        className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-70 group-hover:opacity-90"
+                                        className="object-cover"
                                     />
                                 ) : (
-                                    <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-background" />
+                                    <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-background" />
                                 )}
-
-                                {/* Gradient Overlays */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/20 transition-all duration-500" />
-                                <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-all duration-500" />
-
-                                {/* Animated accent line */}
-                                <motion.div
-                                    className="absolute top-0 left-0 w-full h-[2px] bg-primary z-20"
-                                    initial={{ scaleX: 0 }}
-                                    whileInView={{ scaleX: hoveredIndex === index ? 1 : 0 }}
-                                    transition={{ duration: 0.4 }}
-                                    style={{ transformOrigin: 'left' }}
-                                />
-
-                                {/* Tag */}
-                                <div className="absolute top-6 left-8 z-10">
-                                    <span className="bg-white/10 backdrop-blur-md border border-white/20 text-white/80 text-[10px] font-bold uppercase tracking-widest px-4.5 py-1.5 rounded-full">
-                                        {pillar.tag}
-                                    </span>
-                                </div>
-
-                                {/* Content */}
-                                <div className="absolute inset-x-0 bottom-0 p-8 z-10">
-                                    {/* Icon */}
-                                    <motion.div
-                                        className="mb-6"
-                                        whileHover={{ rotate: [0, -10, 10, 0], transition: { duration: 0.5 } }}
-                                    >
-                                        <Icon className="h-10 w-10 text-primary transition-transform duration-300 group-hover:scale-110 drop-shadow-lg" />
-                                    </motion.div>
-
-                                    {/* Stats Pill */}
-                                    <motion.span
-                                        className="inline-block text-primary/70 text-xs font-bold uppercase tracking-widest mb-4 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500"
-                                    >
-                                        {pillar.stats}
-                                    </motion.span>
-
-                                    <h3 className="text-2xl md:text-3xl font-bold text-white mb-4 transition-transform duration-300 group-hover:-translate-y-1">
-                                        {pillar.title}
-                                    </h3>
-
-                                    {/* Description - reveals on hover */}
-                                    <div className="max-h-0 overflow-hidden group-hover:max-h-40 transition-all duration-500 ease-out">
-                                        <p className="text-white/70 leading-relaxed mb-6 text-sm">
-                                            {pillar.description}
-                                        </p>
-                                    </div>
-
-                                    {/* CTA */}
-                                    <span className="text-white font-bold text-sm uppercase tracking-wider flex items-center gap-3 group-hover:text-primary transition-colors">
-                                        Learn More
-                                        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-2" />
-                                    </span>
-
-                                    {/* Bottom Accent Line */}
-                                    <div className="w-0 group-hover:w-full h-[2px] bg-primary mt-6 transition-all duration-700" />
-                                </div>
-                            </Link>
-                        </motion.div>
-                    )
-                })}
-            </motion.div>
+                            </div>
+                        </div>
+                    </motion.div>
+                </AnimatePresence>
+            </SectionCard>
         </ParallaxSection>
     )
 }

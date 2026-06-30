@@ -2,11 +2,14 @@
 
 import React from 'react'
 import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Pencil, Trash2, Building2, ExternalLink } from 'lucide-react'
+import { Building2, ExternalLink } from 'lucide-react'
 import { Input } from '@/components/ui/input'
+import { Checkbox } from '@/components/ui/checkbox'
 import ImageUploader from '@/components/admin/ImageUploader'
 import AdminResourceTemplate from '@/components/admin/core/AdminResourceTemplate'
+import { ResourceCard } from '@/components/admin/ResourceCard'
+import { ResourceTableRow } from '@/components/admin/ResourceTableRow'
+import { StatusBadge } from '@/components/admin/StatusBadge'
 
 const AdminClientsPage = () => {
     return (
@@ -33,27 +36,17 @@ const AdminClientsPage = () => {
             }}
             
             renderGridItem={(client, selectedIds, toggleSelect, handleEdit, handleDelete) => (
-                <Card className="bg-secondary/10 border-border/50 hover:bg-secondary/20 transition-all relative">
-                    <div className="absolute top-4 left-4 z-10">
-                        <input 
-                            type="checkbox"
-                            checked={selectedIds.includes(client.id)}
-                            onChange={() => toggleSelect(client.id)}
-                            className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
-                        />
-                    </div>
+                <ResourceCard
+                    item={client}
+                    selectedIds={selectedIds}
+                    onToggleSelect={toggleSelect}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                >
                     <CardContent className="p-5 pt-10">
                         <div className="flex items-start justify-between mb-3">
                             <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold ${client.is_active ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500'}`}>
                                 {client.order}
-                            </div>
-                            <div className="flex items-center gap-1">
-                                <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => handleEdit(client)}>
-                                    <Pencil size={12} />
-                                </Button>
-                                <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:bg-destructive/10" onClick={() => handleDelete(client.id)}>
-                                    <Trash2 size={12} />
-                                </Button>
                             </div>
                         </div>
                         {client.logo ? (
@@ -70,17 +63,15 @@ const AdminClientsPage = () => {
                             </a>
                         )}
                     </CardContent>
-                </Card>
+                </ResourceCard>
             )}
 
             renderTableHeaders={(filteredClients, selectedIds, selectAll) => (
                 <tr>
                     <th className="p-4 px-6 w-10">
-                        <input 
-                            type="checkbox"
+                        <Checkbox
                             checked={selectedIds.length === filteredClients?.length && filteredClients?.length > 0}
-                            onChange={() => selectAll(filteredClients?.map(i => i.id) || [])}
-                            className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
+                            onCheckedChange={() => selectAll(filteredClients?.map(i => i.id) || [])}
                         />
                     </th>
                     <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground">Client</th>
@@ -94,15 +85,14 @@ const AdminClientsPage = () => {
             renderTableRows={(filteredClients, selectedIds, toggleSelect, handleEdit, handleDelete) => (
                 <>
                     {filteredClients?.map((client: any) => (
-                        <tr key={client.id} className="hover:bg-primary/5 transition-colors group">
-                            <td className="p-4 px-6">
-                                <input 
-                                    type="checkbox"
-                                    checked={selectedIds.includes(client.id)}
-                                    onChange={() => toggleSelect(client.id)}
-                                    className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
-                                />
-                            </td>
+                        <ResourceTableRow
+                            key={client.id}
+                            item={client}
+                            selectedIds={selectedIds}
+                            onToggleSelect={toggleSelect}
+                            onEdit={handleEdit}
+                            onDelete={handleDelete}
+                        >
                             <td className="p-4">
                                 <div className="flex items-center gap-3">
                                     {client.logo ? (
@@ -126,19 +116,9 @@ const AdminClientsPage = () => {
                                 {client.order}
                             </td>
                             <td className="p-4">
-                                {client.is_active ? (
-                                    <span className="text-[10px] font-bold text-emerald-500 uppercase">Active</span>
-                                ) : (
-                                    <span className="text-[10px] font-bold text-amber-500 uppercase">Inactive</span>
-                                )}
+                                <StatusBadge isActive={!!client.is_active} />
                             </td>
-                            <td className="p-4 text-right pr-6">
-                                <div className="flex items-center justify-end gap-2">
-                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => handleEdit(client)}><Pencil size={14} /></Button>
-                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-destructive/40 hover:text-destructive" onClick={() => handleDelete(client.id)}><Trash2 size={14} /></Button>
-                                </div>
-                            </td>
-                        </tr>
+                        </ResourceTableRow>
                     ))}
                 </>
             )}
@@ -169,14 +149,13 @@ const AdminClientsPage = () => {
                             <Input type="number" placeholder="Sort Order" value={form.order || 0} onChange={(e) => setForm({ ...form, order: parseInt(e.target.value) || 0 })} />
                         </div>
                         <div className="flex items-center gap-2 pt-8">
-                            <input 
-                                type="checkbox" 
-                                checked={form.is_active ?? true} 
-                                onChange={(e) => setForm({ ...form, is_active: e.target.checked })} 
-                                id="is_active_modal"
-                                className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
+                            <Checkbox
+                                checked={form.is_active ?? true}
+                                onCheckedChange={(checked: boolean) => setForm({ ...form, is_active: !!checked })}
+                                id="is_active_client"
+                                className="border-border"
                             />
-                            <label htmlFor="is_active_modal" className="text-sm font-medium">Active (visible on site)</label>
+                            <label htmlFor="is_active_client" className="text-sm font-medium">Active (visible on site)</label>
                         </div>
                     </div>
                 </>

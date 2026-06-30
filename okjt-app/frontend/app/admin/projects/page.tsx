@@ -1,14 +1,15 @@
 "use client"
 
 import React from 'react'
-import { Pencil, Trash2, ExternalLink, Star } from 'lucide-react'
+import { ExternalLink, Star } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Button } from '@/components/ui/button'
 import { Project } from '@/types/api'
 import { getMediaUrl } from '@/lib/utils'
 import AdminResourceTemplate from '@/components/admin/core/AdminResourceTemplate'
 import ProjectFormFields from '@/components/admin/forms/ProjectFormFields'
-import { Card } from '@/components/ui/card'
+import { ResourceCard } from '@/components/admin/ResourceCard'
+import { ResourceTableRow } from '@/components/admin/ResourceTableRow'
+import { StatusBadge } from '@/components/admin/StatusBadge'
 
 const AdminProjectsPage = () => {
     return (
@@ -64,15 +65,13 @@ const AdminProjectsPage = () => {
                 <ProjectFormFields form={form} setForm={setForm} />
             )}
             renderGridItem={(item, selectedIds, toggleSelect, onEdit, onDelete) => (
-                <Card key={item.id} className="group relative border border-border overflow-hidden hover:border-primary/40 transition-all flex flex-col shadow-sm">
-                    <div className="absolute top-3 left-3 z-10">
-                        <Checkbox
-                            checked={selectedIds.includes(item.id)}
-                            onCheckedChange={() => toggleSelect(item.id)}
-                            className="border-border bg-background/50"
-                        />
-                    </div>
-
+                <ResourceCard
+                    item={item}
+                    selectedIds={selectedIds}
+                    onToggleSelect={toggleSelect}
+                    onEdit={onEdit}
+                    onDelete={onDelete}
+                >
                     <div className="aspect-video relative overflow-hidden bg-secondary/30">
                         {item.image ? (
                             <img src={getMediaUrl(item.image)} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -103,10 +102,7 @@ const AdminProjectsPage = () => {
                                 </span>
                             )}
                         </div>
-                        <h3
-                            className="font-bold text-base leading-tight mb-2 line-clamp-2 text-foreground group-hover:text-primary transition-colors cursor-pointer"
-                            onClick={() => onEdit(item)}
-                        >
+                        <h3 className="font-bold text-base leading-tight mb-2 line-clamp-2 text-foreground group-hover:text-primary transition-colors cursor-pointer">
                             {item.title}
                         </h3>
                         {item.significant_figure && (
@@ -115,14 +111,7 @@ const AdminProjectsPage = () => {
                     </div>
 
                     <div className="px-5 pb-5 pt-0 flex items-center justify-between">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 text-xs font-bold text-muted-foreground hover:text-foreground"
-                            onClick={() => onEdit(item)}
-                        >
-                            Edit
-                        </Button>
+                        <span className="text-xs font-bold text-muted-foreground">Edit</span>
                         <div className="flex items-center gap-2">
                             {(item.website_url || item.url) && (
                                 <a
@@ -133,17 +122,9 @@ const AdminProjectsPage = () => {
                                     <ExternalLink size={16} />
                                 </a>
                             )}
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 text-muted-foreground/40 hover:text-destructive"
-                                onClick={() => onDelete(item.id)}
-                            >
-                                <Trash2 size={14} />
-                            </Button>
                         </div>
                     </div>
-                </Card>
+                </ResourceCard>
             )}
             renderTableHeaders={(items, selectedIds, selectAll) => (
                 <tr>
@@ -166,14 +147,14 @@ const AdminProjectsPage = () => {
             )}
             renderTableRows={(items, selectedIds, toggleSelect, onEdit, onDelete) => (
                 items.map((item) => (
-                    <tr key={item.id} className="hover:bg-primary/5 transition-colors group">
-                        <td className="p-4 px-6">
-                            <Checkbox
-                                checked={selectedIds.includes(item.id)}
-                                onCheckedChange={() => toggleSelect(item.id)}
-                                className="border-border"
-                            />
-                        </td>
+                    <ResourceTableRow
+                        key={item.id}
+                        item={item}
+                        selectedIds={selectedIds}
+                        onToggleSelect={toggleSelect}
+                        onEdit={onEdit}
+                        onDelete={onDelete}
+                    >
                         <td className="p-4">
                             <div className="flex items-center gap-4">
                                 <div className="w-10 h-10 rounded bg-secondary overflow-hidden shrink-0 border border-border/50">
@@ -185,10 +166,7 @@ const AdminProjectsPage = () => {
                                         </div>
                                     )}
                                 </div>
-                                <div
-                                    className="font-bold line-clamp-1 group-hover:text-primary transition-colors cursor-pointer"
-                                    onClick={() => onEdit(item)}
-                                >
+                                <div className="font-bold line-clamp-1 group-hover:text-primary transition-colors cursor-pointer">
                                     {item.title}
                                 </div>
                             </div>
@@ -209,13 +187,7 @@ const AdminProjectsPage = () => {
                         <td className="p-4 text-xs text-muted-foreground">
                             {item.created_at ? new Date(item.created_at).toLocaleDateString() : '—'}
                         </td>
-                        <td className="p-4 text-right">
-                            <div className="flex items-center justify-end gap-2">
-                                <Button variant="ghost" size="sm" onClick={() => onEdit(item)} className="h-8 w-8 p-0"><Pencil size={14} /></Button>
-                                <Button variant="ghost" size="sm" onClick={() => onDelete(item.id)} className="h-8 w-8 p-0 text-destructive hover:bg-destructive/10"><Trash2 size={14} /></Button>
-                            </div>
-                        </td>
-                    </tr>
+                    </ResourceTableRow>
                 ))
             )}
         />

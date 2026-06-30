@@ -19,7 +19,7 @@ export async function generateMetadata() {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
     const apiUrl = baseUrl.replace('localhost', '127.0.0.1');
-    const response = await fetch(`${apiUrl}/settings`, { next: { revalidate: 60 } });
+    const response = await fetch(`${apiUrl}/settings`, { next: { tags: ['okjt-content'] } });
     const settingsByGroup = await response.json();
     const allSettings = Object.values(settingsByGroup).flat() as any[];
     const favicon = allSettings.find(s => s.key === 'favicon')?.value;
@@ -66,7 +66,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   try {
     const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
     const apiUrl = baseUrl.replace('localhost', '127.0.0.1');
-    const response = await fetch(`${apiUrl}/site-settings/maintenance`, { next: { revalidate: 60 } });
+    const response = await fetch(`${apiUrl}/site-settings/maintenance`, { next: { tags: ['okjt-content'] } });
     if (response.ok && response.headers.get('content-type')?.includes('application/json')) {
       maintenanceSettings = await response.json();
     } else {
@@ -121,7 +121,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           }}
         />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground relative`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

@@ -4,6 +4,7 @@ import InsightsSection from "@/components/sections/InsightsSection";
 import StatsSection from "@/components/sections/StatsSection";
 import ValueProposition from "@/components/sections/ValueProposition";
 import CTABanner from "@/components/sections/CTABanner";
+import HomeBottomBar from "@/components/HomeBottomBar";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -60,10 +61,10 @@ export default async function Home() {
       '/team-members': teamMembers,
       '/pillars': pillars,
     }}>
-      <main className="flex min-h-screen flex-col relative bg-background w-full overflow-x-hidden">
+      <main className="flex min-h-screen flex-col relative bg-background w-full overflow-x-clip">
         <Navbar />
         <Hero />
-        <div className="bg-black w-full overflow-visible">
+        <div className="relative bg-black w-full overflow-visible">
           <ValueProposition />
           <StatsSection />
           <ServicesSection />
@@ -71,6 +72,7 @@ export default async function Home() {
           <CTABanner />
         </div>
         <ParallaxNav sections={navSections} />
+        <HomeBottomBar />
         <Footer />
       </main>
     </SWRProvider>

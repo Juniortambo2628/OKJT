@@ -2,114 +2,52 @@
 
 import React, { useState, useEffect } from 'react'
 import AdminLayout from '@/components/admin/AdminLayout'
-import { useApi } from '@/hooks/use-api'
-import { Button } from '@/components/ui/button'
+import { useSiteSettings } from '@/hooks/use-site-settings'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Save, RefreshCw, MessageCircle, Send, Bot, ExternalLink, Plus, Trash2, GripVertical } from 'lucide-react'
+import { MessageCircle, Send, Bot, ExternalLink, Plus, Trash2, GripVertical } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
-import api from '@/lib/api'
-import { SiteSetting } from '@/types/api'
-import { useToast } from '@/hooks/use-toast'
-import ImageUploader from '@/components/admin/ImageUploader'
-
+import SettingsHeader from '@/components/admin/core/SettingsHeader'
 
 const AdminWidgetsPage = () => {
-    const { data: settingsByGroup, mutate, isLoading } = useApi<Record<string, SiteSetting[]>>('/settings')
-    const { toast } = useToast()
-    const [localSettings, setLocalSettings] = useState<Record<string, string>>({})
+    const { localSettings, updateSetting, handleSave, isLoading, isSaving, mutate } = useSiteSettings()
     const [faqData, setFaqData] = useState<{keywords: string[], answer: string}[]>([])
     const [quickReplies, setQuickReplies] = useState<string[]>([])
-    const [isSaving, setIsSaving] = useState(false)
 
-    // Sync local state when data loads
     useEffect(() => {
-        if (settingsByGroup) {
-            const flat: Record<string, string> = {}
-            Object.values(settingsByGroup).flat().forEach((s) => {
-                flat[s.key] = s.value || ''
-                if (s.key === 'chatbot_faq_data') {
-                    try { setFaqData(JSON.parse(s.value || '[]')) } catch (e) {}
-                }
-                if (s.key === 'chatbot_quick_replies') {
-                    try { setQuickReplies(JSON.parse(s.value || '[]')) } catch (e) {}
-                }
-            })
-            setLocalSettings(flat)
+        if (localSettings.chatbot_faq_data) {
+            try { setFaqData(JSON.parse(localSettings.chatbot_faq_data || '[]')) } catch (e) {}
         }
-    }, [settingsByGroup])
-
-    const handleSave = async () => {
-        if (!settingsByGroup) return
-        
-        setIsSaving(true)
-        try {
-            const allSettings = Object.values(settingsByGroup).flat()
-            const settingsToUpdate = allSettings.map(s => {
-                let val = localSettings[s.key] || ''
-                if (s.key === 'chatbot_faq_data') val = JSON.stringify(faqData)
-                if (s.key === 'chatbot_quick_replies') val = JSON.stringify(quickReplies)
-                
-                return {
-                    key: s.key,
-                    value: val,
-                    type: s.type,
-                    group: s.group
-                }
-            })
-
-            await api.put('/settings/batch', { settings: settingsToUpdate })
-            toast({
-                title: "Settings Saved",
-                description: "All configurations have been updated.",
-            })
-            mutate()
-        } catch (err: any) {
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: err.response?.data?.message || err.message || 'Failed to save settings',
-            })
-        } finally {
-            setIsSaving(false)
+        if (localSettings.chatbot_quick_replies) {
+            try { setQuickReplies(JSON.parse(localSettings.chatbot_quick_replies || '[]')) } catch (e) {}
         }
-    }
+    }, [localSettings])
 
-    const updateSetting = (key: string, value: string) => {
-        setLocalSettings(prev => ({ ...prev, [key]: value }))
+    const handleSaveWithExtras = () => {
+        handleSave((settings, local) => {
+            const updated = { ...local }
+            updated.chatbot_faq_data = JSON.stringify(faqData)
+            updated.chatbot_quick_replies = JSON.stringify(quickReplies)
+            return updated
+        })
     }
 
     return (
         <AdminLayout>
             <div className="space-y-8">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight text-foreground">Widget Management</h1>
-                        <p className="text-muted-foreground text-sm">Configure OKJTech Assistant and WhatsApp integrations.</p>
-                    </div>
-                    <div className="flex gap-3">
-                        <Button 
-                            variant="outline" 
-                            className="bg-transparent border-border hover:bg-secondary/20 text-foreground" 
-                            onClick={() => mutate()} 
-                            disabled={isLoading}
-                        >
-                            <RefreshCw size={18} className={isLoading ? "animate-spin" : ""} />
-                        </Button>
-                        <Button 
-                            onClick={handleSave}
-                            disabled={isSaving || isLoading}
-                            className="gap-2 bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20"
-                        >
-                            {isSaving ? <RefreshCw size={18} className="animate-spin" /> : <Save size={18} />}
-                            Save Changes
-                        </Button>
-                    </div>
-                </div>
+                <SettingsHeader
+                    title="Widget Management"
+                    description="Configure OKJTech Assistant and WhatsApp integrations."
+                    onSave={handleSaveWithExtras}
+                    onRefresh={() => mutate()}
+                    isSaving={isSaving}
+                    isLoading={isLoading}
+                    isRefreshing={isLoading}
+                />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pb-20">
-                    {/* OKJTech Assistant Card */}
                     <Card className="bg-secondary/5 border-border overflow-hidden">
                         <CardHeader className="bg-primary/5 border-b border-border">
                             <div className="flex items-center justify-between">
@@ -238,7 +176,6 @@ const AdminWidgetsPage = () => {
                         </CardContent>
                     </Card>
 
-                    {/* WhatsApp Card */}
                     <Card className="bg-secondary/5 border-border overflow-hidden">
                         <CardHeader className="bg-emerald-500/5 border-b border-border">
                             <div className="flex items-center justify-between">

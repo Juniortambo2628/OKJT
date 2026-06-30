@@ -18,7 +18,7 @@ const PageTransition = ({ children }: { children: React.ReactNode }) => {
                     duration: 0.4, 
                     ease: "easeInOut" 
                 }}
-                className="w-full h-full flex flex-col flex-1"
+                className="w-full h-full flex flex-col flex-1 relative"
                 id="content"
             >
                 {children}

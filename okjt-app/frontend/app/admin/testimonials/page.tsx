@@ -2,11 +2,14 @@
 
 import React from 'react'
 import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Pencil, Trash2, Star, User } from 'lucide-react'
+import { Star, User } from 'lucide-react'
 import { Input } from '@/components/ui/input'
+import { Checkbox } from '@/components/ui/checkbox'
 import ImageUploader from '@/components/admin/ImageUploader'
 import AdminResourceTemplate from '@/components/admin/core/AdminResourceTemplate'
+import { ResourceCard } from '@/components/admin/ResourceCard'
+import { ResourceTableRow } from '@/components/admin/ResourceTableRow'
+import { StatusBadge } from '@/components/admin/StatusBadge'
 
 const AdminTestimonialsPage = () => {
     return (
@@ -38,29 +41,19 @@ const AdminTestimonialsPage = () => {
             }}
             
             renderGridItem={(t, selectedIds, toggleSelect, handleEdit, handleDelete) => (
-                <Card className="bg-secondary/10 border-border/50 hover:bg-secondary/20 transition-all relative">
-                    <div className="absolute top-4 left-4 z-10">
-                        <input 
-                            type="checkbox"
-                            checked={selectedIds.includes(t.id)}
-                            onChange={() => toggleSelect(t.id)}
-                            className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
-                        />
-                    </div>
+                <ResourceCard
+                    item={t}
+                    selectedIds={selectedIds}
+                    onToggleSelect={toggleSelect}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                >
                     <CardContent className="p-6 pt-10">
                         <div className="flex items-start justify-between mb-4">
                             <div className="flex items-center gap-1">
                                 {Array.from({ length: t.rating || 5 }).map((_, i) => (
                                     <Star key={i} className="h-3 w-3 fill-amber-400 text-amber-400" />
                                 ))}
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" onClick={() => handleEdit(t)}>
-                                    <Pencil size={14} />
-                                </Button>
-                                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/10" onClick={() => handleDelete(t.id)}>
-                                    <Trash2 size={14} />
-                                </Button>
                             </div>
                         </div>
                         <blockquote className="text-sm text-foreground/70 italic mb-4 line-clamp-4">
@@ -85,17 +78,15 @@ const AdminTestimonialsPage = () => {
                             </div>
                         </div>
                     </CardContent>
-                </Card>
+                </ResourceCard>
             )}
 
             renderTableHeaders={(filteredTestimonials, selectedIds, selectAll) => (
                 <tr>
                     <th className="p-4 px-6 w-10">
-                        <input 
-                            type="checkbox"
+                        <Checkbox
                             checked={selectedIds.length === filteredTestimonials?.length && filteredTestimonials?.length > 0}
-                            onChange={() => selectAll(filteredTestimonials?.map(i => i.id) || [])}
-                            className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
+                            onCheckedChange={() => selectAll(filteredTestimonials?.map(i => i.id) || [])}
                         />
                     </th>
                     <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground">Client</th>
@@ -108,15 +99,14 @@ const AdminTestimonialsPage = () => {
             renderTableRows={(filteredTestimonials, selectedIds, toggleSelect, handleEdit, handleDelete) => (
                 <>
                     {filteredTestimonials?.map((t: any) => (
-                        <tr key={t.id} className="hover:bg-primary/5 transition-colors group">
-                            <td className="p-4 px-6">
-                                <input 
-                                    type="checkbox"
-                                    checked={selectedIds.includes(t.id)}
-                                    onChange={() => toggleSelect(t.id)}
-                                    className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
-                                />
-                            </td>
+                        <ResourceTableRow
+                            key={t.id}
+                            item={t}
+                            selectedIds={selectedIds}
+                            onToggleSelect={toggleSelect}
+                            onEdit={handleEdit}
+                            onDelete={handleDelete}
+                        >
                             <td className="p-4">
                                 <div className="flex items-center gap-3">
                                     {t.avatar ? (
@@ -136,19 +126,14 @@ const AdminTestimonialsPage = () => {
                                 &ldquo;{t.quote}&rdquo;
                             </td>
                             <td className="p-4">
-                                {t.is_featured ? (
-                                    <span className="text-[10px] font-bold text-emerald-500 uppercase">Featured</span>
-                                ) : (
-                                    <span className="text-[10px] font-bold text-muted-foreground uppercase">Standard</span>
-                                )}
+                                <StatusBadge
+                                    isActive={!!t.is_featured}
+                                    activeLabel="Featured"
+                                    inactiveLabel="Standard"
+                                    variant="featured"
+                                />
                             </td>
-                            <td className="p-4 text-right pr-6">
-                                <div className="flex items-center justify-end gap-2">
-                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => handleEdit(t)}><Pencil size={14} /></Button>
-                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-destructive/40 hover:text-destructive" onClick={() => handleDelete(t.id)}><Trash2 size={14} /></Button>
-                                </div>
-                            </td>
-                        </tr>
+                        </ResourceTableRow>
                     ))}
                 </>
             )}
@@ -197,14 +182,13 @@ const AdminTestimonialsPage = () => {
                             <Input type="number" placeholder="Sort Order" value={form.order || 0} onChange={(e) => setForm({ ...form, order: parseInt(e.target.value) || 0 })} />
                         </div>
                         <div className="flex items-center gap-2 pt-8">
-                            <input 
-                                type="checkbox" 
-                                checked={form.is_featured ?? true} 
-                                onChange={(e) => setForm({ ...form, is_featured: e.target.checked })} 
-                                id="is_featured_modal"
-                                className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
+                            <Checkbox
+                                checked={form.is_featured ?? true}
+                                onCheckedChange={(checked: boolean) => setForm({ ...form, is_featured: !!checked })}
+                                id="is_featured_testimonial"
+                                className="border-border"
                             />
-                            <label htmlFor="is_featured_modal" className="text-sm font-medium">Featured</label>
+                            <label htmlFor="is_featured_testimonial" className="text-sm font-medium">Featured</label>
                         </div>
                     </div>
                 </>

@@ -6,38 +6,39 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ProjectResource;
 use App\Models\Project;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
+use App\Traits\HandlesStandardCrud;
+use App\Traits\HasUniqueSlug;
 
 class ProjectController extends Controller
 {
-    use \App\Traits\HasUniqueSlug;
+    use HandlesStandardCrud, HasUniqueSlug;
 
-    private function clearCache()
+    protected $resourceClass = ProjectResource::class;
+
+    protected function getCacheKey(): ?string
     {
-        Cache::forget('projects_all');
-        Cache::forget('projects_client');
-        Cache::forget('projects_flagship');
+        return request()->get('type') ? 'projects_' . request()->get('type') : 'projects_all';
     }
 
-    public function index(Request $request)
+    protected function clearCache(): void
     {
-        $type = $request->get('type');
-        $cacheKey = $type ? 'projects_' . $type : 'projects_all';
-
-        $projects = Cache::rememberForever($cacheKey, function () use ($type) {
-            $query = Project::query();
-            if ($type) {
-                $query->where('type', $type);
-            }
-            return $query->orderBy('order')->orderBy('created_at', 'desc')->get();
-        });
-
-        return ProjectResource::collection($projects);
+        \Illuminate\Support\Facades\Cache::forget('projects_all');
+        \Illuminate\Support\Facades\Cache::forget('projects_client');
+        \Illuminate\Support\Facades\Cache::forget('projects_flagship');
     }
 
-    public function store(Request $request)
+    protected function indexQuery($query)
     {
-        $validated = $request->validate([
+        $type = request()->get('type');
+        if ($type) {
+            $query->where('type', $type);
+        }
+        return $query->orderBy('order')->orderBy('created_at', 'desc');
+    }
+
+    protected function storeRules(): array
+    {
+        return [
             'type' => 'required|string|in:client,flagship',
             'title' => 'required|string|max:255',
             'client_name' => 'nullable|string',
@@ -53,31 +54,16 @@ class ProjectController extends Controller
             'testimonial_author' => 'nullable|string',
             'image' => 'nullable|string',
             'gallery' => 'nullable|array',
-            'website_url' => 'nullable|string',
             'url' => 'nullable|string',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
             'order' => 'integer',
-        ]);
-
-        $validated['slug'] = $this->generateUniqueSlug($validated['title']);
-        $project = Project::create($validated);
-        $this->clearCache();
-        return new ProjectResource($project);
+        ];
     }
 
-    public function show($identifier)
+    protected function updateRules(Request $request, $record): array
     {
-        $project = Project::where('id', $identifier)
-            ->orWhere('slug', $identifier)
-            ->firstOrFail();
-
-        return new ProjectResource($project);
-    }
-
-    public function update(Request $request, Project $project)
-    {
-        $validated = $request->validate([
+        return [
             'type' => 'string|in:client,flagship',
             'title' => 'string|max:255',
             'client_name' => 'nullable|string',
@@ -93,26 +79,24 @@ class ProjectController extends Controller
             'testimonial_author' => 'nullable|string',
             'image' => 'nullable|string',
             'gallery' => 'nullable|array',
-            'website_url' => 'nullable|string',
             'url' => 'nullable|string',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
             'order' => 'integer',
-        ]);
-
-        if (isset($validated['title']) && $validated['title'] !== $project->title) {
-            $validated['slug'] = $this->generateUniqueSlug($validated['title'], $project->id);
-        }
-
-        $project->update($validated);
-        $this->clearCache();
-        return new ProjectResource($project);
+        ];
     }
 
-    public function destroy(Project $project)
+    protected function beforeStore(array $validated, Request $request): array
     {
-        $project->delete();
-        $this->clearCache();
-        return response()->json(null, 204);
+        $validated['slug'] = $this->generateUniqueSlug($validated['title']);
+        return $validated;
+    }
+
+    protected function beforeUpdate($record, array $validated, Request $request): array
+    {
+        if (isset($validated['title']) && $validated['title'] !== $record->title) {
+            $validated['slug'] = $this->generateUniqueSlug($validated['title'], $record->id);
+        }
+        return $validated;
     }
 }

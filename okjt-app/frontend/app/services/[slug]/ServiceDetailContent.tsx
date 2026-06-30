@@ -13,6 +13,7 @@ import { useSettings } from '@/hooks/use-settings'
 import { SectionSkeleton } from '@/components/MediaSkeleton'
 import ParallaxSection from '@/components/ParallaxSection'
 import ParallaxNav from '@/components/ParallaxNav'
+import { SectionCard } from '@/components/ui/SectionCard'
 
 const benefits = [
     'Data-driven insights tailored to your market',
@@ -62,6 +63,7 @@ export default function ServiceDetailContent({ slug }: { slug: string }) {
         { id: 'hero', label: 'Intro' },
         { id: 'service-details', label: 'Overview' },
         { id: 'service-benefits', label: 'Benefits' },
+        ...(relatedServices && relatedServices.length > 0 ? [{ id: 'service-related', label: 'Related' }] : []),
         { id: 'service-cta', label: 'Contact' }
     ]
 
@@ -90,59 +92,62 @@ export default function ServiceDetailContent({ slug }: { slug: string }) {
                 heightClass="min-h-[170vh]"
                 contentMaxWidth="max-w-[1000px]"
             >
-                    <div className="border border-white/5 bg-black/40 backdrop-blur-md rounded-2xl p-8 md:p-12 w-full">
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            className="prose prose-invert lg:prose-xl max-w-none"
-                        >
-                            <div 
-                                className="text-white/80 leading-relaxed text-sm md:text-base prose-p:leading-relaxed prose-p:text-white/80 prose-headings:text-white prose-strong:text-white prose-ul:text-white/85"
-                                dangerouslySetInnerHTML={{ __html: service.content || service.description || '' }} 
-                            />
-                        </motion.div>
-                    </div>
+                <SectionCard>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        className="prose prose-invert lg:prose-xl max-w-none"
+                    >
+                        <div 
+                            className="text-white/80 leading-relaxed text-sm md:text-base prose-p:leading-relaxed prose-p:text-white/80 prose-headings:text-white prose-strong:text-white prose-ul:text-white/85"
+                            dangerouslySetInnerHTML={{ __html: service.content || service.description || '' }} 
+                        />
+                    </motion.div>
+                </SectionCard>
             </ParallaxSection>
 
             {/* Benefits */}
             <ParallaxSection
                 id="service-benefits"
-                bgMedia="/assets/videos/services/energy-advisory.mp4"
+                bgMedia="/assets/videos/services/all-services-video.mp4"
                 heightClass="min-h-[200vh]"
                 badgeText="WHY OKJTECH?"
-                title="Why Choose Our Advisory?"
+                title="Why Choose Our Expertise?"
                 subtitle="Our approach is built on rigour, transparency, and measurable impact."
                 contentMaxWidth="max-w-[1400px]"
             >
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full mt-8">
-                    {benefits.map((benefit, i) => (
-                        <motion.div
-                            key={i}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ delay: i * 0.1 }}
-                            className="flex items-start gap-4 bg-black/40 backdrop-blur-md p-8 border border-white/5 hover:border-primary/40 rounded-2xl transition-all group"
-                        >
-                            <CheckCircle2 className="h-6 w-6 text-primary mt-0.5 shrink-0" />
-                            <span className="text-white/85 font-light text-sm">{benefit}</span>
-                        </motion.div>
-                    ))}
-                </div>
+                <SectionCard>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+                        {benefits.map((benefit, i) => (
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ delay: i * 0.1 }}
+                                className="flex items-start gap-4 bg-black/20 p-8 border border-white/5 hover:border-primary/40 rounded-2xl transition-all group"
+                            >
+                                <CheckCircle2 className="h-6 w-6 text-primary mt-0.5 shrink-0" />
+                                <span className="text-white/85 font-light text-sm">{benefit}</span>
+                            </motion.div>
+                        ))}
+                    </div>
+                </SectionCard>
             </ParallaxSection>
 
             {/* Related Services */}
             {relatedServices && relatedServices.length > 0 && (
-                <section className="py-24 bg-secondary/10 relative z-10 border-b border-white/5">
-                    <div className="max-w-[1400px] mx-auto px-6">
-                        <div className="flex items-center justify-between mb-12">
-                            <h2 className="text-2xl font-bold text-white">Other {service.category} Services</h2>
-                            <Link href="/services" className="text-primary text-xs font-bold uppercase tracking-widest hover:underline">
-                                View All Services
-                            </Link>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <ParallaxSection
+                    id="service-related"
+                    bgMedia="/assets/videos/services/all-services-video.mp4"
+                    heightClass="min-h-[170vh]"
+                    badgeText="EXPLORE MORE"
+                    title={`Other ${service.category} Services`}
+                    contentMaxWidth="max-w-[1400px]"
+                >
+                    <SectionCard>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
                             {relatedServices.map((rs: any) => (
-                                <Link key={rs.id} href={`/services/${rs.slug}`} className="group block bg-black/30 p-8 border border-white/5 rounded-2xl backdrop-blur-sm hover:border-primary/45 hover:bg-black/50 transition-all">
+                                <Link key={rs.id} href={`/services/${rs.slug}`} className="group block bg-black/20 p-8 border border-white/5 rounded-2xl hover:border-primary/45 hover:bg-black/40 transition-all">
                                     <h3 className="text-lg font-bold text-white group-hover:text-primary transition-colors mb-4">{rs.title}</h3>
                                     <p className="text-white/60 text-sm line-clamp-2">{rs.description}</p>
                                     <div className="mt-6 flex items-center gap-2 text-primary text-[10px] font-bold uppercase tracking-widest">
@@ -151,18 +156,25 @@ export default function ServiceDetailContent({ slug }: { slug: string }) {
                                 </Link>
                             ))}
                         </div>
-                    </div>
-                </section>
+                        <div className="mt-8">
+                            <Button variant="outline" className="rounded-none border-primary/30 text-primary hover:bg-primary/10" asChild>
+                                <Link href="/services">
+                                    View All Services <ArrowRight className="ml-2 h-4 w-4" />
+                                </Link>
+                            </Button>
+                        </div>
+                    </SectionCard>
+                </ParallaxSection>
             )}
 
             {/* CTA */}
             <ParallaxSection
                 id="service-cta"
-                bgMedia="/assets/videos/services/international-diplomacy-video.mp4"
+                bgMedia="/assets/videos/services/all-services-video.mp4"
                 heightClass="min-h-[170vh]"
                 contentMaxWidth="max-w-[1400px]"
             >
-                <div className="text-center w-full">
+                <SectionCard className="text-center">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -186,7 +198,7 @@ export default function ServiceDetailContent({ slug }: { slug: string }) {
                             </Button>
                         </div>
                     </motion.div>
-                </div>
+                </SectionCard>
             </ParallaxSection>
             </div>
 

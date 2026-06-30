@@ -3,11 +3,12 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 async function fetchApi<T>(endpoint: string): Promise<T | null> {
   try {
     const res = await fetch(`${API_URL}${endpoint}`, {
-      next: { revalidate: 60 },
+      next: { tags: ['okjt-content'] },
       headers: { 'Content-Type': 'application/json' },
     });
     if (!res.ok) return null;
-    return res.json();
+    const json = await res.json();
+    return json?.data !== undefined ? json.data : json;
   } catch {
     return null;
   }

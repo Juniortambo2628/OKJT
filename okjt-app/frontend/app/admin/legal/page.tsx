@@ -2,22 +2,14 @@
 
 import React, { useState, useEffect } from 'react'
 import AdminLayout from '@/components/admin/AdminLayout'
-import { useApi } from '@/hooks/use-api'
-import { Button } from '@/components/ui/button'
+import { useSiteSettings } from '@/hooks/use-site-settings'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Save, Loader2, ShieldCheck, FileText, Cookie } from 'lucide-react'
-import api from '@/lib/api'
+import { ShieldCheck, FileText, Cookie } from 'lucide-react'
 import RichTextEditor from '@/components/admin/RichTextEditor'
+import SettingsHeader from '@/components/admin/core/SettingsHeader'
 
 const LegalSettingsPage = () => {
-    const { data: settingsByGroup, mutate, isLoading } = useApi('/settings')
-    const [formValues, setFormValues] = useState<Record<string, string>>({
-        'privacy_policy': '',
-        'terms_of_service': '',
-        'cookie_policy': ''
-    })
-    const [isSaving, setIsSaving] = useState(false)
-    const [saveSuccess, setSaveSuccess] = useState(false)
+    const { localSettings, updateSetting, handleSave, isLoading, isSaving } = useSiteSettings()
     const [activeTab, setActiveTab] = useState('privacy')
     const [mounted, setMounted] = useState(false)
 
@@ -25,38 +17,15 @@ const LegalSettingsPage = () => {
         setMounted(true)
     }, [])
 
-    useEffect(() => {
-        if (settingsByGroup) {
-            const flat: Record<string, string> = {}
-            Object.values(settingsByGroup).forEach((group: any) => {
-                group.forEach((s: any) => { flat[s.key] = s.value || '' })
+    const handleSaveLegal = async () => {
+        await handleSave((settings, local) => {
+            const legalKeys = ['privacy_policy', 'terms_of_service', 'cookie_policy']
+            const updated = { ...local }
+            legalKeys.forEach(key => {
+                if (!(key in updated)) updated[key] = ''
             })
-            setFormValues(prev => ({
-                ...prev,
-                ...flat
-            }))
-        }
-    }, [settingsByGroup])
-
-    const handleSave = async () => {
-        setIsSaving(true)
-        setSaveSuccess(false)
-        try {
-            const settings = [
-                { key: 'privacy_policy', value: formValues['privacy_policy'], group: 'legal', type: 'rich-text' },
-                { key: 'terms_of_service', value: formValues['terms_of_service'], group: 'legal', type: 'rich-text' },
-                { key: 'cookie_policy', value: formValues['cookie_policy'], group: 'legal', type: 'rich-text' },
-            ]
-
-            await api.put('/settings/batch', { settings })
-            mutate()
-            setSaveSuccess(true)
-            setTimeout(() => setSaveSuccess(false), 3000)
-        } catch {
-            alert('Failed to save legal settings')
-        } finally {
-            setIsSaving(false)
-        }
+            return updated
+        })
     }
 
     const tabs = [
@@ -70,20 +39,13 @@ const LegalSettingsPage = () => {
     return (
         <AdminLayout>
             <div className="space-y-8">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight text-foreground">Legal Content Management</h1>
-                        <p className="text-muted-foreground">Manage your website's legal documents with a rich text editor.</p>
-                    </div>
-                    <Button
-                        onClick={handleSave}
-                        disabled={isSaving}
-                        className={`gap-2 px-8 font-bold shadow-xl transition-all ${saveSuccess ? 'bg-emerald-600 hover:bg-emerald-700' : 'shadow-primary/20'}`}
-                    >
-                        {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-                        {saveSuccess ? 'Saved!' : 'Save Changes'}
-                    </Button>
-                </div>
+                <SettingsHeader
+                    title="Legal Content Management"
+                    description="Manage your website's legal documents with a rich text editor."
+                    onSave={handleSaveLegal}
+                    isSaving={isSaving}
+                    isLoading={isLoading}
+                />
 
                 <div className="flex gap-2 border-b border-border/50">
                     {tabs.map((tab) => {
@@ -122,8 +84,8 @@ const LegalSettingsPage = () => {
                         </CardHeader>
                         <CardContent className="p-6">
                             <RichTextEditor 
-                                value={formValues[activeTabData.key]} 
-                                onChange={(val) => setFormValues(prev => ({ ...prev, [activeTabData.key]: val }))}
+                                value={localSettings[activeTabData.key] || ''} 
+                                onChange={(val) => updateSetting(activeTabData.key, val)}
                             />
                         </CardContent>
                     </Card>

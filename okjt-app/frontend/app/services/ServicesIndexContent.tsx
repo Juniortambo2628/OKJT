@@ -16,6 +16,7 @@ import { usePageHeroMedia } from '@/hooks/use-page-hero-media'
 import SkeletonCard from '@/components/SkeletonCard'
 import ParallaxSection from '@/components/ParallaxSection'
 import ParallaxNav from '@/components/ParallaxNav'
+import { SectionCard } from '@/components/ui/SectionCard'
 
 const getIconComponent = (iconName: string | null) => {
     if (!iconName) return Globe;
@@ -27,11 +28,10 @@ const getIconComponent = (iconName: string | null) => {
 
 const categoryVideos: Record<string, string> = {
     'Web Development': '/assets/videos/services/all-services-video.mp4',
-    'UI/UX Design': '/assets/videos/services/fintech-video.mp4',
-    'Digital Strategy': '/assets/videos/services/international-diplomacy-video.mp4',
-    'Energy Advisory': '/assets/videos/services/energy-advisory.mp4',
-    'Fintech': '/assets/videos/services/fintech-video.mp4',
-    'International Diplomacy': '/assets/videos/services/international-diplomacy-video.mp4',
+    'UI/UX Design': '/assets/videos/services/all-services-video.mp4',
+    'Digital Strategy': '/assets/videos/services/all-services-video.mp4',
+    'Branding': '/assets/videos/services/all-services-video.mp4',
+    'Cloud Solutions': '/assets/videos/services/all-services-video.mp4',
 }
 
 export default function ServicesIndexContent() {
@@ -64,20 +64,15 @@ export default function ServicesIndexContent() {
                 gradient: 'from-violet-500 to-purple-400',
                 description: 'Architecture consulting, performance optimization, and digital transformation roadmaps.',
             },
-            'Energy Advisory': {
-                icon: Zap,
+            'Branding': {
+                icon: Sparkles,
                 gradient: 'from-blue-500 to-cyan-400',
-                description: 'Comprehensive advisory across due diligence, commercial strategy, and market intelligence.',
+                description: 'Crafting brand identities that resonate and stand out in the digital landscape.',
             },
-            'Fintech': {
-                icon: Landmark,
-                gradient: 'from-emerald-500 to-teal-400',
-                description: 'Strategic advisory for financial technology companies and compliance support.',
-            },
-            'International Diplomacy': {
+            'Cloud Solutions': {
                 icon: Globe,
-                gradient: 'from-violet-500 to-purple-400',
-                description: 'Geopolitical risk management, cross-border deals, and reputational positioning.',
+                gradient: 'from-emerald-500 to-teal-400',
+                description: 'Cloud architecture, DevOps pipelines, and scalable serverless environments.',
             }
         }
 
@@ -117,7 +112,7 @@ export default function ServicesIndexContent() {
     }, [groupedServices])
 
     return (
-        <main className="flex min-h-screen flex-col bg-background w-full overflow-x-hidden">
+        <main className="flex min-h-screen flex-col bg-background w-full overflow-x-clip">
             <Navbar />
 
             <PageHero 
@@ -140,7 +135,7 @@ export default function ServicesIndexContent() {
                 </div>
             </section>
 
-            <div className="bg-black w-full overflow-visible">
+            <div className="relative bg-black w-full overflow-visible">
             {/* Category Sections */}
             {isLoading && (
                 <section className="py-24 bg-background">
@@ -161,80 +156,82 @@ export default function ServicesIndexContent() {
                         heightClass="min-h-[220vh]"
                         contentMaxWidth="max-w-[1400px]"
                     >
-                        <div className="w-full">
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-12"
-                            >
-                                <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${group.gradient} flex items-center justify-center shrink-0 shadow-lg shadow-black/10`}>
-                                    <Icon className="h-8 w-8 text-white" />
-                                </div>
-                                <div className="text-center md:text-left">
-                                    <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4 drop-shadow-2xl">{group.title}</h2>
-                                    <p className="text-white/70 max-w-2xl leading-relaxed">{group.description}</p>
-                                </div>
-                            </motion.div>
+                        <SectionCard>
+                            <div className="w-full">
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-12"
+                                >
+                                    <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${group.gradient} flex items-center justify-center shrink-0 shadow-lg shadow-black/10`}>
+                                        <Icon className="h-8 w-8 text-white" />
+                                    </div>
+                                    <div className="text-center md:text-left">
+                                        <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4 drop-shadow-2xl">{group.title}</h2>
+                                        <p className="text-white/70 max-w-2xl leading-relaxed">{group.description}</p>
+                                    </div>
+                                </motion.div>
 
-                            <div className={cn(
-                                "grid gap-6 w-full",
-                                viewMode === 'grid' ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"
-                            )}>
-                                {group.items.map((service, index: number) => (
-                                    <motion.div
-                                        key={service.id}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        whileInView={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: index * 0.08 }}
-                                    >
-                                        <Link
-                                            href={`/services/${service.slug}`}
-                                            className={cn(
-                                                "block group border transition-all duration-300 rounded-2xl overflow-hidden backdrop-blur-md",
-                                                viewMode === 'grid' 
-                                                    ? "bg-black/40 border-white/5 p-8 h-full hover:shadow-2xl hover:border-primary/45 hover:-translate-y-1" 
-                                                    : "bg-black/30 border-white/5 p-6 flex flex-col md:flex-row items-center gap-6 hover:bg-black/50 hover:border-primary/30"
-                                            )}
+                                <div className={cn(
+                                    "grid gap-6 w-full",
+                                    viewMode === 'grid' ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"
+                                )}>
+                                    {group.items.map((service, index: number) => (
+                                        <motion.div
+                                            key={service.id}
+                                            initial={{ opacity: 0, y: 20 }}
+                                            whileInView={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: index * 0.08 }}
                                         >
-                                            <div className={cn(
-                                                "flex-1 min-w-0 w-full",
-                                                viewMode === 'list' && "md:flex md:items-center md:gap-8"
-                                            )}>
-                                                <div className={cn(viewMode === 'list' && "md:min-w-[300px] w-full text-center md:text-left")}>
-                                                    <h3 className="text-lg md:text-xl font-bold text-white mb-3 group-hover:text-primary transition-colors truncate">
-                                                        {service.title}
-                                                    </h3>
-                                                    {viewMode === 'list' && (
-                                                        <span className="inline-block px-2.5 py-1 bg-primary/10 text-primary text-[9px] font-bold uppercase tracking-widest rounded-full mb-3 md:mb-0">
-                                                            {group.title}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                                <p className={cn(
-                                                    "text-white/60 text-sm leading-relaxed transition-colors group-hover:text-white/80 w-full text-center md:text-left",
-                                                    viewMode === 'grid' ? "line-clamp-3 mb-6" : "flex-1 line-clamp-2 md:line-clamp-1 mb-4 md:mb-0"
+                                            <Link
+                                                href={`/services/${service.slug}`}
+                                                className={cn(
+                                                    "block group border transition-all duration-300 rounded-2xl overflow-hidden",
+                                                    viewMode === 'grid' 
+                                                        ? "bg-black/20 border-white/5 p-8 h-full hover:border-primary/45 hover:-translate-y-1" 
+                                                        : "bg-black/20 border-white/5 p-6 flex flex-col md:flex-row items-center gap-6 hover:bg-black/40 hover:border-primary/30"
+                                                )}
+                                            >
+                                                <div className={cn(
+                                                    "flex-1 min-w-0 w-full",
+                                                    viewMode === 'list' && "md:flex md:items-center md:gap-8"
                                                 )}>
-                                                    {service.description}
-                                                </p>
-                                            </div>
-                                            <span className={cn(
-                                                "text-primary font-bold text-xs uppercase tracking-wider flex items-center gap-2 shrink-0 justify-center md:justify-start w-full md:w-auto",
-                                                viewMode === 'list' && "md:ml-auto"
-                                            )}>
-                                                Learn More
-                                                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                                            </span>
-                                        </Link>
-                                    </motion.div>
-                                ))}
-                            </div>
-
-                            {group.items.length === 0 && !isLoading && (
-                                <div className="text-center py-16 text-white/30 border border-dashed border-white/10 rounded-2xl bg-black/20">
-                                    Services for this category are being finalised.
+                                                    <div className={cn(viewMode === 'list' && "md:min-w-[300px] w-full text-center md:text-left")}>
+                                                        <h3 className="text-lg md:text-xl font-bold text-white mb-3 group-hover:text-primary transition-colors truncate">
+                                                            {service.title}
+                                                        </h3>
+                                                        {viewMode === 'list' && (
+                                                            <span className="inline-block px-2.5 py-1 bg-primary/10 text-primary text-[9px] font-bold uppercase tracking-widest rounded-full mb-3 md:mb-0">
+                                                                {group.title}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <p className={cn(
+                                                        "text-white/60 text-sm leading-relaxed transition-colors group-hover:text-white/80 w-full text-center md:text-left",
+                                                        viewMode === 'grid' ? "line-clamp-3 mb-6" : "flex-1 line-clamp-2 md:line-clamp-1 mb-4 md:mb-0"
+                                                    )}>
+                                                        {service.description}
+                                                    </p>
+                                                </div>
+                                                <span className={cn(
+                                                    "text-primary font-bold text-xs uppercase tracking-wider flex items-center gap-2 shrink-0 justify-center md:justify-start w-full md:w-auto",
+                                                    viewMode === 'list' && "md:ml-auto"
+                                                )}>
+                                                    Learn More
+                                                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                                                </span>
+                                            </Link>
+                                        </motion.div>
+                                    ))}
                                 </div>
-                            )}
-                        </div>
+
+                                {group.items.length === 0 && !isLoading && (
+                                    <div className="text-center py-16 text-white/30 border border-dashed border-white/10 rounded-2xl bg-black/20">
+                                        Services for this category are being finalised.
+                                    </div>
+                                )}
+                            </div>
+                        </SectionCard>
                     </ParallaxSection>
                 )
             })}
