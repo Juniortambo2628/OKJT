@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { API_BASE_URL } from "@/lib/config"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -7,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export function getMediaUrl(path: string | undefined | null) {
   if (!path) return ''
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'
+  const apiBase = API_BASE_URL
 
   if (path.startsWith('data:')) return path
 

@@ -1,7 +1,6 @@
 "use client"
 
 import React from 'react'
-import { Shield, Globe, Zap, Landmark, Star, Award, Heart } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
@@ -10,14 +9,14 @@ import AdminResourceTemplate from '@/components/admin/core/AdminResourceTemplate
 import { ResourceCard } from '@/components/admin/ResourceCard'
 import { ResourceTableRow } from '@/components/admin/ResourceTableRow'
 import { IconPicker } from '@/components/admin/IconPicker'
-
-const availableIcons = {
-    Shield, Globe, Zap, Landmark, Star, Award, Heart
-}
+import { iconMap } from '@/components/admin/constants'
+import { FormField } from '@/components/admin/core/FormField'
+import { ADMIN_INPUT_CLASSES } from '@/lib/config'
+import { Value } from '@/types/api'
 
 export default function AdminValuesPage() {
     return (
-        <AdminResourceTemplate<any>
+        <AdminResourceTemplate<Value>
             endpoint="/values"
             resourceName="Value"
             title="Company Values"
@@ -47,7 +46,7 @@ export default function AdminValuesPage() {
                 return null
             }}
             renderGridItem={(val, selectedIds, toggleSelect, handleEdit, handleDelete) => {
-                const IconComp = (availableIcons as any)[val.icon] || Shield
+                const IconComp = val.icon ? (iconMap as any)[val.icon] || (iconMap as any).Shield : (iconMap as any).Shield
 
                 return (
                     <ResourceCard
@@ -93,7 +92,7 @@ export default function AdminValuesPage() {
             renderTableRows={(filteredValues, selectedIds, toggleSelect, handleEdit, handleDelete) => (
                 <>
                     {filteredValues?.map((val) => {
-                        const IconComp = (availableIcons as any)[val.icon] || Shield
+                        const IconComp = val.icon ? (iconMap as any)[val.icon] || (iconMap as any).Shield : (iconMap as any).Shield
 
                         return (
                             <ResourceTableRow
@@ -126,34 +125,31 @@ export default function AdminValuesPage() {
                         <IconPicker
                             selectedIcon={formData.icon || 'Shield'}
                             onSelect={(iconName) => setFormData({...formData, icon: iconName})}
-                            icons={availableIcons}
+                            icons={iconMap}
                         />
                     </div>
-                    <div className="space-y-2">
-                        <Label>Title</Label>
+                    <FormField label="Title">
                         <Input 
-                            className="bg-white/5 border-white/10"
+                            className={ADMIN_INPUT_CLASSES}
                             value={formData.title || ''}
                             onChange={(e) => setFormData({...formData, title: e.target.value})}
                         />
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Description</Label>
+                    </FormField>
+                    <FormField label="Description">
                         <Textarea 
-                            className="bg-white/5 border-white/10 min-h-[100px]"
+                            className={`${ADMIN_INPUT_CLASSES} min-h-[100px]`}
                             value={formData.description || ''}
                             onChange={(e) => setFormData({...formData, description: e.target.value})}
                         />
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Display Order</Label>
+                    </FormField>
+                    <FormField label="Display Order">
                         <Input 
                             type="number"
-                            className="bg-white/5 border-white/10"
+                            className={ADMIN_INPUT_CLASSES}
                             value={formData.order || 0}
                             onChange={(e) => setFormData({...formData, order: parseInt(e.target.value) || 0})}
                         />
-                    </div>
+                    </FormField>
                 </>
             )}
         />

@@ -10,10 +10,13 @@ import AdminResourceTemplate from '@/components/admin/core/AdminResourceTemplate
 import { ResourceCard } from '@/components/admin/ResourceCard'
 import { ResourceTableRow } from '@/components/admin/ResourceTableRow'
 import { StatusBadge } from '@/components/admin/StatusBadge'
+import { FormField } from '@/components/admin/core/FormField'
+import { ADMIN_INPUT_CLASSES } from '@/lib/config'
+import { Client } from '@/types/api'
 
 const AdminClientsPage = () => {
     return (
-        <AdminResourceTemplate<any>
+        <AdminResourceTemplate<Client>
             endpoint="/clients"
             resourceName="Client"
             title="Client Logos"
@@ -84,7 +87,7 @@ const AdminClientsPage = () => {
 
             renderTableRows={(filteredClients, selectedIds, toggleSelect, handleEdit, handleDelete) => (
                 <>
-                    {filteredClients?.map((client: any) => (
+                    {filteredClients?.map((client) => (
                         <ResourceTableRow
                             key={client.id}
                             item={client}
@@ -126,14 +129,12 @@ const AdminClientsPage = () => {
             renderFormFields={(form, setForm) => (
                 <>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Client Name</label>
-                            <Input placeholder="Client Name" value={form.name || ''} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Website</label>
-                            <Input placeholder="Website URL" value={form.website || ''} onChange={(e) => setForm({ ...form, website: e.target.value })} />
-                        </div>
+                        <FormField label="Client Name">
+                            <Input className={ADMIN_INPUT_CLASSES} placeholder="Client Name" value={form.name || ''} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+                        </FormField>
+                        <FormField label="Website">
+                            <Input className={ADMIN_INPUT_CLASSES} placeholder="Website URL" value={form.website || ''} onChange={(e) => setForm({ ...form, website: e.target.value })} />
+                        </FormField>
                     </div>
                     
                     <ImageUploader 
@@ -144,10 +145,9 @@ const AdminClientsPage = () => {
                     />
 
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Sort Order</label>
-                            <Input type="number" placeholder="Sort Order" value={form.order || 0} onChange={(e) => setForm({ ...form, order: parseInt(e.target.value) || 0 })} />
-                        </div>
+                        <FormField label="Sort Order">
+                            <Input type="number" className={ADMIN_INPUT_CLASSES} placeholder="Sort Order" value={form.order || 0} onChange={(e) => setForm({ ...form, order: parseInt(e.target.value) || 0 })} />
+                        </FormField>
                         <div className="flex items-center gap-2 pt-8">
                             <Checkbox
                                 checked={form.is_active ?? true}
@@ -155,7 +155,7 @@ const AdminClientsPage = () => {
                                 id="is_active_client"
                                 className="border-border"
                             />
-                            <label htmlFor="is_active_client" className="text-sm font-medium">Active (visible on site)</label>
+                            <label htmlFor="is_active_client" className="text-sm font-medium text-muted-foreground">Active (visible on site)</label>
                         </div>
                     </div>
                 </>

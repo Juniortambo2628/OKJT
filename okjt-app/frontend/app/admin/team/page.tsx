@@ -10,6 +10,8 @@ import ImageUploader from '@/components/admin/ImageUploader'
 import AdminResourceTemplate from '@/components/admin/core/AdminResourceTemplate'
 import { ResourceCard } from '@/components/admin/ResourceCard'
 import { ResourceTableRow } from '@/components/admin/ResourceTableRow'
+import { FormField } from '@/components/admin/core/FormField'
+import { ADMIN_INPUT_CLASSES } from '@/lib/config'
 
 export default function AdminTeamPage() {
     return (
@@ -122,22 +124,18 @@ export default function AdminTeamPage() {
                 <>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
                         <div className="space-y-4">
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-muted-foreground">Full Name</label>
-                                <Input className="bg-background border-border text-foreground" placeholder="Full Name" value={form.name || ''} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-muted-foreground">Role / Title</label>
-                                <Input className="bg-background border-border text-foreground" placeholder="Role / Title" value={form.role || ''} onChange={(e) => setForm({ ...form, role: e.target.value })} />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-muted-foreground">Qualifications</label>
-                                <Input className="bg-background border-border text-foreground" placeholder="e.g. MBA, CFA" value={form.qualifications || ''} onChange={(e) => setForm({ ...form, qualifications: e.target.value })} />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-muted-foreground">LinkedIn URL</label>
-                                <Input className="bg-background border-border text-foreground" placeholder="https://linkedin.com/in/..." value={form.linkedin || ''} onChange={(e) => setForm({ ...form, linkedin: e.target.value })} />
-                            </div>
+                            <FormField label="Full Name">
+                                <Input className={ADMIN_INPUT_CLASSES} placeholder="Full Name" value={form.name || ''} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+                            </FormField>
+                            <FormField label="Role / Title">
+                                <Input className={ADMIN_INPUT_CLASSES} placeholder="Role / Title" value={form.role || ''} onChange={(e) => setForm({ ...form, role: e.target.value })} />
+                            </FormField>
+                            <FormField label="Qualifications">
+                                <Input className={ADMIN_INPUT_CLASSES} placeholder="e.g. MBA, CFA" value={form.qualifications || ''} onChange={(e) => setForm({ ...form, qualifications: e.target.value })} />
+                            </FormField>
+                            <FormField label="LinkedIn URL">
+                                <Input className={ADMIN_INPUT_CLASSES} placeholder="https://linkedin.com/in/..." value={form.linkedin || ''} onChange={(e) => setForm({ ...form, linkedin: e.target.value })} />
+                            </FormField>
                         </div>
                         <div className="space-y-4">
                             <ImageUploader
@@ -145,15 +143,13 @@ export default function AdminTeamPage() {
                                 value={form.image || ''}
                                 onChange={(url) => setForm({ ...form, image: url })}
                             />
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-muted-foreground">Display Order</label>
-                                <Input type="number" className="bg-background border-border text-foreground" value={form.order || 0} onChange={(e) => setForm({ ...form, order: parseInt(e.target.value) || 0 })} />
-                            </div>
+                            <FormField label="Display Order">
+                                <Input type="number" className={ADMIN_INPUT_CLASSES} value={form.order || 0} onChange={(e) => setForm({ ...form, order: parseInt(e.target.value) || 0 })} />
+                            </FormField>
                         </div>
-                        <div className="col-span-full space-y-2">
-                            <label className="text-sm font-medium text-muted-foreground">Short Bio</label>
-                            <Textarea className="bg-background border-border text-foreground min-h-[120px]" value={form.bio || ''} onChange={(e) => setForm({ ...form, bio: e.target.value })} />
-                        </div>
+                        <FormField label="Short Bio" className="col-span-full">
+                            <Textarea className={`${ADMIN_INPUT_CLASSES} min-h-[120px]`} value={form.bio || ''} onChange={(e) => setForm({ ...form, bio: e.target.value })} />
+                        </FormField>
                     </div>
                 </>
             )}

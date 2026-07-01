@@ -1,8 +1,6 @@
 "use client"
 
 import React from 'react'
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
 import PageHero from '@/components/PageHero'
 import { useSettings } from '@/hooks/use-settings'
 import { usePageHeroMedia } from '@/hooks/use-page-hero-media'
@@ -18,8 +16,9 @@ import { Service } from '@/types/api'
 import { useToast } from '@/hooks/use-toast'
 import api from '@/lib/api'
 import ParallaxSection from '@/components/ParallaxSection'
-import ParallaxNav from '@/components/ParallaxNav'
 import { SectionCard } from '@/components/ui/SectionCard'
+import { PageShell } from '@/components/PageShell'
+import { CONTACT_NAV_SECTIONS } from '@/lib/nav-sections'
 
 export default function ContactContent() {
     const { getSetting, isLoading: settingsLoading } = useSettings()
@@ -73,16 +72,8 @@ export default function ContactContent() {
         }
     }
 
-    const navSections = [
-        { id: 'contact-hero', label: 'Intro' },
-        { id: 'contact-form', label: 'Get in Touch' },
-        { id: 'contact-info', label: 'Details' },
-    ]
-
     return (
-        <main className="flex min-h-screen flex-col relative bg-background w-full overflow-x-clip">
-            <Navbar />
-
+        <PageShell navSections={CONTACT_NAV_SECTIONS}>
             <PageHero
                 id="contact-hero"
                 centered
@@ -276,9 +267,6 @@ export default function ContactContent() {
                 </SectionCard>
             </ParallaxSection>
             </div>
-
-            <ParallaxNav sections={navSections} />
-            <Footer />
-        </main>
+        </PageShell>
     )
 }

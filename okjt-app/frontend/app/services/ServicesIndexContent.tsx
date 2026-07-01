@@ -2,12 +2,10 @@
 
 import React from 'react'
 import { useApi } from '@/hooks/use-api'
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
-import { motion } from 'framer-motion'
-import { ArrowRight, Zap, Landmark, Globe, Sparkles, Palette, Users, Rocket, TrendingUp, Code2, Cpu } from 'lucide-react'
+import { Zap, Landmark, Globe, Sparkles, Palette, Users, Rocket, TrendingUp, Code2, Cpu, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
+import { motion } from 'framer-motion'
 import ViewToggle, { ViewMode } from '@/components/ViewToggle'
 import { Service, Pillar } from '@/types/api'
 import PageHero from '@/components/PageHero'
@@ -15,8 +13,9 @@ import { useSettings } from '@/hooks/use-settings'
 import { usePageHeroMedia } from '@/hooks/use-page-hero-media'
 import SkeletonCard from '@/components/SkeletonCard'
 import ParallaxSection from '@/components/ParallaxSection'
-import ParallaxNav from '@/components/ParallaxNav'
 import { SectionCard } from '@/components/ui/SectionCard'
+import { PageShell } from '@/components/PageShell'
+import { type NavSection } from '@/lib/nav-sections'
 
 const getIconComponent = (iconName: string | null) => {
     if (!iconName) return Globe;
@@ -100,8 +99,8 @@ export default function ServicesIndexContent() {
         return Object.values(groups)
     }, [services])
 
-    const navSections = React.useMemo(() => {
-        const sections = [{ id: 'hero', label: 'Intro' }]
+    const navSections = React.useMemo<NavSection[]>(() => {
+        const sections: NavSection[] = [{ id: 'hero', label: 'Intro' }]
         groupedServices.forEach((group, index) => {
             sections.push({
                 id: `group-${index}`,
@@ -112,8 +111,7 @@ export default function ServicesIndexContent() {
     }, [groupedServices])
 
     return (
-        <main className="flex min-h-screen flex-col bg-background w-full overflow-x-clip">
-            <Navbar />
+        <PageShell navSections={navSections}>
 
             <PageHero 
                 id="hero"
@@ -236,9 +234,6 @@ export default function ServicesIndexContent() {
                 )
             })}
             </div>
-
-            <ParallaxNav sections={navSections} />
-            <Footer />
-        </main>
+        </PageShell>
     )
 }

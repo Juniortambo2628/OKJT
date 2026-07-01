@@ -2,8 +2,6 @@
 
 import React from 'react'
 import { useApi } from '@/hooks/use-api'
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
 import PageHero from '@/components/PageHero'
 import { useSettings } from '@/hooks/use-settings'
 import { usePageHeroMedia } from '@/hooks/use-page-hero-media'
@@ -17,8 +15,9 @@ import CategoryFilter from '@/components/ui/CategoryFilter'
 import SkeletonCard from '@/components/SkeletonCard'
 import { Insight } from '@/types/api'
 import ParallaxSection from '@/components/ParallaxSection'
-import ParallaxNav from '@/components/ParallaxNav'
 import { SectionCard } from '@/components/ui/SectionCard'
+import { PageShell } from '@/components/PageShell'
+import { INSIGHTS_NAV_SECTIONS } from '@/lib/nav-sections'
 
 export default function InsightsContent() {
     const { getSetting, isLoading: settingsLoading } = useSettings()
@@ -41,15 +40,8 @@ export default function InsightsContent() {
             ins.category?.toLowerCase() === activeCategory.toLowerCase()
         )
 
-    const navSections = [
-        { id: 'hero', label: 'Intro' },
-        { id: 'insights-grid', label: 'Research Notes' }
-    ]
-
     return (
-        <main className="flex min-h-screen flex-col bg-background w-full overflow-x-clip">
-            <Navbar />
-
+        <PageShell navSections={INSIGHTS_NAV_SECTIONS}>
             <PageHero
                 id="hero"
                 centered
@@ -164,9 +156,6 @@ export default function InsightsContent() {
                 </SectionCard>
             </ParallaxSection>
             </div>
-
-            <ParallaxNav sections={navSections} />
-            <Footer />
-        </main>
+        </PageShell>
     )
 }

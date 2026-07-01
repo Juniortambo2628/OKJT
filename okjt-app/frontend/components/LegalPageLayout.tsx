@@ -1,12 +1,11 @@
 "use client"
 
 import React from 'react'
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
-import { useApi } from '@/hooks/use-api'
+import { useSettings } from '@/hooks/use-settings'
 import { motion } from 'framer-motion'
 import { Printer } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { PageShell } from '@/components/PageShell'
 
 interface LegalPageLayoutProps {
     title: string
@@ -15,23 +14,18 @@ interface LegalPageLayoutProps {
 }
 
 export default function LegalPageLayout({ title, settingKey, lastUpdated = 'March 2026' }: LegalPageLayoutProps) {
-    const { data: settingsByGroup, isLoading } = useApi('/settings')
+    const { getSetting, isLoading } = useSettings()
 
     const content = React.useMemo(() => {
-        if (!settingsByGroup) return ''
-        const allSettings = Object.values(settingsByGroup).flat() as any[]
-        const setting = allSettings.find(s => s.key === settingKey)
-        return setting?.value || '<p>Content is being updated. Please check back shortly.</p>'
-    }, [settingsByGroup, settingKey])
+        return getSetting(settingKey) || '<p>Content is being updated. Please check back shortly.</p>'
+    }, [getSetting, settingKey])
 
     const handlePrint = () => {
         window.print()
     }
 
     return (
-        <main className="flex min-h-screen flex-col bg-background">
-            <Navbar />
-
+        <PageShell>
             {/* Simple Hero */}
             <section className="pt-32 pb-16 bg-[#020810] border-b border-white/5">
                 <div className="max-w-[1400px] mx-auto px-6">
@@ -88,8 +82,6 @@ export default function LegalPageLayout({ title, settingKey, lastUpdated = 'Marc
                 </div>
             </section>
 
-            <Footer />
-
             <style jsx global>{`
                 @media print {
                     nav, footer, .pt-32, .mt-20 { display: none !important; }
@@ -98,6 +90,6 @@ export default function LegalPageLayout({ title, settingKey, lastUpdated = 'Marc
                     .prose { max-width: 100% !important; color: black !important; }
                 }
             `}</style>
-        </main>
+        </PageShell>
     )
 }

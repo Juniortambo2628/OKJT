@@ -2,8 +2,6 @@
 
 import React from 'react'
 import { useApi } from '@/hooks/use-api'
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
 import { Button } from '@/components/ui/button'
 import { motion } from 'framer-motion'
 import { ArrowRight, CheckCircle2 } from 'lucide-react'
@@ -12,8 +10,10 @@ import PageHero from '@/components/PageHero'
 import { useSettings } from '@/hooks/use-settings'
 import { SectionSkeleton } from '@/components/MediaSkeleton'
 import ParallaxSection from '@/components/ParallaxSection'
-import ParallaxNav from '@/components/ParallaxNav'
 import { SectionCard } from '@/components/ui/SectionCard'
+import { PageShell } from '@/components/PageShell'
+import { SERVICE_DETAIL_NAV_SECTIONS, type NavSection } from '@/lib/nav-sections'
+import { Service } from '@/types/api'
 
 const benefits = [
     'Data-driven insights tailored to your market',
@@ -25,25 +25,27 @@ const benefits = [
 
 export default function ServiceDetailContent({ slug }: { slug: string }) {
     const { getSetting } = useSettings()
-    const { data: service, isLoading, isError } = useApi(`/services/${slug}`)
-    const { data: allServices } = useApi('/services')
+    const { data: service, isLoading, isError } = useApi<Service>(`/services/${slug}`)
+    const { data: allServices } = useApi<Service[]>('/services')
 
-    const relatedServices = allServices?.filter((s: any) => s.slug !== slug && s.category === service?.category).slice(0, 3)
+    const relatedServices = allServices?.filter((s) => s.slug !== slug && s.category === service?.category).slice(0, 3)
+
+    const navSections: NavSection[] = [
+        ...SERVICE_DETAIL_NAV_SECTIONS,
+        ...(relatedServices && relatedServices.length > 0 ? [{ id: 'service-related', label: 'Related' }] : []),
+    ]
 
     if (isLoading) {
         return (
-            <main className="flex min-h-screen flex-col bg-background">
-                <Navbar />
+            <PageShell>
                 <SectionSkeleton />
-                <Footer />
-            </main>
+            </PageShell>
         )
     }
 
     if (isError || !service) {
         return (
-            <main className="flex min-h-screen flex-col bg-background">
-                <Navbar />
+            <PageShell>
                 <div className="flex-1 flex items-center justify-center pt-32">
                     <div className="text-center">
                         <h1 className="text-4xl font-bold text-foreground mb-4">Service Not Found</h1>
@@ -51,33 +53,22 @@ export default function ServiceDetailContent({ slug }: { slug: string }) {
                         <Button asChild variant="outline"><Link href="/#services">Explore Services</Link></Button>
                     </div>
                 </div>
-                <Footer />
-            </main>
+            </PageShell>
         )
     }
 
     const mediaUrl = service.image || service.pillar?.image
     const isVideo = mediaUrl && (mediaUrl.endsWith('.mp4') || mediaUrl.endsWith('.webm'))
 
-    const navSections = [
-        { id: 'hero', label: 'Intro' },
-        { id: 'service-details', label: 'Overview' },
-        { id: 'service-benefits', label: 'Benefits' },
-        ...(relatedServices && relatedServices.length > 0 ? [{ id: 'service-related', label: 'Related' }] : []),
-        { id: 'service-cta', label: 'Contact' }
-    ]
-
     return (
-        <main className="flex min-h-screen flex-col bg-background w-full overflow-x-hidden">
-            <Navbar />
-
+        <PageShell navSections={navSections}>
             <PageHero
                 id="hero"
                 tagline={service.category}
                 title={service.title}
                 subtitle={service.description}
-                videoSrc={isVideo ? mediaUrl : undefined}
-                bgImage={!isVideo ? mediaUrl : undefined}
+                videoSrc={isVideo ? mediaUrl ?? undefined : undefined}
+                bgImage={!isVideo ? mediaUrl ?? undefined : undefined}
                 breadcrumbs={[
                     { label: 'Services', href: '/services' },
                     { label: service.title }
@@ -146,7 +137,7 @@ export default function ServiceDetailContent({ slug }: { slug: string }) {
                 >
                     <SectionCard>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
-                            {relatedServices.map((rs: any) => (
+                            {relatedServices.map((rs) => (
                                 <Link key={rs.id} href={`/services/${rs.slug}`} className="group block bg-black/20 p-8 border border-white/5 rounded-2xl hover:border-primary/45 hover:bg-black/40 transition-all">
                                     <h3 className="text-lg font-bold text-white group-hover:text-primary transition-colors mb-4">{rs.title}</h3>
                                     <p className="text-white/60 text-sm line-clamp-2">{rs.description}</p>
@@ -201,9 +192,6 @@ export default function ServiceDetailContent({ slug }: { slug: string }) {
                 </SectionCard>
             </ParallaxSection>
             </div>
-
-            <ParallaxNav sections={navSections} />
-            <Footer />
-        </main>
+        </PageShell>
     )
 }

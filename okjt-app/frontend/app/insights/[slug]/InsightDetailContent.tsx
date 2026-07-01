@@ -2,8 +2,6 @@
 
 import React from 'react'
 import { useApi } from '@/hooks/use-api'
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
 import { Button } from '@/components/ui/button'
 import { motion } from 'framer-motion'
 import { Clock, Tag, ArrowRight } from 'lucide-react'
@@ -14,57 +12,52 @@ import SocialShare from '@/components/SocialShare'
 import PageHero from '@/components/PageHero'
 import { SectionSkeleton } from '@/components/MediaSkeleton'
 import ParallaxSection from '@/components/ParallaxSection'
-import ParallaxNav from '@/components/ParallaxNav'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { useSettings } from '@/hooks/use-settings'
+import { PageShell } from '@/components/PageShell'
+import { INSIGHT_DETAIL_NAV_SECTIONS, type NavSection } from '@/lib/nav-sections'
+import { Insight } from '@/types/api'
 
 export default function InsightDetailContent({ slug }: { slug: string }) {
     const { getSetting } = useSettings()
-    const { data: insight, isLoading, isError } = useApi(`/insights/${slug}`)
-    const { data: allInsights } = useApi('/insights')
+    const { data: insight, isLoading, isError } = useApi<Insight>(`/insights/${slug}`)
+    const { data: allInsights } = useApi<Insight[]>('/insights')
 
     const bgContent = getSetting('bg_insight_content', '/assets/videos/services/all-services-video.mp4')
     const bgRelated = getSetting('bg_insight_related', '/assets/videos/services/all-services-video.mp4')
 
-    const relatedInsights = allInsights?.filter((i: any) => i.slug !== slug && i.category === insight?.category).slice(0, 3)
+    const relatedInsights = allInsights?.filter((i) => i.slug !== slug && i.category === insight?.category).slice(0, 3)
+
+    const navSections: NavSection[] = [
+        ...INSIGHT_DETAIL_NAV_SECTIONS,
+        ...(relatedInsights && relatedInsights.length > 0 ? [{ id: 'insight-related', label: 'Related' }] : []),
+    ]
 
     if (isLoading) {
         return (
-            <main className="flex min-h-screen flex-col bg-background w-full overflow-x-clip">
-                <Navbar />
+            <PageShell>
                 <SectionSkeleton />
-                <Footer />
-            </main>
+            </PageShell>
         )
     }
 
     if (isError || !insight) {
         return (
-            <main className="flex min-h-screen flex-col bg-background w-full overflow-x-clip">
-                <Navbar />
+            <PageShell>
                 <div className="flex-1 flex items-center justify-center pt-32">
                     <div className="text-center">
                         <h1 className="text-4xl font-bold text-foreground mb-4">Article Not Found</h1>
                         <Button asChild variant="outline"><Link href="/insights">Back to Insights</Link></Button>
                     </div>
                 </div>
-                <Footer />
-            </main>
+            </PageShell>
         )
     }
 
     const timeToRead = readingTime(insight.content || '')
 
-    const navSections = [
-        { id: 'insight-hero', label: 'Intro' },
-        { id: 'insight-content', label: 'Article' },
-        ...(relatedInsights && relatedInsights.length > 0 ? [{ id: 'insight-related', label: 'Related' }] : []),
-    ]
-
     return (
-        <main className="flex min-h-screen flex-col bg-background w-full overflow-x-clip">
-            <Navbar />
-
+        <PageShell navSections={navSections}>
             <PageHero
                 id="insight-hero" 
                 title={insight.title}
@@ -134,7 +127,7 @@ export default function InsightDetailContent({ slug }: { slug: string }) {
                 >
                     <SectionCard>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
-                            {relatedInsights.map((ri: any) => (
+                            {relatedInsights.map((ri) => (
                                 <motion.div
                                     key={ri.id}
                                     initial={{ opacity: 0, y: 20 }}
@@ -167,9 +160,6 @@ export default function InsightDetailContent({ slug }: { slug: string }) {
                 </ParallaxSection>
             )}
             </div>
-
-            <ParallaxNav sections={navSections} />
-            <Footer />
-        </main>
+        </PageShell>
     )
 }

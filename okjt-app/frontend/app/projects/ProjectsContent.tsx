@@ -3,8 +3,6 @@
 import React from 'react'
 import Link from 'next/link'
 import { useApi } from '@/hooks/use-api'
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
 import PageHero from '@/components/PageHero'
 import { motion } from 'framer-motion'
 import { ExternalLink, ArrowRight, Star } from 'lucide-react'
@@ -14,29 +12,28 @@ import SkeletonCard from '@/components/SkeletonCard'
 import { Button } from '@/components/ui/button'
 import { getMediaUrl } from '@/lib/utils'
 import ParallaxSection from '@/components/ParallaxSection'
-import ParallaxNav from '@/components/ParallaxNav'
 import { SectionCard } from '@/components/ui/SectionCard'
+import { PageShell } from '@/components/PageShell'
+import { type NavSection } from '@/lib/nav-sections'
 
 export default function ProjectsContent() {
     const { data: projects, isLoading } = useApi<Project[]>('/projects')
     
     const featured = projects?.filter(p => p.type === 'flagship' && p.is_active) || []
 
-    const navSections = React.useMemo(() => {
-        const sections = [{ id: 'hero', label: 'Intro' }]
+    const navSections = React.useMemo<NavSection[]>(() => {
+        const sections: NavSection[] = [{ id: 'hero', label: 'Intro' }]
         featured.forEach((item, index) => {
             sections.push({
                 id: `project-${index}`,
-                label: item.title.split(' ')[0] // first word of title
+                label: item.title.split(' ')[0]
             })
         })
         return sections
     }, [featured])
 
     return (
-        <main className="flex min-h-screen flex-col bg-background w-full overflow-x-clip">
-            <Navbar />
-
+        <PageShell navSections={navSections}>
             <PageHero
                 id="hero"
                 centered
@@ -119,9 +116,6 @@ export default function ProjectsContent() {
                     </ParallaxSection>
                 ))}
             </div>
-
-            <ParallaxNav sections={navSections} />
-            <Footer />
-        </main>
+        </PageShell>
     )
 }

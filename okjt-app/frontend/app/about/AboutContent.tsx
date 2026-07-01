@@ -1,14 +1,12 @@
 "use client"
 
 import React from 'react'
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
 import PageHero from '@/components/PageHero'
 import { useSettings } from '@/hooks/use-settings'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { useApi } from '@/hooks/use-api'
-import { ArrowRight, Linkedin, Zap, Landmark, Globe, Shield, Star, Award, Heart, Info } from 'lucide-react'
+import { ArrowRight, Linkedin, Info } from 'lucide-react'
 import Link from 'next/link'
 import {
     Dialog,
@@ -19,12 +17,10 @@ import {
 } from "@/components/ui/dialog"
 import { TeamMember, Value } from '@/types/api'
 import ParallaxSection from '@/components/ParallaxSection'
-import ParallaxNav from '@/components/ParallaxNav'
 import { SectionCard } from '@/components/ui/SectionCard'
-
-const availableIcons: Record<string, any> = {
-    Shield, Globe, Zap, Landmark, Star, Award, Heart
-}
+import { PageShell } from '@/components/PageShell'
+import { iconMap } from '@/components/admin/constants'
+import { ABOUT_NAV_SECTIONS } from '@/lib/nav-sections'
 
 export default function AboutContent() {
     const { getSetting } = useSettings()
@@ -49,18 +45,8 @@ export default function AboutContent() {
     const bgTeam = getSetting('bg_about_team', '/assets/videos/services/all-services-video.mp4')
     const bgCta = getSetting('bg_about_cta', '/assets/videos/services/all-services-video.mp4')
 
-    const navSections = [
-        { id: 'hero', label: 'Intro' },
-        { id: 'about-mission', label: 'Mission' },
-        { id: 'about-values', label: 'Values' },
-        { id: 'about-team', label: 'Team' },
-        { id: 'about-cta', label: 'Contact' }
-    ]
-
     return (
-        <main className="flex min-h-screen flex-col bg-background font-inter w-full overflow-x-clip">
-            <Navbar />
-
+        <PageShell navSections={ABOUT_NAV_SECTIONS}>
             <PageHero
                 id="hero"
                 centered
@@ -107,7 +93,7 @@ export default function AboutContent() {
                     <SectionCard>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
                             {values?.map((val, idx) => {
-                                const IconComponent = availableIcons[val.icon || 'Shield'] || Shield
+                                const IconComponent = (iconMap as any)[val.icon || 'Shield'] || (iconMap as any).Shield
                                 return (
                                     <motion.div key={val.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }} className="bg-black/20 border border-white/5 p-8 hover:border-primary/30 transition-all group rounded-2xl">
                                         <div className="w-12 h-12 bg-primary/5 border border-primary/10 flex items-center justify-center mb-8 group-hover:bg-primary group-hover:text-black transition-all duration-300 rounded-xl">
@@ -233,9 +219,6 @@ export default function AboutContent() {
                     </SectionCard>
                 </ParallaxSection>
             </div>
-
-            <ParallaxNav sections={navSections} />
-            <Footer />
-        </main>
+        </PageShell>
     )
 }

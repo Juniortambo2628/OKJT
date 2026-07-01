@@ -7,23 +7,24 @@ import { Pencil, Trash2, ArrowUpDown } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import AdminResourceTemplate from '@/components/admin/core/AdminResourceTemplate'
+import { FormField } from '@/components/admin/core/FormField'
+import { ADMIN_INPUT_CLASSES } from '@/lib/config'
+import { Stat } from '@/types/api'
 
 const AdminStatsPage = () => {
     return (
-        <AdminResourceTemplate<any>
+        <AdminResourceTemplate<Stat>
             endpoint="/stats"
             resourceName="Stat"
             title="Key Statistics"
             description="Manage the performance metrics shown on the landing page."
             actionLabel="Add Stat"
-            statusField="is_active"
             gridColsClass="grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
             initialForm={{
                 label: '',
                 value: '',
                 order: 0,
                 icon: '',
-                is_active: true,
             }}
             filterFn={(s, term) => 
                 (s.label || '').toLowerCase().includes(term.toLowerCase()) ||
@@ -97,7 +98,7 @@ const AdminStatsPage = () => {
 
             renderTableRows={(filteredStats, selectedIds, toggleSelect, handleEdit, handleDelete) => (
                 <>
-                    {filteredStats?.map((stat: any) => (
+                    {filteredStats?.map((stat) => (
                         <tr key={stat.id} className="hover:bg-primary/5 transition-colors group">
                             <td className="p-4 px-6">
                                 <Checkbox
@@ -132,24 +133,20 @@ const AdminStatsPage = () => {
             renderFormFields={(form, setForm) => (
                 <>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Value (e.g. 180 M)</label>
-                            <Input placeholder="Stat Value" value={form.value || ''} onChange={(e) => setForm({ ...form, value: e.target.value })} />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Label (e.g. PPA Portfolio)</label>
-                            <Input placeholder="Stat Label" value={form.label || ''} onChange={(e) => setForm({ ...form, label: e.target.value })} />
-                        </div>
+                        <FormField label="Value (e.g. 180 M)">
+                            <Input className={ADMIN_INPUT_CLASSES} placeholder="Stat Value" value={form.value || ''} onChange={(e) => setForm({ ...form, value: e.target.value })} />
+                        </FormField>
+                        <FormField label="Label (e.g. PPA Portfolio)">
+                            <Input className={ADMIN_INPUT_CLASSES} placeholder="Stat Label" value={form.label || ''} onChange={(e) => setForm({ ...form, label: e.target.value })} />
+                        </FormField>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Sort Order</label>
-                            <Input type="number" value={form.order || 0} onChange={(e) => setForm({ ...form, order: parseInt(e.target.value) || 0 })} />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Icon Name (Optional)</label>
-                            <Input placeholder="e.g. Activity, Users" value={form.icon || ''} onChange={(e) => setForm({ ...form, icon: e.target.value })} />
-                        </div>
+                        <FormField label="Sort Order">
+                            <Input type="number" className={ADMIN_INPUT_CLASSES} value={form.order || 0} onChange={(e) => setForm({ ...form, order: parseInt(e.target.value) || 0 })} />
+                        </FormField>
+                        <FormField label="Icon Name (Optional)">
+                            <Input className={ADMIN_INPUT_CLASSES} placeholder="e.g. Activity, Users" value={form.icon || ''} onChange={(e) => setForm({ ...form, icon: e.target.value })} />
+                        </FormField>
                     </div>
                 </>
             )}

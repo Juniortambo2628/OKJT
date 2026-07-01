@@ -14,6 +14,8 @@ import { ResourceCard } from '@/components/admin/ResourceCard'
 import { ResourceTableRow } from '@/components/admin/ResourceTableRow'
 import { StatusBadge } from '@/components/admin/StatusBadge'
 import { IconPicker } from '@/components/admin/IconPicker'
+import { FormField } from '@/components/admin/core/FormField'
+import { ADMIN_INPUT_CLASSES } from '@/lib/config'
 
 export default function AdminServicesPage() {
     const { data: pillars } = useApi<Pillar[]>('/pillars')
@@ -131,17 +133,15 @@ export default function AdminServicesPage() {
             renderFormFields={(form, setForm) => (
                 <>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-muted-foreground">Title</label>
-                            <Input className="bg-background border-border text-foreground" placeholder="Service Title" value={form.title || ''} onChange={(e) => setForm({ ...form, title: e.target.value })} />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-muted-foreground">Pillar Association</label>
+                        <FormField label="Title">
+                            <Input className={ADMIN_INPUT_CLASSES} placeholder="Service Title" value={form.title || ''} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+                        </FormField>
+                        <FormField label="Pillar Association">
                             <Select 
                                 value={form.pillar_id?.toString() || 'none'} 
                                 onValueChange={(val) => setForm({ ...form, pillar_id: val === 'none' ? undefined : parseInt(val, 10) })}
                             >
-                                <SelectTrigger className="bg-background border-border text-foreground">
+                                <SelectTrigger className={ADMIN_INPUT_CLASSES}>
                                     <SelectValue placeholder="Select a pillar" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -151,15 +151,13 @@ export default function AdminServicesPage() {
                                     ))}
                                 </SelectContent>
                             </Select>
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-muted-foreground">Category</label>
-                            <Input className="bg-background border-border text-foreground" placeholder="Service Category" value={form.category || ''} onChange={(e) => setForm({ ...form, category: e.target.value })} />
-                        </div>
-                        <div className="space-y-2 md:col-span-2">
-                            <label className="text-sm font-medium text-muted-foreground">Short Description</label>
-                            <Input className="bg-background border-border text-foreground" placeholder="Brief overview for the card" value={form.description || ''} onChange={(e) => setForm({ ...form, description: e.target.value })} />
-                        </div>
+                        </FormField>
+                        <FormField label="Category">
+                            <Input className={ADMIN_INPUT_CLASSES} placeholder="Service Category" value={form.category || ''} onChange={(e) => setForm({ ...form, category: e.target.value })} />
+                        </FormField>
+                        <FormField label="Short Description" className="md:col-span-2">
+                            <Input className={ADMIN_INPUT_CLASSES} placeholder="Brief overview for the card" value={form.description || ''} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+                        </FormField>
                         <div className="md:col-span-2">
                             <RichTextEditor 
                                 label="Detailed Content"
@@ -169,7 +167,7 @@ export default function AdminServicesPage() {
                             />
                         </div>
                         <div className="space-y-4">
-                            <label className="text-sm font-medium block text-muted-foreground">Icon Selection</label>
+                            <label className="text-sm font-medium text-muted-foreground">Icon Selection</label>
                             <IconPicker
                                 selectedIcon={form.icon || 'Activity'}
                                 onSelect={(iconName) => setForm({ ...form, icon: iconName })}

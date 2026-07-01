@@ -1,8 +1,6 @@
 "use client"
 
 import React from 'react'
-import Navbar from "@/components/Navbar"
-import Footer from "@/components/Footer"
 import TestimonialsSection from "@/components/sections/TestimonialsSection"
 import ClientsSection from "@/components/sections/ClientsSection"
 import CTABanner from "@/components/sections/CTABanner"
@@ -10,9 +8,10 @@ import PageHero from "@/components/PageHero"
 import { usePageHeroMedia } from "@/hooks/use-page-hero-media"
 import ProjectsPreview from "@/components/sections/ProjectsPreview"
 import ParallaxSection from "@/components/ParallaxSection"
-import ParallaxNav from "@/components/ParallaxNav"
 import { SectionCard } from "@/components/ui/SectionCard"
 import { useSettings } from "@/hooks/use-settings"
+import { PageShell } from '@/components/PageShell'
+import { CLIENT_IMPACT_NAV_SECTIONS } from '@/lib/nav-sections'
 
 export default function ClientImpactContent() {
     const { videoSrc, bgImage } = usePageHeroMedia({
@@ -25,17 +24,8 @@ export default function ClientImpactContent() {
     const bgTestimonials = getSetting('bg_client_impact_testimonials', '/assets/videos/services/all-services-video.mp4')
     const bgClients = getSetting('bg_client_impact_clients', '/assets/videos/services/all-services-video.mp4')
 
-    const navSections = [
-        { id: 'impact-hero', label: 'Intro' },
-        { id: 'impact-projects', label: 'Projects' },
-        { id: 'impact-testimonials', label: 'Testimonials' },
-        { id: 'impact-clients', label: 'Clients' },
-        { id: 'cta', label: 'Contact' },
-    ]
-
     return (
-        <main className="flex min-h-screen flex-col relative bg-background w-full overflow-x-clip">
-            <Navbar />
+        <PageShell navSections={CLIENT_IMPACT_NAV_SECTIONS}>
             <PageHero 
                 id="impact-hero"
                 centered
@@ -94,9 +84,6 @@ export default function ClientImpactContent() {
 
                 <CTABanner />
             </div>
-
-            <ParallaxNav sections={navSections} />
-            <Footer />
-        </main>
+        </PageShell>
     )
 }

@@ -1,6 +1,4 @@
 import React from 'react'
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
 import { Button } from '@/components/ui/button'
 import { motion } from 'framer-motion'
 import { ArrowRight, Globe, Code2, Quote, CheckCircle2, ChevronRight, LayoutGrid } from 'lucide-react'
@@ -9,8 +7,9 @@ import Image from 'next/image'
 import SocialShare from '@/components/SocialShare'
 import PageHero from '@/components/PageHero'
 import ParallaxSection from '@/components/ParallaxSection'
-import ParallaxNav from '@/components/ParallaxNav'
 import { SectionCard } from '@/components/ui/SectionCard'
+import { PageShell } from '@/components/PageShell'
+import { PARALLAX_DEFAULTS } from '@/lib/config'
 
 interface DetailLayoutProps {
     isLoading: boolean
@@ -143,20 +142,17 @@ export default function DetailLayout({
 
     if (isLoading) {
         return (
-            <main className="flex min-h-screen flex-col bg-[#050a1a]">
-                <Navbar />
+            <PageShell>
                 <div className="flex-1 flex items-center justify-center pt-32">
                     <div className="text-muted-foreground/50 text-lg animate-pulse">{loadingLabel}</div>
                 </div>
-                <Footer />
-            </main>
+            </PageShell>
         )
     }
 
     if (isError || !title) {
         return (
-            <main className="flex min-h-screen flex-col bg-background">
-                <Navbar />
+            <PageShell>
                 <div className="flex-1 flex items-center justify-center pt-32">
                     <div className="text-center">
                         <h1 className="text-4xl font-bold text-foreground mb-4">{notFoundTitle}</h1>
@@ -165,15 +161,12 @@ export default function DetailLayout({
                         </Button>
                     </div>
                 </div>
-                <Footer />
-            </main>
+            </PageShell>
         )
     }
 
     return (
-        <main className="flex min-h-screen flex-col bg-background w-full overflow-x-hidden">
-            <Navbar />
-
+        <PageShell navSections={navSections}>
             <PageHero 
                 id="hero"
                 tagline={tagline}
@@ -415,9 +408,6 @@ export default function DetailLayout({
                     </SectionCard>
                 </ParallaxSection>
             )}
-
-            <ParallaxNav sections={navSections} />
-            <Footer />
-        </main>
+        </PageShell>
     )
 }

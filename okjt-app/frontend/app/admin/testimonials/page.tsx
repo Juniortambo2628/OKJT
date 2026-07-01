@@ -10,10 +10,13 @@ import AdminResourceTemplate from '@/components/admin/core/AdminResourceTemplate
 import { ResourceCard } from '@/components/admin/ResourceCard'
 import { ResourceTableRow } from '@/components/admin/ResourceTableRow'
 import { StatusBadge } from '@/components/admin/StatusBadge'
+import { FormField } from '@/components/admin/core/FormField'
+import { ADMIN_INPUT_CLASSES } from '@/lib/config'
+import { Testimonial } from '@/types/api'
 
 const AdminTestimonialsPage = () => {
     return (
-        <AdminResourceTemplate<any>
+        <AdminResourceTemplate<Testimonial>
             endpoint="/testimonials"
             resourceName="Testimonial"
             title="Testimonials"
@@ -98,7 +101,7 @@ const AdminTestimonialsPage = () => {
 
             renderTableRows={(filteredTestimonials, selectedIds, toggleSelect, handleEdit, handleDelete) => (
                 <>
-                    {filteredTestimonials?.map((t: any) => (
+                    {filteredTestimonials?.map((t) => (
                         <ResourceTableRow
                             key={t.id}
                             item={t}
@@ -141,18 +144,15 @@ const AdminTestimonialsPage = () => {
             renderFormFields={(form, setForm) => (
                 <>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Client Name</label>
-                            <Input placeholder="Client Name" value={form.name || ''} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Role / Title</label>
-                            <Input placeholder="Role / Title" value={form.role || ''} onChange={(e) => setForm({ ...form, role: e.target.value })} />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Company</label>
-                            <Input placeholder="Company" value={form.company || ''} onChange={(e) => setForm({ ...form, company: e.target.value })} />
-                        </div>
+                        <FormField label="Client Name">
+                            <Input className={ADMIN_INPUT_CLASSES} placeholder="Client Name" value={form.name || ''} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+                        </FormField>
+                        <FormField label="Role / Title">
+                            <Input className={ADMIN_INPUT_CLASSES} placeholder="Role / Title" value={form.role || ''} onChange={(e) => setForm({ ...form, role: e.target.value })} />
+                        </FormField>
+                        <FormField label="Company">
+                            <Input className={ADMIN_INPUT_CLASSES} placeholder="Company" value={form.company || ''} onChange={(e) => setForm({ ...form, company: e.target.value })} />
+                        </FormField>
                     </div>
                     
                     <ImageUploader 
@@ -162,25 +162,22 @@ const AdminTestimonialsPage = () => {
                         maxSizeMB={10}
                     />
 
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium">Testimonial Quote</label>
+                    <FormField label="Testimonial Quote">
                         <textarea
                             placeholder="Testimonial quote..."
                             value={form.quote || ''}
                             onChange={(e) => setForm({ ...form, quote: e.target.value })}
                             className="w-full bg-secondary/5 border border-border rounded-md p-3 text-sm min-h-[120px] resize-y focus:outline-none focus:ring-1 focus:ring-primary/30"
                         />
-                    </div>
+                    </FormField>
 
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Rating (1-5)</label>
-                            <Input type="number" placeholder="Rating" value={form.rating || 5} onChange={(e) => setForm({ ...form, rating: parseInt(e.target.value) || 5 })} min={1} max={5} />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Sort Order</label>
-                            <Input type="number" placeholder="Sort Order" value={form.order || 0} onChange={(e) => setForm({ ...form, order: parseInt(e.target.value) || 0 })} />
-                        </div>
+                        <FormField label="Rating (1-5)">
+                            <Input type="number" className={ADMIN_INPUT_CLASSES} placeholder="Rating" value={form.rating || 5} onChange={(e) => setForm({ ...form, rating: parseInt(e.target.value) || 5 })} min={1} max={5} />
+                        </FormField>
+                        <FormField label="Sort Order">
+                            <Input type="number" className={ADMIN_INPUT_CLASSES} placeholder="Sort Order" value={form.order || 0} onChange={(e) => setForm({ ...form, order: parseInt(e.target.value) || 0 })} />
+                        </FormField>
                         <div className="flex items-center gap-2 pt-8">
                             <Checkbox
                                 checked={form.is_featured ?? true}
@@ -188,7 +185,7 @@ const AdminTestimonialsPage = () => {
                                 id="is_featured_testimonial"
                                 className="border-border"
                             />
-                            <label htmlFor="is_featured_testimonial" className="text-sm font-medium">Featured</label>
+                            <label htmlFor="is_featured_testimonial" className="text-sm font-medium text-muted-foreground">Featured</label>
                         </div>
                     </div>
                 </>

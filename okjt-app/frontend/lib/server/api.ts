@@ -1,8 +1,8 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+import { API_BASE_URL } from '@/lib/config'
 
 async function fetchApi<T>(endpoint: string): Promise<T | null> {
   try {
-    const res = await fetch(`${API_URL}${endpoint}`, {
+    const res = await fetch(`${API_BASE_URL}${endpoint}`, {
       next: { tags: ['okjt-content'] },
       headers: { 'Content-Type': 'application/json' },
     });
