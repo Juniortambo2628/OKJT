@@ -195,7 +195,7 @@ export default function DetailLayout({
             {/* Overview / Content sections */}
             <ParallaxSection
                 id="details-overview"
-                bgMedia="/assets/videos/services/all-services-video.mp4"
+                
                 heightClass="min-h-[220vh]"
             >
                 <SectionCard>
@@ -313,7 +313,7 @@ export default function DetailLayout({
             {testimonialQuote && (
                 <ParallaxSection
                     id="details-testimonial"
-                    bgMedia="/assets/videos/services/all-services-video.mp4"
+                    
                     heightClass="min-h-[170vh]"
                 >
                     <SectionCard className="max-w-[800px] mx-auto text-center">
@@ -334,7 +334,7 @@ export default function DetailLayout({
             {gallery && gallery.length > 0 && (
                 <ParallaxSection
                     id="details-gallery"
-                    bgMedia="/assets/videos/services/all-services-video.mp4"
+                    
                     heightClass="min-h-[170vh]"
                     badgeText={galleryTagline}
                     title={galleryTitle}
@@ -372,7 +372,7 @@ export default function DetailLayout({
             {relatedItems && relatedItems.length > 0 && (
                 <ParallaxSection
                     id="details-related"
-                    bgMedia="/assets/videos/services/all-services-video.mp4"
+                    
                     heightClass="min-h-[170vh]"
                 >
                     <SectionCard>

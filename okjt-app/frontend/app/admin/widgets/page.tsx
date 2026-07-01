@@ -48,7 +48,7 @@ const AdminWidgetsPage = () => {
                 />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pb-20">
-                    <Card className="bg-secondary/5 border-border overflow-hidden">
+                    <Card className="bg-secondary/5 border-border shadow-sm overflow-hidden">
                         <CardHeader className="bg-primary/5 border-b border-border">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
@@ -176,7 +176,7 @@ const AdminWidgetsPage = () => {
                         </CardContent>
                     </Card>
 
-                    <Card className="bg-secondary/5 border-border overflow-hidden">
+                    <Card className="bg-secondary/5 border-border shadow-sm overflow-hidden">
                         <CardHeader className="bg-emerald-500/5 border-b border-border">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">

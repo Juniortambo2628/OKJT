@@ -23,8 +23,8 @@ export default function InsightDetailContent({ slug }: { slug: string }) {
     const { data: insight, isLoading, isError } = useApi<Insight>(`/insights/${slug}`)
     const { data: allInsights } = useApi<Insight[]>('/insights')
 
-    const bgContent = getSetting('bg_insight_content', '/assets/videos/services/all-services-video.mp4')
-    const bgRelated = getSetting('bg_insight_related', '/assets/videos/services/all-services-video.mp4')
+    const bgContent = getSetting('bg_insight_content')
+    const bgRelated = getSetting('bg_insight_related')
 
     const relatedInsights = allInsights?.filter((i) => i.slug !== slug && i.category === insight?.category).slice(0, 3)
 

@@ -79,7 +79,7 @@ export default function ServiceDetailContent({ slug }: { slug: string }) {
             {/* Service Detail Content */}
             <ParallaxSection
                 id="service-details"
-                bgMedia={mediaUrl || "/assets/videos/services/all-services-video.mp4"}
+                bgMedia={mediaUrl}
                 heightClass="min-h-[170vh]"
                 contentMaxWidth="max-w-[1000px]"
             >
@@ -100,7 +100,6 @@ export default function ServiceDetailContent({ slug }: { slug: string }) {
             {/* Benefits */}
             <ParallaxSection
                 id="service-benefits"
-                bgMedia="/assets/videos/services/all-services-video.mp4"
                 heightClass="min-h-[200vh]"
                 badgeText="WHY OKJTECH?"
                 title="Why Choose Our Expertise?"
@@ -129,7 +128,6 @@ export default function ServiceDetailContent({ slug }: { slug: string }) {
             {relatedServices && relatedServices.length > 0 && (
                 <ParallaxSection
                     id="service-related"
-                    bgMedia="/assets/videos/services/all-services-video.mp4"
                     heightClass="min-h-[170vh]"
                     badgeText="EXPLORE MORE"
                     title={`Other ${service.category} Services`}
@@ -161,7 +159,6 @@ export default function ServiceDetailContent({ slug }: { slug: string }) {
             {/* CTA */}
             <ParallaxSection
                 id="service-cta"
-                bgMedia="/assets/videos/services/all-services-video.mp4"
                 heightClass="min-h-[170vh]"
                 contentMaxWidth="max-w-[1400px]"
             >

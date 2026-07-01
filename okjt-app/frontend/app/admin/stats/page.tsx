@@ -36,7 +36,7 @@ const AdminStatsPage = () => {
             }}
             
             renderGridItem={(stat, selectedIds, toggleSelect, handleEdit, handleDelete) => (
-                <Card className="bg-secondary/10 border-border/50 hover:bg-secondary/20 transition-all relative">
+                <Card className="bg-secondary/5 border-border shadow-sm hover:bg-secondary/20 transition-all relative">
                     <div className="absolute top-4 left-4 z-10">
                         <Checkbox
                             checked={selectedIds.includes(stat.id)}

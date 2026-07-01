@@ -20,9 +20,9 @@ export default function ClientImpactContent() {
     
     const { getSetting } = useSettings()
     
-    const bgProjects = getSetting('bg_projects_featured', '/assets/videos/services/all-services-video.mp4')
-    const bgTestimonials = getSetting('bg_client_impact_testimonials', '/assets/videos/services/all-services-video.mp4')
-    const bgClients = getSetting('bg_client_impact_clients', '/assets/videos/services/all-services-video.mp4')
+    const bgProjects = getSetting('bg_projects_featured')
+    const bgTestimonials = getSetting('bg_client_impact_testimonials')
+    const bgClients = getSetting('bg_client_impact_clients')
 
     return (
         <PageShell navSections={CLIENT_IMPACT_NAV_SECTIONS}>

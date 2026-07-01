@@ -25,7 +25,7 @@ export default function InsightsContent() {
     const { data: insights, isLoading } = useApi<Insight[]>('/insights')
     const [viewMode, setViewMode] = React.useState<ViewMode>('grid')
 
-    const bgInsights = getSetting('bg_insights_grid', '/assets/videos/services/all-services-video.mp4')
+    const bgInsights = getSetting('bg_insights_grid')
 
     const categories = React.useMemo(() => {
         if (!insights) return ['All']

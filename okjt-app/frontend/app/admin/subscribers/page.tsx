@@ -49,7 +49,7 @@ const AdminSubscribersPage = () => {
             renderGridItem={(item, selectedIds, toggleSelect, onEdit, onDelete) => (
                 <Card
                     key={item.id}
-                    className="bg-secondary/10 border-border/50 hover:bg-secondary/20 transition-all cursor-pointer"
+                    className="bg-secondary/5 border-border shadow-sm hover:bg-secondary/20 transition-all cursor-pointer"
                     onClick={() => onEdit(item)}
                 >
                     <CardContent className="p-4 flex items-center justify-between">

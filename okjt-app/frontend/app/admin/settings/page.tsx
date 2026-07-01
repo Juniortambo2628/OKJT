@@ -199,7 +199,7 @@ const AdminSettingsPage = () => {
                             </TabsContent>
 
                             <TabsContent value="branding" className="focus-visible:outline-none focus-visible:ring-0">
-                                <Card className="bg-secondary/5 border-border max-w-4xl">
+                                <Card className="bg-secondary/5 border-border shadow-sm max-w-4xl">
                                     <CardHeader className="bg-secondary/10 border-b border-border">
                                         <CardTitle className="text-foreground">Brand Assets</CardTitle>
                                         <CardDescription className="text-muted-foreground">Manage your logos and favicons across the site.</CardDescription>
@@ -213,7 +213,7 @@ const AdminSettingsPage = () => {
                             </TabsContent>
 
                             <TabsContent value="maintenance" className="focus-visible:outline-none focus-visible:ring-0">
-                                <Card className="bg-secondary/5 border-border max-w-4xl">
+                                <Card className="bg-secondary/5 border-border shadow-sm max-w-4xl">
                                     <CardHeader className="bg-secondary/10 border-border border-b">
                                         <div className="flex items-center gap-3">
                                             <div className="p-2 rounded-lg bg-orange-500/10 text-orange-600 dark:text-orange-400">
@@ -260,7 +260,7 @@ const AdminSettingsPage = () => {
                             </TabsContent>
 
                             <TabsContent value="hero-media" className="focus-visible:outline-none focus-visible:ring-0">
-                                <Card className="bg-secondary/5 border-border">
+                                <Card className="bg-secondary/5 border-border shadow-sm">
                                     <CardHeader className="bg-secondary/10 border-b border-border">
                                         <div className="flex items-center gap-3">
                                             <div className="p-2 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
@@ -299,7 +299,7 @@ const AdminSettingsPage = () => {
                             </TabsContent>
 
                             <TabsContent value="section-media" className="focus-visible:outline-none focus-visible:ring-0">
-                                <Card className="bg-secondary/5 border-border">
+                                <Card className="bg-secondary/5 border-border shadow-sm">
                                     <CardHeader className="bg-secondary/10 border-b border-border">
                                         <div className="flex items-center gap-3">
                                             <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
@@ -356,7 +356,7 @@ const AdminSettingsPage = () => {
                             </TabsContent>
 
                             <TabsContent value="navigation" className="focus-visible:outline-none focus-visible:ring-0">
-                                <Card className="bg-secondary/5 border-border max-w-5xl">
+                                <Card className="bg-secondary/5 border-border shadow-sm max-w-5xl">
                                     <CardHeader className="bg-secondary/10 border-b border-border">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-3">

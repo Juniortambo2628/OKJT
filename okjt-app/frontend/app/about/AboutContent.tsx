@@ -40,10 +40,10 @@ export default function AboutContent() {
     const ctaTitle = getSetting('about_cta_title', "Let's build the future together.")
     const ctaSubtitle = getSetting('about_cta_subtitle', 'Whether you need a custom web application, a design overhaul, or a technical strategy — our team is ready to scale your impact.')
 
-    const bgMission = getSetting('bg_about_mission', '/assets/videos/services/all-services-video.mp4')
-    const bgValues = getSetting('bg_about_values', '/assets/videos/services/all-services-video.mp4')
-    const bgTeam = getSetting('bg_about_team', '/assets/videos/services/all-services-video.mp4')
-    const bgCta = getSetting('bg_about_cta', '/assets/videos/services/all-services-video.mp4')
+    const bgMission = getSetting('bg_about_mission')
+    const bgValues = getSetting('bg_about_values')
+    const bgTeam = getSetting('bg_about_team')
+    const bgCta = getSetting('bg_about_cta')
 
     return (
         <PageShell navSections={ABOUT_NAV_SECTIONS}>

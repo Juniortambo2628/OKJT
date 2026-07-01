@@ -25,14 +25,6 @@ const getIconComponent = (iconName: string | null) => {
     return icons[iconName] || Globe;
 }
 
-const categoryVideos: Record<string, string> = {
-    'Web Development': '/assets/videos/services/all-services-video.mp4',
-    'UI/UX Design': '/assets/videos/services/all-services-video.mp4',
-    'Digital Strategy': '/assets/videos/services/all-services-video.mp4',
-    'Branding': '/assets/videos/services/all-services-video.mp4',
-    'Cloud Solutions': '/assets/videos/services/all-services-video.mp4',
-}
-
 export default function ServicesIndexContent() {
     const { getSetting, isLoading: settingsLoading } = useSettings()
     const { videoSrc, bgImage, mediaLoading } = usePageHeroMedia({ settingsKey: 'hero_services_media' })
@@ -150,7 +142,6 @@ export default function ServicesIndexContent() {
                     <ParallaxSection
                         key={`group-${groupIndex}`}
                         id={`group-${groupIndex}`}
-                        bgMedia={categoryVideos[group.title] || "/assets/videos/services/all-services-video.mp4"}
                         heightClass="min-h-[220vh]"
                         contentMaxWidth="max-w-[1400px]"
                     >

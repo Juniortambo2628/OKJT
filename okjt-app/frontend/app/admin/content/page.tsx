@@ -151,7 +151,7 @@ const AdminContentPage = () => {
                         </div>
                     </div>
                 ) : activeSection && (
-                    <Card className="bg-secondary/10 border-border/50">
+                    <Card className="bg-secondary/5 border-border shadow-sm">
                         <CardHeader className="border-b border-border/50 bg-secondary/5">
                             <div className="flex items-center gap-3">
                                 <div className="p-2 rounded-lg bg-primary/10 text-primary">

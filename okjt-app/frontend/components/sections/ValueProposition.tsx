@@ -61,7 +61,7 @@ const ValueProposition = () => {
     const activePillar = pillars.find(p => p.title === activeTabTitle) || pillars[0]
     const Icon = activePillar.icon
 
-    const bgMedia = getSetting('bg_home_value_proposition', '/assets/videos/services/all-services-video.mp4')
+    const bgMedia = getSetting('bg_home_value_proposition')
 
     return (
         <ParallaxSection

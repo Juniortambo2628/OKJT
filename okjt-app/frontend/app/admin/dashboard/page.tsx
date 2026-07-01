@@ -30,7 +30,7 @@ const AdminDashboardPage = () => {
                     {statCards.map((stat) => {
                         const Icon = stat.icon
                         return (
-                            <Card key={stat.label} className="bg-secondary/10 border-border/50">
+                            <Card key={stat.label} className="bg-secondary/5 border-border shadow-sm">
                                 <CardContent className="p-6">
                                     <div className="flex items-center justify-between mb-4">
                                         <div className={`p-2 rounded-lg ${stat.bg}`}>
@@ -52,7 +52,7 @@ const AdminDashboardPage = () => {
                 {/* Charts */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Views Over Time */}
-                    <Card className="bg-secondary/10 border-border/50">
+                    <Card className="bg-secondary/5 border-border shadow-sm">
                         <CardHeader>
                             <CardTitle className="text-lg">Views Over Time</CardTitle>
                             <CardDescription>Page views for the last 14 days</CardDescription>
@@ -97,7 +97,7 @@ const AdminDashboardPage = () => {
                     </Card>
 
                     {/* Top Pages */}
-                    <Card className="bg-secondary/10 border-border/50">
+                    <Card className="bg-secondary/5 border-border shadow-sm">
                         <CardHeader>
                             <CardTitle className="text-lg">Top Pages</CardTitle>
                             <CardDescription>Most visited pages (last 30 days)</CardDescription>
@@ -135,7 +135,7 @@ const AdminDashboardPage = () => {
                 </div>
 
                 {/* Top Referrers */}
-                <Card className="bg-secondary/10 border-border/50">
+                <Card className="bg-secondary/5 border-border shadow-sm">
                     <CardHeader>
                         <CardTitle className="text-lg">Top Referrers</CardTitle>
                         <CardDescription>Where your visitors come from (last 30 days)</CardDescription>

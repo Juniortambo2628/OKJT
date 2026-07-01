@@ -203,7 +203,7 @@ const EmailSettingsPage = () => {
                             </div>
 
                             <TabsContent value="visual" className="mt-0 space-y-6">
-                                <Card className="bg-secondary/5 border-border">
+                                <Card className="bg-secondary/5 border-border shadow-sm">
                                     <CardHeader className="bg-secondary/10 border-b border-border py-3">
                                         <CardTitle className="text-sm text-foreground flex items-center gap-2">
                                             <Layout size={14} /> Structure & Content

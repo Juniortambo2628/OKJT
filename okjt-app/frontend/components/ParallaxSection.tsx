@@ -3,18 +3,19 @@
 import React, { useRef } from 'react'
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
 import { SkeletonBlock } from '@/components/MediaSkeleton'
+import { PARALLAX_DEFAULTS } from '@/lib/config'
 
 interface ParallaxSectionProps {
     bgMedia?: string | null
     overlayOpacity?: number
-    heightClass?: string // e.g. "min-h-[230vh]"
+    heightClass?: string
     badgeText?: string
     title?: string | React.ReactNode
     subtitle?: string | React.ReactNode
     id?: string
     children?: React.ReactNode
     index?: number
-    contentMaxWidth?: string // e.g. "max-w-4xl" or "max-w-[1400px]"
+    contentMaxWidth?: string
 }
 
 /**
@@ -34,14 +35,14 @@ interface ParallaxSectionProps {
 export default function ParallaxSection({
     bgMedia,
     overlayOpacity = 0.65,
-    heightClass = "min-h-[230vh]",
+    heightClass = PARALLAX_DEFAULTS.heightClass,
     badgeText,
     title,
     subtitle,
     id,
     children,
     index,
-    contentMaxWidth = "max-w-[1400px]"
+    contentMaxWidth = PARALLAX_DEFAULTS.contentMaxWidth
 }: ParallaxSectionProps) {
     const sectionRef = useRef<HTMLDivElement>(null)
     
@@ -144,7 +145,8 @@ export default function ParallaxSection({
         [24,  24,   0,    0,    -35,  -35]
     )
 
-    const isVideo = bgMedia?.endsWith('.mp4') || bgMedia?.endsWith('.webm')
+    const resolvedBgMedia = bgMedia || PARALLAX_DEFAULTS.fallbackBgMedia
+    const isVideo = resolvedBgMedia?.endsWith('.mp4') || resolvedBgMedia?.endsWith('.webm')
 
     return (
         <div 
@@ -162,13 +164,13 @@ export default function ParallaxSection({
                         willChange: 'transform, opacity'
                     }}
                 >
-                    {bgMedia ? (
+                    {resolvedBgMedia ? (
                         isVideo ? (
                             <video autoPlay muted loop playsInline className="w-full h-full object-cover">
-                                <source src={bgMedia} type="video/mp4" />
+                                <source src={resolvedBgMedia} type="video/mp4" />
                             </video>
                         ) : (
-                            <img src={bgMedia} alt="" className="w-full h-full object-cover" />
+                            <img src={resolvedBgMedia} alt="" className="w-full h-full object-cover" />
                         )
                     ) : null}
                     <div className="absolute inset-0 bg-black" style={{ opacity: overlayOpacity }} />

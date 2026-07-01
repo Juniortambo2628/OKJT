@@ -17,7 +17,7 @@ export function AuthPageShell({ title, description, children }: AuthPageShellPro
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-background px-6">
-            <Card className="w-full max-w-md bg-secondary/10 border-border/50">
+            <Card className="w-full max-w-md bg-secondary/5 border-border shadow-sm">
                 <CardHeader className="text-center">
                     <div className="flex justify-center mb-6">
                         <Image

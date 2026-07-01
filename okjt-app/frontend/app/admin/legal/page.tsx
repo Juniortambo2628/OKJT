@@ -72,7 +72,7 @@ const LegalSettingsPage = () => {
                         <div className="h-[500px] bg-secondary/10 rounded-xl border border-border/50" />
                     </div>
                 ) : activeTabData && (
-                    <Card className="bg-secondary/10 border-border/50">
+                    <Card className="bg-secondary/5 border-border shadow-sm">
                         <CardHeader className="border-b border-border/50 bg-secondary/5">
                             <CardTitle className="text-xl flex items-center gap-2">
                                 <activeTabData.icon size={20} className="text-primary" />

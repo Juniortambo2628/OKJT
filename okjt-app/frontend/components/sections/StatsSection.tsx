@@ -83,7 +83,7 @@ const StatsSection = () => {
     return (
         <ParallaxSection
             id="stats"
-            bgMedia={backgroundMedia || getSetting('bg_home_stats', '/assets/videos/services/all-services-video.mp4')}
+            bgMedia={backgroundMedia || getSetting('bg_home_stats')}
             heightClass="min-h-[230vh]"
             badgeText={sectionTagline || "KEY PERFORMANCE METRICS"}
             title={sectionTitle}

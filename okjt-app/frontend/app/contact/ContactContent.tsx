@@ -26,8 +26,8 @@ export default function ContactContent() {
     const { toast } = useToast()
     const [isSubmitting, setIsSubmitting] = React.useState(false)
 
-    const bgForm = getSetting('bg_contact_form', '/assets/videos/services/all-services-video.mp4')
-    const bgInfo = getSetting('bg_contact_info', '/assets/videos/services/all-services-video.mp4')
+    const bgForm = getSetting('bg_contact_form')
+    const bgInfo = getSetting('bg_contact_info')
 
     const { data: services } = useApi<Service[]>('/services')
     const sectors = React.useMemo(() => {

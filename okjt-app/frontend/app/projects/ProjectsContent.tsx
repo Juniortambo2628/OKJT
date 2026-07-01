@@ -63,7 +63,7 @@ export default function ProjectsContent() {
                     <ParallaxSection
                         key={item.id}
                         id={`project-${index}`}
-                        bgMedia={item.image ? getMediaUrl(item.image) : "/assets/videos/services/all-services-video.mp4"}
+                        bgMedia={item.image ? getMediaUrl(item.image) : undefined}
                         heightClass="min-h-[220vh]"
                         contentMaxWidth="max-w-[1400px]"
                     >

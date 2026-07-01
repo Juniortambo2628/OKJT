@@ -16,7 +16,7 @@ const CTABanner = () => {
     const title = getSetting('cta_title')
     const subtitle = getSetting('cta_subtitle')
 
-    const bgMedia = getSetting('bg_home_cta', '/assets/videos/services/all-services-video.mp4')
+    const bgMedia = getSetting('bg_home_cta')
 
     return (
         <ParallaxSection

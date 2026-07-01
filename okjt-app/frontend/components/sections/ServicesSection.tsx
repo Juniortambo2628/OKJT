@@ -25,7 +25,7 @@ const ServicesSection = () => {
     const sectionTagline = getSetting('services_tagline')
     const sectionTitle = getSetting('services_title')
     
-    const bgMedia = getSetting('bg_home_services', '/assets/videos/services/all-services-video.mp4')
+    const bgMedia = getSetting('bg_home_services')
 
     if (servicesLoading || settingsLoading) return <SectionSkeleton />
     if (servicesError) return null

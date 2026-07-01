@@ -16,7 +16,7 @@ const InsightsSection = () => {
     const { data: insights, isLoading, isError } = useApi('/insights')
     const { getSetting } = useSettings()
     const [activeTab, setActiveTab] = useState('Featured')
-    const bgMedia = getSetting('bg_home_insights', '/assets/videos/services/all-services-video.mp4')
+    const bgMedia = getSetting('bg_home_insights')
 
     if (isLoading) return <SectionSkeleton />
     if (isError || !insights || insights.length === 0) {
