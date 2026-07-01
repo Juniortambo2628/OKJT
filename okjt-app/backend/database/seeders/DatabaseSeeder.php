@@ -16,6 +16,8 @@ class DatabaseSeeder extends Seeder
             PillarSeeder::class,
             ServiceSeeder::class,
             SiteSettingSeeder::class,
+            WidgetSettingsSeeder::class,
+            SectionBackgroundSeeder::class,
             ProjectSeeder::class,
             TestimonialClientSeeder::class,
             AdvancedSettingsSeeder::class,

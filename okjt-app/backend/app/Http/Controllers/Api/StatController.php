@@ -21,6 +21,7 @@ class StatController extends Controller
         return [
             'label' => 'required|string',
             'value' => 'required|string',
+            'description' => 'nullable|string',
             'icon' => 'nullable|string',
             'order' => 'integer',
         ];
@@ -31,6 +32,7 @@ class StatController extends Controller
         return [
             'label' => 'string',
             'value' => 'string',
+            'description' => 'nullable|string',
             'icon' => 'nullable|string',
             'order' => 'integer',
         ];

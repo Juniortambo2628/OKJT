@@ -9,6 +9,7 @@ class Stat extends Model
     protected $fillable = [
         'label',
         'value',
+        'description',
         'icon',
         'order',
     ];

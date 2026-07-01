@@ -13,6 +13,7 @@ class StatResource extends JsonResource
             'id' => $this->id,
             'label' => $this->label,
             'value' => $this->value,
+            'description' => $this->description,
             'icon' => $this->icon,
             'order' => $this->order,
             'created_at' => $this->created_at,
