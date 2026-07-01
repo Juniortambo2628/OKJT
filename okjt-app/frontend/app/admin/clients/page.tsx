@@ -1,43 +1,30 @@
 "use client"
 
 import React from 'react'
-import { Card, CardContent } from '@/components/ui/card'
 import { Building2, ExternalLink } from 'lucide-react'
-import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
-import ImageUploader from '@/components/admin/ImageUploader'
 import AdminResourceTemplate from '@/components/admin/core/AdminResourceTemplate'
 import { ResourceCard } from '@/components/admin/ResourceCard'
 import { ResourceTableRow } from '@/components/admin/ResourceTableRow'
 import { StatusBadge } from '@/components/admin/StatusBadge'
-import { FormField } from '@/components/admin/core/FormField'
-import { ADMIN_INPUT_CLASSES } from '@/lib/config'
+import { renderFieldsFromConfig } from '@/components/admin/AdminResourceConfig'
+import { clientsConfig } from '@/components/admin/configs/clients.config'
 import { Client } from '@/types/api'
 
 const AdminClientsPage = () => {
+    const { endpoint, resourceName, title, description, actionLabel, initialForm, validate, filterFn, fields, ...configRest } = clientsConfig
+
     return (
         <AdminResourceTemplate<Client>
-            endpoint="/clients"
-            resourceName="Client"
-            title="Client Logos"
-            description="Manage the client logos displayed in the trust carousel."
-            actionLabel="Add Client"
-            statusField="is_active"
-            initialForm={{
-                name: '',
-                logo: '',
-                website: '',
-                is_active: true,
-                order: 0,
-            }}
-            filterFn={(c, term) => 
-                (c.name || '').toLowerCase().includes(term.toLowerCase())
-            }
-            onValidate={(form) => {
-                if (!form.name) return "Client Name is required"
-                return null
-            }}
-            
+            endpoint={endpoint}
+            resourceName={resourceName}
+            title={title}
+            description={description}
+            actionLabel={actionLabel}
+            initialForm={initialForm}
+            filterFn={filterFn}
+            onValidate={validate}
+            {...configRest}
             renderGridItem={(client, selectedIds, toggleSelect, handleEdit, handleDelete) => (
                 <ResourceCard
                     item={client}
@@ -46,7 +33,7 @@ const AdminClientsPage = () => {
                     onEdit={handleEdit}
                     onDelete={handleDelete}
                 >
-                    <CardContent className="p-5 pt-10">
+                    <div className="p-5 pt-10">
                         <div className="flex items-start justify-between mb-3">
                             <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold ${client.is_active ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500'}`}>
                                 {client.order}
@@ -65,7 +52,7 @@ const AdminClientsPage = () => {
                                 <ExternalLink size={10} /> Website
                             </a>
                         )}
-                    </CardContent>
+                    </div>
                 </ResourceCard>
             )}
 
@@ -126,40 +113,7 @@ const AdminClientsPage = () => {
                 </>
             )}
 
-            renderFormFields={(form, setForm) => (
-                <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormField label="Client Name">
-                            <Input className={ADMIN_INPUT_CLASSES} placeholder="Client Name" value={form.name || ''} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-                        </FormField>
-                        <FormField label="Website">
-                            <Input className={ADMIN_INPUT_CLASSES} placeholder="Website URL" value={form.website || ''} onChange={(e) => setForm({ ...form, website: e.target.value })} />
-                        </FormField>
-                    </div>
-                    
-                    <ImageUploader 
-                        label="Client Logo"
-                        value={form.logo || ''}
-                        onChange={(url) => setForm({ ...form, logo: url })}
-                        maxSizeMB={10}
-                    />
-
-                    <div className="grid grid-cols-2 gap-4">
-                        <FormField label="Sort Order">
-                            <Input type="number" className={ADMIN_INPUT_CLASSES} placeholder="Sort Order" value={form.order || 0} onChange={(e) => setForm({ ...form, order: parseInt(e.target.value) || 0 })} />
-                        </FormField>
-                        <div className="flex items-center gap-2 pt-8">
-                            <Checkbox
-                                checked={form.is_active ?? true}
-                                onCheckedChange={(checked: boolean) => setForm({ ...form, is_active: !!checked })}
-                                id="is_active_client"
-                                className="border-border"
-                            />
-                            <label htmlFor="is_active_client" className="text-sm font-medium text-muted-foreground">Active (visible on site)</label>
-                        </div>
-                    </div>
-                </>
-            )}
+            renderFormFields={(form, setForm) => renderFieldsFromConfig(fields, form as Record<string, any>, setForm as any)}
         />
     )
 }

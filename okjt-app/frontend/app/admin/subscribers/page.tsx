@@ -12,6 +12,7 @@ import { Subscriber } from '@/types/api'
 import AdminResourceTemplate from '@/components/admin/core/AdminResourceTemplate'
 import { ResourceTableRow } from '@/components/admin/ResourceTableRow'
 import { StatusBadge } from '@/components/admin/StatusBadge'
+import { subscribersConfig } from '@/components/admin/configs/subscribers.config'
 
 const sourceColors: Record<string, string> = {
     footer: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
@@ -21,31 +22,24 @@ const sourceColors: Record<string, string> = {
 }
 
 const AdminSubscribersPage = () => {
+    const { endpoint, resourceName, title, description, actionLabel, initialForm, validate, filterFn, fields, ...configRest } = subscribersConfig
+
     return (
         <AdminResourceTemplate<Subscriber>
-            endpoint="/subscribers"
-            resourceName="Subscriber"
-            title="Subscribers"
-            description="Manage your mailing list and track subscription sources."
-            actionLabel="Add Subscriber"
-            statusField="is_active"
-            initialForm={{ email: '', name: '', source: 'footer', is_active: true } as Partial<Subscriber>}
-            hideStatusFilter
-            filterPlaceholder="Search by email, name, or source..."
-            filterFn={(item, term) =>
-                item.email.toLowerCase().includes(term.toLowerCase()) ||
-                !!(item.name && item.name.toLowerCase().includes(term.toLowerCase())) ||
-                !!(item.source && item.source.toLowerCase().includes(term.toLowerCase()))
-            }
+            endpoint={endpoint}
+            resourceName={resourceName}
+            title={title}
+            description={description}
+            actionLabel={actionLabel}
+            initialForm={initialForm}
+            filterFn={filterFn}
+            onValidate={validate}
+            {...configRest}
             sortOptions={[
                 { label: 'Date', value: 'created_at' },
                 { label: 'Email', value: 'email' },
                 { label: 'Name', value: 'name' },
             ]}
-            onValidate={(form) => {
-                if (!form.email) return 'Email is required.'
-                return null
-            }}
             renderGridItem={(item, selectedIds, toggleSelect, onEdit, onDelete) => (
                 <Card
                     key={item.id}

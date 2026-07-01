@@ -16,40 +16,29 @@ import { StatusBadge } from '@/components/admin/StatusBadge'
 import { IconPicker } from '@/components/admin/IconPicker'
 import { FormField } from '@/components/admin/core/FormField'
 import { ADMIN_INPUT_CLASSES } from '@/lib/config'
+import { servicesConfig } from '@/components/admin/configs/services.config'
 
 export default function AdminServicesPage() {
     const { data: pillars } = useApi<Pillar[]>('/pillars')
+    const { endpoint, resourceName, title, description, actionLabel, initialForm, validate, filterFn, fields, ...configRest } = servicesConfig
 
     return (
         <AdminResourceTemplate<Service>
-            endpoint="/services"
-            resourceName="Service"
-            title="Advisory Services"
-            description="Manage your core advisory offerings and service categories."
-            actionLabel="Add Service"
+            endpoint={endpoint}
+            resourceName={resourceName}
+            title={title}
+            description={description}
+            actionLabel={actionLabel}
             gridColsClass="grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-            initialForm={{
-                title: '',
-                category: '',
-                pillar_id: undefined,
-                description: '',
-                content: '',
-                icon: 'Activity',
-                is_active: true,
-            }}
-            filterFn={(service, term) =>
-                service.title.toLowerCase().includes(term.toLowerCase()) ||
-                (service.category || '').toLowerCase().includes(term.toLowerCase())
-            }
+            initialForm={initialForm}
+            filterFn={filterFn}
+            onValidate={validate}
+            {...configRest}
             sortOptions={[
                 { label: 'Date Created', value: 'created_at' },
                 { label: 'Title', value: 'title' },
                 { label: 'Category', value: 'category' },
             ]}
-            onValidate={(form) => {
-                if (!form.title) return 'Service Title is required'
-                return null
-            }}
             renderGridItem={(service, selectedIds, toggleSelect, handleEdit, handleDelete) => {
                 const IconNode = iconMap[service.icon || 'Activity'] || Activity
 

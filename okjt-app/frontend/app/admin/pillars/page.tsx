@@ -13,36 +13,27 @@ import { ResourceCard } from '@/components/admin/ResourceCard'
 import { ResourceTableRow } from '@/components/admin/ResourceTableRow'
 import { StatusBadge } from '@/components/admin/StatusBadge'
 import { IconPicker } from '@/components/admin/IconPicker'
+import { pillarsConfig } from '@/components/admin/configs/pillars.config'
 
 const AdminPillarsPage = () => {
+    const { endpoint, resourceName, title, description, actionLabel, initialForm, validate, filterFn, fields, ...configRest } = pillarsConfig
+
     return (
         <AdminResourceTemplate<Pillar>
-            endpoint="/pillars"
-            resourceName="Pillar"
-            title="Brand Core Pillars"
-            description="Manage the foundational pillars and core values that drive your engineering approach."
-            actionLabel="Add Pillar"
-            dialogSizeClass="max-w-4xl"
+            endpoint={endpoint}
+            resourceName={resourceName}
+            title={title}
+            description={description}
+            actionLabel={actionLabel}
             gridColsClass="grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-            initialForm={{
-                title: '',
-                overview: '',
-                content: '',
-                icon: 'Activity',
-                image: '',
-                is_active: true,
-            }}
-            filterFn={(p, term) =>
-                p.title.toLowerCase().includes(term.toLowerCase())
-            }
+            initialForm={initialForm}
+            filterFn={filterFn}
+            onValidate={validate}
+            {...configRest}
             sortOptions={[
                 { label: 'Date Created', value: 'created_at' },
                 { label: 'Title', value: 'title' },
             ]}
-            onValidate={(form) => {
-                if (!form.title) return 'Title is required'
-                return null
-            }}
             renderGridItem={(pillar, selectedIds, toggleSelect, handleEdit, handleDelete) => {
                 const IconNode = iconMap[pillar.icon || 'Activity'] || Activity
 

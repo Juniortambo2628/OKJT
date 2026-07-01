@@ -1,48 +1,31 @@
 "use client"
 
 import React from 'react'
-import { Card, CardContent } from '@/components/ui/card'
 import { Star, User } from 'lucide-react'
-import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
-import ImageUploader from '@/components/admin/ImageUploader'
+import { CardContent } from '@/components/ui/card'
 import AdminResourceTemplate from '@/components/admin/core/AdminResourceTemplate'
 import { ResourceCard } from '@/components/admin/ResourceCard'
 import { ResourceTableRow } from '@/components/admin/ResourceTableRow'
 import { StatusBadge } from '@/components/admin/StatusBadge'
-import { FormField } from '@/components/admin/core/FormField'
-import { ADMIN_INPUT_CLASSES } from '@/lib/config'
+import { renderFieldsFromConfig } from '@/components/admin/AdminResourceConfig'
+import { testimonialsConfig } from '@/components/admin/configs/testimonials.config'
 import { Testimonial } from '@/types/api'
 
 const AdminTestimonialsPage = () => {
+    const { endpoint, resourceName, title, description, actionLabel, initialForm, validate, filterFn, fields, ...configRest } = testimonialsConfig
+
     return (
         <AdminResourceTemplate<Testimonial>
-            endpoint="/testimonials"
-            resourceName="Testimonial"
-            title="Testimonials"
-            description="Manage client testimonials displayed on the landing page."
-            actionLabel="Add Testimonial"
-            statusField="is_featured"
-            dialogSizeClass="max-w-3xl"
-            initialForm={{
-                name: '',
-                role: '',
-                company: '',
-                quote: '',
-                avatar: '',
-                rating: 5,
-                is_featured: true,
-                order: 0,
-            }}
-            filterFn={(t, term) => 
-                (t.name || '').toLowerCase().includes(term.toLowerCase()) ||
-                (t.company || '').toLowerCase().includes(term.toLowerCase())
-            }
-            onValidate={(form) => {
-                if (!form.name || !form.quote) return "Name and Quote are required"
-                return null
-            }}
-            
+            endpoint={endpoint}
+            resourceName={resourceName}
+            title={title}
+            description={description}
+            actionLabel={actionLabel}
+            initialForm={initialForm}
+            filterFn={filterFn}
+            onValidate={validate}
+            {...configRest}
             renderGridItem={(t, selectedIds, toggleSelect, handleEdit, handleDelete) => (
                 <ResourceCard
                     item={t}
@@ -51,33 +34,27 @@ const AdminTestimonialsPage = () => {
                     onEdit={handleEdit}
                     onDelete={handleDelete}
                 >
-                    <CardContent className="p-6 pt-10">
-                        <div className="flex items-start justify-between mb-4">
-                            <div className="flex items-center gap-1">
-                                {Array.from({ length: t.rating || 5 }).map((_, i) => (
-                                    <Star key={i} className="h-3 w-3 fill-amber-400 text-amber-400" />
-                                ))}
-                            </div>
+                    <CardContent className="p-6">
+                        <div className="flex items-center gap-1 mb-3">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                                <Star key={star} size={14} className={star <= (t.rating || 0) ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/30'} />
+                            ))}
                         </div>
-                        <blockquote className="text-sm text-foreground/70 italic mb-4 line-clamp-4">
-                            &ldquo;{t.quote}&rdquo;
-                        </blockquote>
-                        <div className="border-t border-border/50 pt-3 flex items-center gap-3">
+                        <p className="text-sm italic text-muted-foreground line-clamp-4 mb-4">"{t.quote}"</p>
+                        <div className="flex items-center gap-3">
                             {t.avatar ? (
-                                <img src={t.avatar} alt={t.name} className="w-8 h-8 rounded-full object-cover" />
+                                <img src={t.avatar} alt={t.name} className="w-10 h-10 rounded-full object-cover" />
                             ) : (
-                                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                                    <User size={14} />
+                                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                    <User size={18} className="text-primary/40" />
                                 </div>
                             )}
                             <div>
                                 <div className="font-bold text-sm flex items-center gap-2">
                                     {t.name}
-                                    {t.is_featured && (
-                                        <span className="text-[9px] bg-primary/20 text-primary px-1.5 py-0.2 rounded font-bold uppercase tracking-wider">Featured</span>
-                                    )}
+                                    {t.is_featured && <span className="text-[10px] bg-amber-500/10 text-amber-500 px-1.5 py-0.5 rounded">Featured</span>}
                                 </div>
-                                <div className="text-xs text-muted-foreground">{t.role}, {t.company}</div>
+                                <div className="text-xs text-muted-foreground">{t.role} {t.company ? `at ${t.company}` : ''}</div>
                             </div>
                         </div>
                     </CardContent>
@@ -115,19 +92,17 @@ const AdminTestimonialsPage = () => {
                                     {t.avatar ? (
                                         <img src={t.avatar} alt={t.name} className="w-8 h-8 rounded-full object-cover" />
                                     ) : (
-                                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                                            <User size={12} />
+                                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                                            <User size={14} className="text-primary/40" />
                                         </div>
                                     )}
                                     <div>
                                         <div className="font-bold text-sm">{t.name}</div>
-                                        <div className="text-xs text-muted-foreground">{t.role}, {t.company}</div>
+                                        <div className="text-xs text-muted-foreground">{t.role} {t.company ? `at ${t.company}` : ''}</div>
                                     </div>
                                 </div>
                             </td>
-                            <td className="p-4 text-xs text-muted-foreground max-w-md truncate">
-                                &ldquo;{t.quote}&rdquo;
-                            </td>
+                            <td className="p-4 text-xs text-muted-foreground max-w-md truncate italic">"{t.quote}"</td>
                             <td className="p-4">
                                 <StatusBadge
                                     isActive={!!t.is_featured}
@@ -141,55 +116,7 @@ const AdminTestimonialsPage = () => {
                 </>
             )}
 
-            renderFormFields={(form, setForm) => (
-                <>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <FormField label="Client Name">
-                            <Input className={ADMIN_INPUT_CLASSES} placeholder="Client Name" value={form.name || ''} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-                        </FormField>
-                        <FormField label="Role / Title">
-                            <Input className={ADMIN_INPUT_CLASSES} placeholder="Role / Title" value={form.role || ''} onChange={(e) => setForm({ ...form, role: e.target.value })} />
-                        </FormField>
-                        <FormField label="Company">
-                            <Input className={ADMIN_INPUT_CLASSES} placeholder="Company" value={form.company || ''} onChange={(e) => setForm({ ...form, company: e.target.value })} />
-                        </FormField>
-                    </div>
-                    
-                    <ImageUploader 
-                        label="Client Avatar"
-                        value={form.avatar || ''}
-                        onChange={(url) => setForm({ ...form, avatar: url })}
-                        maxSizeMB={10}
-                    />
-
-                    <FormField label="Testimonial Quote">
-                        <textarea
-                            placeholder="Testimonial quote..."
-                            value={form.quote || ''}
-                            onChange={(e) => setForm({ ...form, quote: e.target.value })}
-                            className="w-full bg-secondary/5 border border-border rounded-md p-3 text-sm min-h-[120px] resize-y focus:outline-none focus:ring-1 focus:ring-primary/30"
-                        />
-                    </FormField>
-
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        <FormField label="Rating (1-5)">
-                            <Input type="number" className={ADMIN_INPUT_CLASSES} placeholder="Rating" value={form.rating || 5} onChange={(e) => setForm({ ...form, rating: parseInt(e.target.value) || 5 })} min={1} max={5} />
-                        </FormField>
-                        <FormField label="Sort Order">
-                            <Input type="number" className={ADMIN_INPUT_CLASSES} placeholder="Sort Order" value={form.order || 0} onChange={(e) => setForm({ ...form, order: parseInt(e.target.value) || 0 })} />
-                        </FormField>
-                        <div className="flex items-center gap-2 pt-8">
-                            <Checkbox
-                                checked={form.is_featured ?? true}
-                                onCheckedChange={(checked: boolean) => setForm({ ...form, is_featured: !!checked })}
-                                id="is_featured_testimonial"
-                                className="border-border"
-                            />
-                            <label htmlFor="is_featured_testimonial" className="text-sm font-medium text-muted-foreground">Featured</label>
-                        </div>
-                    </div>
-                </>
-            )}
+            renderFormFields={(form, setForm) => renderFieldsFromConfig(fields, form as Record<string, any>, setForm as any)}
         />
     )
 }

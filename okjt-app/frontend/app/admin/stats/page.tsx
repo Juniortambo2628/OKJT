@@ -4,37 +4,26 @@ import React from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Pencil, Trash2, ArrowUpDown } from 'lucide-react'
-import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import AdminResourceTemplate from '@/components/admin/core/AdminResourceTemplate'
-import { FormField } from '@/components/admin/core/FormField'
-import { ADMIN_INPUT_CLASSES } from '@/lib/config'
+import { renderFieldsFromConfig } from '@/components/admin/AdminResourceConfig'
+import { statsConfig } from '@/components/admin/configs/stats.config'
 import { Stat } from '@/types/api'
 
 const AdminStatsPage = () => {
+    const { endpoint, resourceName, title, description, actionLabel, initialForm, validate, filterFn, fields, ...configRest } = statsConfig
+
     return (
         <AdminResourceTemplate<Stat>
-            endpoint="/stats"
-            resourceName="Stat"
-            title="Key Statistics"
-            description="Manage the performance metrics shown on the landing page."
-            actionLabel="Add Stat"
-            gridColsClass="grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-            initialForm={{
-                label: '',
-                value: '',
-                order: 0,
-                icon: '',
-            }}
-            filterFn={(s, term) => 
-                (s.label || '').toLowerCase().includes(term.toLowerCase()) ||
-                (s.value || '').toLowerCase().includes(term.toLowerCase())
-            }
-            onValidate={(form) => {
-                if (!form.value || !form.label) return "Value and Label are required"
-                return null
-            }}
-            
+            endpoint={endpoint}
+            resourceName={resourceName}
+            title={title}
+            description={description}
+            actionLabel={actionLabel}
+            initialForm={initialForm}
+            filterFn={filterFn}
+            onValidate={validate}
+            {...configRest}
             renderGridItem={(stat, selectedIds, toggleSelect, handleEdit, handleDelete) => (
                 <Card className="bg-secondary/5 border-border shadow-sm hover:bg-secondary/20 transition-all relative">
                     <div className="absolute top-4 left-4 z-10">
@@ -53,9 +42,9 @@ const AdminStatsPage = () => {
                                 <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" onClick={() => handleEdit(stat)}>
                                     <Pencil size={14} />
                                 </Button>
-                                <Button 
-                                    variant="ghost" 
-                                    size="icon" 
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
                                     className="h-8 w-8 text-destructive hover:bg-destructive/10"
                                     onClick={() => handleDelete(stat.id)}
                                 >
@@ -66,6 +55,7 @@ const AdminStatsPage = () => {
                         <div className="space-y-1">
                             <h3 className="text-3xl font-bold tracking-tight text-primary">{stat.value}</h3>
                             <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{stat.label}</p>
+                            {stat.description && <p className="text-xs text-muted-foreground mt-1">{stat.description}</p>}
                         </div>
                         <div className="mt-4 pt-4 border-t border-border/50 flex items-center justify-between text-xs text-muted-foreground">
                             <div className="flex items-center gap-1">
@@ -130,26 +120,7 @@ const AdminStatsPage = () => {
                 </>
             )}
 
-            renderFormFields={(form, setForm) => (
-                <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormField label="Value (e.g. 180 M)">
-                            <Input className={ADMIN_INPUT_CLASSES} placeholder="Stat Value" value={form.value || ''} onChange={(e) => setForm({ ...form, value: e.target.value })} />
-                        </FormField>
-                        <FormField label="Label (e.g. PPA Portfolio)">
-                            <Input className={ADMIN_INPUT_CLASSES} placeholder="Stat Label" value={form.label || ''} onChange={(e) => setForm({ ...form, label: e.target.value })} />
-                        </FormField>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <FormField label="Sort Order">
-                            <Input type="number" className={ADMIN_INPUT_CLASSES} value={form.order || 0} onChange={(e) => setForm({ ...form, order: parseInt(e.target.value) || 0 })} />
-                        </FormField>
-                        <FormField label="Icon Name (Optional)">
-                            <Input className={ADMIN_INPUT_CLASSES} placeholder="e.g. Activity, Users" value={form.icon || ''} onChange={(e) => setForm({ ...form, icon: e.target.value })} />
-                        </FormField>
-                    </div>
-                </>
-            )}
+            renderFormFields={(form, setForm) => renderFieldsFromConfig(fields, form as Record<string, any>, setForm as any)}
         />
     )
 }

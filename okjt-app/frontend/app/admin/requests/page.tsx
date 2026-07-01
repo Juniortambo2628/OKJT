@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import AdminResourceTemplate from '@/components/admin/core/AdminResourceTemplate'
 import { ResourceTableRow } from '@/components/admin/ResourceTableRow'
+import { requestsConfig } from '@/components/admin/configs/requests.config'
 
 const statusColors: Record<string, string> = {
     pending: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
@@ -26,34 +27,23 @@ const statusColors: Record<string, string> = {
 }
 
 export default function AdminRequestsPage() {
+    const { endpoint, resourceName, title, description, actionLabel, initialForm, validate, filterFn, fields, ...configRest } = requestsConfig
+
     return (
         <AdminResourceTemplate<ConsultationRequest>
-            endpoint="/consultation-requests"
-            resourceName="ConsultationRequest"
-            title="Consultation Requests"
-            description="Manage leads and inquiries from the contact form."
-            actionLabel="New Request"
-            statusField="status"
-            initialForm={{ first_name: '', last_name: '', email: '', subject: '', message: '', status: 'pending' } as Partial<ConsultationRequest>}
-            hideStatusFilter
-            filterPlaceholder="Search by name, email, or subject..."
-            filterFn={(item, term) =>
-                item.first_name.toLowerCase().includes(term.toLowerCase()) ||
-                item.last_name.toLowerCase().includes(term.toLowerCase()) ||
-                item.email.toLowerCase().includes(term.toLowerCase()) ||
-                !!(item.subject && item.subject.toLowerCase().includes(term.toLowerCase()))
-            }
+            endpoint={endpoint}
+            resourceName={resourceName}
+            title={title}
+            description={description}
+            actionLabel={actionLabel}
+            initialForm={initialForm}
+            filterFn={filterFn}
+            onValidate={validate}
+            {...configRest}
             sortOptions={[
                 { label: 'Date', value: 'created_at' },
                 { label: 'Status', value: 'status' },
             ]}
-            onValidate={(form) => {
-                const f = form as Partial<ConsultationRequest>
-                if (!f.first_name) return 'First name is required.'
-                if (!f.last_name) return 'Last name is required.'
-                if (!f.email) return 'Email is required.'
-                return null
-            }}
             renderGridItem={(item, selectedIds, toggleSelect, onEdit, onDelete) => (
                 <div
                     key={item.id}

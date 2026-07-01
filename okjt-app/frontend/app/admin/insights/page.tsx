@@ -11,41 +11,28 @@ import AdminResourceTemplate from '@/components/admin/core/AdminResourceTemplate
 import { ResourceCard } from '@/components/admin/ResourceCard'
 import { ResourceTableRow } from '@/components/admin/ResourceTableRow'
 import { StatusBadge } from '@/components/admin/StatusBadge'
+import { insightsConfig } from '@/components/admin/configs/insights.config'
 
 const AdminInsightsPage = () => {
+    const { endpoint, resourceName, title, description, actionLabel, initialForm, validate, filterFn, fields, ...configRest } = insightsConfig
+
     return (
         <AdminResourceTemplate<Insight>
-            endpoint="/insights"
-            resourceName="Insight"
-            title="Market Insights"
-            description="Manage your insights, advisories, and articles."
-            actionLabel="Create Insight"
-            statusField="is_published"
-            dialogSizeClass="max-w-4xl"
+            endpoint={endpoint}
+            resourceName={resourceName}
+            title={title}
+            description={description}
+            actionLabel={actionLabel}
             gridColsClass="grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-            initialForm={{
-                title: '',
-                category: '',
-                excerpt: '',
-                content: '',
-                image: '',
-                is_published: false,
-            }}
-            filterFn={(i, term) =>
-                i.title.toLowerCase().includes(term.toLowerCase()) ||
-                (i.category || '').toLowerCase().includes(term.toLowerCase())
-            }
+            initialForm={initialForm}
+            filterFn={filterFn}
+            onValidate={validate}
+            {...configRest}
             sortOptions={[
                 { label: 'Date Created', value: 'created_at' },
                 { label: 'Title', value: 'title' },
                 { label: 'Category', value: 'category' },
             ]}
-            activeLabel="Published"
-            inactiveLabel="Draft"
-            onValidate={(form) => {
-                if (!form.title) return 'Title is required'
-                return null
-            }}
             renderGridItem={(insight, selectedIds, toggleSelect, handleEdit, handleDelete) => (
                 <ResourceCard
                     item={insight}

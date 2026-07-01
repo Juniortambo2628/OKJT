@@ -1,4 +1,5 @@
 import { API_BASE_URL } from '@/lib/config'
+import type { Service, Insight, Project, Pillar, Stat, Testimonial, Client, TeamMember, Value, SiteSetting } from '@/types/api'
 
 async function fetchApi<T>(endpoint: string): Promise<T | null> {
   try {
@@ -14,59 +15,67 @@ async function fetchApi<T>(endpoint: string): Promise<T | null> {
   }
 }
 
+async function fetchCollection<T>(endpoint: string): Promise<T[]> {
+  return (await fetchApi<T[]>(endpoint)) ?? [];
+}
+
+async function fetchBySlug<T>(endpoint: string, slug: string): Promise<T | null> {
+  return fetchApi<T>(`${endpoint}/${slug}`);
+}
+
 export async function getSettings() {
-  return fetchApi<Record<string, any[]>>('/settings');
+  return fetchApi<Record<string, SiteSetting[]>>('/settings');
 }
 
 export async function getServices() {
-  return fetchApi<any[]>('/services');
+  return fetchCollection<Service[]>('/services');
 }
 
 export async function getInsights() {
-  return fetchApi<any[]>('/insights');
+  return fetchCollection<Insight[]>('/insights');
 }
 
 export async function getProjects(type?: string) {
   const query = type ? `?type=${type}` : '';
-  return fetchApi<any[]>(`/projects${query}`);
+  return fetchCollection<Project[]>(`/projects${query}`);
 }
 
 export async function getStats() {
-  return fetchApi<any[]>('/stats');
+  return fetchCollection<Stat[]>('/stats');
 }
 
 export async function getPillars() {
-  return fetchApi<any[]>('/pillars');
+  return fetchCollection<Pillar[]>('/pillars');
 }
 
 export async function getTestimonials() {
-  return fetchApi<any[]>('/testimonials');
+  return fetchCollection<Testimonial[]>('/testimonials');
 }
 
 export async function getClients() {
-  return fetchApi<any[]>('/clients');
+  return fetchCollection<Client[]>('/clients');
 }
 
 export async function getValues() {
-  return fetchApi<any[]>('/values');
+  return fetchCollection<Value[]>('/values');
 }
 
 export async function getTeamMembers() {
-  return fetchApi<any[]>('/team-members');
+  return fetchCollection<TeamMember[]>('/team-members');
 }
 
 export async function getServiceBySlug(slug: string) {
-  return fetchApi<any>(`/services/${slug}`);
+  return fetchBySlug<Service>('/services', slug);
 }
 
 export async function getInsightBySlug(slug: string) {
-  return fetchApi<any>(`/insights/${slug}`);
+  return fetchBySlug<Insight>('/insights', slug);
 }
 
 export async function getProjectBySlug(slug: string) {
-  return fetchApi<any>(`/projects/${slug}`);
+  return fetchBySlug<Project>('/projects', slug);
 }
 
 export async function getPillarBySlug(slug: string) {
-  return fetchApi<any>(`/pillars/${slug}`);
+  return fetchBySlug<Pillar>('/pillars', slug);
 }

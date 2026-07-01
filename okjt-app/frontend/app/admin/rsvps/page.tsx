@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import AdminResourceTemplate from '@/components/admin/core/AdminResourceTemplate'
 import { ResourceTableRow } from '@/components/admin/ResourceTableRow'
+import { rsvpsConfig } from '@/components/admin/configs/rsvps.config'
 
 const typeColors: Record<string, string> = {
     rsvp: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
@@ -30,33 +31,24 @@ const attendanceColors: Record<string, string> = {
 }
 
 export default function AdminRsvpsPage() {
+    const { endpoint, resourceName, title, description, actionLabel, initialForm, validate, filterFn, fields, ...configRest } = rsvpsConfig
+
     return (
         <AdminResourceTemplate<Rsvp>
-            endpoint="/rsvps"
-            resourceName="Rsvp"
-            title="RSVPs & Early Access"
-            description="Manage RSVP and early access registrations."
-            actionLabel="Add RSVP"
-            statusField="type"
-            initialForm={{ name: '', email: '', company: '', job_title: '', sector: '', interest: '', consent: false, newsletter: false, type: 'early_access', attendance: null } as Partial<Rsvp>}
-            hideStatusFilter
-            filterPlaceholder="Search by name, email, or company..."
-            filterFn={(item, term) =>
-                item.name.toLowerCase().includes(term.toLowerCase()) ||
-                item.email.toLowerCase().includes(term.toLowerCase()) ||
-                !!(item.company && item.company.toLowerCase().includes(term.toLowerCase()))
-            }
+            endpoint={endpoint}
+            resourceName={resourceName}
+            title={title}
+            description={description}
+            actionLabel={actionLabel}
+            initialForm={initialForm}
+            filterFn={filterFn}
+            onValidate={validate}
+            {...configRest}
             sortOptions={[
                 { label: 'Date', value: 'created_at' },
                 { label: 'Name', value: 'name' },
                 { label: 'Type', value: 'type' },
             ]}
-            onValidate={(form) => {
-                const f = form as Partial<Rsvp>
-                if (!f.name) return 'Name is required.'
-                if (!f.email) return 'Email is required.'
-                return null
-            }}
             renderGridItem={(item, selectedIds, toggleSelect, onEdit, onDelete) => (
                 <div
                     key={item.id}

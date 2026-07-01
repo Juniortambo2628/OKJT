@@ -2,52 +2,33 @@
 
 import React from 'react'
 import { User, Linkedin } from 'lucide-react'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { TeamMember } from '@/types/api'
-import ImageUploader from '@/components/admin/ImageUploader'
 import AdminResourceTemplate from '@/components/admin/core/AdminResourceTemplate'
 import { ResourceCard } from '@/components/admin/ResourceCard'
 import { ResourceTableRow } from '@/components/admin/ResourceTableRow'
-import { FormField } from '@/components/admin/core/FormField'
-import { ADMIN_INPUT_CLASSES } from '@/lib/config'
+import { renderFieldsFromConfig } from '@/components/admin/AdminResourceConfig'
+import { teamConfig } from '@/components/admin/configs/team.config'
 
 export default function AdminTeamPage() {
+    const { endpoint, resourceName, title, description, actionLabel, initialForm, validate, filterFn, fields, ...configRest } = teamConfig
+
     return (
         <AdminResourceTemplate<TeamMember>
-            endpoint="/team-members"
-            resourceName="TeamMember"
-            title="Team Members"
-            description="Manage the professionals leading OKJTech."
-            actionLabel="Add Member"
-            dialogSizeClass="max-w-2xl"
-            initialForm={{
-                name: '',
-                role: '',
-                bio: '',
-                qualifications: '',
-                linkedin: '',
-                image: '',
-                order: 0,
-            }}
-            filterFn={(m, term) =>
-                m.name.toLowerCase().includes(term.toLowerCase()) ||
-                (m.role || '').toLowerCase().includes(term.toLowerCase())
-            }
+            endpoint={endpoint}
+            resourceName={resourceName}
+            title={title}
+            description={description}
+            actionLabel={actionLabel}
             sortOptions={[
                 { label: 'Order', value: 'order' },
                 { label: 'Name', value: 'name' },
                 { label: 'Date Created', value: 'created_at' },
             ]}
-            initialSortBy="order"
-            initialSortOrder="asc"
-            hideStatusFilter
-            onValidate={(form) => {
-                if (!form.name) return 'Name is required'
-                if (!form.role) return 'Role is required'
-                return null
-            }}
+            initialForm={initialForm}
+            filterFn={filterFn}
+            onValidate={validate}
+            {...configRest}
             renderGridItem={(member, selectedIds, toggleSelect, handleEdit, handleDelete) => (
                 <ResourceCard
                     item={member}
@@ -120,39 +101,7 @@ export default function AdminTeamPage() {
                     ))}
                 </>
             )}
-            renderFormFields={(form, setForm) => (
-                <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
-                        <div className="space-y-4">
-                            <FormField label="Full Name">
-                                <Input className={ADMIN_INPUT_CLASSES} placeholder="Full Name" value={form.name || ''} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-                            </FormField>
-                            <FormField label="Role / Title">
-                                <Input className={ADMIN_INPUT_CLASSES} placeholder="Role / Title" value={form.role || ''} onChange={(e) => setForm({ ...form, role: e.target.value })} />
-                            </FormField>
-                            <FormField label="Qualifications">
-                                <Input className={ADMIN_INPUT_CLASSES} placeholder="e.g. MBA, CFA" value={form.qualifications || ''} onChange={(e) => setForm({ ...form, qualifications: e.target.value })} />
-                            </FormField>
-                            <FormField label="LinkedIn URL">
-                                <Input className={ADMIN_INPUT_CLASSES} placeholder="https://linkedin.com/in/..." value={form.linkedin || ''} onChange={(e) => setForm({ ...form, linkedin: e.target.value })} />
-                            </FormField>
-                        </div>
-                        <div className="space-y-4">
-                            <ImageUploader
-                                label="Profile Photo"
-                                value={form.image || ''}
-                                onChange={(url) => setForm({ ...form, image: url })}
-                            />
-                            <FormField label="Display Order">
-                                <Input type="number" className={ADMIN_INPUT_CLASSES} value={form.order || 0} onChange={(e) => setForm({ ...form, order: parseInt(e.target.value) || 0 })} />
-                            </FormField>
-                        </div>
-                        <FormField label="Short Bio" className="col-span-full">
-                            <Textarea className={`${ADMIN_INPUT_CLASSES} min-h-[120px]`} value={form.bio || ''} onChange={(e) => setForm({ ...form, bio: e.target.value })} />
-                        </FormField>
-                    </div>
-                </>
-            )}
+            renderFormFields={(form, setForm) => renderFieldsFromConfig(fields, form as Record<string, any>, setForm as any)}
         />
     )
 }
