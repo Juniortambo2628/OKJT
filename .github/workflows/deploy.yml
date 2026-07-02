@@ -107,7 +107,6 @@ jobs:
             --exclude='./storage/framework/cache' \
             --exclude='./storage/framework/sessions' \
             --exclude='./storage/framework/views' \
-            --exclude='./bootstrap/cache' \
             --exclude='tests' \
             --exclude='phpunit.xml' \
             -C ${{ env.BACKEND_DIR }} .
@@ -147,8 +146,17 @@ jobs:
           username: ${{ secrets.SSH_USER || env.REMOTE_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT || env.REMOTE_PORT }}
+          script_stop: true
           script: |
             cd ${{ env.BACKEND_TARGET }}
+
+            # Ensure required directories exist
+            mkdir -p bootstrap/cache
+            mkdir -p storage/framework/cache
+            mkdir -p storage/framework/sessions
+            mkdir -p storage/framework/views
+            mkdir -p storage/logs
+            mkdir -p storage/app/public
 
             # Ensure Composer dependencies are installed (safe fallback if deployment missed anything)
             if command -v composer &> /dev/null; then
@@ -160,7 +168,7 @@ jobs:
             find vendor -type f -exec chmod 644 {} +
             chmod -R 775 storage
             chmod -R 775 bootstrap/cache
-            chmod 644 .env
+            chmod 600 .env
 
             # Clear old caches
             php artisan config:clear
@@ -189,6 +197,7 @@ jobs:
           username: ${{ secrets.SSH_USER || env.REMOTE_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT || env.REMOTE_PORT }}
+          script_stop: true
           script: |
             cd ${{ env.FRONTEND_TARGET }}
 
@@ -199,11 +208,10 @@ jobs:
             if command -v pm2 &> /dev/null; then
               pm2 restart okj-frontend || pm2 start server.js --name okj-frontend
             else
-              echo "PM2 not found. Starting frontend with nohup."
-              # Kill any existing instance on port 3000 (adjust if you use a different port)
+              echo "PM2 not found. Starting frontend with setsid."
+              # Kill any existing instance
               pkill -f "node server.js" || true
-              nohup node server.js > /tmp/okj-frontend.log 2>&1 &
-              disown
+              setsid node server.js > /tmp/okj-frontend.log 2>&1 &
             fi
 
             echo "Frontend activation complete."
