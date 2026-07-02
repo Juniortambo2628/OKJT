@@ -201,10 +201,23 @@ jobs:
           script: |
             cd ${{ env.FRONTEND_TARGET }}
 
-            # Debug info
+            # Ensure Node.js is available on the server
+            if ! command -v node &> /dev/null; then
+              if [ ! -f "$HOME/nodejs/bin/node" ]; then
+                echo "Node.js not found. Installing to $HOME/nodejs ..."
+                cd $HOME
+                NODE_VERSION="v20.15.0"
+                NODE_TARBALL="node-${NODE_VERSION}-linux-x64.tar.xz"
+                wget -q "https://nodejs.org/dist/${NODE_VERSION}/${NODE_TARBALL}"
+                tar -xJf "${NODE_TARBALL}"
+                mv "node-${NODE_VERSION}-linux-x64" nodejs
+                rm "${NODE_TARBALL}"
+              fi
+              export PATH="$HOME/nodejs/bin:$PATH"
+            fi
+
+            echo "Node version: $(node --version)"
             echo "Current directory: $(pwd)"
-            echo "Node version: $(node --version 2>&1 || echo 'Node not found')"
-            echo "setsid available: $(command -v setsid || echo 'not found')"
             echo "server.js exists: $([ -f server.js ] && echo 'YES' || echo 'NO')"
 
             # Ensure executable permissions for Node server
