@@ -8,50 +8,52 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('rsvps', function (Blueprint $table) {
-            if (!$this->hasIndex($table, ['type'])) {
+        if (!Schema::hasIndex('rsvps', 'type')) {
+            Schema::table('rsvps', function (Blueprint $table) {
                 $table->index('type');
-            }
-        });
+            });
+        }
 
-        Schema::table('pillars', function (Blueprint $table) {
-            if (!$this->hasIndex($table, ['is_active'])) {
+        if (!Schema::hasIndex('pillars', 'is_active')) {
+            Schema::table('pillars', function (Blueprint $table) {
                 $table->index('is_active');
-            }
-        });
+            });
+        }
 
-        Schema::table('clients', function (Blueprint $table) {
-            if (!$this->hasIndex($table, ['is_active'])) {
+        if (!Schema::hasIndex('clients', 'is_active')) {
+            Schema::table('clients', function (Blueprint $table) {
                 $table->index('is_active');
-            }
-        });
+            });
+        }
 
-        Schema::table('testimonials', function (Blueprint $table) {
-            if (!$this->hasIndex($table, ['is_featured'])) {
+        if (!Schema::hasIndex('testimonials', 'is_featured')) {
+            Schema::table('testimonials', function (Blueprint $table) {
                 $table->index('is_featured');
-            }
-            if (!$this->hasIndex($table, ['order'])) {
+            });
+        }
+        if (!Schema::hasIndex('testimonials', 'order')) {
+            Schema::table('testimonials', function (Blueprint $table) {
                 $table->index('order');
-            }
-        });
+            });
+        }
 
-        Schema::table('team_members', function (Blueprint $table) {
-            if (!$this->hasIndex($table, ['order'])) {
+        if (!Schema::hasIndex('team_members', 'order')) {
+            Schema::table('team_members', function (Blueprint $table) {
                 $table->index('order');
-            }
-        });
+            });
+        }
 
-        Schema::table('values', function (Blueprint $table) {
-            if (!$this->hasIndex($table, ['order'])) {
+        if (!Schema::hasIndex('values', 'order')) {
+            Schema::table('values', function (Blueprint $table) {
                 $table->index('order');
-            }
-        });
+            });
+        }
 
-        Schema::table('stats', function (Blueprint $table) {
-            if (!$this->hasIndex($table, ['order'])) {
+        if (!Schema::hasIndex('stats', 'order')) {
+            Schema::table('stats', function (Blueprint $table) {
                 $table->index('order');
-            }
-        });
+            });
+        }
     }
 
     public function down(): void
@@ -84,16 +86,5 @@ return new class extends Migration
         Schema::table('stats', function (Blueprint $table) {
             $table->dropIndex(['order']);
         });
-    }
-
-    private function hasIndex(Blueprint $table, array $columns): bool
-    {
-        $indexer = $table->getIndexer();
-        foreach ($indexer->getIndexes() as $index) {
-            if ($index->getColumns() === $columns) {
-                return true;
-            }
-        }
-        return false;
     }
 };
