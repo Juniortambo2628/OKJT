@@ -199,7 +199,6 @@ jobs:
           port: ${{ secrets.SSH_PORT || env.REMOTE_PORT }}
           script_stop: true
           script: |
-            set -x
             cd ${{ env.FRONTEND_TARGET }}
 
             # Ensure Node.js is available on the server
