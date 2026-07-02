@@ -199,6 +199,7 @@ jobs:
           port: ${{ secrets.SSH_PORT || env.REMOTE_PORT }}
           script_stop: true
           script: |
+            set -x
             cd ${{ env.FRONTEND_TARGET }}
 
             # Ensure Node.js is available on the server
@@ -222,25 +223,24 @@ jobs:
             echo "Current directory: $(pwd)"
             echo "server.js exists: $([ -f server.js ] && echo 'YES' || echo 'NO')"
 
-            # Ensure executable permissions for Node server
-            chmod +x server.js 2>/dev/null || true
+            # Kill any existing instance
+            pkill -f "node server.js" || true
 
-            # Restart the Node.js process if PM2 is available
-            if command -v pm2 &> /dev/null; then
-              pm2 restart okj-frontend || pm2 start server.js --name okj-frontend
+            # Start frontend in background
+            echo "Starting frontend with setsid."
+            rm -f /tmp/okj-frontend.log
+            setsid node server.js > /tmp/okj-frontend.log 2>&1 &
+            sleep 3
+
+            echo "Recent log output:"
+            tail -n 50 /tmp/okj-frontend.log || true
+
+            # Check if process is running
+            if ps aux | grep -v grep | grep "node server.js" > /dev/null; then
+              echo "Frontend process is running."
             else
-              echo "PM2 not found. Starting frontend with setsid."
-              # Kill any existing instance
-              pkill -f "node server.js" || true
-              setsid node server.js > /tmp/okj-frontend.log 2>&1 &
-              sleep 3
-              if pgrep -f "node server.js" > /dev/null; then
-                echo "Frontend process is running."
-              else
-                echo "Frontend process failed to start. Log output:"
-                cat /tmp/okj-frontend.log || echo "No log file found."
-                exit 1
-              fi
+              echo "Frontend process failed to start."
+              exit 1
             fi
 
             echo "Frontend activation complete."
