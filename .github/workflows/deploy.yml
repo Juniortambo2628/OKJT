@@ -201,6 +201,12 @@ jobs:
           script: |
             cd ${{ env.FRONTEND_TARGET }}
 
+            # Debug info
+            echo "Current directory: $(pwd)"
+            echo "Node version: $(node --version 2>&1 || echo 'Node not found')"
+            echo "setsid available: $(command -v setsid || echo 'not found')"
+            echo "server.js exists: $([ -f server.js ] && echo 'YES' || echo 'NO')"
+
             # Ensure executable permissions for Node server
             chmod +x server.js 2>/dev/null || true
 
@@ -212,6 +218,14 @@ jobs:
               # Kill any existing instance
               pkill -f "node server.js" || true
               setsid node server.js > /tmp/okj-frontend.log 2>&1 &
+              sleep 3
+              if pgrep -f "node server.js" > /dev/null; then
+                echo "Frontend process is running."
+              else
+                echo "Frontend process failed to start. Log output:"
+                cat /tmp/okj-frontend.log || echo "No log file found."
+                exit 1
+              fi
             fi
 
             echo "Frontend activation complete."
