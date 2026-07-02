@@ -95,6 +95,9 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -p ${{ secrets.SSH_PORT || env.REMOTE_PORT }} -H ${{ secrets.SSH_HOST || env.REMOTE_HOST }} >> ~/.ssh/known_hosts
 
+      - name: Install rsync
+        run: sudo apt-get update && sudo apt-get install -y rsync
+
       - name: Create remote directories
         run: |
           ssh -p ${{ secrets.SSH_PORT || env.REMOTE_PORT }} ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }} "mkdir -p ${{ env.PUBLIC_TARGET }} ${{ env.BACKEND_TARGET }} ${{ env.FRONTEND_TARGET }}"
