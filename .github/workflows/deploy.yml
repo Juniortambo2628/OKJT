@@ -82,7 +82,8 @@ jobs:
           cp -R public .next/standalone/public
 
       # -------------------------------
-      # Deploy via SSH / rsync
+      # Deploy via SSH / tar / scp
+      # (scp is used because shared hosts often do not provide rsync.)
       # -------------------------------
       - name: Setup SSH agent
         uses: webfactory/ssh-agent@v0.9.0
@@ -95,34 +96,26 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -p ${{ secrets.SSH_PORT || env.REMOTE_PORT }} -H ${{ secrets.SSH_HOST || env.REMOTE_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Install rsync
+      - name: Package backend for deployment
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends rsync
-          which rsync
-          rsync --version | head -n 1
-
-      - name: Create remote directories
-        run: |
-          ssh -p ${{ secrets.SSH_PORT || env.REMOTE_PORT }} ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }} "mkdir -p ${{ env.PUBLIC_TARGET }} ${{ env.BACKEND_TARGET }} ${{ env.FRONTEND_TARGET }}"
-
-      - name: Deploy backend files
-        run: |
-          rsync -avz --delete \
-            -e "ssh -p ${{ secrets.SSH_PORT || env.REMOTE_PORT }}" \
+          tar czf backend.tar.gz \
             --exclude='.git' \
             --exclude='.github' \
             --exclude='.env' \
             --exclude='node_modules' \
-            --exclude='storage/logs/*' \
-            --exclude='storage/framework/cache/*' \
-            --exclude='storage/framework/sessions/*' \
-            --exclude='storage/framework/views/*' \
-            --exclude='bootstrap/cache/*' \
+            --exclude='./storage/logs' \
+            --exclude='./storage/framework/cache' \
+            --exclude='./storage/framework/sessions' \
+            --exclude='./storage/framework/views' \
+            --exclude='./bootstrap/cache' \
             --exclude='tests' \
             --exclude='phpunit.xml' \
-            ${{ env.BACKEND_DIR }}/ \
-            ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }}:${{ env.BACKEND_TARGET }}/
+            -C ${{ env.BACKEND_DIR }} .
+
+      - name: Deploy backend files
+        run: |
+          scp -P ${{ secrets.SSH_PORT || env.REMOTE_PORT }} backend.tar.gz ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }}:/home/zhpebukm/backend.tar.gz
+          ssh -p ${{ secrets.SSH_PORT || env.REMOTE_PORT }} ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }} "cd /home/zhpebukm && rm -rf ${{ env.BACKEND_TARGET }} && mkdir -p ${{ env.BACKEND_TARGET }} && tar xzf backend.tar.gz -C ${{ env.BACKEND_TARGET }} && rm backend.tar.gz"
 
       - name: Deploy backend .env
         run: |
@@ -132,17 +125,17 @@ jobs:
 
       - name: Deploy public API entry point
         run: |
-          rsync -avz --delete \
-            -e "ssh -p ${{ secrets.SSH_PORT || env.REMOTE_PORT }}" \
-            ${{ env.BACKEND_DIR }}/public/ \
-            ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }}:${{ env.PUBLIC_TARGET }}/
+          tar czf public.tar.gz -C ${{ env.BACKEND_DIR }}/public .
+          scp -P ${{ secrets.SSH_PORT || env.REMOTE_PORT }} public.tar.gz ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }}:/home/zhpebukm/public.tar.gz
+          ssh -p ${{ secrets.SSH_PORT || env.REMOTE_PORT }} ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }} "rm -rf ${{ env.PUBLIC_TARGET }} && mkdir -p ${{ env.PUBLIC_TARGET }} && tar xzf /home/zhpebukm/public.tar.gz -C ${{ env.PUBLIC_TARGET }} && rm /home/zhpebukm/public.tar.gz"
+
+      - name: Package frontend for deployment
+        run: tar czf frontend.tar.gz -C ${{ env.FRONTEND_DIR }}/.next/standalone .
 
       - name: Deploy frontend files
         run: |
-          rsync -avz --delete \
-            -e "ssh -p ${{ secrets.SSH_PORT || env.REMOTE_PORT }}" \
-            ${{ env.FRONTEND_DIR }}/.next/standalone/ \
-            ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }}:${{ env.FRONTEND_TARGET }}/
+          scp -P ${{ secrets.SSH_PORT || env.REMOTE_PORT }} frontend.tar.gz ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }}:/home/zhpebukm/frontend.tar.gz
+          ssh -p ${{ secrets.SSH_PORT || env.REMOTE_PORT }} ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }} "cd /home/zhpebukm && rm -rf ${{ env.FRONTEND_TARGET }} && mkdir -p ${{ env.FRONTEND_TARGET }} && tar xzf frontend.tar.gz -C ${{ env.FRONTEND_TARGET }} && rm frontend.tar.gz"
 
       # -------------------------------
       # Activate backend on server
@@ -157,7 +150,7 @@ jobs:
           script: |
             cd ${{ env.BACKEND_TARGET }}
 
-            # Ensure Composer dependencies are installed (safe fallback if rsync missed anything)
+            # Ensure Composer dependencies are installed (safe fallback if deployment missed anything)
             if command -v composer &> /dev/null; then
               composer install --no-dev --optimize-autoloader --no-interaction
             fi
