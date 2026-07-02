@@ -16,7 +16,7 @@ class SubscriberController extends Controller
     protected $orderByDirection = 'desc';
     protected $resourceClass = SubscriberResource::class;
 
-    protected function storeRules(): array
+    protected function storeRules(Request $request): array
     {
         return [
             'email' => 'required|email|unique:subscribers,email',

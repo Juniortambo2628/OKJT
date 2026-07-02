@@ -1,0 +1,209 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: true
+
+env:
+  BACKEND_DIR: okjt-app/backend
+  FRONTEND_DIR: okjt-app/frontend
+  REMOTE_USER: zhpebukm
+  REMOTE_HOST: 51.89.113.223
+  REMOTE_PORT: 1624
+  BACKEND_TARGET: /home/zhpebukm/okj-core
+  PUBLIC_TARGET: /home/zhpebukm/public_html/api
+  FRONTEND_TARGET: /home/zhpebukm/okj-frontend
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # -------------------------------
+      # Backend setup
+      # -------------------------------
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: bcmath, ctype, curl, fileinfo, intl, json, mbstring, openssl, pdo_mysql, tokenizer, xml, zip
+          tools: composer:v2
+          coverage: none
+
+      - name: Write backend .env
+        working-directory: ${{ env.BACKEND_DIR }}
+        run: |
+          echo "${{ secrets.BACKEND_ENV }}" > .env
+          # Generate an APP_KEY only if one is not already provided.
+          if ! grep -qE '^APP_KEY=base64:' .env; then
+            php artisan key:generate --force
+          fi
+
+      - name: Install backend dependencies
+        working-directory: ${{ env.BACKEND_DIR }}
+        run: composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction
+
+      # -------------------------------
+      # Frontend setup
+      # -------------------------------
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: ${{ env.FRONTEND_DIR }}/package-lock.json
+
+      - name: Write frontend .env
+        working-directory: ${{ env.FRONTEND_DIR }}
+        run: echo "${{ secrets.FRONTEND_ENV }}" > .env.production
+
+      - name: Install frontend dependencies
+        working-directory: ${{ env.FRONTEND_DIR }}
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: ${{ env.FRONTEND_DIR }}
+        run: npm run build
+
+      - name: Prepare standalone frontend bundle
+        working-directory: ${{ env.FRONTEND_DIR }}
+        run: |
+          cp -R .next/static .next/standalone/.next/static
+          cp -R public .next/standalone/public
+
+      # -------------------------------
+      # Deploy via SSH / rsync
+      # -------------------------------
+      - name: Setup SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          log-public-key: false
+
+      - name: Add server to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p ${{ secrets.SSH_PORT || env.REMOTE_PORT }} -H ${{ secrets.SSH_HOST || env.REMOTE_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Create remote directories
+        run: |
+          ssh -p ${{ secrets.SSH_PORT || env.REMOTE_PORT }} ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }} "mkdir -p ${{ env.PUBLIC_TARGET }} ${{ env.BACKEND_TARGET }} ${{ env.FRONTEND_TARGET }}"
+
+      - name: Deploy backend files
+        run: |
+          rsync -avz --delete \
+            -e "ssh -p ${{ secrets.SSH_PORT || env.REMOTE_PORT }}" \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='.env' \
+            --exclude='node_modules' \
+            --exclude='storage/logs/*' \
+            --exclude='storage/framework/cache/*' \
+            --exclude='storage/framework/sessions/*' \
+            --exclude='storage/framework/views/*' \
+            --exclude='bootstrap/cache/*' \
+            --exclude='tests' \
+            --exclude='phpunit.xml' \
+            ${{ env.BACKEND_DIR }}/ \
+            ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }}:${{ env.BACKEND_TARGET }}/
+
+      - name: Deploy backend .env
+        run: |
+          scp -P ${{ secrets.SSH_PORT || env.REMOTE_PORT }} \
+            ${{ env.BACKEND_DIR }}/.env \
+            ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }}:${{ env.BACKEND_TARGET }}/.env
+
+      - name: Deploy public API entry point
+        run: |
+          rsync -avz --delete \
+            -e "ssh -p ${{ secrets.SSH_PORT || env.REMOTE_PORT }}" \
+            ${{ env.BACKEND_DIR }}/public/ \
+            ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }}:${{ env.PUBLIC_TARGET }}/
+
+      - name: Deploy frontend files
+        run: |
+          rsync -avz --delete \
+            -e "ssh -p ${{ secrets.SSH_PORT || env.REMOTE_PORT }}" \
+            ${{ env.FRONTEND_DIR }}/.next/standalone/ \
+            ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }}:${{ env.FRONTEND_TARGET }}/
+
+      # -------------------------------
+      # Activate backend on server
+      # -------------------------------
+      - name: Activate backend
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST || env.REMOTE_HOST }}
+          username: ${{ secrets.SSH_USER || env.REMOTE_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT || env.REMOTE_PORT }}
+          script: |
+            cd ${{ env.BACKEND_TARGET }}
+
+            # Ensure Composer dependencies are installed (safe fallback if rsync missed anything)
+            if command -v composer &> /dev/null; then
+              composer install --no-dev --optimize-autoloader --no-interaction
+            fi
+
+            # Set secure permissions
+            find vendor -type d -exec chmod 755 {} +
+            find vendor -type f -exec chmod 644 {} +
+            chmod -R 775 storage
+            chmod -R 775 bootstrap/cache
+            chmod 644 .env
+
+            # Clear old caches
+            php artisan config:clear
+            php artisan route:clear
+            php artisan view:clear
+            php artisan event:clear
+
+            # Run database migrations
+            php artisan migrate --force
+
+            # Re-optimize for production
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+
+            # Verify public entry point is reachable
+            ls -la ${{ env.PUBLIC_TARGET }}/index.php
+
+      # -------------------------------
+      # Activate frontend on server
+      # -------------------------------
+      - name: Activate frontend
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST || env.REMOTE_HOST }}
+          username: ${{ secrets.SSH_USER || env.REMOTE_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT || env.REMOTE_PORT }}
+          script: |
+            cd ${{ env.FRONTEND_TARGET }}
+
+            # Ensure executable permissions for Node server
+            chmod +x server.js 2>/dev/null || true
+
+            # Restart the Node.js process if PM2 is available
+            if command -v pm2 &> /dev/null; then
+              pm2 restart okj-frontend || pm2 start server.js --name okj-frontend
+            else
+              echo "PM2 not found. Starting frontend with nohup."
+              # Kill any existing instance on port 3000 (adjust if you use a different port)
+              pkill -f "node server.js" || true
+              nohup node server.js > /tmp/okj-frontend.log 2>&1 &
+              disown
+            fi
+
+            echo "Frontend activation complete."

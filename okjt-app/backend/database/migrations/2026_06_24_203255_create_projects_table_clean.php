@@ -20,40 +20,42 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('projects', function (Blueprint $table) {
-            $table->id();
-            $table->string('type')->default('client');
-            $table->string('title');
-            $table->string('slug')->unique();
-            $table->string('client_name')->nullable();
-            $table->string('tagline')->nullable();
-            $table->string('category')->nullable();
-            $table->json('technologies')->nullable();
-            $table->string('significant_figure')->nullable();
-            $table->text('description')->nullable();
-            $table->text('problem')->nullable();
-            $table->text('methodology')->nullable();
-            $table->text('outcome')->nullable();
-            $table->text('testimonial_quote')->nullable();
-            $table->string('testimonial_author')->nullable();
-            $table->string('image')->nullable();
-            $table->json('gallery')->nullable();
-            $table->string('website_url')->nullable();
-            $table->string('url')->nullable();
-            $table->boolean('is_active')->default(true);
-            $table->boolean('is_featured')->default(false);
-            $table->integer('order')->default(0);
-            $table->timestamps();
+        if (!Schema::hasTable('projects')) {
+            Schema::create('projects', function (Blueprint $table) {
+                $table->id();
+                $table->string('type')->default('client');
+                $table->string('title');
+                $table->string('slug')->unique();
+                $table->string('client_name')->nullable();
+                $table->string('tagline')->nullable();
+                $table->string('category')->nullable();
+                $table->json('technologies')->nullable();
+                $table->string('significant_figure')->nullable();
+                $table->text('description')->nullable();
+                $table->text('problem')->nullable();
+                $table->text('methodology')->nullable();
+                $table->text('outcome')->nullable();
+                $table->text('testimonial_quote')->nullable();
+                $table->string('testimonial_author')->nullable();
+                $table->string('image')->nullable();
+                $table->json('gallery')->nullable();
+                $table->string('website_url')->nullable();
+                $table->string('url')->nullable();
+                $table->boolean('is_active')->default(true);
+                $table->boolean('is_featured')->default(false);
+                $table->integer('order')->default(0);
+                $table->timestamps();
 
-            $table->index('type');
-            $table->index('is_active');
-            $table->index('is_featured');
-            $table->index('category');
-            $table->index('order');
-        });
+                $table->index('type');
+                $table->index('is_active');
+                $table->index('is_featured');
+                $table->index('category');
+                $table->index('order');
+            });
+        }
 
         // Add fulltext indexes (from 2026_06_23_000002_add_fulltext_indexes.php)
-        if (config('database.default') === 'mysql') {
+        if (config('database.default') === 'mysql' && !Schema::hasIndex('projects', 'projects_title_client_name_category_fulltext')) {
             DB::statement('ALTER TABLE `projects` ADD FULLTEXT INDEX `projects_title_client_name_category_fulltext` (`title`, `client_name`, `category`)');
         }
     }

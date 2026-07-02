@@ -7,6 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Project } from '@/types/api'
 import RichTextEditor from '@/components/admin/RichTextEditor'
 import ImageUploader from '@/components/admin/ImageUploader'
+import MultiImageUploader from '@/components/admin/MultiImageUploader'
 
 interface ProjectFormFieldsProps {
     form: Partial<Project>
@@ -42,7 +43,7 @@ export default function ProjectFormFields({ form, setForm }: ProjectFormFieldsPr
                 </div>
                 <div className="space-y-2">
                     <Label className="text-muted-foreground">Website URL</Label>
-                    <Input className="bg-background border-border text-foreground" value={form.website_url || ''} onChange={(e) => setForm({ ...form, website_url: e.target.value })} placeholder="e.g. https://project-link.com" />
+                    <Input className="bg-background border-border text-foreground" value={form.url || ''} onChange={(e) => setForm({ ...form, url: e.target.value })} placeholder="e.g. https://project-link.com" />
                 </div>
                 <div className="space-y-2 md:col-span-2">
                     <Label className="text-muted-foreground">Short Description</Label>
@@ -103,16 +104,12 @@ export default function ProjectFormFields({ form, setForm }: ProjectFormFieldsPr
                     onChange={(url) => setForm({ ...form, image: url })}
                 />
 
-                <div className="space-y-2">
-                    <Label className="text-muted-foreground font-bold">Gallery Images (comma separated URLs)</Label>
-                    <Input 
-                        className="bg-background border-border text-foreground" 
-                        value={Array.isArray(form.gallery) ? form.gallery.join(', ') : (form.gallery || '')} 
-                        onChange={(e) => setForm({ ...form, gallery: e.target.value.split(',').map(t => t.trim()) })} 
-                        placeholder="Enter image URLs separated by comma" 
-                    />
-                    <div className="text-[10px] text-muted-foreground/50">Note: You can use Cloudinary URLs or local paths.</div>
-                </div>
+                <MultiImageUploader
+                    label="Gallery Images"
+                    value={Array.isArray(form.gallery) ? form.gallery : []}
+                    onChange={(urls) => setForm({ ...form, gallery: urls })}
+                    maxImages={10}
+                />
             </div>
             
             <div className="flex items-center gap-2">

@@ -19,7 +19,7 @@ class ConsultationRequestController extends Controller
     protected $orderByDirection = 'desc';
     protected $resourceClass = ConsultationRequestResource::class;
 
-    protected function storeRules(): array
+    protected function storeRules(Request $request): array
     {
         return [
             'first_name' => 'required|string|max:255',

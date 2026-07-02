@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\TeamMemberResource;
+use Illuminate\Http\Request;
 use App\Traits\HandlesStandardCrud;
 
 class TeamMemberController extends Controller
@@ -15,7 +16,7 @@ class TeamMemberController extends Controller
     protected $cacheKey = 'all_team_members';
     protected $resourceClass = TeamMemberResource::class;
 
-    protected function storeRules(): array
+    protected function storeRules(Request $request): array
     {
         return [
             'name' => 'required|string|max:255',
@@ -28,7 +29,7 @@ class TeamMemberController extends Controller
         ];
     }
 
-    protected function updateRules(): array
+    protected function updateRules(Request $request, $record): array
     {
         return [
             'name' => 'required|string|max:255',

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\TestimonialResource;
+use Illuminate\Http\Request;
 use App\Traits\HandlesStandardCrud;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -21,7 +22,7 @@ class TestimonialController extends Controller
         return $query->where('is_featured', true)->orderBy('order');
     }
 
-    protected function storeRules(): array
+    protected function storeRules(Request $request): array
     {
         return [
             'name' => 'required|string|max:255',
@@ -35,7 +36,7 @@ class TestimonialController extends Controller
         ];
     }
 
-    protected function updateRules(): array
+    protected function updateRules(Request $request, $record): array
     {
         return [
             'name' => 'string|max:255',

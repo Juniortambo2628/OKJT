@@ -62,12 +62,14 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/password/reset', [AuthController::class, 'sendResetLink']);
 Route::post('/password/reset/confirm', [AuthController::class, 'resetPassword']);
 
-// Protected routes
+// Protected routes — any authenticated user
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
+});
 
-    // RSVP CRUD (admin)
+// Admin-only routes
+Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::get('/rsvps', [\App\Http\Controllers\Api\RsvpController::class, 'index']);
     Route::get('/rsvps/{rsvp}', [\App\Http\Controllers\Api\RsvpController::class, 'show']);
     Route::put('/rsvps/{rsvp}', [\App\Http\Controllers\Api\RsvpController::class, 'update']);

@@ -19,6 +19,13 @@ class Pillar extends Model
         'is_active',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean',
+        ];
+    }
+
     public function services(): HasMany
     {
         return $this->hasMany(Service::class);

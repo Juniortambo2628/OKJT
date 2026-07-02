@@ -8,43 +8,34 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('subscribers', function (Blueprint $table) {
-            $table->index(['is_active', 'created_at']);
-        });
+        $indexes = [
+            'subscribers' => [['is_active', 'created_at']],
+            'rsvps' => [['type', 'attendance'], ['email', 'type']],
+            'consultation_requests' => [['status', 'created_at']],
+            'page_views' => [['path', 'created_at'], ['ip']],
+            'team_members' => [['order']],
+            'values' => [['order']],
+            'stats' => [['order']],
+            'clients' => [['order']],
+            'testimonials' => [['order']],
+        ];
 
-        Schema::table('rsvps', function (Blueprint $table) {
-            $table->index(['type', 'attendance']);
-            $table->index(['email', 'type']);
-        });
-
-        Schema::table('consultation_requests', function (Blueprint $table) {
-            $table->index(['status', 'created_at']);
-        });
-
-        Schema::table('page_views', function (Blueprint $table) {
-            $table->index(['path', 'created_at']);
-            $table->index('ip');
-        });
-
-        Schema::table('team_members', function (Blueprint $table) {
-            $table->index('order');
-        });
-
-        Schema::table('values', function (Blueprint $table) {
-            $table->index('order');
-        });
-
-        Schema::table('stats', function (Blueprint $table) {
-            $table->index('order');
-        });
-
-        Schema::table('clients', function (Blueprint $table) {
-            $table->index('order');
-        });
-
-        Schema::table('testimonials', function (Blueprint $table) {
-            $table->index('order');
-        });
+        foreach ($indexes as $table => $indexColumns) {
+            if (Schema::hasTable($table)) {
+                foreach ($indexColumns as $columns) {
+                    $indexName = $table . '_' . implode('_', $columns) . '_index';
+                    if (!Schema::hasIndex($table, $indexName)) {
+                        try {
+                            Schema::table($table, function (Blueprint $table) use ($columns) {
+                                $table->index($columns);
+                            });
+                        } catch (\Exception $e) {
+                            // Skip indexes that exceed key length limits
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public function down(): void

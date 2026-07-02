@@ -18,7 +18,7 @@ class RsvpController extends Controller
     protected $orderByDirection = 'desc';
     protected $resourceClass = RsvpResource::class;
 
-    protected function storeRules(): array
+    protected function storeRules(Request $request): array
     {
         return [
             'name' => 'required|string|max:255',

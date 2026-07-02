@@ -8,18 +8,14 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('services', function (Blueprint $table) {
-            $table->softDeletes();
-        });
-        Schema::table('insights', function (Blueprint $table) {
-            $table->softDeletes();
-        });
-        Schema::table('projects', function (Blueprint $table) {
-            $table->softDeletes();
-        });
-        Schema::table('pillars', function (Blueprint $table) {
-            $table->softDeletes();
-        });
+        $tables = ['services', 'insights', 'projects', 'pillars'];
+        foreach ($tables as $table) {
+            if (Schema::hasTable($table) && !Schema::hasColumn($table, 'deleted_at')) {
+                Schema::table($table, function (Blueprint $table) {
+                    $table->softDeletes();
+                });
+            }
+        }
     }
 
     public function down(): void

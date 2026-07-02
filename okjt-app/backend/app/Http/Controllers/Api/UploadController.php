@@ -24,16 +24,17 @@ class UploadController extends Controller
             $image = $manager->read($file);
             $image->scaleDown(width: 1920, height: 1920);
             $encoded = $image->toWebp(80);
+            $encodedString = (string) $encoded;
                 
             $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '_' . uniqid() . '.webp';
             $path = 'uploads/' . $filename;
-            Storage::disk('public')->put($path, (string) $encoded);
+            Storage::disk('public')->put($path, $encodedString);
             
             return response()->json([
                 'url' => url('/api/storage/' . ltrim($path, '/')),
                 'path' => $path,
                 'filename' => $filename,
-                'size' => strlen($image->stream()->getContents()),
+                'size' => strlen($encodedString),
                 'mime' => 'image/webp',
             ], 201);
         }

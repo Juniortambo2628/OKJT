@@ -36,7 +36,7 @@ class ProjectController extends Controller
         return $query->orderBy('order')->orderBy('created_at', 'desc');
     }
 
-    protected function storeRules(): array
+    protected function storeRules(Request $request): array
     {
         return [
             'type' => 'required|string|in:client,flagship',

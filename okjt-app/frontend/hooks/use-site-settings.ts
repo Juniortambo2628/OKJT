@@ -1,37 +1,46 @@
 "use client"
 
-import { useState, useEffect, useCallback } from 'react'
-import { useApi } from '@/hooks/use-api'
+import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useSettings } from './use-settings'
 import api from '@/lib/api'
 import { useToast } from '@/hooks/use-toast'
 import { SiteSetting } from '@/types/api'
 
 export function useSiteSettings() {
-    const { data: settingsByGroup, mutate, isLoading } = useApi<Record<string, SiteSetting[]>>('/settings')
+    const { settings: allSettings, isLoading, mutate } = useSettings()
     const { toast } = useToast()
     const [localSettings, setLocalSettings] = useState<Record<string, string>>({})
     const [isSaving, setIsSaving] = useState(false)
 
+    const settingsByGroup = useMemo(() => {
+        if (allSettings.length === 0) return undefined
+        const grouped: Record<string, SiteSetting[]> = {}
+        allSettings.forEach((s) => {
+            if (!grouped[s.group]) grouped[s.group] = []
+            grouped[s.group].push(s)
+        })
+        return grouped
+    }, [allSettings])
+
     useEffect(() => {
-        if (settingsByGroup) {
+        if (allSettings.length > 0) {
             const flat: Record<string, string> = {}
-            Object.values(settingsByGroup).flat().forEach((s) => {
+            allSettings.forEach((s) => {
                 flat[s.key] = s.value || ''
             })
             setLocalSettings(flat)
         }
-    }, [settingsByGroup])
+    }, [allSettings])
 
     const updateSetting = useCallback((key: string, value: string) => {
         setLocalSettings(prev => ({ ...prev, [key]: value }))
     }, [])
 
     const handleSave = useCallback(async (extraTransforms?: (settings: SiteSetting[], local: Record<string, string>) => Record<string, string>) => {
-        if (!settingsByGroup) return
+        if (allSettings.length === 0) return
 
         setIsSaving(true)
         try {
-            const allSettings = Object.values(settingsByGroup).flat()
             let finalLocal = localSettings
 
             if (extraTransforms) {
@@ -60,7 +69,7 @@ export function useSiteSettings() {
         } finally {
             setIsSaving(false)
         }
-    }, [settingsByGroup, localSettings, mutate, toast])
+    }, [allSettings, localSettings, mutate, toast])
 
     return {
         settingsByGroup,

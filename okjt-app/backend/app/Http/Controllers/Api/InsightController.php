@@ -23,7 +23,7 @@ class InsightController extends Controller
         return $query->where('is_published', true)->orderBy('published_at', 'desc');
     }
 
-    protected function storeRules(): array
+    protected function storeRules(Request $request): array
     {
         return [
             'title' => 'required|string|max:255',

@@ -35,7 +35,8 @@ trait HasUniqueSlug
      */
     protected function slugExists(string $slug, ?int $excludeId = null): bool
     {
-        $query = static::where('slug', $slug);
+        $modelClass = $this->getModelClass();
+        $query = $modelClass::where('slug', $slug);
 
         if ($excludeId) {
             $query->where('id', '!=', $excludeId);

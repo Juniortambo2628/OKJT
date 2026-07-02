@@ -3,6 +3,89 @@
 This document represents the final canonical schema for all application tables.
 Generated after all migrations have been applied.
 
+## Infrastructure Tables
+
+### `password_reset_tokens`
+| Column | Type | Constraints |
+|--------|------|-------------|
+| email | varchar(255) | PK |
+| token | varchar(255) | NOT NULL |
+| created_at | timestamp | NULLABLE |
+
+### `sessions`
+| Column | Type | Constraints |
+|--------|------|-------------|
+| id | varchar(255) | PK |
+| user_id | bigint | NULLABLE, INDEX |
+| ip_address | varchar(45) | NULLABLE |
+| user_agent | text | NULLABLE |
+| payload | longText | NOT NULL |
+| last_activity | int | NOT NULL, INDEX |
+
+### `cache`
+| Column | Type | Constraints |
+|--------|------|-------------|
+| key | varchar(255) | PK |
+| value | mediumText | NOT NULL |
+| expiration | int | NOT NULL |
+
+### `cache_locks`
+| Column | Type | Constraints |
+|--------|------|-------------|
+| key | varchar(255) | PK |
+| owner | varchar(255) | NOT NULL |
+| expiration | int | NOT NULL |
+
+### `jobs`
+| Column | Type | Constraints |
+|--------|------|-------------|
+| id | bigint | PK, auto-increment |
+| queue | varchar(255) | NOT NULL, INDEX |
+| payload | longText | NOT NULL |
+| attempts | tinyint unsigned | NOT NULL |
+| reserved_at | int unsigned | NULLABLE |
+| available_at | int unsigned | NOT NULL |
+| created_at | int unsigned | NOT NULL |
+
+### `job_batches`
+| Column | Type | Constraints |
+|--------|------|-------------|
+| id | varchar(255) | PK |
+| name | varchar(255) | NOT NULL |
+| total_jobs | int | NOT NULL |
+| pending_jobs | int | NOT NULL |
+| failed_jobs | int | NOT NULL |
+| failed_job_ids | longText | NOT NULL |
+| options | mediumText | NULLABLE |
+| cancelled_at | int | NULLABLE |
+| created_at | int | NOT NULL |
+| finished_at | int | NULLABLE |
+
+### `failed_jobs`
+| Column | Type | Constraints |
+|--------|------|-------------|
+| id | bigint | PK, auto-increment |
+| uuid | varchar(255) | NOT NULL, UNIQUE |
+| connection | text | NOT NULL |
+| queue | text | NOT NULL |
+| payload | longText | NOT NULL |
+| exception | longText | NOT NULL |
+| failed_at | timestamp | DEFAULT CURRENT_TIMESTAMP |
+
+### `personal_access_tokens`
+| Column | Type | Constraints |
+|--------|------|-------------|
+| id | bigint | PK, auto-increment |
+| tokenable_type | varchar(255) | NOT NULL (MORPH type) |
+| tokenable_id | bigint | NOT NULL (MORPH id) |
+| name | varchar(255) | NOT NULL |
+| token | varchar(64) | NOT NULL, UNIQUE |
+| abilities | text | NULLABLE |
+| last_used_at | timestamp | NULLABLE |
+| expires_at | timestamp | NULLABLE, INDEX |
+| created_at | timestamp | NULLABLE |
+| updated_at | timestamp | NULLABLE |
+
 ## Application Tables
 
 ### `users`
@@ -113,6 +196,7 @@ Generated after all migrations have been applied.
 | order | integer | DEFAULT 0 |
 | created_at | timestamp | NULLABLE |
 | updated_at | timestamp | NULLABLE |
+| deleted_at | timestamp | NULLABLE (SoftDeletes) |
 
 **Indexes:** INDEX(order)
 
@@ -130,6 +214,7 @@ Generated after all migrations have been applied.
 | order | integer | DEFAULT 0 |
 | created_at | timestamp | NULLABLE |
 | updated_at | timestamp | NULLABLE |
+| deleted_at | timestamp | NULLABLE (SoftDeletes) |
 
 **Indexes:** INDEX(is_featured), INDEX(order)
 
@@ -145,6 +230,7 @@ Generated after all migrations have been applied.
 | order | integer | DEFAULT 0 |
 | created_at | timestamp | NULLABLE |
 | updated_at | timestamp | NULLABLE |
+| deleted_at | timestamp | NULLABLE (SoftDeletes) |
 
 **Indexes:** INDEX(is_active), INDEX(order)
 
@@ -161,6 +247,7 @@ Generated after all migrations have been applied.
 | order | integer | DEFAULT 0 |
 | created_at | timestamp | NULLABLE |
 | updated_at | timestamp | NULLABLE |
+| deleted_at | timestamp | NULLABLE (SoftDeletes) |
 
 **Indexes:** INDEX(order)
 
@@ -174,6 +261,7 @@ Generated after all migrations have been applied.
 | order | integer | DEFAULT 0 |
 | created_at | timestamp | NULLABLE |
 | updated_at | timestamp | NULLABLE |
+| deleted_at | timestamp | NULLABLE (SoftDeletes) |
 
 **Indexes:** INDEX(order)
 

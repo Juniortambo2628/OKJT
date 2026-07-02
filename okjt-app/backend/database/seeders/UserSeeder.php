@@ -19,6 +19,7 @@ class UserSeeder extends Seeder
                 'name' => 'OKJTech Admin',
                 'password' => Hash::make('admin123'),
                 'email_verified_at' => now(),
+                'is_admin' => true,
             ]
         );
     }

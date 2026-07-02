@@ -35,7 +35,6 @@ const AdminProjectsPage = () => {
                 testimonial_author: '',
                 image: '',
                 gallery: [],
-                website_url: '',
                 url: '',
                 is_active: true,
                 is_featured: false,
@@ -113,9 +112,9 @@ const AdminProjectsPage = () => {
                     <div className="px-5 pb-5 pt-0 flex items-center justify-between">
                         <span className="text-xs font-bold text-muted-foreground">Edit</span>
                         <div className="flex items-center gap-2">
-                            {(item.website_url || item.url) && (
+                            {item.url && (
                                 <a
-                                    href={item.website_url || item.url || '#'}
+                                    href={item.url || '#'}
                                     target="_blank"
                                     className="text-muted-foreground hover:text-primary transition-colors"
                                 >

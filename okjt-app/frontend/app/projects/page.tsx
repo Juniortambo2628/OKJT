@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import SWRProvider from '@/components/SWRProvider'
 import { getProjects } from '@/lib/server/api'
 import ProjectsContent from './ProjectsContent'
@@ -11,7 +12,9 @@ export default async function FlagshipProjectsPage() {
         <SWRProvider fallback={{
             '/projects': projects,
         }}>
-            <ProjectsContent />
+            <Suspense>
+                <ProjectsContent />
+            </Suspense>
         </SWRProvider>
     )
 }

@@ -17,7 +17,7 @@ class ServiceController extends Controller
     protected $cacheKey = 'all_services';
     protected $resourceClass = ServiceResource::class;
 
-    protected function storeRules(): array
+    protected function storeRules(Request $request): array
     {
         return [
             'title' => 'required|string|max:255',
@@ -61,5 +61,12 @@ class ServiceController extends Controller
     public function show(Service $service)
     {
         return new ServiceResource($service->load('pillar'));
+    }
+
+    protected function clearCache(): void
+    {
+        \Illuminate\Support\Facades\Cache::forget('all_services');
+        \Illuminate\Support\Facades\Cache::forget('all_pillars');
+        \Illuminate\Support\Facades\Cache::forget('all_pillars_admin');
     }
 }

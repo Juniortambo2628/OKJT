@@ -36,7 +36,7 @@ class PillarController extends Controller
         return $query->orderBy('created_at', 'desc');
     }
 
-    protected function storeRules(): array
+    protected function storeRules(Request $request): array
     {
         return [
             'title' => 'required|string|max:255',

@@ -2,6 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { useApi } from '@/hooks/use-api'
 import PageHero from '@/components/PageHero'
 import { motion } from 'framer-motion'
@@ -17,9 +18,20 @@ import { PageShell } from '@/components/PageShell'
 import { type NavSection } from '@/lib/nav-sections'
 
 export default function ProjectsContent() {
+    const searchParams = useSearchParams()
+    const typeFilter = searchParams.get('type') as 'client' | 'flagship' | null
+
     const { data: projects, isLoading } = useApi<Project[]>('/projects')
-    
-    const featured = projects?.filter(p => p.type === 'flagship' && p.is_active) || []
+
+    const featured = React.useMemo(() => {
+        if (!projects) return []
+        if (typeFilter) {
+            return projects.filter(p => p.type === typeFilter && p.is_active)
+        }
+        return projects.filter(p => p.type === 'flagship' && p.is_active)
+    }, [projects, typeFilter])
+
+    const isFlagship = !typeFilter || typeFilter === 'flagship'
 
     const navSections = React.useMemo<NavSection[]>(() => {
         const sections: NavSection[] = [{ id: 'hero', label: 'Intro' }]
@@ -37,9 +49,15 @@ export default function ProjectsContent() {
             <PageHero
                 id="hero"
                 centered
-                tagline="Flagship Innovations"
-                title="Engineering the <br />Future of Digital."
-                subtitle="Explore our bespoke flagship projects—highly specialized digital products built for scale, performance, and maximum impact."
+                tagline={isFlagship ? 'Flagship Innovations' : 'Client Portfolio'}
+                title={isFlagship
+                    ? "Engineering the <br />Future of Digital."
+                    : "Delivering Results <br />For Our Clients."
+                }
+                subtitle={isFlagship
+                    ? "Explore our bespoke flagship projects—highly specialized digital products built for scale, performance, and maximum impact."
+                    : "A curated selection of client engagements—tailored digital solutions that drive real business outcomes."
+                }
             />
 
             {isLoading && (
@@ -53,7 +71,12 @@ export default function ProjectsContent() {
             {!isLoading && featured.length === 0 && (
                 <section className="py-24 bg-background">
                     <div className="max-w-[1400px] mx-auto px-6 text-center py-40 border border-white/5 rounded-3xl bg-black/40 backdrop-blur-md">
-                        <p className="text-white/60 text-xl">Our flagship projects are currently being synchronized.</p>
+                        <p className="text-white/60 text-xl">
+                            {isFlagship
+                                ? 'Our flagship projects are currently being synchronized.'
+                                : 'Our client portfolio is currently being synchronized.'
+                            }
+                        </p>
                     </div>
                 </section>
             )}
@@ -76,22 +99,24 @@ export default function ProjectsContent() {
                                                 <Star size={10} className="fill-primary" /> Featured
                                             </span>
                                         )}
-                                        <span className="text-primary font-mono text-xs font-bold uppercase tracking-[0.3em]">Flagship Innovation</span>
+                                        <span className="text-primary font-mono text-xs font-bold uppercase tracking-[0.3em]">
+                                            {isFlagship ? 'Flagship Innovation' : 'Client Project'}
+                                        </span>
                                     </div>
                                     <span className="text-white/20 font-bold font-mono text-2xl hidden md:inline">0{index + 1}</span>
                                 </div>
-                                
+
                                 <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
                                     {item.title}
                                 </h2>
-                                
+
                                 {item.tagline && (
                                     <p className="text-lg md:text-xl font-bold text-primary/80 italic">
                                         "{item.tagline}"
                                     </p>
                                 )}
 
-                                <div 
+                                <div
                                     className="text-white/70 text-sm md:text-base leading-relaxed prose prose-invert max-w-none text-center md:text-left prose-p:leading-relaxed prose-p:text-white/70"
                                     dangerouslySetInnerHTML={{ __html: item.description || '' }}
                                 />

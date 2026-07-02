@@ -164,13 +164,17 @@ trait HandlesStandardCrud
     public function destroy($id)
     {
         $model = $this->getModelClass();
-        $record = $model::findOrFail($id);
+        $record = $model::withTrashed()->findOrFail($id);
 
         if (method_exists($this, 'beforeDelete')) {
             $this->beforeDelete($record);
         }
 
-        $record->delete();
+        if ($record->trashed()) {
+            $record->forceDelete();
+        } else {
+            $record->delete();
+        }
         $this->clearCache();
 
         return response()->json(null, 204);

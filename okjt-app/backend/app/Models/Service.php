@@ -20,6 +20,13 @@ class Service extends Model
         'is_active',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean',
+        ];
+    }
+
     public function pillar()
     {
         return $this->belongsTo(Pillar::class);
