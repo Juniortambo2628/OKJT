@@ -9,6 +9,8 @@ import { motion } from 'framer-motion'
 import ViewToggle, { ViewMode } from '@/components/ViewToggle'
 import { Service, Pillar } from '@/types/api'
 import Hero from '@/components/Hero'
+import FadeIn from '@/components/animations/FadeIn'
+import { StaggerContainer, StaggerItem } from '@/components/animations/Stagger'
 import { useSettings } from '@/hooks/use-settings'
 import { usePageHeroMedia } from '@/hooks/use-page-hero-media'
 import SkeletonCard from '@/components/SkeletonCard'
@@ -145,9 +147,9 @@ export default function ServicesIndexContent() {
                     >
                         <SectionCard>
                             <div className="w-full">
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
+                                <FadeIn
+                                    direction="up"
+                                    distance={24}
                                     className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-12"
                                 >
                                     <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${group.gradient} flex items-center justify-center shrink-0 shadow-lg shadow-black/10`}>
@@ -157,19 +159,14 @@ export default function ServicesIndexContent() {
                                         <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4 drop-shadow-2xl">{group.title}</h2>
                                         <p className="text-white/70 max-w-2xl leading-relaxed">{group.description}</p>
                                     </div>
-                                </motion.div>
+                                </FadeIn>
 
-                                <div className={cn(
+                                <StaggerContainer className={cn(
                                     "grid gap-6 w-full",
                                     viewMode === 'grid' ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"
                                 )}>
-                                    {group.items.map((service, index: number) => (
-                                        <motion.div
-                                            key={service.id}
-                                            initial={{ opacity: 0, y: 20 }}
-                                            whileInView={{ opacity: 1, y: 0 }}
-                                            transition={{ delay: index * 0.08 }}
-                                        >
+                                    {group.items.map((service) => (
+                                        <StaggerItem key={service.id}>
                                             <Link
                                                 href={`/services/${service.slug}`}
                                                 className={cn(
@@ -208,14 +205,14 @@ export default function ServicesIndexContent() {
                                                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                                                 </span>
                                             </Link>
-                                        </motion.div>
+                                        </StaggerItem>
                                     ))}
-                                </div>
+                                </StaggerContainer>
 
                                 {group.items.length === 0 && !isLoading && (
-                                    <div className="text-center py-16 text-white/30 border border-dashed border-white/10 rounded-2xl bg-black/20">
+                                    <FadeIn className="text-center py-16 text-white/30 border border-dashed border-white/10 rounded-2xl bg-black/20" direction="up" distance={16} blur={false}>
                                         Services for this category are being finalised.
-                                    </div>
+                                    </FadeIn>
                                 )}
                             </div>
                         </SectionCard>

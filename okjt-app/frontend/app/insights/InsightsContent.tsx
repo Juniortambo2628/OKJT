@@ -18,6 +18,8 @@ import ParallaxSection from '@/components/ParallaxSection'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { PageShell } from '@/components/PageShell'
 import { INSIGHTS_NAV_SECTIONS } from '@/lib/nav-sections'
+import FadeIn from '@/components/animations/FadeIn'
+import { StaggerContainer, StaggerItem } from '@/components/animations/Stagger'
 
 export default function InsightsContent() {
     const { getSetting, isLoading: settingsLoading } = useSettings()
@@ -81,17 +83,12 @@ export default function InsightsContent() {
                             </div>
                         )}
 
-                        <div className={cn(
+                        <StaggerContainer className={cn(
                             "grid gap-6 w-full",
                             viewMode === 'grid' ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"
-                        )}>
-                            {filtered?.map((insight, index: number) => (
-                                <motion.div
-                                    key={insight.id}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: index * 0.05 }}
-                                >
+                        )} staggerDelay={0.06}>
+                            {filtered?.map((insight) => (
+                                <StaggerItem key={insight.id}>
                                     <Link href={`/insights/${insight.slug}`} className="block group h-full">
                                         <div className={cn(
                                             "border transition-all duration-300 overflow-hidden rounded-2xl bg-black/20 h-full",
@@ -147,9 +144,9 @@ export default function InsightsContent() {
                                             </div>
                                         </div>
                                     </Link>
-                                </motion.div>
+                                </StaggerItem>
                             ))}
-                        </div>
+                        </StaggerContainer>
                     </div>
                 </SectionCard>
             </ParallaxSection>

@@ -3,6 +3,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { useApi } from '@/hooks/use-api'
+import FadeIn from '@/components/animations/FadeIn'
 
 const ClientsSection = () => {
     const { data: clients, isLoading, isError } = useApi('/clients')
@@ -15,16 +16,11 @@ const ClientsSection = () => {
     return (
         <section className="w-full py-20 bg-background border-t border-b border-border/50 overflow-hidden">
             <div className="max-w-[1400px] mx-auto px-6 mb-12">
-                <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="text-center"
-                >
+                <FadeIn className="text-center" direction="up" distance={16} blur={false}>
                     <span className="text-muted-foreground text-sm font-bold uppercase tracking-[0.2em]">
                         Trusted by ambitious brands
                     </span>
-                </motion.div>
+                </FadeIn>
             </div>
 
             {/* Infinite Scroll Marquee */}

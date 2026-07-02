@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/button'
 import { useApi } from '@/hooks/use-api'
 import { ArrowRight, Linkedin, Info } from 'lucide-react'
 import Link from 'next/link'
+import FadeIn from '@/components/animations/FadeIn'
+import { StaggerContainer, StaggerItem } from '@/components/animations/Stagger'
 import {
     Dialog,
     DialogContent,
@@ -66,16 +68,16 @@ export default function AboutContent() {
                 >
                     <SectionCard>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-20 items-center w-full">
-                            <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}>
+                            <FadeIn direction="left" distance={30}>
                                 <span className="text-primary font-bold text-sm uppercase tracking-[0.2em] mb-4 block">Our Mission</span>
                                 <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 leading-tight">{missionTitle}</h2>
                                 <p className="text-white/70 text-base md:text-lg leading-relaxed mb-6">{missionText1}</p>
                                 <p className="text-white/70 text-base md:text-lg leading-relaxed">{missionText2}</p>
-                            </motion.div>
-                            <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} className="relative aspect-[4/3] overflow-hidden border border-border/50 shadow-2xl rounded-2xl">
+                            </FadeIn>
+                            <FadeIn direction="right" distance={30} delay={0.15} className="relative aspect-[4/3] overflow-hidden border border-border/50 shadow-2xl rounded-2xl">
                                 <img src="/NI-Digital-Assets/strategic-advisory.jpg" alt="OKJTech Team in session" className="w-full h-full object-cover grayscale opacity-85" />
                                 <div className="absolute inset-0 bg-primary/10 mix-blend-color" />
-                            </motion.div>
+                            </FadeIn>
                         </div>
                     </SectionCard>
                 </ParallaxSection>
@@ -90,20 +92,20 @@ export default function AboutContent() {
                     contentMaxWidth="max-w-[1400px]"
                 >
                     <SectionCard>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
-                            {values?.map((val, idx) => {
+                        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full" staggerDelay={0.08}>
+                            {values?.map((val) => {
                                 const IconComponent = (iconMap as any)[val.icon || 'Shield'] || (iconMap as any).Shield
                                 return (
-                                    <motion.div key={val.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }} className="bg-black/20 border border-white/5 p-8 hover:border-primary/30 transition-all group rounded-2xl">
+                                    <StaggerItem key={val.id} className="bg-black/20 border border-white/5 p-8 hover:border-primary/30 transition-all group rounded-2xl">
                                         <div className="w-12 h-12 bg-primary/5 border border-primary/10 flex items-center justify-center mb-8 group-hover:bg-primary group-hover:text-black transition-all duration-300 rounded-xl">
                                             <IconComponent className="h-6 w-6 text-primary group-hover:text-black transition-colors" />
                                         </div>
                                         <h3 className="text-xl font-bold text-white mb-4">{val.title}</h3>
                                         <p className="text-white/70 leading-relaxed text-sm">{val.description}</p>
-                                    </motion.div>
+                                    </StaggerItem>
                                 )
                             })}
-                        </div>
+                        </StaggerContainer>
                     </SectionCard>
                 </ParallaxSection>
 
@@ -118,13 +120,10 @@ export default function AboutContent() {
                     contentMaxWidth="max-w-[1400px]"
                 >
                     <SectionCard>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
-                            {team?.map((member, index) => (
-                                <motion.div
-                                    key={index}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: index * 0.1 }}
+                        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full" staggerDelay={0.08}>
+                            {team?.map((member) => (
+                                <StaggerItem
+                                    key={member.id}
                                     className="bg-black/20 border border-white/5 p-8 text-center flex flex-col group relative rounded-2xl"
                                 >
                                     <div className="w-28 h-28 rounded-full bg-gradient-to-br from-primary/10 via-background to-background mx-auto mb-6 flex items-center justify-center overflow-hidden border border-primary/20">
@@ -192,9 +191,9 @@ export default function AboutContent() {
                                             </DialogContent>
                                         </Dialog>
                                     </div>
-                                </motion.div>
+                                </StaggerItem>
                             ))}
-                        </div>
+                        </StaggerContainer>
                     </SectionCard>
                 </ParallaxSection>
 

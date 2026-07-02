@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useApi } from '@/hooks/use-api'
 import { ArrowRight, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -10,6 +10,8 @@ import { useSettings } from '@/hooks/use-settings'
 import { SectionSkeleton } from '@/components/MediaSkeleton'
 import ParallaxSection from '@/components/ParallaxSection'
 import { SectionCard } from '@/components/ui/SectionCard'
+import FadeIn from '@/components/animations/FadeIn'
+import { EASE_OUT_EXPO } from '@/components/animations/FadeIn'
 
 const categories = ['All', 'Web Development', 'UI/UX Design', 'Digital Strategy']
 
@@ -70,16 +72,13 @@ const ServicesSection = () => {
                             className="divide-y divide-foreground/10"
                         >
                             {displayedServices.map((service: any, index: number) => (
-                                <motion.div
+                                <FadeIn
                                     key={service.id}
-                                    initial={{ opacity: 0, x: -20 }}
-                                    whileInView={{ opacity: 1, x: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ 
-                                        duration: 0.5, 
-                                        delay: index * 0.08,
-                                        ease: [0.215, 0.61, 0.355, 1] 
-                                    }}
+                                    direction="left"
+                                    distance={24}
+                                    delay={index * 0.06}
+                                    duration={0.6}
+                                    blur={false}
                                     className="group"
                                 >
                                     <button
@@ -123,19 +122,14 @@ const ServicesSection = () => {
                                             </motion.div>
                                         )}
                                     </AnimatePresence>
-                                </motion.div>
+                                </FadeIn>
                             ))}
                         </motion.div>
                     </AnimatePresence>
 
                     {/* See All Button */}
                     {hasMore && (
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            whileInView={{ opacity: 1 }}
-                            viewport={{ once: true }}
-                            className="mt-8 text-center"
-                        >
+                        <FadeIn className="mt-8 text-center" direction="up" distance={16} blur={false}>
                             <Button
                                 variant="outline"
                                 className="font-bold text-xs uppercase tracking-wider"
@@ -146,13 +140,13 @@ const ServicesSection = () => {
                                     <ArrowRight className="ml-2 h-4 w-4" />
                                 </Link>
                             </Button>
-                        </motion.div>
+                        </FadeIn>
                     )}
 
                     {(!filteredServices || filteredServices.length === 0) && (
-                        <div className="py-20 text-center text-foreground/30 border border-dashed border-foreground/10 rounded-xl">
+                        <FadeIn className="py-20 text-center text-foreground/30 border border-dashed border-foreground/10 rounded-xl" direction="up" distance={16} blur={false}>
                             No services available in this category yet.
-                        </div>
+                        </FadeIn>
                     )}
                 </div>
             </SectionCard>

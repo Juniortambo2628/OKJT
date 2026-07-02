@@ -1,13 +1,15 @@
 "use client"
 
 import React, { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useApi } from '@/hooks/use-api'
 import Image from 'next/image'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { SectionSkeleton } from '@/components/MediaSkeleton'
+import FadeIn from '@/components/animations/FadeIn'
+import { StaggerContainer, StaggerItem } from '@/components/animations/Stagger'
 
 import { Card } from '@/components/ui/card'
 
@@ -27,11 +29,7 @@ const ProjectsPreview = () => {
         <section className="w-full py-32 bg-background relative overflow-hidden">
             <div className="max-w-[1400px] mx-auto px-6">
                 {/* Header */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    className="flex flex-col md:flex-row items-end justify-between mb-16 gap-6"
-                >
+                <FadeIn className="flex flex-col md:flex-row items-end justify-between mb-16 gap-6" direction="up" distance={24}>
                     <div>
                         <span className="text-primary font-bold text-sm uppercase tracking-[0.2em] mb-4 block">
                             Technical Excellence
@@ -45,40 +43,38 @@ const ProjectsPreview = () => {
                             View All Projects <ArrowRight className="ml-2 h-4 w-4" />
                         </Link>
                     </Button>
-                </motion.div>
+                </FadeIn>
 
                 {/* Interactive Layout: Tabs + Featured Project */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                     {/* Tab List */}
-                    <div className="lg:col-span-4 space-y-4">
-                        {clientProjects.map((p: any, index: number) => (
-                            <motion.button
-                                key={p.id}
-                                onClick={() => setActiveIndex(index)}
-                                initial={{ opacity: 0, x: -20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.1 }}
-                                className="w-full block"
-                            >
-                                <Card className={`text-left p-5 transition-all duration-300 border ${
-                                    activeIndex === index
-                                        ? 'border-primary bg-primary/5 shadow-lg shadow-primary/5'
-                                        : 'border-border/50 hover:border-primary/30'
-                                }`}>
-                                    <span className={`text-[9px] font-bold uppercase tracking-widest block mb-2 ${
-                                        activeIndex === index ? 'text-primary' : 'text-slate-400'
+                    <StaggerContainer className="lg:col-span-4 space-y-4" staggerDelay={0.08}>
+                        {clientProjects.map((p: any) => (
+                            <StaggerItem key={p.id} direction="left" distance={20}>
+                                <button
+                                    onClick={() => setActiveIndex(clientProjects.indexOf(p))}
+                                    className="w-full block text-left"
+                                >
+                                    <Card className={`text-left p-5 transition-all duration-300 border ${
+                                        activeIndex === clientProjects.indexOf(p)
+                                            ? 'border-primary bg-primary/5 shadow-lg shadow-primary/5'
+                                            : 'border-border/50 hover:border-primary/30'
                                     }`}>
-                                        {p.significant_figure || 'Project'}
-                                    </span>
-                                    <h3 className={`font-bold text-base ${
-                                        activeIndex === index ? 'text-foreground' : 'text-muted-foreground'
-                                    }`}>
-                                        {p.title}
-                                    </h3>
-                                </Card>
-                            </motion.button>
+                                        <span className={`text-[9px] font-bold uppercase tracking-widest block mb-2 ${
+                                            activeIndex === clientProjects.indexOf(p) ? 'text-primary' : 'text-slate-400'
+                                        }`}>
+                                            {p.significant_figure || 'Project'}
+                                        </span>
+                                        <h3 className={`font-bold text-base ${
+                                            activeIndex === clientProjects.indexOf(p) ? 'text-foreground' : 'text-muted-foreground'
+                                        }`}>
+                                            {p.title}
+                                        </h3>
+                                    </Card>
+                                </button>
+                            </StaggerItem>
                         ))}
-                    </div>
+                    </StaggerContainer>
 
                     {/* Featured Project */}
                     <div className="lg:col-span-8">

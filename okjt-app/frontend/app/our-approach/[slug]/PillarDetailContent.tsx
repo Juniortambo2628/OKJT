@@ -9,6 +9,8 @@ import { motion } from 'framer-motion'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import Hero from '@/components/Hero'
+import FadeIn from '@/components/animations/FadeIn'
+import { StaggerContainer, StaggerItem } from '@/components/animations/Stagger'
 import { SectionSkeleton } from '@/components/MediaSkeleton'
 
 import { Pillar } from '@/types/api'
@@ -67,16 +69,12 @@ export default function PillarDetailContent({ slug }: { slug: string }) {
 
                     <div className="grid grid-cols-1 lg:grid-cols-1 gap-16 mb-32">
                         <div className="lg:col-span-1">
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                className="prose prose-invert lg:prose-xl max-w-none"
-                            >
-                                <div 
+                            <FadeIn direction="up" distance={24}>
+                                <div
                                     className="text-muted-foreground leading-relaxed text-lg prose-p:leading-relaxed prose-p:text-muted-foreground prose-headings:text-foreground prose-strong:text-foreground prose-ul:text-muted-foreground"
-                                    dangerouslySetInnerHTML={{ __html: pillar.content || pillar.overview || '' }} 
+                                    dangerouslySetInnerHTML={{ __html: pillar.content || pillar.overview || '' }}
                                 />
-                            </motion.div>
+                            </FadeIn>
                         </div>
                     </div>
 
@@ -88,17 +86,12 @@ export default function PillarDetailContent({ slug }: { slug: string }) {
                             </p>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {pillar.services?.map((service, index) => (
-                                <motion.div
-                                    key={service.id}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: index * 0.1 }}
-                                >
+                        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" staggerDelay={0.08}>
+                            {pillar.services?.map((service) => (
+                                <StaggerItem key={service.id}>
                                     <Link
                                         href={`/services/${service.slug}`}
-                                        className="group relative h-full bg-secondary/5 p-8 border border-border/50 hover:border-primary/40 transition-all flex flex-col justify-between overflow-hidden"
+                                        className="group relative h-full bg-secondary/5 p-8 border border-border/50 hover:border-primary/40 transition-all flex flex-col justify-between overflow-hidden block"
                                     >
                                         <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 group-hover:bg-primary/10 transition-colors" />
                                         
@@ -118,9 +111,9 @@ export default function PillarDetailContent({ slug }: { slug: string }) {
                                             <ArrowRight className="h-4 w-4 text-primary transition-transform group-hover:translate-x-2" />
                                         </div>
                                     </Link>
-                                </motion.div>
+                                </StaggerItem>
                             ))}
-                        </div>
+                        </StaggerContainer>
 
                         {(!pillar.services || pillar.services.length === 0) && (
                             <div className="text-center py-24 border-2 border-dashed border-border/50 rounded-xl bg-secondary/5">

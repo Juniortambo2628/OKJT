@@ -1,9 +1,10 @@
 "use client"
 
 import React, { useState, useEffect, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useApi } from '@/hooks/use-api'
 import { Star, ChevronLeft, ChevronRight, Quote } from 'lucide-react'
+import FadeIn from '@/components/animations/FadeIn'
 
 const TestimonialsSection = () => {
     const { data: testimonials, isLoading, isError } = useApi('/testimonials')
@@ -41,12 +42,7 @@ const TestimonialsSection = () => {
 
             <div className="max-w-[1200px] mx-auto px-6 relative z-10">
                 {/* Header */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="text-center mb-20"
-                >
+                <FadeIn className="text-center mb-20" direction="up" distance={24}>
                     <span className="text-primary font-bold text-sm uppercase tracking-[0.2em] mb-4 block">
                         Client Testimonials
                     </span>
@@ -54,7 +50,7 @@ const TestimonialsSection = () => {
                         What our clients say
                     </h2>
                     <div className="w-20 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent mx-auto" />
-                </motion.div>
+                </FadeIn>
 
                 {/* Testimonial Carousel */}
                 <div

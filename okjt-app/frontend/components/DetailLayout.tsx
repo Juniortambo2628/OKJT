@@ -6,6 +6,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import SocialShare from '@/components/SocialShare'
 import Hero from '@/components/Hero'
+import FadeIn from '@/components/animations/FadeIn'
+import { StaggerContainer, StaggerItem } from '@/components/animations/Stagger'
 import ParallaxSection from '@/components/ParallaxSection'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { PageShell } from '@/components/PageShell'
@@ -205,57 +207,54 @@ export default function DetailLayout({
                             <div className="lg:col-span-8 space-y-12">
                                 {/* Short Description Highlight */}
                                 {description && (
-                                    <motion.div 
-                                        initial={{ opacity: 0, y: 20 }} 
-                                        whileInView={{ opacity: 1, y: 0 }}
-                                        viewport={{ once: true }}
-                                        className="p-8 border-l-2 border-primary bg-black/20 rounded-r-xl"
-                                    >
-                                        <div 
-                                            className="text-lg md:text-xl font-light text-white/90 leading-relaxed italic prose prose-invert max-w-none prose-p:italic prose-p:text-white/90"
-                                            dangerouslySetInnerHTML={{ __html: description }}
-                                        />
-                                    </motion.div>
+                                    <FadeIn direction="left" distance={24}>
+                                        <div className="p-8 border-l-2 border-primary bg-black/20 rounded-r-xl">
+                                            <div
+                                                className="text-lg md:text-xl font-light text-white/90 leading-relaxed italic prose prose-invert max-w-none prose-p:italic prose-p:text-white/90"
+                                                dangerouslySetInnerHTML={{ __html: description }}
+                                            />
+                                        </div>
+                                    </FadeIn>
                                 )}
 
                                 {/* Narrative Blocks */}
-                                <div className="space-y-12 border border-white/5 bg-black/20 rounded-2xl p-8 md:p-12">
+                                <StaggerContainer className="space-y-12 border border-white/5 bg-black/20 rounded-2xl p-8 md:p-12" staggerDelay={0.12}>
                                     {challengeHtml && (
-                                        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+                                        <StaggerItem>
                                             <h2 className="text-[10px] font-bold text-primary uppercase tracking-[0.3em] mb-6 flex items-center gap-3">
                                                 <span className="w-8 h-[1px] bg-primary/30" /> {challengeTitle}
                                             </h2>
-                                            <div 
+                                            <div
                                                 className="text-white/70 leading-relaxed text-sm md:text-base font-light prose dark:prose-invert max-w-none prose-p:leading-relaxed prose-p:text-white/70 prose-strong:text-white"
-                                                dangerouslySetInnerHTML={{ __html: challengeHtml }} 
+                                                dangerouslySetInnerHTML={{ __html: challengeHtml }}
                                             />
-                                        </motion.div>
+                                        </StaggerItem>
                                     )}
 
                                     {approachHtml && (
-                                        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="pt-8 border-t border-white/5">
+                                        <StaggerItem className="pt-8 border-t border-white/5">
                                             <h2 className="text-[10px] font-bold text-primary uppercase tracking-[0.3em] mb-6 flex items-center gap-3">
                                                 <span className="w-8 h-[1px] bg-primary/30" /> {approachTitle}
                                             </h2>
-                                            <div 
+                                            <div
                                                 className="text-white/70 leading-relaxed text-sm md:text-base font-light prose dark:prose-invert max-w-none prose-p:leading-relaxed prose-p:text-white/70 prose-strong:text-white"
-                                                dangerouslySetInnerHTML={{ __html: approachHtml }} 
+                                                dangerouslySetInnerHTML={{ __html: approachHtml }}
                                             />
-                                        </motion.div>
+                                        </StaggerItem>
                                     )}
 
                                     {impactHtml && (
-                                        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="pt-8 border-t border-white/5">
+                                        <StaggerItem className="pt-8 border-t border-white/5">
                                             <h2 className="text-[10px] font-bold text-primary uppercase tracking-[0.3em] mb-6 flex items-center gap-3">
                                                 <span className="w-8 h-[1px] bg-primary/30" /> {impactTitle}
                                             </h2>
-                                            <div 
+                                            <div
                                                 className="text-white/70 leading-relaxed text-sm md:text-base font-light prose dark:prose-invert max-w-none prose-p:leading-relaxed prose-p:text-white/70 prose-strong:text-white"
-                                                dangerouslySetInnerHTML={{ __html: impactHtml }} 
+                                                dangerouslySetInnerHTML={{ __html: impactHtml }}
                                             />
-                                        </motion.div>
+                                        </StaggerItem>
                                     )}
-                                </div>
+                                </StaggerContainer>
                             </div>
 
                             {/* Sidebar Info */}
@@ -378,18 +377,19 @@ export default function DetailLayout({
                 >
                     <SectionCard>
                         <div className="max-w-[1200px] mx-auto w-full">
-                            <div className="flex items-center justify-between mb-12">
+                            <FadeIn direction="up" distance={20} className="flex items-center justify-between mb-12">
                                 <h2 className="text-2xl md:text-3xl font-bold text-white">{relatedTitle}</h2>
                                 <Link href={relatedAllLink} className="text-primary text-xs font-bold uppercase tracking-widest hover:underline flex items-center gap-2">
                                     {relatedAllLabel} <ChevronRight size={14} />
                                 </Link>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                            </FadeIn>
+                            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-10" staggerDelay={0.1}>
                                 {relatedItems.map((item: any) => {
                                     const imgSrc = getRelatedImage ? getRelatedImage(item) : item.image;
                                     const taglineText = getRelatedTagline ? getRelatedTagline(item) : (item.client_name || item.tagline);
                                     return (
-                                        <Link key={item.id} href={`${relatedLinkPrefix}/${item.slug}`} className="group block relative aspect-[21/9] overflow-hidden border border-white/5 rounded-2xl bg-black/20">
+                                        <StaggerItem key={item.id}>
+                                            <Link href={`${relatedLinkPrefix}/${item.slug}`} className="group block relative aspect-[21/9] overflow-hidden border border-white/5 rounded-2xl bg-black/20">
                                             {imgSrc && (
                                                 <Image src={imgSrc} alt={item.title} fill className="object-cover opacity-60 group-hover:opacity-20 transition-all duration-700" />
                                             )}
@@ -400,11 +400,12 @@ export default function DetailLayout({
                                                     <span className="text-[10px] font-bold uppercase">View Details</span>
                                                     <ArrowRight size={14} />
                                                 </div>
-                                            </div>
-                                        </Link>
+                                                </div>
+                                            </Link>
+                                        </StaggerItem>
                                     );
                                 })}
-                            </div>
+                            </StaggerContainer>
                         </div>
                     </SectionCard>
                 </ParallaxSection>

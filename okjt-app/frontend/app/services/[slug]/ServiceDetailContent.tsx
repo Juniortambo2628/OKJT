@@ -7,6 +7,8 @@ import { motion } from 'framer-motion'
 import { ArrowRight, CheckCircle2 } from 'lucide-react'
 import Link from 'next/link'
 import Hero from '@/components/Hero'
+import FadeIn from '@/components/animations/FadeIn'
+import { StaggerContainer, StaggerItem } from '@/components/animations/Stagger'
 import { useSettings } from '@/hooks/use-settings'
 import { SectionSkeleton } from '@/components/MediaSkeleton'
 import ParallaxSection from '@/components/ParallaxSection'
@@ -85,16 +87,12 @@ export default function ServiceDetailContent({ slug }: { slug: string }) {
                 contentMaxWidth="max-w-[1000px]"
             >
                 <SectionCard>
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        className="prose prose-invert lg:prose-xl max-w-none"
-                    >
-                        <div 
+                    <FadeIn direction="up" distance={24}>
+                        <div
                             className="text-white/80 leading-relaxed text-sm md:text-base prose-p:leading-relaxed prose-p:text-white/80 prose-headings:text-white prose-strong:text-white prose-ul:text-white/85"
-                            dangerouslySetInnerHTML={{ __html: service.content || service.description || '' }} 
+                            dangerouslySetInnerHTML={{ __html: service.content || service.description || '' }}
                         />
-                    </motion.div>
+                    </FadeIn>
                 </SectionCard>
             </ParallaxSection>
 
@@ -108,20 +106,17 @@ export default function ServiceDetailContent({ slug }: { slug: string }) {
                 contentMaxWidth="max-w-[1400px]"
             >
                 <SectionCard>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+                    <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full" staggerDelay={0.08}>
                         {benefits.map((benefit, i) => (
-                            <motion.div
+                            <StaggerItem
                                 key={i}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                transition={{ delay: i * 0.1 }}
                                 className="flex items-start gap-4 bg-black/20 p-8 border border-white/5 hover:border-primary/40 rounded-2xl transition-all group"
                             >
                                 <CheckCircle2 className="h-6 w-6 text-primary mt-0.5 shrink-0" />
                                 <span className="text-white/85 font-light text-sm">{benefit}</span>
-                            </motion.div>
+                            </StaggerItem>
                         ))}
-                    </div>
+                    </StaggerContainer>
                 </SectionCard>
             </ParallaxSection>
 
@@ -135,17 +130,19 @@ export default function ServiceDetailContent({ slug }: { slug: string }) {
                     contentMaxWidth="max-w-[1400px]"
                 >
                     <SectionCard>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
+                        <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full" staggerDelay={0.08}>
                             {relatedServices.map((rs) => (
-                                <Link key={rs.id} href={`/services/${rs.slug}`} className="group block bg-black/20 p-8 border border-white/5 rounded-2xl hover:border-primary/45 hover:bg-black/40 transition-all">
+                                <StaggerItem key={rs.id}>
+                                    <Link href={`/services/${rs.slug}`} className="group block bg-black/20 p-8 border border-white/5 rounded-2xl hover:border-primary/45 hover:bg-black/40 transition-all h-full">
                                     <h3 className="text-lg font-bold text-white group-hover:text-primary transition-colors mb-4">{rs.title}</h3>
-                                    <p className="text-white/60 text-sm line-clamp-2">{rs.description}</p>
-                                    <div className="mt-6 flex items-center gap-2 text-primary text-[10px] font-bold uppercase tracking-widest">
-                                        Explore <ArrowRight size={12} className="transition-transform group-hover:translate-x-1" />
-                                    </div>
-                                </Link>
+                                        <p className="text-white/60 text-sm line-clamp-2">{rs.description}</p>
+                                        <div className="mt-6 flex items-center gap-2 text-primary text-[10px] font-bold uppercase tracking-widest">
+                                            Explore <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                                        </div>
+                                    </Link>
+                                </StaggerItem>
                             ))}
-                        </div>
+                        </StaggerContainer>
                         <div className="mt-8">
                             <Button variant="outline" className="rounded-none border-primary/30 text-primary hover:bg-primary/10" asChild>
                                 <Link href="/services">

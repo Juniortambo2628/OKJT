@@ -16,6 +16,8 @@ import { Service } from '@/types/api'
 import { useToast } from '@/hooks/use-toast'
 import api from '@/lib/api'
 import ParallaxSection from '@/components/ParallaxSection'
+import FadeIn from '@/components/animations/FadeIn'
+import { StaggerContainer, StaggerItem } from '@/components/animations/Stagger'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { PageShell } from '@/components/PageShell'
 import { CONTACT_NAV_SECTIONS } from '@/lib/nav-sections'
@@ -96,29 +98,29 @@ export default function ContactContent() {
                 <SectionCard>
                     <div className="w-full max-w-4xl mx-auto">
                         {/* Value Props */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
-                            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0 }} className="text-center">
+                        <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16" staggerDelay={0.1}>
+                            <StaggerItem className="text-center">
                                 <div className="w-16 h-16 bg-white/5 backdrop-blur-md flex items-center justify-center rounded-none border border-white/10 mx-auto mb-6">
                                     <Globe className="h-6 w-6 text-primary" />
                                 </div>
                                 <h4 className="font-bold text-white mb-2">Global Expertise</h4>
                                 <p className="text-xs text-white/60 leading-relaxed">Advisors with deep experience across 40+ markets.</p>
-                            </motion.div>
-                            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-center">
+                            </StaggerItem>
+                            <StaggerItem className="text-center">
                                 <div className="w-16 h-16 bg-white/5 backdrop-blur-md flex items-center justify-center rounded-none border border-white/10 mx-auto mb-6">
                                     <Clock className="h-6 w-6 text-primary" />
                                 </div>
                                 <h4 className="font-bold text-white mb-2">Confidentiality</h4>
                                 <p className="text-xs text-white/60 leading-relaxed">Secure, high-stakes dialogue focused on your objectives.</p>
-                            </motion.div>
-                            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="text-center">
+                            </StaggerItem>
+                            <StaggerItem className="text-center">
                                 <div className="w-16 h-16 bg-white/5 backdrop-blur-md flex items-center justify-center rounded-none border border-white/10 mx-auto mb-6">
                                     <Briefcase className="h-6 w-6 text-primary" />
                                 </div>
                                 <h4 className="font-bold text-white mb-2">Technical Focus</h4>
                                 <p className="text-xs text-white/60 leading-relaxed">Specialists in Software Engineering, Electronics & Digital Transformation.</p>
-                            </motion.div>
-                        </div>
+                            </StaggerItem>
+                        </StaggerContainer>
 
                         {/* Form Card */}
                         <div className="bg-black/20 border border-white/10 p-8 md:p-12 shadow-xl rounded-2xl">
@@ -231,35 +233,29 @@ export default function ContactContent() {
                 <SectionCard>
                     <div className="w-full max-w-4xl mx-auto">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                            <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}>
+                            <FadeIn direction="left" distance={24}>
                                 <h5 className="font-bold text-primary text-[10px] uppercase tracking-[0.3em] mb-6">What to expect</h5>
-                                <ul className="space-y-4">
+                                <StaggerContainer className="space-y-4" staggerDelay={0.08}>
                                     {[
                                         'Specialist matching based on your sector and geography.',
                                         'Initial 30-minute discovery session.',
                                         'Confidential needs assessment and capability overview.',
                                         'Strategic proposal for high-impact engagement.'
                                     ].map((item, idx) => (
-                                        <motion.li 
-                                            key={idx} 
-                                            initial={{ opacity: 0, x: -10 }} 
-                                            whileInView={{ opacity: 1, x: 0 }} 
-                                            transition={{ delay: idx * 0.1 }}
-                                            className="flex items-start gap-3 text-sm text-white/70"
-                                        >
+                                        <StaggerItem key={idx} className="flex items-start gap-3 text-sm text-white/70">
                                             <CheckCircle2 className="h-4 w-4 text-emerald-400 mt-0.5 shrink-0" />
                                             <span>{item}</span>
-                                        </motion.li>
+                                        </StaggerItem>
                                     ))}
-                                </ul>
-                            </motion.div>
-                            <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} className="p-8 border border-white/10 bg-black/20 flex flex-col justify-center rounded-2xl">
+                                </StaggerContainer>
+                            </FadeIn>
+                            <FadeIn direction="right" distance={24} delay={0.15} className="p-8 border border-white/10 bg-black/20 flex flex-col justify-center rounded-2xl">
                                 <h4 className="font-bold text-white mb-2 italic">Prefer a direct line?</h4>
                                 <p className="text-sm text-white/60 mb-6 leading-relaxed">Our partners are available for priority discussions via our local regional office.</p>
                                 <a href={`tel:${getSetting('contact_phone', '+254 700 000 000').replace(/\s/g, '')}`} className="text-xl font-bold text-primary hover:underline transition-all">
                                     {getSetting('contact_phone', '+254 700 000 000')}
                                 </a>
-                            </motion.div>
+                            </FadeIn>
                         </div>
                     </div>
                 </SectionCard>

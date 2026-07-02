@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
 import { useApi } from '@/hooks/use-api'
 import { ArrowRight, ArrowUpRight, Clock } from 'lucide-react'
@@ -11,6 +11,9 @@ import { Card } from '@/components/ui/card'
 import { useSettings } from '@/hooks/use-settings'
 import ParallaxSection from '@/components/ParallaxSection'
 import { SectionCard } from '@/components/ui/SectionCard'
+import FadeIn from '@/components/animations/FadeIn'
+import { StaggerContainer, StaggerItem } from '@/components/animations/Stagger'
+import { EASE_OUT_EXPO } from '@/components/animations/FadeIn'
 
 const InsightsSection = () => {
     const { data: insights, isLoading, isError } = useApi('/insights')
@@ -28,9 +31,9 @@ const InsightsSection = () => {
                 badgeText="Technical Insights"
                 title="Latest Articles & News"
             >
-                <div className="w-full text-center bg-foreground/5 border border-foreground/10 rounded-[2rem] p-12">
+                <FadeIn className="w-full text-center bg-foreground/5 border border-foreground/10 rounded-[2rem] p-12" direction="up" distance={24} blur={false}>
                     <p className="text-foreground/60">The latest research notes and advisory updates will appear here as they are published.</p>
-                </div>
+                </FadeIn>
             </ParallaxSection>
         )
     }
@@ -57,10 +60,10 @@ const InsightsSection = () => {
                     {activeTab === 'Featured' ? (
                         <motion.div
                             key="featured"
-                            initial={{ opacity: 0, y: 20 }}
+                            initial={{ opacity: 0, y: 24 }}
                             animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{ duration: 0.4 }}
+                            exit={{ opacity: 0, y: -24 }}
+                            transition={{ duration: 0.5, ease: EASE_OUT_EXPO }}
                         >
                             <Link href={`/insights/${featured.slug}`} className="block group w-full h-[450px]">
                                 <Card className="relative w-full h-full overflow-hidden border border-foreground/10 rounded-[1.5rem] bg-foreground/5 backdrop-blur-md">
@@ -104,16 +107,14 @@ const InsightsSection = () => {
                             </Link>
                         </motion.div>
                     ) : (
-                        <motion.div
+                        <StaggerContainer
                             key="latest"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{ duration: 0.4 }}
                             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                            staggerDelay={0.08}
                         >
-                            {rest.map((insight: any, index: number) => (
-                                <Link key={insight.id} href={`/insights/${insight.slug}`} className="block group h-full">
+                            {rest.map((insight: any) => (
+                                <StaggerItem key={insight.id}>
+                                    <Link href={`/insights/${insight.slug}`} className="block group h-full">
                                     <Card className="flex flex-col h-full hover:shadow-2xl border border-foreground/10 hover:border-primary/30 bg-background/40 backdrop-blur-md rounded-2xl transition-all overflow-hidden">
                                         {insight.image ? (
                                             <div className="relative w-full h-48 overflow-hidden">
@@ -154,8 +155,9 @@ const InsightsSection = () => {
                                         </div>
                                     </Card>
                                 </Link>
+                                </StaggerItem>
                             ))}
-                        </motion.div>
+                        </StaggerContainer>
                     )}
                 </AnimatePresence>
             </SectionCard>

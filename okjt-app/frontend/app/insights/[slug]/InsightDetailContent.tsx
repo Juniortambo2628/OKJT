@@ -3,7 +3,6 @@
 import React from 'react'
 import { useApi } from '@/hooks/use-api'
 import { Button } from '@/components/ui/button'
-import { motion } from 'framer-motion'
 import { Clock, Tag, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -14,6 +13,8 @@ import { SectionSkeleton } from '@/components/MediaSkeleton'
 import ParallaxSection from '@/components/ParallaxSection'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { useSettings } from '@/hooks/use-settings'
+import FadeIn from '@/components/animations/FadeIn'
+import { StaggerContainer, StaggerItem } from '@/components/animations/Stagger'
 import { PageShell } from '@/components/PageShell'
 import { INSIGHT_DETAIL_NAV_SECTIONS, type NavSection } from '@/lib/nav-sections'
 import { Insight } from '@/types/api'
@@ -123,13 +124,9 @@ export default function InsightDetailContent({ slug }: { slug: string }) {
                     contentMaxWidth="max-w-[1400px]"
                 >
                     <SectionCard>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
+                        <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full" staggerDelay={0.08}>
                             {relatedInsights.map((ri) => (
-                                <motion.div
-                                    key={ri.id}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                >
+                                <StaggerItem key={ri.id}>
                                     <Link href={`/insights/${ri.slug}`} className="group block h-full">
                                         <div className="relative h-48 mb-6 overflow-hidden border border-white/10 group-hover:border-primary/40 transition-colors bg-black/20 rounded-xl">
                                             {ri.image ? (
@@ -143,9 +140,9 @@ export default function InsightDetailContent({ slug }: { slug: string }) {
                                         </h3>
                                         <p className="text-white/60 text-sm line-clamp-2">{ri.excerpt?.replace(/<[^>]*>?/gm, '')}</p>
                                     </Link>
-                                </motion.div>
+                                </StaggerItem>
                             ))}
-                        </div>
+                        </StaggerContainer>
                         <div className="mt-10">
                             <Button variant="outline" className="rounded-none border-primary/30 text-primary hover:bg-primary/10" asChild>
                                 <Link href="/insights">
