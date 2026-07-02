@@ -223,13 +223,22 @@ jobs:
             echo "Current directory: $(pwd)"
             echo "server.js exists: $([ -f server.js ] && echo 'YES' || echo 'NO')"
 
-            # Kill any existing instance
-            pkill -f "node server.js" || true
+            # Stop any existing instance using its saved PID
+            if [ -f /tmp/okj-frontend.pid ]; then
+              OLD_PID=$(cat /tmp/okj-frontend.pid)
+              if ps -p "$OLD_PID" > /dev/null 2>&1; then
+                echo "Stopping existing frontend process $OLD_PID"
+                kill "$OLD_PID" || true
+                sleep 1
+              fi
+              rm -f /tmp/okj-frontend.pid
+            fi
 
             # Start frontend in background
             echo "Starting frontend with setsid."
             rm -f /tmp/okj-frontend.log
             setsid node server.js > /tmp/okj-frontend.log 2>&1 &
+            echo $! > /tmp/okj-frontend.pid
             sleep 3
 
             echo "Recent log output:"
