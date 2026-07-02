@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { Suspense, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -145,4 +145,10 @@ const PasswordResetPage = () => {
     )
 }
 
-export default PasswordResetPage
+export default function PasswordResetPageWrapper() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center" />}>
+            <PasswordResetPage />
+        </Suspense>
+    )
+}
