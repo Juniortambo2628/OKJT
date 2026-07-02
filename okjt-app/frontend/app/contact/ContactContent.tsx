@@ -1,7 +1,7 @@
 "use client"
 
 import React from 'react'
-import PageHero from '@/components/PageHero'
+import Hero from '@/components/Hero'
 import { useSettings } from '@/hooks/use-settings'
 import { usePageHeroMedia } from '@/hooks/use-page-hero-media'
 import { Button } from '@/components/ui/button'
@@ -74,16 +74,14 @@ export default function ContactContent() {
 
     return (
         <PageShell navSections={CONTACT_NAV_SECTIONS}>
-            <PageHero
+            <Hero
                 id="contact-hero"
-                centered
                 tagline="Request a Quote"
                 title="Bring your vision <br />to life."
                 subtitle="Discuss your next digital project with our engineering team. From custom software to innovative hardware, we build the future."
-                videoSrc={videoSrc}
+                videos={videoSrc ? [videoSrc] : undefined}
                 bgImage={bgImage}
-                mediaLoading={mediaLoading}
-                contentLoading={settingsLoading}
+                loading={settingsLoading || mediaLoading}
             />
 
             <div className="relative bg-black w-full overflow-visible">

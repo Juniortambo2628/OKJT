@@ -9,7 +9,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { readingTime } from '@/lib/reading-time'
 import SocialShare from '@/components/SocialShare'
-import PageHero from '@/components/PageHero'
+import Hero from '@/components/Hero'
 import { SectionSkeleton } from '@/components/MediaSkeleton'
 import ParallaxSection from '@/components/ParallaxSection'
 import { SectionCard } from '@/components/ui/SectionCard'
@@ -58,34 +58,31 @@ export default function InsightDetailContent({ slug }: { slug: string }) {
 
     return (
         <PageShell navSections={navSections}>
-            <PageHero
-                id="insight-hero" 
+            <Hero
+                id="insight-hero"
+                tagline={insight.category ?? undefined}
                 title={insight.title}
+                subtitle={insight.excerpt?.replace(/<[^>]*>?/gm, '').substring(0, 180)}
                 breadcrumbs={[
                     { label: 'Insights', href: '/insights' },
                     { label: insight.title }
                 ]}
             >
-                <div className="flex items-center gap-6 mb-8 text-[10px] font-bold uppercase tracking-widest mt-8">
-                    {insight.category && (
-                        <span className="flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full">
-                            <Tag className="h-3 w-3" /> {insight.category}
-                        </span>
-                    )}
+                <div className="flex flex-wrap items-center gap-4 mb-6 text-[10px] font-bold uppercase tracking-widest text-foreground/50">
                     {insight.created_at && (
-                        <span className="flex items-center gap-2 text-muted-foreground/60">
+                        <span className="flex items-center gap-2">
                             <Clock className="h-3 w-3" /> {new Date(insight.created_at).toLocaleDateString()}
                         </span>
                     )}
-                    <span className="flex items-center gap-2 text-muted-foreground/60 italic">
+                    <span className="flex items-center gap-2 italic">
                         {timeToRead} min read
                     </span>
                 </div>
-                
-                <div className="flex items-center gap-6 pt-8 border-t border-border/50">
+
+                <div className="flex items-center gap-4 pt-6 border-t border-white/10">
                     <SocialShare title={insight.title} slug={slug} type="insights" />
                 </div>
-            </PageHero>
+            </Hero>
 
             <div className="bg-black w-full overflow-visible">
             {/* Content */}

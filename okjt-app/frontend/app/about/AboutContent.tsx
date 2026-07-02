@@ -1,7 +1,7 @@
 "use client"
 
 import React from 'react'
-import PageHero from '@/components/PageHero'
+import Hero from '@/components/Hero'
 import { useSettings } from '@/hooks/use-settings'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -47,13 +47,12 @@ export default function AboutContent() {
 
     return (
         <PageShell navSections={ABOUT_NAV_SECTIONS}>
-            <PageHero
+            <Hero
                 id="hero"
-                centered
                 tagline={tagline}
                 title={title.replace(/\n/g, '<br />')}
                 subtitle={story}
-                videoSrc={heroImage?.endsWith('.mp4') ? heroImage : undefined}
+                videos={heroImage?.endsWith('.mp4') ? [heroImage] : undefined}
                 bgImage={heroImage && !heroImage.endsWith('.mp4') ? heroImage : undefined}
             />
 

@@ -5,7 +5,7 @@ import { ArrowRight, Globe, Code2, Quote, CheckCircle2, ChevronRight, LayoutGrid
 import Link from 'next/link'
 import Image from 'next/image'
 import SocialShare from '@/components/SocialShare'
-import PageHero from '@/components/PageHero'
+import Hero from '@/components/Hero'
 import ParallaxSection from '@/components/ParallaxSection'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { PageShell } from '@/components/PageShell'
@@ -167,13 +167,14 @@ export default function DetailLayout({
 
     return (
         <PageShell navSections={navSections}>
-            <PageHero 
+            <Hero
                 id="hero"
                 tagline={tagline}
                 title={title}
+                subtitle={description}
                 breadcrumbs={breadcrumbs}
             >
-                <div className="flex flex-wrap items-center gap-8 pt-8 border-t border-white/10 mt-8">
+                <div className="flex flex-wrap items-center gap-8 pt-8 border-t border-white/10">
                     {significantFigure && (
                         <div className="flex flex-col">
                             <span className="text-[10px] text-white/50 uppercase tracking-widest mb-1">{significantFigureLabel}</span>
@@ -190,7 +191,7 @@ export default function DetailLayout({
                         <SocialShare title={title} slug={slug} type={socialShareType} />
                     </div>
                 </div>
-            </PageHero>
+            </Hero>
 
             {/* Overview / Content sections */}
             <ParallaxSection

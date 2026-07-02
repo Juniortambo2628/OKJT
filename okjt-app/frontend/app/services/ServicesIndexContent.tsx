@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
 import ViewToggle, { ViewMode } from '@/components/ViewToggle'
 import { Service, Pillar } from '@/types/api'
-import PageHero from '@/components/PageHero'
+import Hero from '@/components/Hero'
 import { useSettings } from '@/hooks/use-settings'
 import { usePageHeroMedia } from '@/hooks/use-page-hero-media'
 import SkeletonCard from '@/components/SkeletonCard'
@@ -105,16 +105,14 @@ export default function ServicesIndexContent() {
     return (
         <PageShell navSections={navSections}>
 
-            <PageHero 
+            <Hero
                 id="hero"
-                centered
                 tagline="Our Services"
                 title={servicesTitle}
                 subtitle={servicesSubtitle}
-                videoSrc={videoSrc}
+                videos={videoSrc ? [videoSrc] : undefined}
                 bgImage={bgImage}
-                mediaLoading={mediaLoading}
-                contentLoading={settingsLoading}
+                loading={settingsLoading || mediaLoading}
             />
 
             <section className="bg-background py-10 border-b border-white/5 relative z-10">

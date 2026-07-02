@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { useApi } from '@/hooks/use-api'
-import PageHero from '@/components/PageHero'
+import Hero from '@/components/Hero'
 import { useSettings } from '@/hooks/use-settings'
 import { usePageHeroMedia } from '@/hooks/use-page-hero-media'
 import { motion } from 'framer-motion'
@@ -42,16 +42,14 @@ export default function InsightsContent() {
 
     return (
         <PageShell navSections={INSIGHTS_NAV_SECTIONS}>
-            <PageHero
+            <Hero
                 id="hero"
-                centered
                 tagline="Thought Leadership"
                 title="Insights &amp; Research"
                 subtitle="Analysis, commentary, and research from our team on the trends shaping web development, design, and digital strategy."
-                videoSrc={videoSrc}
+                videos={videoSrc ? [videoSrc] : undefined}
                 bgImage={bgImage}
-                mediaLoading={mediaLoading}
-                contentLoading={settingsLoading}
+                loading={settingsLoading || mediaLoading}
             />
 
             <div className="relative bg-black w-full overflow-visible">

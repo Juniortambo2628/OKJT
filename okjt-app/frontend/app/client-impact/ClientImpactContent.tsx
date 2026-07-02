@@ -4,7 +4,7 @@ import React from 'react'
 import TestimonialsSection from "@/components/sections/TestimonialsSection"
 import ClientsSection from "@/components/sections/ClientsSection"
 import CTABanner from "@/components/sections/CTABanner"
-import PageHero from "@/components/PageHero"
+import Hero from "@/components/Hero"
 import { usePageHeroMedia } from "@/hooks/use-page-hero-media"
 import ProjectsPreview from "@/components/sections/ProjectsPreview"
 import ParallaxSection from "@/components/ParallaxSection"
@@ -26,13 +26,12 @@ export default function ClientImpactContent() {
 
     return (
         <PageShell navSections={CLIENT_IMPACT_NAV_SECTIONS}>
-            <PageHero 
+            <Hero
                 id="impact-hero"
-                centered
                 tagline="Client Impact"
                 title="Results that build trust."
                 subtitle="Delivering measurable results across global markets through strategic advisory and deep sector expertise."
-                videoSrc={videoSrc}
+                videos={videoSrc ? [videoSrc] : undefined}
                 bgImage={bgImage}
             />
 

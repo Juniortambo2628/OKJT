@@ -4,7 +4,7 @@ import React from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useApi } from '@/hooks/use-api'
-import PageHero from '@/components/PageHero'
+import Hero from '@/components/Hero'
 import { motion } from 'framer-motion'
 import { ExternalLink, ArrowRight, Star } from 'lucide-react'
 import Image from 'next/image'
@@ -46,9 +46,8 @@ export default function ProjectsContent() {
 
     return (
         <PageShell navSections={navSections}>
-            <PageHero
+            <Hero
                 id="hero"
-                centered
                 tagline={isFlagship ? 'Flagship Innovations' : 'Client Portfolio'}
                 title={isFlagship
                     ? "Engineering the <br />Future of Digital."

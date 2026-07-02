@@ -8,7 +8,7 @@ import Footer from '@/components/Footer'
 import { motion } from 'framer-motion'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
-import PageHero from '@/components/PageHero'
+import Hero from '@/components/Hero'
 import { SectionSkeleton } from '@/components/MediaSkeleton'
 
 import { Pillar } from '@/types/api'
@@ -39,7 +39,7 @@ export default function PillarDetailContent({ slug }: { slug: string }) {
         <main className="flex min-h-screen flex-col bg-background">
             <Navbar />
             
-            <PageHero 
+            <Hero
                 tagline="OKJTech Innovation"
                 title={pillar.title}
                 subtitle={pillar.overview || ''}
@@ -47,7 +47,7 @@ export default function PillarDetailContent({ slug }: { slug: string }) {
                     { label: 'Our Approach', href: '/our-approach' },
                     { label: pillar.title }
                 ]}
-                videoSrc={heroMedia?.endsWith('.mp4') ? heroMedia : undefined}
+                videos={heroMedia?.endsWith('.mp4') ? [heroMedia] : undefined}
                 bgImage={heroMedia && !heroMedia.endsWith('.mp4') ? heroMedia : undefined}
             />
 

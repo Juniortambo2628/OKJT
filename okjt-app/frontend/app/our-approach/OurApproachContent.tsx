@@ -6,7 +6,7 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
 import { Pillar } from '@/types/api'
-import PageHero from '@/components/PageHero'
+import Hero from '@/components/Hero'
 import { usePageHeroMedia } from '@/hooks/use-page-hero-media'
 import { SkeletonBlock, SectionSkeleton } from '@/components/MediaSkeleton'
 
@@ -226,14 +226,13 @@ export default function OurApproachContent() {
                 style={{ scaleX: scrollYProgress }}
             />
 
-            <PageHero 
-                centered
+            <Hero
                 tagline="Our Approach"
                 title="Engineering <br />Excellence."
                 subtitle="High-performance software and digital engineering with measurable outcomes. Explore our engineering foundations."
-                videoSrc={videoSrc}
+                videos={videoSrc ? [videoSrc] : undefined}
                 bgImage={bgImage}
-                mediaLoading={mediaLoading}
+                loading={mediaLoading}
             />
 
             {pillars && pillars.length > 0 ? (

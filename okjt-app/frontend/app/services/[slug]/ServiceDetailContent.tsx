@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { motion } from 'framer-motion'
 import { ArrowRight, CheckCircle2 } from 'lucide-react'
 import Link from 'next/link'
-import PageHero from '@/components/PageHero'
+import Hero from '@/components/Hero'
 import { useSettings } from '@/hooks/use-settings'
 import { SectionSkeleton } from '@/components/MediaSkeleton'
 import ParallaxSection from '@/components/ParallaxSection'
@@ -62,17 +62,18 @@ export default function ServiceDetailContent({ slug }: { slug: string }) {
 
     return (
         <PageShell navSections={navSections}>
-            <PageHero
+            <Hero
                 id="hero"
                 tagline={service.category}
                 title={service.title}
                 subtitle={service.description}
-                videoSrc={isVideo ? mediaUrl ?? undefined : undefined}
+                videos={isVideo ? [mediaUrl].filter(Boolean) as string[] : undefined}
                 bgImage={!isVideo ? mediaUrl ?? undefined : undefined}
                 breadcrumbs={[
                     { label: 'Services', href: '/services' },
                     { label: service.title }
                 ]}
+                cta={{ label: 'Book a Consultation', href: '/contact' }}
             />
 
             <div className="bg-black w-full overflow-visible">
