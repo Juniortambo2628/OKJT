@@ -96,7 +96,11 @@ jobs:
           ssh-keyscan -p ${{ secrets.SSH_PORT || env.REMOTE_PORT }} -H ${{ secrets.SSH_HOST || env.REMOTE_HOST }} >> ~/.ssh/known_hosts
 
       - name: Install rsync
-        run: sudo apt-get update && sudo apt-get install -y rsync
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends rsync
+          which rsync
+          rsync --version | head -n 1
 
       - name: Create remote directories
         run: |
