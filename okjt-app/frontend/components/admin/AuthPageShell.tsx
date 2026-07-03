@@ -13,7 +13,7 @@ interface AuthPageShellProps {
 
 export function AuthPageShell({ title, description, children }: AuthPageShellProps) {
     const { getSetting } = useSettings()
-    const logo = getSetting('logo_dark', '/assets/logos/logo-dark-bg.png')
+    const logo = getSetting('logo_dark', '/logos/OKJT-Logos/OKJTechLogo-White_Transparent.png')
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-background px-6">
