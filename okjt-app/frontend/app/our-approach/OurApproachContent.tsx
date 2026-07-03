@@ -2,13 +2,11 @@
 
 import React, { useRef } from 'react'
 import { useApi } from '@/hooks/use-api'
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
 import { Pillar } from '@/types/api'
-import Hero from '@/components/Hero'
 import { usePageHeroMedia } from '@/hooks/use-page-hero-media'
 import { SkeletonBlock, SectionSkeleton } from '@/components/MediaSkeleton'
+import BaseLayout from '@/components/BaseLayout'
 
 const PillarSection = ({ pillar, index }: { pillar: Pillar, index: number }) => {
     const sectionRef = useRef(null)
@@ -208,40 +206,34 @@ export default function OurApproachContent() {
     const { data: pillars, isLoading } = useApi<Pillar[]>('/pillars')
     const { scrollYProgress } = useScroll()
     const { videoSrc, bgImage, mediaLoading } = usePageHeroMedia({ settingsKey: 'hero_products_media' })
+    const heroMedia = videoSrc ?? bgImage
 
     if (isLoading) {
         return (
-            <main className="min-h-screen bg-background">
+            <BaseLayout loading>
                 <SectionSkeleton />
-            </main>
+            </BaseLayout>
         )
     }
 
     return (
-        <main className="flex min-h-screen flex-col bg-background w-full overflow-x-clip relative">
-            <Navbar />
-
+        <BaseLayout
+            heroMedia={heroMedia}
+            tagline="Our Approach"
+            title="Engineering <br />Excellence."
+            subtitle="High-performance software and digital engineering with measurable outcomes. Explore our engineering foundations."
+            loading={mediaLoading}
+        >
             <motion.div 
                 className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary/80 via-primary to-primary/80 z-[100] origin-left shadow-[0_0_8px_rgba(224,180,68,0.5)]"
                 style={{ scaleX: scrollYProgress }}
             />
 
-            <Hero
-                tagline="Our Approach"
-                title="Engineering <br />Excellence."
-                subtitle="High-performance software and digital engineering with measurable outcomes. Explore our engineering foundations."
-                videos={videoSrc ? [videoSrc] : undefined}
-                bgImage={bgImage}
-                loading={mediaLoading}
-            />
-
             {pillars && pillars.length > 0 ? (
                 <>
-                    <div className="bg-black w-full overflow-visible">
-                        {pillars.map((pillar, index) => (
-                            <PillarSection key={pillar.id} pillar={pillar} index={index} />
-                        ))}
-                    </div>
+                    {pillars.map((pillar, index) => (
+                        <PillarSection key={pillar.id} pillar={pillar} index={index} />
+                    ))}
                     <PillarNav pillars={pillars} />
                 </>
             ) : (
@@ -249,10 +241,6 @@ export default function OurApproachContent() {
                     <p className="text-muted-foreground">No foundations found.</p>
                 </div>
             )}
-
-            <section className="relative z-20">
-                <Footer />
-            </section>
-        </main>
+        </BaseLayout>
     )
 }

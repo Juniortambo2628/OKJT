@@ -14,11 +14,16 @@ interface ParallaxSectionProps {
     title?: string | React.ReactNode
     subtitle?: string | React.ReactNode
     cta?: { label: string; href: string } | null
+    toolbarTitle?: string
+    tabs?: string[]
+    activeTab?: string
+    onTabChange?: (tab: string) => void
     id?: string
     children?: React.ReactNode
     index?: number
     contentMaxWidth?: string
     loading?: boolean
+    className?: string
 }
 
 /**
@@ -36,11 +41,16 @@ export default function ParallaxSection({
     title,
     subtitle,
     cta,
+    toolbarTitle,
+    tabs,
+    activeTab,
+    onTabChange,
     id,
     children,
     index,
     contentMaxWidth = PARALLAX_DEFAULTS.contentMaxWidth,
-    loading = false
+    loading = false,
+    className
 }: ParallaxSectionProps) {
     const sectionRef = useRef<HTMLDivElement>(null)
 
@@ -112,7 +122,17 @@ export default function ParallaxSection({
                             <SkeletonBlock className="h-10 w-40 rounded-full" />
                         </div>
                     ) : (
-                        <SectionCard badgeText={badgeText} title={title} subtitle={subtitle} cta={cta}>
+                        <SectionCard
+                            badgeText={badgeText}
+                            title={title}
+                            subtitle={subtitle}
+                            cta={cta}
+                            toolbarTitle={toolbarTitle}
+                            tabs={tabs}
+                            activeTab={activeTab}
+                            onTabChange={onTabChange}
+                            className={className}
+                        >
                             {children}
                         </SectionCard>
                     )}

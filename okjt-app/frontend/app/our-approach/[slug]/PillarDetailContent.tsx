@@ -3,12 +3,9 @@
 import React from 'react'
 import { useApi } from '@/hooks/use-api'
 import { useSettings } from '@/hooks/use-settings'
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
-import { motion } from 'framer-motion'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
-import Hero from '@/components/Hero'
+import BaseLayout from '@/components/BaseLayout'
 import FadeIn from '@/components/animations/FadeIn'
 import { StaggerContainer, StaggerItem } from '@/components/animations/Stagger'
 import { SectionSkeleton } from '@/components/MediaSkeleton'
@@ -20,39 +17,32 @@ export default function PillarDetailContent({ slug }: { slug: string }) {
     const { data: pillar, isLoading } = useApi<Pillar>(`/pillars/${slug}`)
 
     const heroMedia = React.useMemo(() => {
-        if (!pillar) return ''
+        if (!pillar) return undefined
         const key = `hero_pillar_${pillar.slug?.replace(/-/g, '_')}`
-        return getSetting(key) || pillar.image
+        return getSetting(key) || pillar.image || undefined
     }, [pillar, getSetting])
 
     if (isLoading) {
         return (
-            <main className="min-h-screen bg-background">
-                <Navbar />
+            <BaseLayout loading>
                 <SectionSkeleton />
-                <Footer />
-            </main>
+            </BaseLayout>
         )
     }
 
     if (!pillar) return <div className="min-h-screen bg-background flex items-center justify-center">Pillar not found</div>
 
     return (
-        <main className="flex min-h-screen flex-col bg-background">
-            <Navbar />
-            
-            <Hero
-                tagline="OKJTech Innovation"
-                title={pillar.title}
-                subtitle={pillar.overview || ''}
-                breadcrumbs={[
-                    { label: 'Our Approach', href: '/our-approach' },
-                    { label: pillar.title }
-                ]}
-                videos={heroMedia?.endsWith('.mp4') ? [heroMedia] : undefined}
-                bgImage={heroMedia && !heroMedia.endsWith('.mp4') ? heroMedia : undefined}
-            />
-
+        <BaseLayout
+            heroMedia={heroMedia}
+            tagline="OKJTech Innovation"
+            title={pillar.title}
+            subtitle={pillar.overview || ''}
+            breadcrumbs={[
+                { label: 'Our Approach', href: '/our-approach' },
+                { label: pillar.title }
+            ]}
+        >
             {/* Pillar Content */}
             <section className="py-24 bg-background relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
@@ -123,8 +113,6 @@ export default function PillarDetailContent({ slug }: { slug: string }) {
                     </div>
                 </div>
             </section>
-
-            <Footer />
-        </main>
+        </BaseLayout>
     )
 }

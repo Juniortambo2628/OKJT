@@ -5,18 +5,15 @@ import { useApi } from '@/hooks/use-api'
 import { Zap, Landmark, Globe, Sparkles, Palette, Users, Rocket, TrendingUp, Code2, Cpu, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
-import { motion } from 'framer-motion'
 import ViewToggle, { ViewMode } from '@/components/ViewToggle'
 import { Service, Pillar } from '@/types/api'
-import Hero from '@/components/Hero'
 import FadeIn from '@/components/animations/FadeIn'
 import { StaggerContainer, StaggerItem } from '@/components/animations/Stagger'
 import { useSettings } from '@/hooks/use-settings'
 import { usePageHeroMedia } from '@/hooks/use-page-hero-media'
 import SkeletonCard from '@/components/SkeletonCard'
 import ParallaxSection from '@/components/ParallaxSection'
-import { SectionCard } from '@/components/ui/SectionCard'
-import { PageShell } from '@/components/PageShell'
+import BaseLayout from '@/components/BaseLayout'
 import { type NavSection } from '@/lib/nav-sections'
 
 const getIconComponent = (iconName: string | null) => {
@@ -30,6 +27,7 @@ const getIconComponent = (iconName: string | null) => {
 export default function ServicesIndexContent() {
     const { getSetting, isLoading: settingsLoading } = useSettings()
     const { videoSrc, bgImage, mediaLoading } = usePageHeroMedia({ settingsKey: 'hero_services_media' })
+    const heroMedia = videoSrc ?? bgImage
     const { data: services, isLoading } = useApi<Service[]>('/services')
     const [viewMode, setViewMode] = React.useState<ViewMode>('grid')
 
@@ -105,18 +103,14 @@ export default function ServicesIndexContent() {
     }, [groupedServices])
 
     return (
-        <PageShell navSections={navSections}>
-
-            <Hero
-                id="hero"
-                tagline="Our Services"
-                title={servicesTitle}
-                subtitle={servicesSubtitle}
-                videos={videoSrc ? [videoSrc] : undefined}
-                bgImage={bgImage}
-                loading={settingsLoading || mediaLoading}
-            />
-
+        <BaseLayout
+            navSections={navSections}
+            heroMedia={heroMedia}
+            tagline="Our Services"
+            title={servicesTitle}
+            subtitle={servicesSubtitle}
+            loading={settingsLoading || mediaLoading}
+        >
             <section className="bg-background py-10 border-b border-white/5 relative z-10">
                 <div className="max-w-[1400px] mx-auto px-6">
                     <div className="flex justify-center mt-4">
@@ -126,26 +120,25 @@ export default function ServicesIndexContent() {
             </section>
 
             <div className="relative bg-black w-full overflow-visible">
-            {/* Category Sections */}
-            {isLoading && (
-                <section className="py-24 bg-background">
-                    <div className="max-w-[1400px] mx-auto px-6">
-                        <SkeletonCard variant={viewMode} count={6} />
-                    </div>
-                </section>
-            )}
+                {/* Category Sections */}
+                {isLoading && (
+                    <section className="py-24 bg-background">
+                        <div className="max-w-[1400px] mx-auto px-6">
+                            <SkeletonCard variant={viewMode} count={6} />
+                        </div>
+                    </section>
+                )}
 
-            {groupedServices.map((group, groupIndex) => {
-                const Icon = group.icon
+                {groupedServices.map((group, groupIndex) => {
+                    const Icon = group.icon
 
-                return (
-                    <ParallaxSection
-                        key={`group-${groupIndex}`}
-                        id={`group-${groupIndex}`}
-                        heightClass="min-h-[220vh]"
-                        contentMaxWidth="max-w-[1400px]"
-                    >
-                        <SectionCard>
+                    return (
+                        <ParallaxSection
+                            key={`group-${groupIndex}`}
+                            id={`group-${groupIndex}`}
+                            heightClass="min-h-[220vh]"
+                            contentMaxWidth="max-w-[1400px]"
+                        >
                             <div className="w-full">
                                 <FadeIn
                                     direction="up"
@@ -215,11 +208,10 @@ export default function ServicesIndexContent() {
                                     </FadeIn>
                                 )}
                             </div>
-                        </SectionCard>
-                    </ParallaxSection>
-                )
-            })}
+                        </ParallaxSection>
+                    )
+                })}
             </div>
-        </PageShell>
+        </BaseLayout>
     )
 }

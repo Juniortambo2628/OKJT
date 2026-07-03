@@ -12,6 +12,11 @@ export interface NavSection {
     label: string
 }
 
+interface BreadcrumbItem {
+    label: string
+    href?: string
+}
+
 export interface BaseLayoutProps {
     children: React.ReactNode
     className?: string
@@ -25,6 +30,10 @@ export interface BaseLayoutProps {
     subtitle?: string
     /** Hero CTA. Set to null to hide. */
     cta?: { label: string; href: string } | null
+    /** Inline breadcrumbs rendered inside the hero */
+    breadcrumbs?: BreadcrumbItem[]
+    /** Extra content rendered inside the hero after the CTA */
+    heroChildren?: React.ReactNode
     /** Section list for the persistent jump toolbar */
     navSections?: NavSection[]
     /** Whether the page is still loading hero content */
@@ -39,6 +48,8 @@ export default function BaseLayout({
     title,
     subtitle,
     cta,
+    breadcrumbs,
+    heroChildren,
     navSections,
     loading
 }: BaseLayoutProps) {
@@ -55,8 +66,11 @@ export default function BaseLayout({
                 videos={isVideo && heroMedia ? [heroMedia] : undefined}
                 bgImage={!isVideo ? heroMedia : undefined}
                 cta={cta}
+                breadcrumbs={breadcrumbs}
                 loading={loading}
-            />
+            >
+                {heroChildren}
+            </Hero>
 
             <div className="relative bg-black w-full overflow-visible">
                 {children}
