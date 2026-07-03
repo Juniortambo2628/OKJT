@@ -17,6 +17,7 @@ import { TeamMember, Value } from '@/types/api'
 import ParallaxSection from '@/components/ParallaxSection'
 import BaseLayout from '@/components/BaseLayout'
 import { usePageHeroMedia } from '@/hooks/use-page-hero-media'
+import HorizontalCarousel from '@/components/ui/HorizontalCarousel'
 import { iconMap } from '@/components/admin/constants'
 import { ABOUT_NAV_SECTIONS } from '@/lib/nav-sections'
 
@@ -109,80 +110,78 @@ export default function AboutContent() {
                 subtitle={teamSubtitle}
                 contentMaxWidth="max-w-[1400px]"
             >
-                <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full" staggerDelay={0.08}>
-                        {team?.map((member) => (
-                            <StaggerItem
-                                key={member.id}
-                                className="bg-black/20 border border-white/5 p-8 text-center flex flex-col group relative rounded-2xl"
-                            >
-                                <div className="w-28 h-28 rounded-full bg-gradient-to-br from-primary/10 via-background to-background mx-auto mb-6 flex items-center justify-center overflow-hidden border border-primary/20">
-                                    {member.image ? (
-                                        <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
-                                    ) : (
-                                        <span className="text-2xl font-bold text-primary">
-                                            {member.name.split(' ').map((n) => n[0]).join('')}
-                                        </span>
-                                    )}
-                                </div>
+                <HorizontalCarousel className="h-full items-center">
+                    {team?.map((member) => (
+                        <div
+                            key={member.id}
+                            className="relative h-[320px] w-[280px] sm:w-[300px] flex-shrink-0 rounded-3xl overflow-hidden p-6 flex flex-col items-center justify-center text-center bg-white/5 backdrop-blur-xl border border-white/10 group"
+                        >
+                            <div className="w-28 h-28 rounded-full bg-gradient-to-br from-primary/10 via-background to-background mx-auto mb-6 flex items-center justify-center overflow-hidden border border-primary/20">
+                                {member.image ? (
+                                    <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+                                ) : (
+                                    <span className="text-2xl font-bold text-primary">
+                                        {member.name.split(' ').map((n) => n[0]).join('')}
+                                    </span>
+                                )}
+                            </div>
 
-                                <h3 className="text-lg font-bold text-white mb-1">{member.name}</h3>
-                                <span className="text-primary font-bold text-xs uppercase tracking-wider block mb-3">{member.role}</span>
-                                
-                                <p className="text-white/60 text-xs sm:text-sm leading-relaxed mb-6 line-clamp-3 flex-1 px-4">
-                                    {member.bio}
-                                </p>
+                            <h3 className="text-lg font-bold text-white mb-1">{member.name}</h3>
+                            <span className="text-primary font-bold text-xs uppercase tracking-wider block mb-3">{member.role}</span>
 
-                                <div className="flex flex-col gap-4 mt-auto">
-                                    <Dialog>
-                                        <DialogTrigger asChild>
-                                            <button className="text-primary font-bold text-xs uppercase tracking-widest hover:underline flex items-center justify-center gap-2">
-                                                <Info size={14} /> Read Full Bio
-                                            </button>
-                                        </DialogTrigger>
-                                        <DialogContent className="sm:max-w-[600px] bg-background p-0 overflow-hidden border border-white/5 shadow-2xl">
-                                            <div className="bg-primary/5 p-8 border-b border-white/5">
-                                                <div className="flex items-center gap-6">
-                                                    <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-primary/20 shrink-0">
-                                                        {member.image ? (
-                                                            <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
-                                                        ) : (
-                                                            <div className="w-full h-full bg-primary/10 flex items-center justify-center text-2xl font-bold text-primary">
-                                                                {member.name.split(' ').map((n) => n[0]).join('')}
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                    <div>
-                                                        <h2 className="text-2xl font-bold text-foreground">{member.name}</h2>
-                                                        <p className="text-primary font-bold uppercase tracking-widest text-sm">{member.role}</p>
-                                                        {member.linkedin && (
-                                                            <a href={member.linkedin} target="_blank" className="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-700 text-xs font-bold mt-2">
-                                                                <Linkedin size={14} /> View LinkedIn Profile
-                                                            </a>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="p-8 space-y-6">
-                                                <div>
-                                                    <h4 className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] mb-3">About</h4>
-                                                    <p className="text-muted-foreground leading-relaxed text-sm whitespace-pre-line">
-                                                        {member.bio}
-                                                    </p>
-                                                </div>
-                                                
-                                                {member.qualifications && (
-                                                    <div>
-                                                        <h4 className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] mb-3">Professional Credentials</h4>
-                                                        <p className="text-muted-foreground text-sm italic">{member.qualifications}</p>
+                            <p className="text-white/60 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-3 px-2">
+                                {member.bio}
+                            </p>
+
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                    <button className="text-primary font-bold text-xs uppercase tracking-widest hover:underline flex items-center gap-2">
+                                        <Info size={14} /> Read Full Bio
+                                    </button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[600px] bg-background p-0 overflow-hidden border border-white/5 shadow-2xl">
+                                    <div className="bg-primary/5 p-8 border-b border-white/5">
+                                        <div className="flex items-center gap-6">
+                                            <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-primary/20 shrink-0">
+                                                {member.image ? (
+                                                    <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <div className="w-full h-full bg-primary/10 flex items-center justify-center text-2xl font-bold text-primary">
+                                                        {member.name.split(' ').map((n) => n[0]).join('')}
                                                     </div>
                                                 )}
                                             </div>
-                                        </DialogContent>
-                                    </Dialog>
-                                </div>
-                            </StaggerItem>
-                        ))}
-                    </StaggerContainer>
+                                            <div>
+                                                <h2 className="text-2xl font-bold text-foreground">{member.name}</h2>
+                                                <p className="text-primary font-bold uppercase tracking-widest text-sm">{member.role}</p>
+                                                {member.linkedin && (
+                                                    <a href={member.linkedin} target="_blank" className="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-700 text-xs font-bold mt-2">
+                                                        <Linkedin size={14} /> View LinkedIn Profile
+                                                    </a>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="p-8 space-y-6">
+                                        <div>
+                                            <h4 className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] mb-3">About</h4>
+                                            <p className="text-muted-foreground leading-relaxed text-sm whitespace-pre-line">
+                                                {member.bio}
+                                            </p>
+                                        </div>
+
+                                        {member.qualifications && (
+                                            <div>
+                                                <h4 className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] mb-3">Professional Credentials</h4>
+                                                <p className="text-muted-foreground text-sm italic">{member.qualifications}</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </DialogContent>
+                            </Dialog>
+                        </div>
+                    ))}
+                </HorizontalCarousel>
             </ParallaxSection>
 
             {/* CTA */}
