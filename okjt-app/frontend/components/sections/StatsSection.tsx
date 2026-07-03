@@ -7,7 +7,6 @@ import { getMediaUrl } from '@/lib/utils'
 import { useSettings } from '@/hooks/use-settings'
 import { Stat } from '@/types/api'
 import ParallaxSection from '@/components/ParallaxSection'
-import { SectionCard } from '@/components/ui/SectionCard'
 import CountUp from '@/components/animations/CountUp'
 import FadeIn from '@/components/animations/FadeIn'
 
@@ -57,36 +56,34 @@ const StatsSection = () => {
             title={sectionTitle}
             contentMaxWidth="max-w-[1400px]"
         >
-            <SectionCard className="p-0 sm:p-0 md:p-0 overflow-hidden">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-0 w-full h-full divide-x divide-y md:divide-y-0 divide-foreground/10">
-                    {stats.map((stat, index) => (
-                        <FadeIn
-                            key={stat.id}
-                            direction="up"
-                            distance={30}
-                            delay={index * 0.1}
-                            blur={false}
-                            className="text-center p-6 md:p-10 relative group"
-                        >
-                            {/* Hover glow */}
-                            <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-all duration-500" />
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-0 w-full h-full divide-x divide-y md:divide-y-0 divide-foreground/10">
+                {stats.map((stat, index) => (
+                    <FadeIn
+                        key={stat.id}
+                        direction="up"
+                        distance={30}
+                        delay={index * 0.1}
+                        blur={false}
+                        className="text-center p-6 md:p-10 relative group"
+                    >
+                        {/* Hover glow */}
+                        <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-all duration-500" />
 
-                            <div className="relative z-10">
-                                <div className="text-primary font-bold text-4xl sm:text-5xl md:text-6xl mb-4 tracking-tight">
-                                    <CountUp target={stat.value} />
-                                </div>
-                                <div className="w-8 h-[2px] bg-primary/40 mx-auto mb-4" />
-                                <div className="text-foreground text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] mb-3">
-                                    {stat.label}
-                                </div>
-                                <div className="text-foreground/60 text-xs max-w-[200px] mx-auto leading-relaxed">
-                                    {stat.description || 'Delivering results through design-led engineering.'}
-                                </div>
+                        <div className="relative z-10">
+                            <div className="text-primary font-bold text-4xl sm:text-5xl md:text-6xl mb-4 tracking-tight">
+                                <CountUp target={stat.value} />
                             </div>
-                        </FadeIn>
-                    ))}
-                </div>
-            </SectionCard>
+                            <div className="w-8 h-[2px] bg-primary/40 mx-auto mb-4" />
+                            <div className="text-foreground text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] mb-3">
+                                {stat.label}
+                            </div>
+                            <div className="text-foreground/60 text-xs max-w-[200px] mx-auto leading-relaxed">
+                                {stat.description || 'Delivering results through design-led engineering.'}
+                            </div>
+                        </div>
+                    </FadeIn>
+                ))}
+            </div>
         </ParallaxSection>
     )
 }

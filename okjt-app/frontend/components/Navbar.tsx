@@ -3,8 +3,9 @@
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Menu, X, ChevronDown, ArrowRight, Briefcase, BookOpen } from 'lucide-react'
+import { Menu, X, ChevronDown, Briefcase, BookOpen } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import PrimaryButton from '@/components/PrimaryButton'
 import { cn } from '@/lib/utils'
 import SearchDialog from './SearchDialog'
 import { ThemeToggle } from './ThemeToggle'
@@ -39,15 +40,15 @@ const Navbar = () => {
     }, [theme, mounted, logoWhiteBg, logoBlackBg])
     
     const navLinksJson = getSetting('main_nav_links', '[]')
-    
+
     const navLinks = React.useMemo<{name: string, href: string}[]>(() => {
         try {
             if (navLinksJson) {
                 if (typeof navLinksJson === 'string') {
                     const parsed = JSON.parse(navLinksJson)
-                    if (Array.isArray(parsed) && parsed.length > 0) return parsed.filter((l: any) => !['Projects', 'Portfolio', 'Insights', 'Solutions'].includes(l.name))
+                    if (Array.isArray(parsed) && parsed.length > 0) return parsed
                 } else if (Array.isArray(navLinksJson)) {
-                    return (navLinksJson as any[]).filter((l: any) => !['Projects', 'Portfolio', 'Insights', 'Solutions'].includes(l.name))
+                    return navLinksJson as any[]
                 }
             }
         } catch (e) {
@@ -58,6 +59,22 @@ const Navbar = () => {
             { name: 'Contact', href: '/contact' },
         ]
     }, [navLinksJson])
+
+    // Core public routes exposed in the navbar (mega menus handle Services/Work dropdowns)
+    const coreNavLinks = React.useMemo(() => {
+        const defaults = [
+            { name: 'About', href: '/about' },
+            { name: 'Contact', href: '/contact' },
+        ]
+        // Merge user-defined links while avoiding duplicates on core routes
+        const merged = [...defaults]
+        navLinks.forEach((link) => {
+            if (!merged.some((m) => m.href === link.href)) {
+                merged.push(link)
+            }
+        })
+        return merged
+    }, [navLinks])
 
     // Group services by Pillar for mega menu
     const dynamicServiceCategories = React.useMemo(() => {
@@ -171,7 +188,7 @@ const Navbar = () => {
                         Our Work <ChevronDown className="h-3 w-3" />
                     </button>
 
-                    {navLinks.map((link) => (
+                    {coreNavLinks.map((link) => (
                         <Link
                             key={link.name}
                             href={link.href}
@@ -185,14 +202,9 @@ const Navbar = () => {
                     <SearchDialog />
                     <ThemeToggle />
                     <div className="h-6 w-[1px] bg-border/50" />
-                    <Button
-                        variant="default"
-                        size="sm"
-                        className="bg-primary hover:bg-primary/90 text-[#14110b] rounded-none px-4 font-bold uppercase tracking-wider text-xs"
-                        asChild
-                    >
-                        <Link href="/contact">Start a Project</Link>
-                    </Button>
+                    <PrimaryButton href="/contact" size="sm" showArrow>
+                        Start a Project
+                    </PrimaryButton>
                 </div>
 
                 {/* Mobile Toggle */}
@@ -350,7 +362,7 @@ const Navbar = () => {
                         </div>
                     </div>
 
-                    {navLinks.map((link) => (
+                    {coreNavLinks.map((link) => (
                         <Link
                             key={link.name}
                             href={link.href}
@@ -360,9 +372,11 @@ const Navbar = () => {
                             {link.name}
                         </Link>
                     ))}
-                    <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)} className="w-full mt-4">
-                        <Button className="w-full rounded-none bg-primary text-[#14110b] font-bold uppercase tracking-widest text-xs">Start a Project</Button>
-                    </Link>
+                    <div className="w-full mt-4" onClick={() => setIsMobileMenuOpen(false)}>
+                        <PrimaryButton href="/contact" size="md" className="w-full" showArrow>
+                            Start a Project
+                        </PrimaryButton>
+                    </div>
                 </div>
             )}
         </nav>

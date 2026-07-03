@@ -9,7 +9,6 @@ import Link from 'next/link'
 import { useSettings } from '@/hooks/use-settings'
 import { SectionSkeleton } from '@/components/MediaSkeleton'
 import ParallaxSection from '@/components/ParallaxSection'
-import { SectionCard } from '@/components/ui/SectionCard'
 import FadeIn from '@/components/animations/FadeIn'
 import { EASE_OUT_EXPO } from '@/components/animations/FadeIn'
 
@@ -50,18 +49,16 @@ const ServicesSection = () => {
             contentMaxWidth="max-w-[1400px]"
             badgeText={sectionTagline || "SERVICES"}
             title={sectionTitle}
+            toolbarTitle="Categories"
+            tabs={categories}
+            activeTab={activeCategory}
+            onTabChange={(cat) => {
+                setActiveCategory(cat)
+                setExpandedService(null)
+            }}
         >
-            <SectionCard
-                toolbarTitle="Categories"
-                tabs={categories}
-                activeTab={activeCategory}
-                onTabChange={(cat) => {
-                    setActiveCategory(cat)
-                    setExpandedService(null)
-                }}
-            >
-                {/* Services Accordion List */}
-                <div className="w-full">
+            {/* Services Accordion List */}
+            <div className="w-full">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={activeCategory}
@@ -149,7 +146,6 @@ const ServicesSection = () => {
                         </FadeIn>
                     )}
                 </div>
-            </SectionCard>
         </ParallaxSection>
     )
 }

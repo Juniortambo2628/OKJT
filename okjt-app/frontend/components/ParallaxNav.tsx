@@ -83,13 +83,13 @@ export default function ParallaxNav({ sections }: ParallaxNavProps) {
     if (sections.length <= 1) return null
 
     return (
-        <motion.div 
+        <motion.div
             ref={navRef}
-            initial={{ y: 100, opacity: 0 }}
-            animate={{ y: 0, opacity: isScrolling ? 1 : 0.3 }}
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: isScrolling ? 1 : 0.4 }}
             whileHover={{ opacity: 1 }}
             transition={{ opacity: { duration: 0.5 } }}
-            className="fixed bottom-10 right-6 md:right-10 z-[60] bg-background/20 backdrop-blur-md border border-foreground/15 rounded-full px-4 py-2.5 flex items-center gap-3 shadow-lg overflow-hidden transition-colors"
+            className="fixed top-20 right-4 md:right-8 z-[60] bg-background/30 backdrop-blur-xl border border-foreground/15 rounded-full px-4 py-2.5 flex items-center gap-3 shadow-lg overflow-hidden transition-colors"
         >
             {sections.map((section, index) => (
                 <button

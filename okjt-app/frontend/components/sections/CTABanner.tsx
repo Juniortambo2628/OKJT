@@ -2,11 +2,10 @@
 
 import React from 'react'
 import { Button } from '@/components/ui/button'
-import { ArrowRight, Sparkles, Mail } from 'lucide-react'
-import Link from 'next/link'
+import { Sparkles, Mail } from 'lucide-react'
 import { useSettings } from '@/hooks/use-settings'
 import ParallaxSection from '@/components/ParallaxSection'
-import { SectionCard } from '@/components/ui/SectionCard'
+import PrimaryButton from '@/components/PrimaryButton'
 import FadeIn from '@/components/animations/FadeIn'
 import { StaggerContainer, StaggerItem } from '@/components/animations/Stagger'
 
@@ -29,7 +28,7 @@ const CTABanner = () => {
             title={title}
             subtitle={subtitle}
         >
-            <SectionCard className="text-center py-16 md:py-24">
+            <div className="text-center py-8 md:py-12">
                 <FadeIn direction="down" distance={20} blur={false}>
                     <div className="inline-flex items-center gap-2 bg-primary/10 backdrop-blur-md border border-primary/20 rounded-full px-6 py-2 mb-12">
                         <Sparkles className="w-4 h-4 text-primary animate-pulse" />
@@ -39,45 +38,23 @@ const CTABanner = () => {
 
                 <StaggerContainer className="flex flex-col sm:flex-row items-center justify-center gap-5" staggerDelay={0.08}>
                     <StaggerItem>
-                        <Button
-                            size="lg"
-                            className="h-14 px-10 text-base font-bold bg-primary text-[#14110b] hover:bg-primary/90 transition-all hover:scale-[1.03] active:scale-[0.98] group shadow-2xl shadow-primary/20"
-                            asChild
-                        >
-                            <Link href="/contact">
-                                Start Your Project
-                                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-                            </Link>
-                        </Button>
+                        <PrimaryButton href="/contact" size="lg">
+                            Start Your Project
+                        </PrimaryButton>
                     </StaggerItem>
                     <StaggerItem>
-                        <Button
-                            variant="outline"
-                            size="lg"
-                            className="h-14 px-10 text-base font-bold border-primary/30 text-primary hover:bg-primary/10 backdrop-blur-sm transition-all group"
-                            asChild
-                        >
-                            <Link href="/projects">
-                                View Our Work
-                                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-                            </Link>
-                        </Button>
+                        <PrimaryButton href="/projects" variant="outline" size="lg">
+                            View Our Work
+                        </PrimaryButton>
                     </StaggerItem>
                     <StaggerItem>
-                        <Button
-                            variant="ghost"
-                            size="lg"
-                            className="h-14 px-10 text-base font-bold text-foreground/60 hover:text-primary hover:bg-primary/5 transition-all"
-                            asChild
-                        >
-                            <Link href="/contact">
-                                <Mail className="mr-2 h-5 w-5" />
-                                Get a Free Quote
-                            </Link>
-                        </Button>
+                        <PrimaryButton href="/contact" variant="ghost" size="lg" showArrow={false}>
+                            <Mail className="mr-2 h-5 w-5" />
+                            Get a Free Quote
+                        </PrimaryButton>
                     </StaggerItem>
                 </StaggerContainer>
-            </SectionCard>
+            </div>
         </ParallaxSection>
     )
 }

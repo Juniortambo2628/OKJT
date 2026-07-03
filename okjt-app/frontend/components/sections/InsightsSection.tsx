@@ -10,7 +10,6 @@ import { SectionSkeleton } from '@/components/MediaSkeleton'
 import { Card } from '@/components/ui/card'
 import { useSettings } from '@/hooks/use-settings'
 import ParallaxSection from '@/components/ParallaxSection'
-import { SectionCard } from '@/components/ui/SectionCard'
 import FadeIn from '@/components/animations/FadeIn'
 import { StaggerContainer, StaggerItem } from '@/components/animations/Stagger'
 import { EASE_OUT_EXPO } from '@/components/animations/FadeIn'
@@ -49,13 +48,11 @@ const InsightsSection = () => {
             contentMaxWidth="max-w-[1400px]"
             badgeText="Technical Insights"
             title="Latest Articles & News"
+            toolbarTitle="Filter Insights"
+            tabs={['Featured', 'Latest']}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
         >
-            <SectionCard
-                toolbarTitle="Filter Insights"
-                tabs={['Featured', 'Latest']}
-                activeTab={activeTab}
-                onTabChange={setActiveTab}
-            >
                 <AnimatePresence mode="wait">
                     {activeTab === 'Featured' ? (
                         <motion.div
@@ -160,7 +157,6 @@ const InsightsSection = () => {
                         </StaggerContainer>
                     )}
                 </AnimatePresence>
-            </SectionCard>
         </ParallaxSection>
     )
 }

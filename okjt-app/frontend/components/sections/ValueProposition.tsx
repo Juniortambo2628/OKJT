@@ -7,7 +7,6 @@ import Link from 'next/link'
 import { ArrowRight, Code2, Palette, LineChart } from 'lucide-react'
 import { useSettings } from '@/hooks/use-settings'
 import ParallaxSection from '@/components/ParallaxSection'
-import { SectionCard } from '@/components/ui/SectionCard'
 import FadeIn from '@/components/animations/FadeIn'
 import { EASE_OUT_EXPO } from '@/components/animations/FadeIn'
 
@@ -74,13 +73,12 @@ const ValueProposition = () => {
             title={title}
             subtitle={subtitle}
             contentMaxWidth="max-w-[1400px]"
+            toolbarTitle="Core Values"
+            tabs={pillars.map(p => p.title)}
+            activeTab={activeTabTitle}
+            onTabChange={setActiveTabTitle}
         >
-            <SectionCard
-                toolbarTitle="Core Values"
-                tabs={pillars.map(p => p.title)}
-                activeTab={activeTabTitle}
-                onTabChange={setActiveTabTitle}
-            >
+
                 <AnimatePresence mode="wait">
                     <AnimatePresence mode="wait">
                         <motion.div
@@ -146,8 +144,8 @@ const ValueProposition = () => {
                             </FadeIn>
                         </motion.div>
                     </AnimatePresence>
-                </AnimatePresence>
-            </SectionCard>
+                    </AnimatePresence>
+                </motion.div>
         </ParallaxSection>
     )
 }

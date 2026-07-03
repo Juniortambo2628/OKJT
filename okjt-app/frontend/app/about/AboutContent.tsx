@@ -3,13 +3,11 @@
 import React from 'react'
 import Hero from '@/components/Hero'
 import { useSettings } from '@/hooks/use-settings'
-import { motion } from 'framer-motion'
-import { Button } from '@/components/ui/button'
 import { useApi } from '@/hooks/use-api'
-import { ArrowRight, Linkedin, Info } from 'lucide-react'
-import Link from 'next/link'
+import { Linkedin, Info } from 'lucide-react'
 import FadeIn from '@/components/animations/FadeIn'
 import { StaggerContainer, StaggerItem } from '@/components/animations/Stagger'
+import PrimaryButton from '@/components/PrimaryButton'
 import {
     Dialog,
     DialogContent,
@@ -19,7 +17,6 @@ import {
 } from "@/components/ui/dialog"
 import { TeamMember, Value } from '@/types/api'
 import ParallaxSection from '@/components/ParallaxSection'
-import { SectionCard } from '@/components/ui/SectionCard'
 import { PageShell } from '@/components/PageShell'
 import { iconMap } from '@/components/admin/constants'
 import { ABOUT_NAV_SECTIONS } from '@/lib/nav-sections'
@@ -66,20 +63,18 @@ export default function AboutContent() {
                     heightClass="min-h-[200vh]"
                     contentMaxWidth="max-w-[1400px]"
                 >
-                    <SectionCard>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-20 items-center w-full">
-                            <FadeIn direction="left" distance={30}>
-                                <span className="text-primary font-bold text-sm uppercase tracking-[0.2em] mb-4 block">Our Mission</span>
-                                <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 leading-tight">{missionTitle}</h2>
-                                <p className="text-white/70 text-base md:text-lg leading-relaxed mb-6">{missionText1}</p>
-                                <p className="text-white/70 text-base md:text-lg leading-relaxed">{missionText2}</p>
-                            </FadeIn>
-                            <FadeIn direction="right" distance={30} delay={0.15} className="relative aspect-[4/3] overflow-hidden border border-border/50 shadow-2xl rounded-2xl">
-                                <img src="/NI-Digital-Assets/strategic-advisory.jpg" alt="OKJTech Team in session" className="w-full h-full object-cover grayscale opacity-85" />
-                                <div className="absolute inset-0 bg-primary/10 mix-blend-color" />
-                            </FadeIn>
-                        </div>
-                    </SectionCard>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-20 items-center w-full">
+                        <FadeIn direction="left" distance={30}>
+                            <span className="text-primary font-bold text-sm uppercase tracking-[0.2em] mb-4 block">Our Mission</span>
+                            <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 leading-tight">{missionTitle}</h2>
+                            <p className="text-white/70 text-base md:text-lg leading-relaxed mb-6">{missionText1}</p>
+                            <p className="text-white/70 text-base md:text-lg leading-relaxed">{missionText2}</p>
+                        </FadeIn>
+                        <FadeIn direction="right" distance={30} delay={0.15} className="relative aspect-[4/3] overflow-hidden border border-border/50 shadow-2xl rounded-2xl">
+                            <img src="/NI-Digital-Assets/strategic-advisory.jpg" alt="OKJTech Team in session" className="w-full h-full object-cover grayscale opacity-85" />
+                            <div className="absolute inset-0 bg-primary/10 mix-blend-color" />
+                        </FadeIn>
+                    </div>
                 </ParallaxSection>
 
                 {/* Values */}
@@ -91,8 +86,7 @@ export default function AboutContent() {
                     title="Our Core Values"
                     contentMaxWidth="max-w-[1400px]"
                 >
-                    <SectionCard>
-                        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full" staggerDelay={0.08}>
+                    <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full" staggerDelay={0.08}>
                             {values?.map((val) => {
                                 const IconComponent = (iconMap as any)[val.icon || 'Shield'] || (iconMap as any).Shield
                                 return (
@@ -105,8 +99,7 @@ export default function AboutContent() {
                                     </StaggerItem>
                                 )
                             })}
-                        </StaggerContainer>
-                    </SectionCard>
+                    </StaggerContainer>
                 </ParallaxSection>
 
                 {/* Team */}
@@ -119,8 +112,7 @@ export default function AboutContent() {
                     subtitle={teamSubtitle}
                     contentMaxWidth="max-w-[1400px]"
                 >
-                    <SectionCard>
-                        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full" staggerDelay={0.08}>
+                    <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full" staggerDelay={0.08}>
                             {team?.map((member) => (
                                 <StaggerItem
                                     key={member.id}
@@ -194,7 +186,6 @@ export default function AboutContent() {
                                 </StaggerItem>
                             ))}
                         </StaggerContainer>
-                    </SectionCard>
                 </ParallaxSection>
 
                 {/* CTA */}
@@ -203,18 +194,15 @@ export default function AboutContent() {
                     bgMedia={bgCta}
                     heightClass="min-h-[170vh]"
                     contentMaxWidth="max-w-[1400px]"
+                    title={ctaTitle}
+                    subtitle={ctaSubtitle}
+                    cta={{ label: 'Request a Quote', href: '/contact' }}
                 >
-                    <SectionCard className="flex flex-col items-center justify-center text-center p-12 lg:p-20">
-                        <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">{ctaTitle}</h2>
-                        <p className="text-white/60 mb-12 max-w-xl mx-auto text-lg">
-                            {ctaSubtitle}
-                        </p>
-                        <Button size="lg" className="h-16 px-12 text-lg font-bold rounded-none bg-primary hover:bg-primary/90 text-primary-foreground shadow-2xl shadow-primary/20 transition-all hover:scale-105" asChild>
-                            <Link href="/contact">
-                                Request a Quote <ArrowRight className="ml-2 h-5 w-5" />
-                            </Link>
-                        </Button>
-                    </SectionCard>
+                    <div className="flex flex-col items-center justify-center text-center h-full">
+                        <PrimaryButton href="/contact" size="lg">
+                            Request a Quote
+                        </PrimaryButton>
+                    </div>
                 </ParallaxSection>
             </div>
         </PageShell>
