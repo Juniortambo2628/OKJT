@@ -14,15 +14,18 @@ export default function HorizontalCarousel({ children, className }: HorizontalCa
 
     const scroll = (direction: 'left' | 'right') => {
         if (!scrollRef.current) return
-        const scrollAmount = 340
+        const containerWidth = scrollRef.current.clientWidth
+        const scrollAmount = containerWidth * 0.85
         scrollRef.current.scrollBy({
             left: direction === 'left' ? -scrollAmount : scrollAmount,
             behavior: 'smooth'
         })
     }
 
+    const items = React.Children.toArray(children)
+
     return (
-        <div className={cn("relative group/carousel", className)}>
+        <div className={cn("relative group/carousel h-full w-full", className)}>
             {/* Left fade */}
             <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-black/60 to-transparent z-10 pointer-events-none" />
             {/* Right fade */}
@@ -30,10 +33,17 @@ export default function HorizontalCarousel({ children, className }: HorizontalCa
 
             <div
                 ref={scrollRef}
-                className="flex gap-4 overflow-x-auto pb-4 pt-2 px-1 snap-x snap-mandatory scrollbar-hide"
+                className="flex gap-4 h-full overflow-x-auto snap-x snap-mandatory scrollbar-hide py-1"
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
-                {children}
+                {items.map((child, index) => (
+                    <div
+                        key={index}
+                        className="flex-shrink-0 snap-start h-full w-[calc(33.333%-0.667rem)] min-w-[280px]"
+                    >
+                        {child}
+                    </div>
+                ))}
             </div>
 
             <button

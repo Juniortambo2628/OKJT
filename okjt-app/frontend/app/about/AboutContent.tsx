@@ -3,14 +3,12 @@
 import React from 'react'
 import { useSettings } from '@/hooks/use-settings'
 import { useApi } from '@/hooks/use-api'
-import { Linkedin, Info } from 'lucide-react'
+import { Linkedin } from 'lucide-react'
 import FadeIn from '@/components/animations/FadeIn'
 import { StaggerContainer, StaggerItem } from '@/components/animations/Stagger'
 import {
     Dialog,
     DialogContent,
-    DialogHeader,
-    DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { TeamMember, Value } from '@/types/api'
@@ -18,6 +16,7 @@ import ParallaxSection from '@/components/ParallaxSection'
 import BaseLayout from '@/components/BaseLayout'
 import { usePageHeroMedia } from '@/hooks/use-page-hero-media'
 import HorizontalCarousel from '@/components/ui/HorizontalCarousel'
+import CarouselCard from '@/components/ui/CarouselCard'
 import { iconMap } from '@/components/admin/constants'
 import { ABOUT_NAV_SECTIONS } from '@/lib/nav-sections'
 
@@ -110,76 +109,58 @@ export default function AboutContent() {
                 subtitle={teamSubtitle}
                 contentMaxWidth="max-w-[1400px]"
             >
-                <HorizontalCarousel className="h-full items-center">
+                <HorizontalCarousel className="h-full">
                     {team?.map((member) => (
-                        <div
-                            key={member.id}
-                            className="relative h-[320px] w-[280px] sm:w-[300px] flex-shrink-0 rounded-3xl overflow-hidden p-6 flex flex-col items-center justify-center text-center bg-white/5 backdrop-blur-xl border border-white/10 group"
-                        >
-                            <div className="w-28 h-28 rounded-full bg-gradient-to-br from-primary/10 via-background to-background mx-auto mb-6 flex items-center justify-center overflow-hidden border border-primary/20">
-                                {member.image ? (
-                                    <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
-                                ) : (
-                                    <span className="text-2xl font-bold text-primary">
-                                        {member.name.split(' ').map((n) => n[0]).join('')}
-                                    </span>
-                                )}
-                            </div>
-
-                            <h3 className="text-lg font-bold text-white mb-1">{member.name}</h3>
-                            <span className="text-primary font-bold text-xs uppercase tracking-wider block mb-3">{member.role}</span>
-
-                            <p className="text-white/60 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-3 px-2">
-                                {member.bio}
-                            </p>
-
-                            <Dialog>
-                                <DialogTrigger asChild>
-                                    <button className="text-primary font-bold text-xs uppercase tracking-widest hover:underline flex items-center gap-2">
-                                        <Info size={14} /> Read Full Bio
-                                    </button>
-                                </DialogTrigger>
-                                <DialogContent className="sm:max-w-[600px] bg-background p-0 overflow-hidden border border-white/5 shadow-2xl">
-                                    <div className="bg-primary/5 p-8 border-b border-white/5">
-                                        <div className="flex items-center gap-6">
-                                            <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-primary/20 shrink-0">
-                                                {member.image ? (
-                                                    <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
-                                                ) : (
-                                                    <div className="w-full h-full bg-primary/10 flex items-center justify-center text-2xl font-bold text-primary">
-                                                        {member.name.split(' ').map((n) => n[0]).join('')}
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <div>
-                                                <h2 className="text-2xl font-bold text-foreground">{member.name}</h2>
-                                                <p className="text-primary font-bold uppercase tracking-widest text-sm">{member.role}</p>
-                                                {member.linkedin && (
-                                                    <a href={member.linkedin} target="_blank" className="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-700 text-xs font-bold mt-2">
-                                                        <Linkedin size={14} /> View LinkedIn Profile
-                                                    </a>
-                                                )}
-                                            </div>
+                        <Dialog key={member.id}>
+                            <DialogTrigger asChild>
+                                <div className="h-full w-full cursor-pointer">
+                                    <CarouselCard
+                                        title={member.name}
+                                        description={member.role}
+                                        image={member.image}
+                                    />
+                                </div>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-[600px] bg-background p-0 overflow-hidden border border-white/5 shadow-2xl">
+                                <div className="bg-primary/5 p-8 border-b border-white/5">
+                                    <div className="flex items-center gap-6">
+                                        <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-primary/20 shrink-0">
+                                            {member.image ? (
+                                                <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <div className="w-full h-full bg-primary/10 flex items-center justify-center text-2xl font-bold text-primary">
+                                                    {member.name.split(' ').map((n) => n[0]).join('')}
+                                                </div>
+                                            )}
                                         </div>
-                                    </div>
-                                    <div className="p-8 space-y-6">
                                         <div>
-                                            <h4 className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] mb-3">About</h4>
-                                            <p className="text-muted-foreground leading-relaxed text-sm whitespace-pre-line">
-                                                {member.bio}
-                                            </p>
+                                            <h2 className="text-2xl font-bold text-foreground">{member.name}</h2>
+                                            <p className="text-primary font-bold uppercase tracking-widest text-sm">{member.role}</p>
+                                            {member.linkedin && (
+                                                <a href={member.linkedin} target="_blank" className="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-700 text-xs font-bold mt-2">
+                                                    <Linkedin size={14} /> View LinkedIn Profile
+                                                </a>
+                                            )}
                                         </div>
-
-                                        {member.qualifications && (
-                                            <div>
-                                                <h4 className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] mb-3">Professional Credentials</h4>
-                                                <p className="text-muted-foreground text-sm italic">{member.qualifications}</p>
-                                            </div>
-                                        )}
                                     </div>
-                                </DialogContent>
-                            </Dialog>
-                        </div>
+                                </div>
+                                <div className="p-8 space-y-6">
+                                    <div>
+                                        <h4 className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] mb-3">About</h4>
+                                        <p className="text-muted-foreground leading-relaxed text-sm whitespace-pre-line">
+                                            {member.bio}
+                                        </p>
+                                    </div>
+
+                                    {member.qualifications && (
+                                        <div>
+                                            <h4 className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] mb-3">Professional Credentials</h4>
+                                            <p className="text-muted-foreground text-sm italic">{member.qualifications}</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </DialogContent>
+                        </Dialog>
                     ))}
                 </HorizontalCarousel>
             </ParallaxSection>
