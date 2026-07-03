@@ -17,6 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->statefulApi();
         $middleware->validateCsrfTokens(except: [
             'api/track', // allow anonymous tracking
+            'api/login',
+            'api/register',
+            'api/logout',
         ]);
         $middleware->alias([
             'admin' => IsAdmin::class,
