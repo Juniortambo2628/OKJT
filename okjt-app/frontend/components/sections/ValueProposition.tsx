@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useMemo } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -17,7 +17,7 @@ const ValueProposition = () => {
     const title = getSetting('vp_section_title')
     const subtitle = getSetting('vp_section_subtitle')
 
-    const pillars = [
+    const pillars = useMemo(() => [
         {
             id: 'pillar-1',
             title: getSetting('vp_pillar1_title') || 'Technology',
@@ -48,18 +48,13 @@ const ValueProposition = () => {
             stats: getSetting('vp_pillar3_stats'),
             tag: getSetting('vp_pillar3_tag'),
         },
-    ]
+    ], [getSetting])
 
     const [activeTabTitle, setActiveTabTitle] = useState(pillars[0].title)
-    
-    // Fallback if settings load asynchronously
-    useEffect(() => {
-        if (!pillars.some(p => p.title === activeTabTitle)) {
-            setActiveTabTitle(pillars[0].title)
-        }
-    }, [pillars, activeTabTitle])
 
-    const activePillar = pillars.find(p => p.title === activeTabTitle) || pillars[0]
+    const activePillar = useMemo(() => {
+        return pillars.find(p => p.title === activeTabTitle) || pillars[0]
+    }, [pillars, activeTabTitle])
     const Icon = activePillar.icon
 
     const bgMedia = getSetting('bg_home_value_proposition')

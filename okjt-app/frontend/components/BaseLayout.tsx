@@ -59,18 +59,20 @@ export default function BaseLayout({
         <main className={cn("flex min-h-screen flex-col bg-background w-full overflow-x-clip relative", className)}>
             <Navbar />
 
-            <Hero
-                tagline={tagline}
-                title={title}
-                subtitle={subtitle}
-                videos={isVideo && heroMedia ? [heroMedia] : undefined}
-                bgImage={!isVideo ? heroMedia : undefined}
-                cta={cta}
-                breadcrumbs={breadcrumbs}
-                loading={loading}
-            >
-                {heroChildren}
-            </Hero>
+            {(title || tagline || subtitle || heroMedia) && (
+                <Hero
+                    tagline={tagline}
+                    title={title}
+                    subtitle={subtitle}
+                    videos={isVideo && heroMedia ? [heroMedia] : undefined}
+                    bgImage={!isVideo ? heroMedia : undefined}
+                    cta={cta}
+                    breadcrumbs={breadcrumbs}
+                    loading={loading}
+                >
+                    {heroChildren}
+                </Hero>
+            )}
 
             <div className="relative bg-black w-full overflow-visible">
                 {children}

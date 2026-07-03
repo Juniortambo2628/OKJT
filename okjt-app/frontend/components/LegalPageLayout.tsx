@@ -5,7 +5,7 @@ import { useSettings } from '@/hooks/use-settings'
 import { motion } from 'framer-motion'
 import { Printer } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { PageShell } from '@/components/PageShell'
+import BaseLayout from '@/components/BaseLayout'
 
 interface LegalPageLayoutProps {
     title: string
@@ -25,7 +25,7 @@ export default function LegalPageLayout({ title, settingKey, lastUpdated = 'Marc
     }
 
     return (
-        <PageShell>
+        <BaseLayout>
             {/* Simple Hero */}
             <section className="pt-32 pb-16 bg-[#020810] border-b border-white/5">
                 <div className="max-w-[1400px] mx-auto px-6">
@@ -90,6 +90,6 @@ export default function LegalPageLayout({ title, settingKey, lastUpdated = 'Marc
                     .prose { max-width: 100% !important; color: black !important; }
                 }
             `}</style>
-        </PageShell>
+        </BaseLayout>
     )
 }

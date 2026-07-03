@@ -1,7 +1,6 @@
 "use client"
 
 import React from 'react'
-import { motion, useScroll, useTransform } from 'framer-motion'
 import { useApi } from '@/hooks/use-api'
 import { getMediaUrl } from '@/lib/utils'
 import { useSettings } from '@/hooks/use-settings'
@@ -13,15 +12,11 @@ import FadeIn from '@/components/animations/FadeIn'
 const StatsSection = () => {
     const { data: stats, isLoading: statsLoading } = useApi<Stat[]>('/stats')
     const { getSetting } = useSettings()
-    const { scrollY } = useScroll()
-    const backgroundY = useTransform(scrollY, [0, 3000], [0, -80])
 
     const sectionTagline = getSetting('stats_tagline')
     const sectionTitle = getSetting('stats_title')
     const sectionImage = getSetting('stats_background')
     const backgroundMedia = getMediaUrl(sectionImage)
-    const hasBackground = !!backgroundMedia
-    const isVideoBackground = hasBackground && /\.(mp4|webm|ogg)(\?.*)?$/i.test(backgroundMedia)
 
     if (statsLoading) {
         return (

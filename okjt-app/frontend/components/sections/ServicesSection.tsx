@@ -10,7 +10,6 @@ import { useSettings } from '@/hooks/use-settings'
 import { SectionSkeleton } from '@/components/MediaSkeleton'
 import ParallaxSection from '@/components/ParallaxSection'
 import FadeIn from '@/components/animations/FadeIn'
-import { EASE_OUT_EXPO } from '@/components/animations/FadeIn'
 
 const categories = ['All', 'Web Development', 'UI/UX Design', 'Digital Strategy']
 
