@@ -18,9 +18,14 @@ const LoginPage = () => {
         e.preventDefault()
         setError('')
         setIsLoading(true)
+        console.log('[LOGIN] Submitting email=', email, 'password length=', password.length);
         try {
             await login({ email, password })
         } catch (err: any) {
+            console.error('[LOGIN] Login error caught:', err);
+            console.error('[LOGIN] err.response:', err.response);
+            console.error('[LOGIN] err.response?.data:', err.response?.data);
+            console.error('[LOGIN] err.message:', err.message);
             setError(err.response?.data?.message || 'Failed to login. Please check your credentials.')
         } finally {
             setIsLoading(false)

@@ -37,14 +37,32 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const login = async (credentials: any) => {
         const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:8000';
-        await axios.get(`${baseUrl}/sanctum/csrf-cookie`, { withCredentials: true });
+        console.log('[AUTH] Login start. baseUrl=', baseUrl, 'email=', credentials.email);
 
-        const res = await api.post('/login', credentials)
-        const { token, user } = res.data
-        localStorage.setItem('auth_token', token)
-        api.defaults.headers.common['Authorization'] = `Bearer ${token}`
-        setUser(user)
-        router.push('/admin/dashboard')
+        try {
+            await axios.get(`${baseUrl}/sanctum/csrf-cookie`, { withCredentials: true });
+            console.log('[AUTH] CSRF cookie fetched');
+        } catch (csrfErr: any) {
+            console.warn('[AUTH] CSRF cookie fetch failed (non-fatal):', csrfErr.message, csrfErr.response?.status, csrfErr.response?.data);
+        }
+
+        try {
+            console.log('[AUTH] Sending POST /login');
+            const res = await api.post('/login', credentials)
+            console.log('[AUTH] POST /login response status=', res.status, 'data=', res.data);
+            const { token, user } = res.data
+            localStorage.setItem('auth_token', token)
+            api.defaults.headers.common['Authorization'] = `Bearer ${token}`
+            setUser(user)
+            router.push('/admin/dashboard')
+        } catch (err: any) {
+            console.error('[AUTH] POST /login error:', err);
+            console.error('[AUTH] error.message:', err.message);
+            console.error('[AUTH] error.code:', err.code);
+            console.error('[AUTH] error.response:', err.response);
+            console.error('[AUTH] error.request:', err.request);
+            throw err;
+        }
     }
 
     const logout = async () => {
