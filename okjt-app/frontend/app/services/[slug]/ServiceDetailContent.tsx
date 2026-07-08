@@ -30,6 +30,7 @@ export default function ServiceDetailContent({ slug }: { slug: string }) {
 
     const navSections: NavSection[] = [
         ...SERVICE_DETAIL_NAV_SECTIONS,
+        { id: 'service-methodology', label: 'Methodology' },
         ...(relatedServices && relatedServices.length > 0 ? [{ id: 'service-related', label: 'Related' }] : []),
     ]
 
@@ -86,6 +87,34 @@ export default function ServiceDetailContent({ slug }: { slug: string }) {
                 </FadeIn>
             </ParallaxSection>
 
+            {/* Methodology Section */}
+            <ParallaxSection
+                id="service-methodology"
+                heightClass="min-h-[170vh]"
+                badgeText="OUR PROCESS"
+                title="Methodology & Execution"
+                subtitle="How we deliver measurable impact and strategic value."
+                contentMaxWidth="max-w-[1400px]"
+            >
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div className="bg-black/20 p-8 border border-white/5 hover:border-primary/40 rounded-2xl transition-all">
+                        <div className="text-primary font-bold text-xl mb-4">01. Discovery</div>
+                        <h3 className="text-white text-lg font-bold mb-3">Analysis & Audit</h3>
+                        <p className="text-white/60 text-sm leading-relaxed">We conduct a deep dive into your current processes, infrastructure, and market position to identify core opportunities.</p>
+                    </div>
+                    <div className="bg-black/20 p-8 border border-white/5 hover:border-primary/40 rounded-2xl transition-all">
+                        <div className="text-primary font-bold text-xl mb-4">02. Strategy</div>
+                        <h3 className="text-white text-lg font-bold mb-3">Custom Roadmap</h3>
+                        <p className="text-white/60 text-sm leading-relaxed">Our experts architect a tailored, actionable plan designed to achieve your specific business objectives efficiently.</p>
+                    </div>
+                    <div className="bg-black/20 p-8 border border-white/5 hover:border-primary/40 rounded-2xl transition-all">
+                        <div className="text-primary font-bold text-xl mb-4">03. Implementation</div>
+                        <h3 className="text-white text-lg font-bold mb-3">Execution & Review</h3>
+                        <p className="text-white/60 text-sm leading-relaxed">We oversee the deployment of the strategy, ensuring quality at every step, followed by rigorous performance reviews.</p>
+                    </div>
+                </div>
+            </ParallaxSection>
+
             {/* Benefits */}
             <ParallaxSection
                 id="service-benefits"
@@ -131,7 +160,7 @@ export default function ServiceDetailContent({ slug }: { slug: string }) {
                         ))}
                     </StaggerContainer>
                     <div className="mt-8">
-                        <PrimaryButton href="/services" variant="outline" className="rounded-none border-primary/30 text-primary hover:bg-primary/10" showArrow>
+                        <PrimaryButton href="/services" variant="outline" className="border-primary/30 text-primary hover:bg-primary/10" showArrow>
                             View All Services
                         </PrimaryButton>
                     </div>
@@ -159,7 +188,7 @@ export default function ServiceDetailContent({ slug }: { slug: string }) {
                         <PrimaryButton
                             href="/contact"
                             size="lg"
-                            className="h-16 px-12 text-lg font-bold rounded-none bg-primary text-[#14110b] hover:bg-primary/90 shadow-2xl shadow-primary/20"
+                            className="h-16 px-12 text-lg font-bold bg-primary text-[#14110b] hover:bg-primary/90 shadow-2xl shadow-primary/20"
                         >
                             Book a Consultation
                         </PrimaryButton>

@@ -285,7 +285,7 @@ export default function DetailLayout({
                                             href="/contact"
                                             variant="outline"
                                             showArrow={false}
-                                            className="w-full h-12 gap-2 font-bold uppercase tracking-widest text-[10px] rounded-none border-white/10 bg-transparent text-white/80 hover:text-white hover:border-primary"
+                                            className="w-full h-12 gap-2 font-bold uppercase tracking-widest text-[10px] border-white/10 bg-transparent text-white/80 hover:text-white hover:border-primary"
                                         >
                                             {secondaryActionLabel} <ArrowRight size={14} />
                                         </PrimaryButton>

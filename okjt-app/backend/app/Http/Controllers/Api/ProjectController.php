@@ -14,6 +14,7 @@ class ProjectController extends Controller
     use HandlesStandardCrud, HasUniqueSlug;
 
     protected $resourceClass = ProjectResource::class;
+    protected $routeBindingField = 'slug';
 
     protected function getCacheKey(): ?string
     {
