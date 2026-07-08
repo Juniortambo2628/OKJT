@@ -114,7 +114,7 @@ jobs:
       - name: Deploy backend files
         run: |
           scp -P ${{ secrets.SSH_PORT || env.REMOTE_PORT }} backend.tar.gz ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }}:/home/zhpebukm/backend.tar.gz
-          ssh -p ${{ secrets.SSH_PORT || env.REMOTE_PORT }} ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }} "cd /home/zhpebukm && rm -rf ${{ env.BACKEND_TARGET }} && mkdir -p ${{ env.BACKEND_TARGET }} && tar xzf backend.tar.gz -C ${{ env.BACKEND_TARGET }} && rm backend.tar.gz"
+          ssh -p ${{ secrets.SSH_PORT || env.REMOTE_PORT }} ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }} "cd /home/zhpebukm && mkdir -p backend_new && tar xzf backend.tar.gz -C backend_new && cp -a ${{ env.BACKEND_TARGET }}/storage backend_new/ 2>/dev/null || true && cp ${{ env.BACKEND_TARGET }}/.env backend_new/ 2>/dev/null || true && rm -rf ${{ env.BACKEND_TARGET }} && mv backend_new ${{ env.BACKEND_TARGET }} && rm backend.tar.gz"
 
       - name: Deploy backend .env
         run: |
@@ -134,7 +134,8 @@ jobs:
       - name: Deploy frontend files
         run: |
           scp -P ${{ secrets.SSH_PORT || env.REMOTE_PORT }} frontend.tar.gz ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }}:/home/zhpebukm/frontend.tar.gz
-          ssh -p ${{ secrets.SSH_PORT || env.REMOTE_PORT }} ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }} "cd /home/zhpebukm && rm -rf ${{ env.FRONTEND_TARGET }} && mkdir -p ${{ env.FRONTEND_TARGET }} && tar xzf frontend.tar.gz -C ${{ env.FRONTEND_TARGET }} && rm frontend.tar.gz"
+          # We extract to a temporary directory first. We will swap it during the 'Activate frontend' step to minimize downtime and prevent the running server from crashing.
+          ssh -p ${{ secrets.SSH_PORT || env.REMOTE_PORT }} ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }} "cd /home/zhpebukm && rm -rf frontend_new && mkdir -p frontend_new && tar xzf frontend.tar.gz -C frontend_new && rm frontend.tar.gz"
 
       # -------------------------------
       # Activate backend on server
@@ -219,19 +220,26 @@ jobs:
             fi
 
             echo "Node version: $(node --version)"
+
+            # Kill existing Node process on port 3000 to be absolutely sure it stops
+            echo "Stopping any existing frontend process on port 3000"
+            if command -v fuser &> /dev/null; then
+              fuser -k 3000/tcp || true
+            else
+              lsof -t -i:3000 | xargs kill -9 2>/dev/null || true
+            fi
+            sleep 2
+
+            # Now swap the directories (atomic-like deployment)
+            cd /home/zhpebukm
+            if [ -d "frontend_new" ]; then
+              rm -rf ${{ env.FRONTEND_TARGET }}
+              mv frontend_new ${{ env.FRONTEND_TARGET }}
+            fi
+
+            cd ${{ env.FRONTEND_TARGET }}
             echo "Current directory: $(pwd)"
             echo "server.js exists: $([ -f server.js ] && echo 'YES' || echo 'NO')"
-
-            # Stop any existing instance using its saved PID
-            if [ -f /tmp/okj-frontend.pid ]; then
-              OLD_PID=$(cat /tmp/okj-frontend.pid)
-              if ps -p "$OLD_PID" > /dev/null 2>&1; then
-                echo "Stopping existing frontend process $OLD_PID"
-                kill "$OLD_PID" || true
-                sleep 1
-              fi
-              rm -f /tmp/okj-frontend.pid
-            fi
 
             # Start frontend in background
             echo "Starting frontend with setsid."
