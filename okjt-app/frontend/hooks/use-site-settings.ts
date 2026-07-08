@@ -54,6 +54,20 @@ export function useSiteSettings() {
                 group: s.group,
             }))
 
+            // Include any NEW keys from localSettings that don't exist in the DB yet
+            // (e.g. hero media, section backgrounds set for the first time)
+            const existingKeys = new Set(allSettings.map(s => s.key))
+            Object.entries(finalLocal).forEach(([key, value]) => {
+                if (!existingKeys.has(key) && value) {
+                    settingsToUpdate.push({
+                        key,
+                        value,
+                        type: 'text',
+                        group: 'general',
+                    })
+                }
+            })
+
             await api.put('/settings/batch', { settings: settingsToUpdate })
 
             // Invalidate Next.js server-side cache for site content
