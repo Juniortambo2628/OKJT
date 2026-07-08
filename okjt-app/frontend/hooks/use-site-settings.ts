@@ -55,6 +55,18 @@ export function useSiteSettings() {
             }))
 
             await api.put('/settings/batch', { settings: settingsToUpdate })
+
+            // Invalidate Next.js server-side cache for site content
+            try {
+                await fetch('/api/revalidate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tags: ['okjt-content'] })
+                })
+            } catch (e) {
+                console.error('Failed to invalidate Next.js cache:', e)
+            }
+
             toast({
                 title: "Settings Saved",
                 description: "All configurations have been updated.",

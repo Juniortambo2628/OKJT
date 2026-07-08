@@ -245,7 +245,7 @@ const HeroBackground = ({
             {videos.length > 0 ? (
                 <AnimatePresence mode="sync">
                     <motion.video
-                        key={videoIndex}
+                        key={`${videoIndex}-${videos[videoIndex % videos.length]}`}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
