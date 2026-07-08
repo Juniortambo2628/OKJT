@@ -200,45 +200,10 @@ jobs:
           port: ${{ secrets.SSH_PORT || env.REMOTE_PORT }}
           script_stop: true
           script: |
-            cd ${{ env.FRONTEND_TARGET }}
-
-            # Ensure Node.js is available on the server
-            if ! command -v node &> /dev/null; then
-              if [ ! -f "$HOME/nodejs/bin/node" ]; then
-                echo "Node.js not found. Installing to $HOME/nodejs ..."
-                (
-                  cd $HOME
-                  NODE_VERSION="v20.15.0"
-                  NODE_TARBALL="node-${NODE_VERSION}-linux-x64.tar.gz"
-                  wget -q "https://nodejs.org/dist/${NODE_VERSION}/${NODE_TARBALL}"
-                  tar -xzf "${NODE_TARBALL}"
-                  mv "node-${NODE_VERSION}-linux-x64" nodejs
-                  rm "${NODE_TARBALL}"
-                )
-              fi
-              export PATH="$HOME/nodejs/bin:$PATH"
-            fi
-
-            echo "Node version: $(node --version)"
-
-            # Stop any existing instance using its saved PID
+            # Clean up the old manual Node process from previous deployments to free up memory
             if [ -f /tmp/okj-frontend.pid ]; then
               OLD_PID=$(cat /tmp/okj-frontend.pid)
-              if ps -p "$OLD_PID" > /dev/null 2>&1; then
-                echo "Stopping existing frontend process $OLD_PID"
-                kill "$OLD_PID" || true
-                # Wait up to 5 seconds for it to exit
-                for i in {1..5}; do
-                  if ! ps -p "$OLD_PID" > /dev/null 2>&1; then
-                    break
-                  fi
-                  sleep 1
-                done
-                # Force kill if still running
-                if ps -p "$OLD_PID" > /dev/null 2>&1; then
-                  kill -9 "$OLD_PID" || true
-                fi
-              fi
+              kill -9 "$OLD_PID" 2>/dev/null || true
               rm -f /tmp/okj-frontend.pid
             fi
 
@@ -249,32 +214,9 @@ jobs:
               mv frontend_new ${{ env.FRONTEND_TARGET }}
             fi
 
+            # Tell cPanel / Phusion Passenger to restart the Node.js App
             cd ${{ env.FRONTEND_TARGET }}
-            echo "Current directory: $(pwd)"
-            echo "server.js exists: $([ -f server.js ] && echo 'YES' || echo 'NO')"
-
-            # Start frontend in background
-            echo "Starting frontend with setsid."
-            rm -f /tmp/okj-frontend.log
-            setsid node server.js > /tmp/okj-frontend.log 2>&1 &
-            echo $! > /tmp/okj-frontend.pid
-            sleep 3
-
-            echo "Recent log output:"
-            tail -n 50 /tmp/okj-frontend.log || true
-
-            # Verify the server is actually responding
-            if command -v curl &> /dev/null; then
-              HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 || true)
-            else
-              HTTP_STATUS=$(wget -qO- --server-response http://localhost:3000 2>&1 | awk '/HTTP\//{print $2}' | tail -1 || true)
-            fi
-
-            if [ "$HTTP_STATUS" = "200" ] || [ "$HTTP_STATUS" = "307" ] || [ "$HTTP_STATUS" = "308" ]; then
-              echo "Frontend is responding on port 3000 (HTTP $HTTP_STATUS)."
-            else
-              echo "Frontend is not responding on port 3000 (HTTP status: ${HTTP_STATUS:-none})."
-              exit 1
-            fi
-
-            echo "Frontend activation complete."
+            mkdir -p tmp
+            touch tmp/restart.txt
+            
+            echo "Frontend activation complete. Passenger will restart automatically."
