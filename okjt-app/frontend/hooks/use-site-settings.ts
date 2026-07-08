@@ -58,7 +58,7 @@ export function useSiteSettings() {
 
             // Invalidate Next.js server-side cache for site content
             try {
-                await fetch('/api/revalidate', {
+                await fetch('/revalidate-cache', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ tags: ['okjt-content'] })

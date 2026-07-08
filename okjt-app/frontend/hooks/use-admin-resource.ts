@@ -59,7 +59,7 @@ export function useAdminResource<T extends { id: number, created_at?: string }>(
 
     const triggerRevalidation = useCallback(async () => {
         try {
-            await fetch('/api/revalidate', { 
+            await fetch('/revalidate-cache', { 
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ tags: ['okjt-content'] })
