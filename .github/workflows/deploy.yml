@@ -221,14 +221,26 @@ jobs:
 
             echo "Node version: $(node --version)"
 
-            # Kill existing Node process on port 3000 to be absolutely sure it stops
-            echo "Stopping any existing frontend process on port 3000"
-            if command -v fuser &> /dev/null; then
-              fuser -k 3000/tcp || true
-            else
-              lsof -t -i:3000 | xargs kill -9 2>/dev/null || true
+            # Stop any existing instance using its saved PID
+            if [ -f /tmp/okj-frontend.pid ]; then
+              OLD_PID=$(cat /tmp/okj-frontend.pid)
+              if ps -p "$OLD_PID" > /dev/null 2>&1; then
+                echo "Stopping existing frontend process $OLD_PID"
+                kill "$OLD_PID" || true
+                # Wait up to 5 seconds for it to exit
+                for i in {1..5}; do
+                  if ! ps -p "$OLD_PID" > /dev/null 2>&1; then
+                    break
+                  fi
+                  sleep 1
+                done
+                # Force kill if still running
+                if ps -p "$OLD_PID" > /dev/null 2>&1; then
+                  kill -9 "$OLD_PID" || true
+                fi
+              fi
+              rm -f /tmp/okj-frontend.pid
             fi
-            sleep 2
 
             # Now swap the directories (atomic-like deployment)
             cd /home/zhpebukm
