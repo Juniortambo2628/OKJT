@@ -87,10 +87,19 @@ export function useAdminResource<T extends { id: number, created_at?: string }>(
             triggerRevalidation()
             resetForm()
         } catch (err: any) {
+            const validationErrors = err.response?.data?.errors
+            let description = err.response?.data?.message || `Failed to save ${resourceName.toLowerCase()}`
+            if (validationErrors) {
+                const firstErrors = Object.entries(validationErrors)
+                    .map(([field, msgs]: [string, any]) => `${field}: ${Array.isArray(msgs) ? msgs[0] : msgs}`)
+                    .slice(0, 3)
+                    .join('\n')
+                description = firstErrors || description
+            }
             toast({ 
                 variant: "destructive", 
-                title: "Error", 
-                description: err.response?.data?.message || `Failed to save ${resourceName.toLowerCase()}` 
+                title: "Validation Error", 
+                description 
             })
             throw err
         } finally {

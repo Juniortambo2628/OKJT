@@ -7,7 +7,7 @@ const api = axios.create({
     withXSRFToken: true,
     headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json',
     }
 });
 
