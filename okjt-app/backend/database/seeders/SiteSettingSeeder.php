@@ -65,6 +65,11 @@ class SiteSettingSeeder extends Seeder
             ['key' => 'services_video_software', 'value' => '/assets/videos/services/all-services-video.mp4', 'type' => 'image', 'group' => 'services'],
             ['key' => 'services_video_electronics', 'value' => '/assets/videos/services/all-services-video.mp4', 'type' => 'image', 'group' => 'services'],
             ['key' => 'services_video_innovation', 'value' => '/assets/videos/services/all-services-video.mp4', 'type' => 'image', 'group' => 'services'],
+            // Maintenance Mode
+            ['key' => 'maintenance_active', 'value' => '0', 'type' => 'boolean', 'group' => 'maintenance'],
+            ['key' => 'maintenance_title', 'value' => 'System Maintenance', 'type' => 'text', 'group' => 'maintenance'],
+            ['key' => 'maintenance_description', 'value' => 'OKJTech is currently undergoing scheduled maintenance.', 'type' => 'textarea', 'group' => 'maintenance'],
+            ['key' => 'maintenance_estimated_back', 'value' => '', 'type' => 'text', 'group' => 'maintenance'],
         ];
 
         // Delete legacy launch settings
