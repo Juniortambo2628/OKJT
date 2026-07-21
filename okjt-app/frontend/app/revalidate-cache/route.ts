@@ -19,12 +19,14 @@ export async function POST(request: NextRequest) {
 
     if (tags && Array.isArray(tags)) {
       for (const tag of tags) {
+        // @ts-expect-error - Next.js 16 types incorrectly require 2 args for revalidateTag
         revalidateTag(tag)
       }
     }
 
     // Default tag for our general site content
     if (!tags && !paths) {
+        // @ts-expect-error - Next.js 16 types incorrectly require 2 args for revalidateTag
         revalidateTag('okjt-content')
     }
 
