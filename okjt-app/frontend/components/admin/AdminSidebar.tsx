@@ -75,6 +75,7 @@ const AdminSidebar = () => {
     { name: 'Email', href: '/admin/email', icon: Mail },
     { name: 'Legal', href: '/admin/legal', icon: ShieldCheck },
     { name: 'Content', href: '/admin/content', icon: PenTool },
+    { name: 'Users', href: '/admin/users', icon: Rocket },
     { name: 'Settings', href: '/admin/settings', icon: Settings },
 ]
 

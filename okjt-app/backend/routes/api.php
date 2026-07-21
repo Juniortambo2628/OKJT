@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\ConsultationRequestController;
 use App\Http\Controllers\Api\InsightController;
+use App\Http\Controllers\Api\PageViewController;
 use App\Http\Controllers\Api\PillarController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\SearchController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\Api\SubscriberController;
 use App\Http\Controllers\Api\TeamMemberController;
 use App\Http\Controllers\Api\TestimonialController;
 use App\Http\Controllers\Api\UploadController;
+use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\ValueController;
 use Illuminate\Support\Facades\Route;
 
@@ -53,6 +55,7 @@ Route::get('/pillars/{slug}', [PillarController::class, 'show']);
 Route::get('/search', [SearchController::class, 'index']);
 Route::post('/track', [AnalyticsController::class, 'track']);
 Route::post('/subscribe', [SubscriberController::class, 'store']);
+Route::post('/unsubscribe', [SubscriberController::class, 'unsubscribe']);
 Route::post('/consultation-requests', [ConsultationRequestController::class, 'store']);
 Route::post('/rsvps', [\App\Http\Controllers\Api\RsvpController::class, 'store']);
 Route::get('/storage/{path}', [UploadController::class, 'serve'])->where('path', '.*');
@@ -151,4 +154,11 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::put('/email-templates/{key}', [SiteSettingController::class, 'updateEmailTemplate']);
     Route::delete('/email-templates/{key}', [SiteSettingController::class, 'destroyEmailTemplate']);
     Route::post('/email-templates/preview', [\App\Http\Controllers\Api\EmailTemplateController::class, 'preview']);
+
+    // Users (admin management)
+    Route::apiResource('users', UserController::class);
+
+    // Page Views (read-only analytics)
+    Route::get('/page-views', [PageViewController::class, 'index']);
+    Route::get('/page-views/export', [PageViewController::class, 'export']);
 });
