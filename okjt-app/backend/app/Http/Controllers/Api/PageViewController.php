@@ -16,7 +16,7 @@ class PageViewController extends Controller
         $query = PageView::query()->orderBy('created_at', 'desc');
 
         if ($request->has('path')) {
-            $query->where('path', 'like', '%' . $request->path . '%');
+            $query->where('path', 'like', '%'.$request->path.'%');
         }
 
         if ($request->has('from')) {
@@ -50,11 +50,11 @@ class PageViewController extends Controller
 
         $csv = "Path,IP,User Agent,Referrer,Date\n";
         foreach ($views as $v) {
-            $csv .= '"' . str_replace('"', '""', $v->path) . '","'
-                . $v->ip . '","'
-                . str_replace('"', '""', $v->user_agent ?? '') . '","'
-                . str_replace('"', '""', $v->referrer ?? '') . '","'
-                . $v->created_at . "\"\n";
+            $csv .= '"'.str_replace('"', '""', $v->path).'","'
+                .$v->ip.'","'
+                .str_replace('"', '""', $v->user_agent ?? '').'","'
+                .str_replace('"', '""', $v->referrer ?? '').'","'
+                .$v->created_at."\"\n";
         }
 
         return response($csv, 200, [

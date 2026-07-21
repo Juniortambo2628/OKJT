@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Traits\HandlesStandardCrud;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -43,6 +42,7 @@ class UserController extends Controller
     protected function beforeStore(array $validated, Request $request): array
     {
         $validated['password'] = Hash::make($validated['password']);
+
         return $validated;
     }
 
@@ -53,6 +53,7 @@ class UserController extends Controller
         } else {
             unset($validated['password']);
         }
+
         return $validated;
     }
 }
