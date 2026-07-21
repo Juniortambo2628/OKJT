@@ -40,7 +40,7 @@ const AdminTestimonialsPage = () => {
                                 <Star key={star} size={14} className={star <= (t.rating || 0) ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/30'} />
                             ))}
                         </div>
-                        <p className="text-sm italic text-muted-foreground line-clamp-4 mb-4">"{t.quote}"</p>
+                        <p className="text-sm italic text-muted-foreground line-clamp-4 mb-4">&ldquo;{t.quote}&rdquo;</p>
                         <div className="flex items-center gap-3">
                             {t.avatar ? (
                                 <img src={t.avatar} alt={t.name} className="w-10 h-10 rounded-full object-cover" />
@@ -102,7 +102,7 @@ const AdminTestimonialsPage = () => {
                                     </div>
                                 </div>
                             </td>
-                            <td className="p-4 text-xs text-muted-foreground max-w-md truncate italic">"{t.quote}"</td>
+                            <td className="p-4 text-xs text-muted-foreground max-w-md truncate italic">&ldquo;{t.quote}&rdquo;</td>
                             <td className="p-4">
                                 <StatusBadge
                                     isActive={!!t.is_featured}

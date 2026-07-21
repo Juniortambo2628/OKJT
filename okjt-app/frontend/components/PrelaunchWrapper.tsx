@@ -23,7 +23,7 @@ export default function PrelaunchWrapper({ children, launchSettings: initialSett
     React.useEffect(() => {
         const checkSettings = async () => {
             try {
-                // @ts-ignore
+                // @ts-expect-error - api.get returns untyped response
                 const { data } = await api.get('/site-settings/maintenance')
                 if (data && JSON.stringify(data) !== JSON.stringify(maintenanceSettings)) {
                     setMaintenanceSettings(data)

@@ -334,7 +334,7 @@ const EmailSettingsPage = () => {
                                             <Mail size={48} className="opacity-20" />
                                         </div>
                                         <h3 className="text-slate-600 font-bold mb-2">No Preview Generated</h3>
-                                        <p className="text-sm max-w-xs">Update your content and click "Live Preview" to see how the email will appear to recipients.</p>
+                                        <p className="text-sm max-w-xs">Update your content and click &ldquo;Live Preview&rdquo; to see how the email will appear to recipients.</p>
                                     </div>
                                 )}
                             </div>
