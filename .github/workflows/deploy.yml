@@ -10,6 +10,9 @@ concurrency:
   group: deploy-production
   cancel-in-progress: true
 
+permissions:
+  contents: write
+
 env:
   BACKEND_DIR: okjt-app/backend
   FRONTEND_DIR: okjt-app/frontend
