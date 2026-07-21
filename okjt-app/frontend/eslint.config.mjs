@@ -13,6 +13,7 @@ const eslintConfig = defineConfig([
       "@typescript-eslint/ban-ts-comment": "warn",
       "react/no-unescaped-entities": "warn",
       "react-hooks/purity": "warn",
+      "react-hooks/set-state-in-effect": "warn",
     },
   },
   // Override default ignores of eslint-config-next.
