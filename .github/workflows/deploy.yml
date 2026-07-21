@@ -1,10 +1,9 @@
-name: Deploy to Production
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
       - main
-
   workflow_dispatch:
 
 concurrency:
@@ -14,24 +13,106 @@ concurrency:
 env:
   BACKEND_DIR: okjt-app/backend
   FRONTEND_DIR: okjt-app/frontend
-  REMOTE_USER: zhpebukm
-  REMOTE_HOST: 51.89.113.223
-  REMOTE_PORT: 1624
-  BACKEND_TARGET: /home/zhpebukm/okj-core
-  PUBLIC_TARGET: /home/zhpebukm/public_html/api
-  FRONTEND_TARGET: /home/zhpebukm/okj-frontend
 
 jobs:
-  deploy:
+  lint-and-fix:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: bcmath, ctype, curl, fileinfo, intl, json, mbstring, openssl, pdo_mysql, tokenizer, xml, zip
+          tools: composer:v2
+          coverage: none
+
+      - name: Install backend dependencies (with dev)
+        working-directory: ${{ env.BACKEND_DIR }}
+        run: composer install --prefer-dist --optimize-autoloader --no-interaction
+
+      - name: Fix backend styling with Pint
+        working-directory: ${{ env.BACKEND_DIR }}
+        run: ./vendor/bin/pint
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: ${{ env.FRONTEND_DIR }}/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: ${{ env.FRONTEND_DIR }}
+        run: npm ci
+
+      - name: Fix frontend styling with ESLint
+        working-directory: ${{ env.FRONTEND_DIR }}
+        run: npm run lint -- --fix || npx eslint --fix .
+
+      - name: Commit automatic fixes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "style: Apply automatic formatting fixes [skip ci]"
+
+  test-backend:
+    needs: lint-and-fix
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.BACKEND_DIR }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # -------------------------------
-      # Backend setup
-      # -------------------------------
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: bcmath, ctype, curl, fileinfo, intl, json, mbstring, openssl, pdo_mysql, tokenizer, xml, zip
+          tools: composer:v2
+          coverage: none
+
+      - name: Copy .env
+        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+      - name: Install Dependencies
+        run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+      - name: Generate key
+        run: php artisan key:generate
+
+      - name: Directory Permissions
+        run: chmod -R 777 storage bootstrap/cache
+
+      - name: Create Database
+        run: |
+          mkdir -p database
+          touch database/database.sqlite
+
+      - name: Execute tests
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+        run: php artisan test
+
+  deploy-backend:
+    needs: test-backend
+    runs-on: ubuntu-latest
+    env:
+      REMOTE_USER: zhpebukm
+      REMOTE_HOST: 51.89.113.223
+      REMOTE_PORT: 1624
+      BACKEND_TARGET: /home/zhpebukm/okj-core
+      PUBLIC_TARGET: /home/zhpebukm/public_html/api
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -44,7 +125,6 @@ jobs:
         working-directory: ${{ env.BACKEND_DIR }}
         run: |
           echo "${{ secrets.BACKEND_ENV }}" > .env
-          # Generate an APP_KEY only if one is not already provided.
           if ! grep -qE '^APP_KEY=base64:' .env; then
             php artisan key:generate --force
           fi
@@ -53,38 +133,6 @@ jobs:
         working-directory: ${{ env.BACKEND_DIR }}
         run: composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction
 
-      # -------------------------------
-      # Frontend setup
-      # -------------------------------
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: ${{ env.FRONTEND_DIR }}/package-lock.json
-
-      - name: Write frontend .env
-        working-directory: ${{ env.FRONTEND_DIR }}
-        run: echo "${{ secrets.FRONTEND_ENV }}" > .env.production
-
-      - name: Install frontend dependencies
-        working-directory: ${{ env.FRONTEND_DIR }}
-        run: npm ci
-
-      - name: Build frontend
-        working-directory: ${{ env.FRONTEND_DIR }}
-        run: npm run build
-
-      - name: Prepare standalone frontend bundle
-        working-directory: ${{ env.FRONTEND_DIR }}
-        run: |
-          cp -R .next/static .next/standalone/.next/static
-          cp -R public .next/standalone/public
-
-      # -------------------------------
-      # Deploy via SSH / tar / scp
-      # (scp is used because shared hosts often do not provide rsync.)
-      # -------------------------------
       - name: Setup SSH agent
         uses: webfactory/ssh-agent@v0.9.0
         with:
@@ -128,18 +176,6 @@ jobs:
           scp -P ${{ secrets.SSH_PORT || env.REMOTE_PORT }} public.tar.gz ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }}:/home/zhpebukm/public.tar.gz
           ssh -p ${{ secrets.SSH_PORT || env.REMOTE_PORT }} ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }} "rm -rf ${{ env.PUBLIC_TARGET }} && mkdir -p ${{ env.PUBLIC_TARGET }} && tar xzf /home/zhpebukm/public.tar.gz -C ${{ env.PUBLIC_TARGET }} && rm /home/zhpebukm/public.tar.gz"
 
-      - name: Package frontend for deployment
-        run: tar czf frontend.tar.gz -C ${{ env.FRONTEND_DIR }}/.next/standalone .
-
-      - name: Deploy frontend files
-        run: |
-          scp -P ${{ secrets.SSH_PORT || env.REMOTE_PORT }} frontend.tar.gz ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }}:/home/zhpebukm/frontend.tar.gz
-          # We extract to a temporary directory first. We will swap it during the 'Activate frontend' step to minimize downtime and prevent the running server from crashing.
-          ssh -p ${{ secrets.SSH_PORT || env.REMOTE_PORT }} ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }} "cd /home/zhpebukm && rm -rf frontend_new && mkdir -p frontend_new && tar xzf frontend.tar.gz -C frontend_new && rm frontend.tar.gz"
-
-      # -------------------------------
-      # Activate backend on server
-      # -------------------------------
       - name: Activate backend
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -150,73 +186,18 @@ jobs:
           script_stop: true
           script: |
             cd ${{ env.BACKEND_TARGET }}
-
-            # Ensure required directories exist
-            mkdir -p bootstrap/cache
-            mkdir -p storage/framework/cache
-            mkdir -p storage/framework/sessions
-            mkdir -p storage/framework/views
-            mkdir -p storage/logs
-            mkdir -p storage/app/public
-
-            # Ensure Composer dependencies are installed (safe fallback if deployment missed anything)
-            if command -v composer &> /dev/null; then
-              composer install --no-dev --optimize-autoloader --no-interaction
-            fi
-
-            # Set secure permissions
+            mkdir -p bootstrap/cache storage/framework/cache storage/framework/sessions storage/framework/views storage/logs storage/app/public
+            if command -v composer &> /dev/null; then composer install --no-dev --optimize-autoloader --no-interaction; fi
             find vendor -type d -exec chmod 755 {} +
             find vendor -type f -exec chmod 644 {} +
-            chmod -R 775 storage
-            chmod -R 775 bootstrap/cache
+            chmod -R 775 storage bootstrap/cache
             chmod 600 .env
-
-            # Clear old caches
             php artisan config:clear
             php artisan route:clear
             php artisan view:clear
             php artisan event:clear
-
-            # Run database migrations
             php artisan migrate --force
-
-            # Re-optimize for production
             php artisan config:cache
             php artisan route:cache
             php artisan view:cache
-
-            # Verify public entry point is reachable
             ls -la ${{ env.PUBLIC_TARGET }}/index.php
-
-      # -------------------------------
-      # Activate frontend on server
-      # -------------------------------
-      - name: Activate frontend
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST || env.REMOTE_HOST }}
-          username: ${{ secrets.SSH_USER || env.REMOTE_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT || env.REMOTE_PORT }}
-          script_stop: true
-          script: |
-            # Clean up the old manual Node process from previous deployments to free up memory
-            if [ -f /tmp/okj-frontend.pid ]; then
-              OLD_PID=$(cat /tmp/okj-frontend.pid)
-              kill -9 "$OLD_PID" 2>/dev/null || true
-              rm -f /tmp/okj-frontend.pid
-            fi
-
-            # Now swap the directories (atomic-like deployment)
-            cd /home/zhpebukm
-            if [ -d "frontend_new" ]; then
-              rm -rf ${{ env.FRONTEND_TARGET }}
-              mv frontend_new ${{ env.FRONTEND_TARGET }}
-            fi
-
-            # Tell cPanel / Phusion Passenger to restart the Node.js App
-            cd ${{ env.FRONTEND_TARGET }}
-            mkdir -p tmp
-            touch tmp/restart.txt
-            
-            echo "Frontend activation complete. Passenger will restart automatically."
