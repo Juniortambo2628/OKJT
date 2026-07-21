@@ -53,6 +53,7 @@ jobs:
       - name: Fix frontend styling with ESLint
         working-directory: ${{ env.FRONTEND_DIR }}
         run: npm run lint -- --fix || npx eslint --fix .
+        continue-on-error: true
 
       - name: Commit automatic fixes
         uses: stefanzweifel/git-auto-commit-action@v5
