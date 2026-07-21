@@ -4,17 +4,20 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\TestimonialResource;
-use Illuminate\Http\Request;
 use App\Traits\HandlesStandardCrud;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 
 class TestimonialController extends Controller
 {
     use HandlesStandardCrud;
 
     protected $orderByField = 'order';
+
     protected $orderByDirection = 'asc';
+
     protected $cacheKey = 'all_testimonials';
+
     protected $resourceClass = TestimonialResource::class;
 
     protected function indexQuery(Builder $query): Builder

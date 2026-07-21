@@ -8,10 +8,6 @@ trait HasUniqueSlug
 {
     /**
      * Generate a unique slug for the model.
-     *
-     * @param string $title
-     * @param int|null $excludeId
-     * @return string
      */
     public function generateUniqueSlug(string $title, ?int $excludeId = null): string
     {
@@ -20,7 +16,7 @@ trait HasUniqueSlug
         $count = 1;
 
         while ($this->slugExists($slug, $excludeId)) {
-            $slug = $originalSlug . '-' . $count++;
+            $slug = $originalSlug.'-'.$count++;
         }
 
         return $slug;
@@ -28,10 +24,6 @@ trait HasUniqueSlug
 
     /**
      * Check if slug already exists.
-     *
-     * @param string $slug
-     * @param int|null $excludeId
-     * @return bool
      */
     protected function slugExists(string $slug, ?int $excludeId = null): bool
     {

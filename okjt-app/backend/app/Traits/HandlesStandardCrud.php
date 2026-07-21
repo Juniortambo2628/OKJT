@@ -2,10 +2,9 @@
 
 namespace App\Traits;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
 
 trait HandlesStandardCrud
 {
@@ -17,7 +16,8 @@ trait HandlesStandardCrud
 
         $className = class_basename($this);
         $modelName = str_replace('Controller', '', $className);
-        return 'App\\Models\\' . $modelName;
+
+        return 'App\\Models\\'.$modelName;
     }
 
     protected function getResourceClass(): ?string
@@ -25,6 +25,7 @@ trait HandlesStandardCrud
         if (property_exists($this, 'resourceClass')) {
             return $this->resourceClass;
         }
+
         return null;
     }
 
@@ -33,6 +34,7 @@ trait HandlesStandardCrud
         if (property_exists($this, 'cacheKey')) {
             return $this->cacheKey;
         }
+
         return null;
     }
 
@@ -48,9 +50,9 @@ trait HandlesStandardCrud
     {
         $model = $this->getModelClass();
         $relations = property_exists($this, 'withRelations') ? $this->withRelations : [];
-        
+
         $field = $field ?? 'id';
-        
+
         return $model::with($relations)->where($field, $value)->firstOrFail();
     }
 
@@ -120,9 +122,9 @@ trait HandlesStandardCrud
     {
         $model = $this->getModelClass();
         $relations = property_exists($this, 'withRelations') ? $this->withRelations : [];
-        
+
         $field = property_exists($this, 'routeBindingField') ? $this->routeBindingField : 'id';
-        
+
         $record = $model::with($relations)->where($field, $id)->firstOrFail();
 
         $resourceClass = $this->getResourceClass();

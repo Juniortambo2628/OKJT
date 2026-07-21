@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -29,7 +28,7 @@ class ConsultationRequestUserReceipt extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'We Received Your Request: ' . ($this->requestData->subject ?? 'Consultation Inquiry'),
+            subject: 'We Received Your Request: '.($this->requestData->subject ?? 'Consultation Inquiry'),
         );
     }
 
@@ -39,13 +38,13 @@ class ConsultationRequestUserReceipt extends Mailable
     public function content(): Content
     {
         $customTemplate = \App\Models\SiteSetting::where('key', 'email_template_user')->first();
-        
-        if ($customTemplate && !empty($customTemplate->value)) {
-            if (!str_contains($customTemplate->value, '@extends')) {
+
+        if ($customTemplate && ! empty($customTemplate->value)) {
+            if (! str_contains($customTemplate->value, '@extends')) {
                 return new Content(
                     view: 'emails.dynamic',
                     with: [
-                        'dynamicContent' => \Illuminate\Support\Facades\Blade::render($customTemplate->value, ['requestData' => $this->requestData])
+                        'dynamicContent' => \Illuminate\Support\Facades\Blade::render($customTemplate->value, ['requestData' => $this->requestData]),
                     ]
                 );
             } else {

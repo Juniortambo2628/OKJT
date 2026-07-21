@@ -13,8 +13,8 @@ use App\Models\TeamMember;
 use App\Models\Testimonial;
 use App\Models\Value;
 use App\Observers\CmsModelObserver;
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {

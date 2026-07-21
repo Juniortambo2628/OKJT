@@ -4,18 +4,19 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\InsightResource;
-use App\Models\Insight;
-use Illuminate\Http\Request;
 use App\Traits\HandlesStandardCrud;
 use App\Traits\HasUniqueSlug;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 
 class InsightController extends Controller
 {
     use HandlesStandardCrud, HasUniqueSlug;
 
     protected $withRelations = ['user'];
+
     protected $cacheKey = 'published_insights';
+
     protected $resourceClass = InsightResource::class;
 
     protected function indexQuery(Builder $query): Builder
@@ -65,7 +66,7 @@ class InsightController extends Controller
             $validated['slug'] = $this->generateUniqueSlug($validated['title'], $record->id);
         }
 
-        if (($validated['is_published'] ?? false) && !$record->is_published) {
+        if (($validated['is_published'] ?? false) && ! $record->is_published) {
             $validated['published_at'] = now();
         }
 
@@ -75,6 +76,7 @@ class InsightController extends Controller
     protected function resolveRouteBinding($value, $field = null)
     {
         $field = $field ?? 'slug';
+
         return parent::resolveRouteBinding($value, $field);
     }
 

@@ -3,9 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\ConsultationRequest;
+use App\Models\PageView;
 use App\Models\Rsvp;
 use App\Models\Subscriber;
-use App\Models\PageView;
 use Illuminate\Database\Seeder;
 
 class AnalyticsDataSeeder extends Seeder

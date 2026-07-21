@@ -4,16 +4,19 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\TeamMemberResource;
-use Illuminate\Http\Request;
 use App\Traits\HandlesStandardCrud;
+use Illuminate\Http\Request;
 
 class TeamMemberController extends Controller
 {
     use HandlesStandardCrud;
 
     protected $orderByField = 'order';
+
     protected $orderByDirection = 'asc';
+
     protected $cacheKey = 'all_team_members';
+
     protected $resourceClass = TeamMemberResource::class;
 
     protected function storeRules(Request $request): array

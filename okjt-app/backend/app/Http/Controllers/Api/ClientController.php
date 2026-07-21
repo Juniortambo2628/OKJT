@@ -4,16 +4,19 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ClientResource;
-use Illuminate\Http\Request;
 use App\Traits\HandlesStandardCrud;
+use Illuminate\Http\Request;
 
 class ClientController extends Controller
 {
     use HandlesStandardCrud;
 
     protected $orderByField = 'order';
+
     protected $orderByDirection = 'asc';
+
     protected $cacheKey = 'clients_all';
+
     protected $resourceClass = ClientResource::class;
 
     protected function indexQuery($query)
@@ -21,6 +24,7 @@ class ClientController extends Controller
         if (request()->user('sanctum')) {
             return $query->orderBy('order');
         }
+
         return $query->where('is_active', true)->orderBy('order');
     }
 

@@ -5,16 +5,18 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ServiceResource;
 use App\Models\Service;
-use Illuminate\Http\Request;
 use App\Traits\HandlesStandardCrud;
 use App\Traits\HasUniqueSlug;
+use Illuminate\Http\Request;
 
 class ServiceController extends Controller
 {
     use HandlesStandardCrud, HasUniqueSlug;
 
     protected $withRelations = ['pillar'];
+
     protected $cacheKey = 'all_services';
+
     protected $resourceClass = ServiceResource::class;
 
     protected function storeRules(Request $request): array
@@ -47,6 +49,7 @@ class ServiceController extends Controller
     protected function beforeStore(array $validated, Request $request): array
     {
         $validated['slug'] = $this->generateUniqueSlug($validated['title']);
+
         return $validated;
     }
 
@@ -55,6 +58,7 @@ class ServiceController extends Controller
         if (isset($validated['title']) && $validated['title'] !== $record->title) {
             $validated['slug'] = $this->generateUniqueSlug($validated['title'], $record->id);
         }
+
         return $validated;
     }
 

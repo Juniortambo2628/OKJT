@@ -18,7 +18,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('projects', function (Blueprint $table) {
-            if (!Schema::hasColumn('projects', 'website_url')) {
+            if (! Schema::hasColumn('projects', 'website_url')) {
                 $table->string('website_url')->nullable()->after('gallery');
             }
         });

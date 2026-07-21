@@ -4,21 +4,21 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProjectResource;
-use App\Models\Project;
-use Illuminate\Http\Request;
 use App\Traits\HandlesStandardCrud;
 use App\Traits\HasUniqueSlug;
+use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
     use HandlesStandardCrud, HasUniqueSlug;
 
     protected $resourceClass = ProjectResource::class;
+
     protected $routeBindingField = 'slug';
 
     protected function getCacheKey(): ?string
     {
-        return request()->get('type') ? 'projects_' . request()->get('type') : 'projects_all';
+        return request()->get('type') ? 'projects_'.request()->get('type') : 'projects_all';
     }
 
     protected function clearCache(): void
@@ -34,6 +34,7 @@ class ProjectController extends Controller
         if ($type) {
             $query->where('type', $type);
         }
+
         return $query->orderBy('order')->orderBy('created_at', 'desc');
     }
 
@@ -90,6 +91,7 @@ class ProjectController extends Controller
     protected function beforeStore(array $validated, Request $request): array
     {
         $validated['slug'] = $this->generateUniqueSlug($validated['title']);
+
         return $validated;
     }
 
@@ -98,6 +100,7 @@ class ProjectController extends Controller
         if (isset($validated['title']) && $validated['title'] !== $record->title) {
             $validated['slug'] = $this->generateUniqueSlug($validated['title'], $record->id);
         }
+
         return $validated;
     }
 }

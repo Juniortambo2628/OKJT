@@ -14,13 +14,13 @@ return new class extends Migration
      * - 2026_04_16_191835_create_innovations_table.php
      * - 2026_04_21_145806_add_extended_fields_to_innovations_table.php
      * - 2026_06_22_000001_merge_case_studies_and_innovations_into_projects_table.php
-     * 
+     *
      * On fresh databases, this creates the projects table directly.
      * On existing databases, the obsolete migrations become no-ops.
      */
     public function up(): void
     {
-        if (!Schema::hasTable('projects')) {
+        if (! Schema::hasTable('projects')) {
             Schema::create('projects', function (Blueprint $table) {
                 $table->id();
                 $table->string('type')->default('client');
@@ -55,7 +55,7 @@ return new class extends Migration
         }
 
         // Add fulltext indexes (from 2026_06_23_000002_add_fulltext_indexes.php)
-        if (config('database.default') === 'mysql' && !Schema::hasIndex('projects', 'projects_title_client_name_category_fulltext')) {
+        if (config('database.default') === 'mysql' && ! Schema::hasIndex('projects', 'projects_title_client_name_category_fulltext')) {
             DB::statement('ALTER TABLE `projects` ADD FULLTEXT INDEX `projects_title_client_name_category_fulltext` (`title`, `client_name`, `category`)');
         }
     }

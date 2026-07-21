@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\InsightResource;
 use App\Http\Resources\ProjectResource;
 use App\Http\Resources\ServiceResource;
+use App\Models\Insight;
 use App\Models\Project;
 use App\Models\Service;
-use App\Models\Insight;
 use Illuminate\Http\Request;
 
 class SearchController extends Controller
@@ -35,10 +35,10 @@ class SearchController extends Controller
                         ->orWhere('description', 'like', "%{$q}%")
                         ->orWhere('category', 'like', "%{$q}%");
                 })
-                ->orderByRaw("CASE 
+                ->orderByRaw('CASE 
                     WHEN title LIKE ? THEN 1 
                     WHEN title LIKE ? THEN 2 
-                    ELSE 3 END", ["{$q}", "{$q}%"])
+                    ELSE 3 END', ["{$q}", "{$q}%"])
                 ->select('id', 'title', 'slug', 'category', 'description')
                 ->limit(10)
                 ->get());
@@ -51,10 +51,10 @@ class SearchController extends Controller
                         ->orWhere('excerpt', 'like', "%{$q}%")
                         ->orWhere('category', 'like', "%{$q}%");
                 })
-                ->orderByRaw("CASE 
+                ->orderByRaw('CASE 
                     WHEN title LIKE ? THEN 1 
                     WHEN title LIKE ? THEN 2 
-                    ELSE 3 END", ["{$q}", "{$q}%"])
+                    ELSE 3 END', ["{$q}", "{$q}%"])
                 ->select('id', 'title', 'slug', 'category', 'excerpt')
                 ->limit(10)
                 ->get());
@@ -67,10 +67,10 @@ class SearchController extends Controller
                         ->orWhere('client_name', 'like', "%{$q}%")
                         ->orWhere('category', 'like', "%{$q}%");
                 })
-                ->orderByRaw("CASE 
+                ->orderByRaw('CASE 
                     WHEN title LIKE ? THEN 1 
                     WHEN title LIKE ? THEN 2 
-                    ELSE 3 END", ["{$q}", "{$q}%"])
+                    ELSE 3 END', ["{$q}", "{$q}%"])
                 ->select('id', 'title', 'slug', 'client_name', 'category')
                 ->limit(10)
                 ->get());

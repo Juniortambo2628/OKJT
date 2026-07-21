@@ -4,7 +4,6 @@ namespace App\Mail;
 
 use App\Models\Rsvp;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -30,7 +29,7 @@ class RsvpConfirmation extends Mailable
     public function envelope(): Envelope
     {
         $subject = 'Receipt of Your Request - OKJTech';
-        
+
         if ($this->rsvp->type === 'early_access') {
             $subject = 'Hold tight, your access is requested! - OKJTech';
         } elseif ($this->rsvp->type === 'rsvp') {
@@ -55,7 +54,7 @@ class RsvpConfirmation extends Mailable
             markdown: 'emails.rsvp.confirmation',
             with: [
                 'rsvp' => $this->rsvp,
-                'logoUrl' => config('app.frontend_url', 'http://localhost:3000') . '/logos/OKJT-Logos/OKJTechLogo-Black_Transparent.png',
+                'logoUrl' => config('app.frontend_url', 'http://localhost:3000').'/logos/OKJT-Logos/OKJTechLogo-Black_Transparent.png',
             ],
         );
     }

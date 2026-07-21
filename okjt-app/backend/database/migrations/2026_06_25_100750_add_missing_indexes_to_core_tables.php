@@ -23,8 +23,8 @@ return new class extends Migration
         foreach ($indexes as $table => $indexColumns) {
             if (Schema::hasTable($table)) {
                 foreach ($indexColumns as $columns) {
-                    $indexName = $table . '_' . implode('_', $columns) . '_index';
-                    if (!Schema::hasIndex($table, $indexName)) {
+                    $indexName = $table.'_'.implode('_', $columns).'_index';
+                    if (! Schema::hasIndex($table, $indexName)) {
                         try {
                             Schema::table($table, function (Blueprint $table) use ($columns) {
                                 $table->index($columns);

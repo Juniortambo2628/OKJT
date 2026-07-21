@@ -4,17 +4,17 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PillarResource;
-use App\Models\Pillar;
-use Illuminate\Http\Request;
 use App\Traits\HandlesStandardCrud;
 use App\Traits\HasUniqueSlug;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 
 class PillarController extends Controller
 {
     use HandlesStandardCrud, HasUniqueSlug;
 
     protected $withRelations = ['services'];
+
     protected $resourceClass = PillarResource::class;
 
     protected function getCacheKey(): ?string
@@ -30,9 +30,10 @@ class PillarController extends Controller
 
     protected function indexQuery(Builder $query): Builder
     {
-        if (!request()->user('sanctum')) {
+        if (! request()->user('sanctum')) {
             $query->where('is_active', true);
         }
+
         return $query->orderBy('created_at', 'desc');
     }
 
@@ -63,6 +64,7 @@ class PillarController extends Controller
     protected function beforeStore(array $validated, Request $request): array
     {
         $validated['slug'] = $this->generateUniqueSlug($validated['title']);
+
         return $validated;
     }
 
@@ -71,12 +73,14 @@ class PillarController extends Controller
         if (isset($validated['title']) && $validated['title'] !== $record->title) {
             $validated['slug'] = $this->generateUniqueSlug($validated['title'], $record->id);
         }
+
         return $validated;
     }
 
     protected function resolveRouteBinding($value, $field = null)
     {
         $field = $field ?? 'slug';
+
         return parent::resolveRouteBinding($value, $field);
     }
 }

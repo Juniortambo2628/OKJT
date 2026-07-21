@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Stat extends Model
 {
     use SoftDeletes;
+
     protected $fillable = [
         'label',
         'value',

@@ -4,19 +4,20 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ConsultationRequestResource;
-use App\Models\ConsultationRequest;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 use App\Mail\ConsultationRequestAdminNotification;
 use App\Mail\ConsultationRequestUserReceipt;
 use App\Traits\HandlesStandardCrud;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class ConsultationRequestController extends Controller
 {
     use HandlesStandardCrud;
 
     protected $orderByField = 'created_at';
+
     protected $orderByDirection = 'desc';
+
     protected $resourceClass = ConsultationRequestResource::class;
 
     protected function storeRules(Request $request): array
@@ -46,7 +47,7 @@ class ConsultationRequestController extends Controller
             Mail::to($record->email)
                 ->send(new ConsultationRequestUserReceipt($record));
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Failed to send consultation emails: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Failed to send consultation emails: '.$e->getMessage());
         }
 
         return $record;

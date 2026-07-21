@@ -20,18 +20,18 @@ class UploadController extends Controller
 
         if ($isImage && $mime !== 'image/svg+xml') {
             // Optimize image: resize to max 1920x1920, convert to WebP, compress to 80% quality
-            $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+            $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver);
             $image = $manager->read($file);
             $image->scaleDown(width: 1920, height: 1920);
             $encoded = $image->toWebp(80);
             $encodedString = (string) $encoded;
-                
-            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '_' . uniqid() . '.webp';
-            $path = 'uploads/' . $filename;
+
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME).'_'.uniqid().'.webp';
+            $path = 'uploads/'.$filename;
             Storage::disk('public')->put($path, $encodedString);
-            
+
             return response()->json([
-                'url' => url('/api/storage/' . ltrim($path, '/')),
+                'url' => url('/api/storage/'.ltrim($path, '/')),
                 'path' => $path,
                 'filename' => $filename,
                 'size' => strlen($encodedString),
@@ -43,7 +43,7 @@ class UploadController extends Controller
         $path = $file->store('uploads', 'public');
 
         return response()->json([
-            'url' => url('/api/storage/' . ltrim($path, '/')),
+            'url' => url('/api/storage/'.ltrim($path, '/')),
             'path' => $path,
             'filename' => $file->getClientOriginalName(),
             'size' => $file->getSize(),
@@ -59,6 +59,7 @@ class UploadController extends Controller
 
         if (Storage::disk('public')->exists($request->path)) {
             Storage::disk('public')->delete($request->path);
+
             return response()->json(['message' => 'File deleted'], 200);
         }
 
@@ -67,7 +68,7 @@ class UploadController extends Controller
 
     public function serve(string $path)
     {
-        if (!Storage::disk('public')->exists($path)) {
+        if (! Storage::disk('public')->exists($path)) {
             abort(404);
         }
 

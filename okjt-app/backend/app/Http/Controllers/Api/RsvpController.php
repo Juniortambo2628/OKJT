@@ -4,18 +4,19 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\RsvpResource;
-use App\Models\Rsvp;
-use Illuminate\Http\Request;
 use App\Mail\RsvpConfirmation;
-use Illuminate\Support\Facades\Mail;
 use App\Traits\HandlesStandardCrud;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class RsvpController extends Controller
 {
     use HandlesStandardCrud;
 
     protected $orderByField = 'created_at';
+
     protected $orderByDirection = 'desc';
+
     protected $resourceClass = RsvpResource::class;
 
     protected function storeRules(Request $request): array
@@ -47,7 +48,7 @@ class RsvpController extends Controller
         try {
             Mail::to($record->email)->queue(new RsvpConfirmation($record));
         } catch (\Exception $e) {
-            logger()->error("Failed to send RSVP confirmation mail: " . $e->getMessage());
+            logger()->error('Failed to send RSVP confirmation mail: '.$e->getMessage());
         }
 
         return $record;

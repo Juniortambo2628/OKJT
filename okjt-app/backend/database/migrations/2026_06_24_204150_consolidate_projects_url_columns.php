@@ -2,14 +2,14 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
     public function up(): void
     {
-        if (!Schema::hasColumn('projects', 'url')) {
+        if (! Schema::hasColumn('projects', 'url')) {
             Schema::table('projects', function (Blueprint $table) {
                 $table->string('url')->nullable()->after('gallery');
             });
@@ -22,7 +22,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (!Schema::hasColumn('projects', 'website_url')) {
+        if (! Schema::hasColumn('projects', 'website_url')) {
             Schema::table('projects', function (Blueprint $table) {
                 $table->string('website_url')->nullable()->after('gallery');
             });

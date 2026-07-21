@@ -1,22 +1,22 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\ServiceController;
-use App\Http\Controllers\Api\InsightController;
-use App\Http\Controllers\Api\ProjectController;
-use App\Http\Controllers\Api\StatController;
-use App\Http\Controllers\Api\SiteSettingController;
-use App\Http\Controllers\Api\TestimonialController;
-use App\Http\Controllers\Api\ClientController;
-use App\Http\Controllers\Api\UploadController;
-use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\AnalyticsController;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ClientController;
+use App\Http\Controllers\Api\ConsultationRequestController;
+use App\Http\Controllers\Api\InsightController;
+use App\Http\Controllers\Api\PillarController;
+use App\Http\Controllers\Api\ProjectController;
+use App\Http\Controllers\Api\SearchController;
+use App\Http\Controllers\Api\ServiceController;
+use App\Http\Controllers\Api\SiteSettingController;
+use App\Http\Controllers\Api\StatController;
 use App\Http\Controllers\Api\SubscriberController;
 use App\Http\Controllers\Api\TeamMemberController;
+use App\Http\Controllers\Api\TestimonialController;
+use App\Http\Controllers\Api\UploadController;
 use App\Http\Controllers\Api\ValueController;
-use App\Http\Controllers\Api\ConsultationRequestController;
-use App\Http\Controllers\Api\PillarController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------

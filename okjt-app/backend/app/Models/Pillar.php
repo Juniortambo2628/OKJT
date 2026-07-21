@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Pillar extends Model
 {
     use SoftDeletes;
+
     protected $fillable = [
         'title',
         'slug',

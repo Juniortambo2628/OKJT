@@ -61,8 +61,8 @@ class User extends Authenticatable
 
     public function sendPasswordResetNotification($token)
     {
-        $url = config('app.frontend_url') . '/admin/reset-password?token=' . $token . '&email=' . urlencode($this->email);
-        $expire = config('auth.passwords.' . config('auth.defaults.passwords') . '.expire');
+        $url = config('app.frontend_url').'/admin/reset-password?token='.$token.'&email='.urlencode($this->email);
+        $expire = config('auth.passwords.'.config('auth.defaults.passwords').'.expire');
 
         \Illuminate\Support\Facades\Mail::to($this->email)->send(new \App\Mail\CustomPasswordResetMail($url, $expire));
     }

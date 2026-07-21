@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class SiteSettingSeeder extends Seeder
@@ -19,14 +18,14 @@ class SiteSettingSeeder extends Seeder
             ['key' => 'logo_nobg', 'value' => '/logos/OKJT-Logos/OKJTStyle_NoBG.png', 'type' => 'image', 'group' => 'branding'],
             ['key' => 'favicon', 'value' => '/logos/OKJT-Logos/OKJTechLogo-Black_BG-favicon.png', 'type' => 'image', 'group' => 'branding'],
             ['key' => 'dashboard_favicon', 'value' => '/logos/OKJT-Logos/OKJTechLogo-Black_BG-favicon.png', 'type' => 'image', 'group' => 'branding'],
-            
+
             // Hero Section
             ['key' => 'hero_tagline', 'value' => 'Trusted Design-Led Software Engineering', 'type' => 'text', 'group' => 'homepage'],
             ['key' => 'hero_title_line1', 'value' => 'Engineering for', 'type' => 'text', 'group' => 'homepage'],
             ['key' => 'hero_rotating_words', 'value' => 'Scale.,Impact.,Complexity.', 'type' => 'text', 'group' => 'homepage'],
             ['key' => 'hero_title_line2', 'value' => 'Empowering Digital Growth.', 'type' => 'text', 'group' => 'homepage'],
             ['key' => 'hero_subtitle', 'value' => 'We design and build bespoke, high-performance web applications, robust cloud APIs, and seamless digital solutions for fast-growing businesses.', 'type' => 'textarea', 'group' => 'homepage'],
-            
+
             // Three Pillars (Value Proposition) Section
             ['key' => 'vp_section_tagline', 'value' => 'What We Do', 'type' => 'text', 'group' => 'homepage'],
             ['key' => 'vp_section_title', 'value' => 'Three Pillars of Trusted Intelligence', 'type' => 'text', 'group' => 'homepage'],

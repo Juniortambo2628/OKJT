@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Insight extends Model
 {
     use SoftDeletes;
+
     protected $fillable = [
         'title',
         'slug',

@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -29,7 +28,7 @@ class ConsultationRequestAdminNotification extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'New Consultation Request: ' . ($this->requestData->subject ?? 'General Inquiry'),
+            subject: 'New Consultation Request: '.($this->requestData->subject ?? 'General Inquiry'),
         );
     }
 
@@ -39,14 +38,14 @@ class ConsultationRequestAdminNotification extends Mailable
     public function content(): Content
     {
         $customTemplate = \App\Models\SiteSetting::where('key', 'email_template_admin')->first();
-        
-        if ($customTemplate && !empty($customTemplate->value)) {
+
+        if ($customTemplate && ! empty($customTemplate->value)) {
             // Check if it already has layout stuff, if not we use dynamic view
-            if (!str_contains($customTemplate->value, '@extends')) {
+            if (! str_contains($customTemplate->value, '@extends')) {
                 return new Content(
                     view: 'emails.dynamic',
                     with: [
-                        'dynamicContent' => \Illuminate\Support\Facades\Blade::render($customTemplate->value, ['requestData' => $this->requestData])
+                        'dynamicContent' => \Illuminate\Support\Facades\Blade::render($customTemplate->value, ['requestData' => $this->requestData]),
                     ]
                 );
             } else {

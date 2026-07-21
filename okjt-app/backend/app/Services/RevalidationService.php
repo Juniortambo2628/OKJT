@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Http;
 class RevalidationService
 {
     protected string $nextUrl;
+
     protected string $secret;
 
     public function __construct()
@@ -26,6 +27,7 @@ class RevalidationService
             return $response->successful();
         } catch (\Exception $e) {
             report($e);
+
             return false;
         }
     }

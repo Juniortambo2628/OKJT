@@ -22,7 +22,7 @@ class SiteSettingController extends Controller
         $settings = Cache::rememberForever('site_settings_grouped', function () {
             return SiteSetting::all()->groupBy('group');
         });
-        
+
         return $settings->map(function ($group) {
             return SiteSettingResource::collection($group);
         });
@@ -39,6 +39,7 @@ class SiteSettingController extends Controller
 
         $setting = SiteSetting::create($validated);
         $this->clearCache();
+
         return new SiteSettingResource($setting);
     }
 
@@ -55,6 +56,7 @@ class SiteSettingController extends Controller
 
         $siteSetting->update($validated);
         $this->clearCache();
+
         return new SiteSettingResource($siteSetting);
     }
 
@@ -62,6 +64,7 @@ class SiteSettingController extends Controller
     {
         $siteSetting->delete();
         $this->clearCache();
+
         return response()->json(null, 204);
     }
 
@@ -89,6 +92,7 @@ class SiteSettingController extends Controller
         $this->clearCache();
 
         $settings = SiteSetting::all()->groupBy('group');
+
         return $settings->map(function ($group) {
             return SiteSettingResource::collection($group);
         });
@@ -99,7 +103,7 @@ class SiteSettingController extends Controller
         $settings = Cache::rememberForever('site_settings_maintenance', function () {
             return SiteSetting::where('group', 'maintenance')->get()->pluck('value', 'key');
         });
-        
+
         return response()->json([
             'isActive' => filter_var($settings->get('maintenance_active') ?? '0', FILTER_VALIDATE_BOOLEAN),
             'title' => $settings->get('maintenance_title') ?? 'System Maintenance',
@@ -120,6 +124,7 @@ class SiteSettingController extends Controller
     public function showEmailTemplate(string $key)
     {
         $setting = SiteSetting::where('key', $key)->where('group', 'email')->firstOrFail();
+
         return new SiteSettingResource($setting);
     }
 
@@ -141,6 +146,7 @@ class SiteSettingController extends Controller
         );
 
         $this->clearCache();
+
         return new SiteSettingResource($setting);
     }
 
@@ -161,6 +167,7 @@ class SiteSettingController extends Controller
         );
 
         $this->clearCache();
+
         return new SiteSettingResource($setting);
     }
 
@@ -173,4 +180,3 @@ class SiteSettingController extends Controller
         return response()->json(null, 204);
     }
 }
-

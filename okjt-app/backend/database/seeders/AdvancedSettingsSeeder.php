@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\SiteSetting;
+use Illuminate\Database\Seeder;
 
 class AdvancedSettingsSeeder extends Seeder
 {
@@ -346,31 +346,31 @@ HTML;
                 'key' => 'privacy_policy',
                 'value' => $privacyPolicy,
                 'group' => 'legal',
-                'type' => 'rich-text'
+                'type' => 'rich-text',
             ],
             [
                 'key' => 'terms_of_service',
                 'value' => $termsOfService,
                 'group' => 'legal',
-                'type' => 'rich-text'
+                'type' => 'rich-text',
             ],
             [
                 'key' => 'cookie_policy',
                 'value' => $cookiePolicy,
                 'group' => 'legal',
-                'type' => 'rich-text'
+                'type' => 'rich-text',
             ],
             [
                 'key' => 'email_template_admin',
                 'value' => $emailTemplateAdmin,
                 'group' => 'email',
-                'type' => 'code'
+                'type' => 'code',
             ],
             [
                 'key' => 'email_template_user',
                 'value' => $emailTemplateUser,
                 'group' => 'email',
-                'type' => 'code'
+                'type' => 'code',
             ],
         ];
 
