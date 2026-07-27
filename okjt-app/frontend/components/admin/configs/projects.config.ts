@@ -25,6 +25,7 @@ export const projectsConfig: AdminResourceConfig<Project> = {
     testimonial_quote: '',
     testimonial_author: '',
     image: '',
+    bg_image: '',
     gallery: [],
     url: '',
     is_active: true,

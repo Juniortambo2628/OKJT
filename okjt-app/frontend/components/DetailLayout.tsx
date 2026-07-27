@@ -19,6 +19,8 @@ interface DetailLayoutProps {
     loadingLabel: string
     
     // Page Hero
+    heroMedia?: string
+    projectImage?: string
     tagline: string
     title: string
     breadcrumbs: { label: string; href?: string }[]
@@ -82,6 +84,8 @@ export default function DetailLayout({
     backLink,
     backLinkLabel,
     loadingLabel,
+    heroMedia,
+    projectImage,
     tagline,
     title,
     breadcrumbs,
@@ -185,7 +189,7 @@ export default function DetailLayout({
     return (
         <BaseLayout
             navSections={navSections}
-            heroMedia={undefined}
+            heroMedia={heroMedia}
             tagline={tagline}
             title={title}
             subtitle={description}
@@ -195,6 +199,7 @@ export default function DetailLayout({
             {/* Overview / Content sections */}
             <ParallaxSection
                 id="details-overview"
+                bgMedia={heroMedia}
                 heightClass="min-h-[220vh]"
             >
                 <div className="max-w-[1200px] mx-auto px-6 w-full">
@@ -203,7 +208,10 @@ export default function DetailLayout({
                             {/* Short Description Highlight */}
                             {description && (
                                 <FadeIn direction="left" distance={24}>
-                                    <div className="p-8 border-l-2 border-primary bg-black/20 rounded-r-xl">
+                                    <div className="p-8 bg-black/20 rounded-xl">
+                                        <div className="inline-block px-3 py-1 bg-white/10 backdrop-blur-md border border-white/15 text-primary text-xs font-semibold rounded-full mb-4">
+                                            Overview
+                                        </div>
                                         <div
                                             className="text-lg md:text-xl font-light text-white/90 leading-relaxed italic prose prose-invert max-w-none prose-p:italic prose-p:text-white/90"
                                             dangerouslySetInnerHTML={{ __html: description }}
@@ -216,9 +224,9 @@ export default function DetailLayout({
                             <StaggerContainer className="space-y-12 border border-white/5 bg-black/20 rounded-2xl p-8 md:p-12" staggerDelay={0.12}>
                                 {challengeHtml && (
                                     <StaggerItem>
-                                        <h2 className="text-[10px] font-bold text-primary uppercase tracking-[0.3em] mb-6 flex items-center gap-3">
-                                            <span className="w-8 h-[1px] bg-primary/30" /> {challengeTitle}
-                                        </h2>
+                                        <div className="inline-block px-3 py-1 bg-white/10 backdrop-blur-md border border-white/15 text-primary text-xs font-semibold rounded-full mb-6">
+                                            {challengeTitle}
+                                        </div>
                                         <div
                                             className="text-white/70 leading-relaxed text-sm md:text-base font-light prose dark:prose-invert max-w-none prose-p:leading-relaxed prose-p:text-white/70 prose-strong:text-white"
                                             dangerouslySetInnerHTML={{ __html: challengeHtml }}
@@ -228,9 +236,9 @@ export default function DetailLayout({
 
                                 {approachHtml && (
                                     <StaggerItem className="pt-8 border-t border-white/5">
-                                        <h2 className="text-[10px] font-bold text-primary uppercase tracking-[0.3em] mb-6 flex items-center gap-3">
-                                            <span className="w-8 h-[1px] bg-primary/30" /> {approachTitle}
-                                        </h2>
+                                        <div className="inline-block px-3 py-1 bg-white/10 backdrop-blur-md border border-white/15 text-primary text-xs font-semibold rounded-full mb-6">
+                                            {approachTitle}
+                                        </div>
                                         <div
                                             className="text-white/70 leading-relaxed text-sm md:text-base font-light prose dark:prose-invert max-w-none prose-p:leading-relaxed prose-p:text-white/70 prose-strong:text-white"
                                             dangerouslySetInnerHTML={{ __html: approachHtml }}
@@ -240,9 +248,9 @@ export default function DetailLayout({
 
                                 {impactHtml && (
                                     <StaggerItem className="pt-8 border-t border-white/5">
-                                        <h2 className="text-[10px] font-bold text-primary uppercase tracking-[0.3em] mb-6 flex items-center gap-3">
-                                            <span className="w-8 h-[1px] bg-primary/30" /> {impactTitle}
-                                        </h2>
+                                        <div className="inline-block px-3 py-1 bg-white/10 backdrop-blur-md border border-white/15 text-primary text-xs font-semibold rounded-full mb-6">
+                                            {impactTitle}
+                                        </div>
                                         <div
                                             className="text-white/70 leading-relaxed text-sm md:text-base font-light prose dark:prose-invert max-w-none prose-p:leading-relaxed prose-p:text-white/70 prose-strong:text-white"
                                             dangerouslySetInnerHTML={{ __html: impactHtml }}
@@ -255,6 +263,18 @@ export default function DetailLayout({
                         {/* Sidebar Info */}
                         <div className="lg:col-span-4">
                             <div className="sticky top-32 space-y-8">
+                                {/* Thumbnail Image above stack */}
+                                {projectImage && (
+                                    <div className="relative aspect-video rounded-2xl overflow-hidden border border-white/10 bg-black/40 shadow-lg">
+                                        <Image
+                                            src={projectImage}
+                                            alt={title}
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    </div>
+                                )}
+
                                 <div className="p-8 bg-black/20 border border-white/5 rounded-2xl shadow-sm">
                                     <h3 className="text-white font-bold mb-6 flex items-center gap-2">
                                         <Code2 size={18} className="text-primary" /> {sidebarStackTitle}

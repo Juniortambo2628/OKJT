@@ -107,9 +107,15 @@ export default function ProjectFormFields({ form, setForm }: ProjectFormFieldsPr
 
             <div className="space-y-4">
                 <ImageUploader
-                    label="Featured Image"
+                    label="Featured Thumbnail Image"
                     value={form.image || ''}
                     onChange={(url) => setForm({ ...form, image: url })}
+                />
+
+                <ImageUploader
+                    label="Page Background Image / Video (Hero & Parallax BG)"
+                    value={form.bg_image || ''}
+                    onChange={(url) => setForm({ ...form, bg_image: url })}
                 />
 
                 <MultiImageUploader

@@ -85,11 +85,11 @@ export default function ParallaxNav({ sections }: ParallaxNavProps) {
     return (
         <motion.div
             ref={navRef}
-            initial={{ y: -20, opacity: 0 }}
+            initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: isScrolling ? 1 : 0.4 }}
             whileHover={{ opacity: 1 }}
             transition={{ opacity: { duration: 0.5 } }}
-            className="fixed top-20 right-4 md:right-8 z-[60] bg-background/30 backdrop-blur-xl border border-foreground/15 rounded-full px-4 py-2.5 flex items-center gap-3 shadow-lg overflow-hidden transition-colors"
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] bg-background/40 backdrop-blur-xl border border-foreground/15 rounded-full px-4 py-2.5 flex items-center gap-3 shadow-2xl overflow-hidden transition-colors"
         >
             {sections.map((section, index) => (
                 <button
@@ -107,7 +107,7 @@ export default function ParallaxNav({ sections }: ParallaxNavProps) {
                     ) : (
                         <div className="w-2 h-2 rounded-full bg-foreground/20 hover:bg-foreground/50 transition-all duration-300" />
                     )}
-                    <span className="absolute bottom-full right-0 mb-4 px-3 py-1.5 bg-foreground text-background text-[10px] font-bold rounded uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-md">
+                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 px-3 py-1.5 bg-foreground text-background text-[10px] font-bold rounded uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-md">
                         {section.label}
                     </span>
                 </button>

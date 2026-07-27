@@ -24,7 +24,9 @@ export default function ProjectDetailContent({
             backLinkLabel="Back to Projects"
             loadingLabel={isClient ? 'Retrieving project...' : 'Launching innovation...'}
 
-            // Hero
+            // Hero & Background
+            heroMedia={project?.bg_image ? getMediaUrl(project.bg_image) : undefined}
+            projectImage={project?.image ? getMediaUrl(project.image) : undefined}
             tagline={isClient ? (project?.client_name || '') : (project?.tagline || 'OKJTech Flagship Innovation')}
             title={project?.title || ''}
             breadcrumbs={[
@@ -42,11 +44,11 @@ export default function ProjectDetailContent({
 
             // Content
             description={project?.description}
-            challengeTitle={isClient ? 'The Challenge' : 'The Gap in the Market'}
+            challengeTitle={isClient ? 'the challenge' : 'the problem'}
             challengeHtml={project?.problem}
-            approachTitle={isClient ? 'Strategic Approach' : 'Engineering Excellence'}
+            approachTitle={isClient ? 'strategic approach' : 'our approach'}
             approachHtml={project?.methodology}
-            impactTitle={isClient ? 'Tangible Impact' : 'Commercial Success'}
+            impactTitle={isClient ? 'tangible impact' : 'objective'}
             impactHtml={project?.outcome}
 
             // Sidebar

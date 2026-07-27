@@ -34,6 +34,7 @@ const AdminProjectsPage = () => {
                 testimonial_quote: '',
                 testimonial_author: '',
                 image: '',
+                bg_image: '',
                 gallery: [],
                 url: '',
                 is_active: true,

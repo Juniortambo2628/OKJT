@@ -69,6 +69,7 @@ export interface Project {
   testimonial_quote: string | null;
   testimonial_author: string | null;
   image: string | null;
+  bg_image?: string | null;
   gallery: string[] | null;
   url: string | null;
   is_active: boolean;
