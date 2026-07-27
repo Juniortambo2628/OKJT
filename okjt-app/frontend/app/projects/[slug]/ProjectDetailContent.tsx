@@ -13,7 +13,7 @@ export default function ProjectDetailContent({
     relatedProjects: any[]
     slug: string
 }) {
-    const isClient = project?.category?.toLowerCase() === 'client'
+    const isClient = project?.type === 'client'
 
     return (
         <DetailLayout

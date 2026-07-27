@@ -81,7 +81,7 @@ export default function PillarDetailContent({ slug }: { slug: string }) {
                                 <StaggerItem key={service.id}>
                                     <Link
                                         href={`/services/${service.slug}`}
-                                        className="group relative h-full bg-secondary/5 p-8 border border-border/50 hover:border-primary/40 transition-all flex flex-col justify-between overflow-hidden block"
+                                        className="group relative h-full bg-secondary/5 p-8 border border-border/50 hover:border-primary/40 transition-all flex flex-col justify-between overflow-hidden"
                                     >
                                         <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 group-hover:bg-primary/10 transition-colors" />
                                         

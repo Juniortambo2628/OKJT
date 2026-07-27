@@ -104,6 +104,9 @@ const AdminProjectsPage = () => {
                         <h3 className="font-bold text-base leading-tight mb-2 line-clamp-2 text-foreground group-hover:text-primary transition-colors cursor-pointer">
                             {item.title}
                         </h3>
+                        {item.tagline && (
+                            <div className="text-xs text-muted-foreground italic mb-2 line-clamp-2">{item.tagline}</div>
+                        )}
                         {item.significant_figure && (
                             <div className="text-xs text-primary font-bold mb-4">{item.significant_figure}</div>
                         )}
@@ -141,7 +144,7 @@ const AdminProjectsPage = () => {
                     <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground">Category</th>
                     <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground">Featured</th>
                     <th className="p-4 font-bold text-xs uppercase tracking-widest text-muted-foreground">Created</th>
-                    <th className="p-4 text-right"></th>
+                    <th className="p-4 text-right"><span className="sr-only">Actions</span></th>
                 </tr>
             )}
             renderTableRows={(items, selectedIds, toggleSelect, onEdit, onDelete) => (
@@ -158,7 +161,7 @@ const AdminProjectsPage = () => {
                             <div className="flex items-center gap-4">
                                 <div className="w-10 h-10 rounded bg-secondary overflow-hidden shrink-0 border border-border/50">
                                     {item.image ? (
-                                        <img src={getMediaUrl(item.image)} className="w-full h-full object-cover" />
+                                        <img src={getMediaUrl(item.image)} alt={item.title} className="w-full h-full object-cover" />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-primary/40">
                                             <Star size={16} />

@@ -46,6 +46,14 @@ export default function ProjectFormFields({ form, setForm }: ProjectFormFieldsPr
                     <Input className="bg-background border-border text-foreground" value={form.url || ''} onChange={(e) => setForm({ ...form, url: e.target.value })} placeholder="e.g. https://project-link.com" />
                 </div>
                 <div className="space-y-2 md:col-span-2">
+                    <Label className="text-muted-foreground">Subtitle / Tagline (e.g. "Bridging the gap between tech and policy")</Label>
+                    <Input className="bg-background border-border text-foreground" value={form.tagline || ''} onChange={(e) => setForm({ ...form, tagline: e.target.value })} placeholder="e.g. Documenting love as it happens." />
+                </div>
+                <div className="space-y-2">
+                    <Label className="text-muted-foreground">Badge / Key Result (Significant Figure)</Label>
+                    <Input className="bg-background border-border text-foreground" value={form.significant_figure || ''} onChange={(e) => setForm({ ...form, significant_figure: e.target.value })} placeholder="e.g. Transactional SMTP, Live WebSockets Chat" />
+                </div>
+                <div className="space-y-2 md:col-span-2">
                     <Label className="text-muted-foreground">Short Description</Label>
                     <Input className="bg-background border-border text-foreground" value={form.description || ''} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="A brief summary for the project." />
                 </div>

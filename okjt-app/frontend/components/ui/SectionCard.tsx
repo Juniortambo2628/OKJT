@@ -100,7 +100,7 @@ export function SectionCard({
 
                 {/* Carousel / content area */}
                 {children && (
-                    <div className="flex-1 min-h-0 overflow-hidden">
+                    <div className="flex-1 min-h-0 overflow-y-auto pr-2 custom-scrollbar">
                         {children}
                     </div>
                 )}

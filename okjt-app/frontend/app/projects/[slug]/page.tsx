@@ -10,7 +10,7 @@ export default async function FlagshipProjectDetailPage({ params }: { params: Pr
         getProjects(),
     ])
 
-    const relatedProjects = allProjects?.filter((p: any) => p.slug !== slug && p.id !== project?.id).slice(0, 2) || []
+    const relatedProjects = allProjects?.filter((p: any) => p.slug !== slug && p.id !== project?.id && p.type === project?.type).slice(0, 2) || []
 
     return (
         <ProjectDetailContent
