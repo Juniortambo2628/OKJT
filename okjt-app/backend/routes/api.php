@@ -153,7 +153,7 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::post('/email-templates', [SiteSettingController::class, 'storeEmailTemplate']);
     Route::put('/email-templates/{key}', [SiteSettingController::class, 'updateEmailTemplate']);
     Route::delete('/email-templates/{key}', [SiteSettingController::class, 'destroyEmailTemplate']);
-    Route::post('/email-templates/preview', [\App\Http\Controllers\Api\EmailTemplateController::class, 'preview']);
+    Route::post('/email-templates/preview', [SiteSettingController::class, 'previewEmailTemplate']);
 
     // Users (admin management)
     Route::apiResource('users', UserController::class);

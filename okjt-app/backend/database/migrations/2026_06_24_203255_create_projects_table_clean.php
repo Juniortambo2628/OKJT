@@ -39,7 +39,6 @@ return new class extends Migration
                 $table->string('testimonial_author')->nullable();
                 $table->string('image')->nullable();
                 $table->json('gallery')->nullable();
-                $table->string('website_url')->nullable();
                 $table->string('url')->nullable();
                 $table->boolean('is_active')->default(true);
                 $table->boolean('is_featured')->default(false);

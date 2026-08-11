@@ -22,6 +22,7 @@ export const clientsConfig: AdminResourceConfig<Client> = {
     (c.name || '').toLowerCase().includes(term.toLowerCase()),
   fields: [
     { key: 'name', label: 'Client Name', type: 'text', required: true },
+    { key: 'category', label: 'Category / Sector', type: 'text', placeholder: 'e.g. Fintech, Healthcare' },
     { key: 'website', label: 'Website', type: 'text', placeholder: 'https://...' },
     { key: 'logo', label: 'Client Logo', type: 'image', imageMaxSizeMB: 10, span: 2 },
     { key: 'order', label: 'Sort Order', type: 'number' },

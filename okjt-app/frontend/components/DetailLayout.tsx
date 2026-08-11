@@ -10,6 +10,20 @@ import ParallaxSection from '@/components/ParallaxSection'
 import BaseLayout from '@/components/BaseLayout'
 import PrimaryButton from '@/components/PrimaryButton'
 
+function NarrativeBlock({ title, html, className }: { title: string, html: string, className?: string }) {
+    return (
+        <StaggerItem className={className}>
+            <div className="inline-block px-3 py-1 bg-white/10 backdrop-blur-md border border-white/15 text-primary text-xs font-semibold rounded-full mb-6">
+                {title}
+            </div>
+            <div
+                className="text-white/70 leading-relaxed text-sm md:text-base font-light prose dark:prose-invert max-w-none prose-p:leading-relaxed prose-p:text-white/70 prose-strong:text-white"
+                dangerouslySetInnerHTML={{ __html: html }}
+            />
+        </StaggerItem>
+    )
+}
+
 interface DetailLayoutProps {
     isLoading: boolean
     isError: boolean
@@ -222,41 +236,9 @@ export default function DetailLayout({
 
                             {/* Narrative Blocks */}
                             <StaggerContainer className="space-y-12 border border-white/5 bg-black/20 rounded-2xl p-8 md:p-12" staggerDelay={0.12}>
-                                {challengeHtml && (
-                                    <StaggerItem>
-                                        <div className="inline-block px-3 py-1 bg-white/10 backdrop-blur-md border border-white/15 text-primary text-xs font-semibold rounded-full mb-6">
-                                            {challengeTitle}
-                                        </div>
-                                        <div
-                                            className="text-white/70 leading-relaxed text-sm md:text-base font-light prose dark:prose-invert max-w-none prose-p:leading-relaxed prose-p:text-white/70 prose-strong:text-white"
-                                            dangerouslySetInnerHTML={{ __html: challengeHtml }}
-                                        />
-                                    </StaggerItem>
-                                )}
-
-                                {approachHtml && (
-                                    <StaggerItem className="pt-8 border-t border-white/5">
-                                        <div className="inline-block px-3 py-1 bg-white/10 backdrop-blur-md border border-white/15 text-primary text-xs font-semibold rounded-full mb-6">
-                                            {approachTitle}
-                                        </div>
-                                        <div
-                                            className="text-white/70 leading-relaxed text-sm md:text-base font-light prose dark:prose-invert max-w-none prose-p:leading-relaxed prose-p:text-white/70 prose-strong:text-white"
-                                            dangerouslySetInnerHTML={{ __html: approachHtml }}
-                                        />
-                                    </StaggerItem>
-                                )}
-
-                                {impactHtml && (
-                                    <StaggerItem className="pt-8 border-t border-white/5">
-                                        <div className="inline-block px-3 py-1 bg-white/10 backdrop-blur-md border border-white/15 text-primary text-xs font-semibold rounded-full mb-6">
-                                            {impactTitle}
-                                        </div>
-                                        <div
-                                            className="text-white/70 leading-relaxed text-sm md:text-base font-light prose dark:prose-invert max-w-none prose-p:leading-relaxed prose-p:text-white/70 prose-strong:text-white"
-                                            dangerouslySetInnerHTML={{ __html: impactHtml }}
-                                        />
-                                    </StaggerItem>
-                                )}
+                                {challengeHtml && <NarrativeBlock title={challengeTitle} html={challengeHtml} />}
+                                {approachHtml && <NarrativeBlock title={approachTitle} html={approachHtml} className="pt-8 border-t border-white/5" />}
+                                {impactHtml && <NarrativeBlock title={impactTitle} html={impactHtml} className="pt-8 border-t border-white/5" />}
                             </StaggerContainer>
                         </div>
 

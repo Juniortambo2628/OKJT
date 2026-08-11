@@ -13,6 +13,14 @@ use Illuminate\Http\Request;
 
 class SearchController extends Controller
 {
+    protected function applySearchRanking($query, string $q)
+    {
+        return $query->orderByRaw('CASE 
+            WHEN title LIKE ? THEN 1 
+            WHEN title LIKE ? THEN 2 
+            ELSE 3 END', ["{$q}", "{$q}%"]);
+    }
+
     public function index(Request $request)
     {
         $q = $request->get('q', '');
@@ -35,10 +43,7 @@ class SearchController extends Controller
                         ->orWhere('description', 'like', "%{$q}%")
                         ->orWhere('category', 'like', "%{$q}%");
                 })
-                ->orderByRaw('CASE 
-                    WHEN title LIKE ? THEN 1 
-                    WHEN title LIKE ? THEN 2 
-                    ELSE 3 END', ["{$q}", "{$q}%"])
+                ->tap(fn($qBuilder) => $this->applySearchRanking($qBuilder, $q))
                 ->select('id', 'title', 'slug', 'category', 'description')
                 ->limit(10)
                 ->get());
@@ -51,10 +56,7 @@ class SearchController extends Controller
                         ->orWhere('excerpt', 'like', "%{$q}%")
                         ->orWhere('category', 'like', "%{$q}%");
                 })
-                ->orderByRaw('CASE 
-                    WHEN title LIKE ? THEN 1 
-                    WHEN title LIKE ? THEN 2 
-                    ELSE 3 END', ["{$q}", "{$q}%"])
+                ->tap(fn($qBuilder) => $this->applySearchRanking($qBuilder, $q))
                 ->select('id', 'title', 'slug', 'category', 'excerpt')
                 ->limit(10)
                 ->get());
@@ -67,10 +69,7 @@ class SearchController extends Controller
                         ->orWhere('client_name', 'like', "%{$q}%")
                         ->orWhere('category', 'like', "%{$q}%");
                 })
-                ->orderByRaw('CASE 
-                    WHEN title LIKE ? THEN 1 
-                    WHEN title LIKE ? THEN 2 
-                    ELSE 3 END', ["{$q}", "{$q}%"])
+                ->tap(fn($qBuilder) => $this->applySearchRanking($qBuilder, $q))
                 ->select('id', 'title', 'slug', 'client_name', 'category')
                 ->limit(10)
                 ->get());

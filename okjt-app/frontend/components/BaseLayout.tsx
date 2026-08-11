@@ -7,10 +7,7 @@ import Hero from '@/components/Hero'
 import ParallaxNav from '@/components/ParallaxNav'
 import { cn } from '@/lib/utils'
 
-export interface NavSection {
-    id: string
-    label: string
-}
+import { NavSection } from '@/lib/nav-sections'
 
 interface BreadcrumbItem {
     label: string

@@ -21,6 +21,14 @@ class Insight extends Model
         'published_at',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'is_published' => 'boolean',
+            'published_at' => 'datetime',
+        ];
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

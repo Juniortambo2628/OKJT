@@ -149,7 +149,7 @@ VITE_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"
      ```
    - Add the **private** key to the `SSH_PRIVATE_KEY` GitHub Secret.
 
-2. **PHP 8.3+ CLI** with extensions: `bcmath ctype curl fileinfo intl json mbstring openssl pdo_mysql tokenizer xml zip`.
+2. **PHP 8.2+ CLI** with extensions: `bcmath ctype curl fileinfo intl json mbstring openssl pdo_mysql tokenizer xml zip`.
 3. **Composer** installed globally.
 4. **MySQL database** exists and the configured user has full privileges.
 5. Target directories exist or are creatable:

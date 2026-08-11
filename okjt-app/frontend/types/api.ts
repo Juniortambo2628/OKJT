@@ -125,6 +125,7 @@ export interface Client {
   name: string;
   logo: string | null;
   website: string | null;
+  category: string | null;
   is_active: boolean;
   order: number;
   created_at: string;

@@ -7,6 +7,7 @@ use App\Http\Resources\SiteSettingResource;
 use App\Models\SiteSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Blade;
 
 class SiteSettingController extends Controller
 {
@@ -178,5 +179,36 @@ class SiteSettingController extends Controller
         $this->clearCache();
 
         return response()->json(null, 204);
+    }
+
+    public function previewEmailTemplate(Request $request)
+    {
+        $request->validate([
+            'template_key' => 'required|string',
+            'content' => 'required|string',
+        ]);
+
+        $dummyData = (object) [
+            'first_name' => 'Jordan',
+            'last_name' => 'Taylor',
+            'email' => 'jordan.taylor@example.com',
+            'subject' => 'Consultation Request',
+            'message' => 'This is a sample message used to preview how the email template renders with real request data.',
+            'status' => 'pending',
+        ];
+
+        try {
+            $content = $request->content;
+
+            if (! str_contains($content, '@extends')) {
+                $content = "@extends('emails.layout')\n@section('content')\n".$content."\n@endsection";
+            }
+
+            $rendered = Blade::render($content, ['requestData' => $dummyData]);
+
+            return response()->json(['html' => $rendered]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Template Error: '.$e->getMessage()], 422);
+        }
     }
 }

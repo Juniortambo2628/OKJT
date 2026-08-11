@@ -29,7 +29,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: '8.2'
           extensions: bcmath, ctype, curl, fileinfo, intl, json, mbstring, openssl, pdo_mysql, tokenizer, xml, zip
           tools: composer:v2
           coverage: none
@@ -58,6 +58,10 @@ jobs:
         run: npm run lint -- --fix || npx eslint --fix .
         continue-on-error: true
 
+      - name: Verify frontend build
+        working-directory: ${{ env.FRONTEND_DIR }}
+        run: npm run build
+
       - name: Commit automatic fixes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
@@ -76,7 +80,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: '8.2'
           extensions: bcmath, ctype, curl, fileinfo, intl, json, mbstring, openssl, pdo_mysql, tokenizer, xml, zip
           tools: composer:v2
           coverage: none
@@ -120,7 +124,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: '8.2'
           extensions: bcmath, ctype, curl, fileinfo, intl, json, mbstring, openssl, pdo_mysql, tokenizer, xml, zip
           tools: composer:v2
           coverage: none
