@@ -15,7 +15,7 @@ return new class extends Migration
                     Schema::table('services', function (Blueprint $table) {
                         $table->foreign('pillar_id')->references('id')->on('pillars')->nullOnDelete();
                     });
-                } catch (\Exception $e) { /* FK may already exist or table may not support it */
+                } catch (Exception $e) { /* FK may already exist or table may not support it */
                 }
             }
         }
@@ -27,7 +27,7 @@ return new class extends Migration
                     Schema::table('insights', function (Blueprint $table) {
                         $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
                     });
-                } catch (\Exception $e) { /* FK may already exist or table may not support it */
+                } catch (Exception $e) { /* FK may already exist or table may not support it */
                 }
             }
         }

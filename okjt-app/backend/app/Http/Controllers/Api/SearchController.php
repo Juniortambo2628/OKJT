@@ -43,7 +43,7 @@ class SearchController extends Controller
                         ->orWhere('description', 'like', "%{$q}%")
                         ->orWhere('category', 'like', "%{$q}%");
                 })
-                ->tap(fn($qBuilder) => $this->applySearchRanking($qBuilder, $q))
+                ->tap(fn ($qBuilder) => $this->applySearchRanking($qBuilder, $q))
                 ->select('id', 'title', 'slug', 'category', 'description')
                 ->limit(10)
                 ->get());
@@ -56,7 +56,7 @@ class SearchController extends Controller
                         ->orWhere('excerpt', 'like', "%{$q}%")
                         ->orWhere('category', 'like', "%{$q}%");
                 })
-                ->tap(fn($qBuilder) => $this->applySearchRanking($qBuilder, $q))
+                ->tap(fn ($qBuilder) => $this->applySearchRanking($qBuilder, $q))
                 ->select('id', 'title', 'slug', 'category', 'excerpt')
                 ->limit(10)
                 ->get());
@@ -69,7 +69,7 @@ class SearchController extends Controller
                         ->orWhere('client_name', 'like', "%{$q}%")
                         ->orWhere('category', 'like', "%{$q}%");
                 })
-                ->tap(fn($qBuilder) => $this->applySearchRanking($qBuilder, $q))
+                ->tap(fn ($qBuilder) => $this->applySearchRanking($qBuilder, $q))
                 ->select('id', 'title', 'slug', 'client_name', 'category')
                 ->limit(10)
                 ->get());

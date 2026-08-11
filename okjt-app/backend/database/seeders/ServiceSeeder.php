@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Service;
 use Illuminate\Database\Seeder;
 
 class ServiceSeeder extends Seeder
@@ -97,10 +98,10 @@ class ServiceSeeder extends Seeder
         ];
 
         // Truncate and re-seed for fresh data
-        \App\Models\Service::truncate();
+        Service::truncate();
 
         foreach ($services as $service) {
-            \App\Models\Service::create($service);
+            Service::create($service);
         }
     }
 }

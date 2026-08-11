@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\InsightController;
 use App\Http\Controllers\Api\PageViewController;
 use App\Http\Controllers\Api\PillarController;
 use App\Http\Controllers\Api\ProjectController;
+use App\Http\Controllers\Api\RsvpController;
 use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\SiteSettingController;
@@ -57,7 +58,7 @@ Route::post('/track', [AnalyticsController::class, 'track']);
 Route::post('/subscribe', [SubscriberController::class, 'store']);
 Route::post('/unsubscribe', [SubscriberController::class, 'unsubscribe']);
 Route::post('/consultation-requests', [ConsultationRequestController::class, 'store']);
-Route::post('/rsvps', [\App\Http\Controllers\Api\RsvpController::class, 'store']);
+Route::post('/rsvps', [RsvpController::class, 'store']);
 Route::get('/storage/{path}', [UploadController::class, 'serve'])->where('path', '.*');
 
 // Auth routes
@@ -73,10 +74,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // Admin-only routes
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
-    Route::get('/rsvps', [\App\Http\Controllers\Api\RsvpController::class, 'index']);
-    Route::get('/rsvps/{rsvp}', [\App\Http\Controllers\Api\RsvpController::class, 'show']);
-    Route::put('/rsvps/{rsvp}', [\App\Http\Controllers\Api\RsvpController::class, 'update']);
-    Route::delete('/rsvps/{rsvp}', [\App\Http\Controllers\Api\RsvpController::class, 'destroy']);
+    Route::get('/rsvps', [RsvpController::class, 'index']);
+    Route::get('/rsvps/{rsvp}', [RsvpController::class, 'show']);
+    Route::put('/rsvps/{rsvp}', [RsvpController::class, 'update']);
+    Route::delete('/rsvps/{rsvp}', [RsvpController::class, 'destroy']);
 
     // Services CRUD
     Route::post('/services', [ServiceController::class, 'store']);

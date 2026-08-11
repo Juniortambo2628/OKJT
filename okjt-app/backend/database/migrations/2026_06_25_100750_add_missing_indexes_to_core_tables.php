@@ -29,7 +29,7 @@ return new class extends Migration
                             Schema::table($table, function (Blueprint $table) use ($columns) {
                                 $table->index($columns);
                             });
-                        } catch (\Exception $e) {
+                        } catch (Exception $e) {
                             // Skip indexes that exceed key length limits
                         }
                     }

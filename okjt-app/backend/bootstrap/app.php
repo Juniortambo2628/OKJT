@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\AddCacheHeaders;
 use App\Http\Middleware\IsAdmin;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -22,7 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->api(prepend: [
-            \App\Http\Middleware\AddCacheHeaders::class,
+            AddCacheHeaders::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

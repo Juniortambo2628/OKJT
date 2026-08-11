@@ -2,11 +2,14 @@
 
 namespace App\Mail;
 
+use App\Models\SiteSetting;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Blade;
 
 class ConsultationRequestUserReceipt extends Mailable
 {
@@ -37,19 +40,19 @@ class ConsultationRequestUserReceipt extends Mailable
      */
     public function content(): Content
     {
-        $customTemplate = \App\Models\SiteSetting::where('key', 'email_template_user')->first();
+        $customTemplate = SiteSetting::where('key', 'email_template_user')->first();
 
         if ($customTemplate && ! empty($customTemplate->value)) {
             if (! str_contains($customTemplate->value, '@extends')) {
                 return new Content(
                     view: 'emails.dynamic',
                     with: [
-                        'dynamicContent' => \Illuminate\Support\Facades\Blade::render($customTemplate->value, ['requestData' => $this->requestData]),
+                        'dynamicContent' => Blade::render($customTemplate->value, ['requestData' => $this->requestData]),
                     ]
                 );
             } else {
                 return new Content(
-                    htmlString: \Illuminate\Support\Facades\Blade::render($customTemplate->value, ['requestData' => $this->requestData])
+                    htmlString: Blade::render($customTemplate->value, ['requestData' => $this->requestData])
                 );
             }
         }
@@ -62,7 +65,7 @@ class ConsultationRequestUserReceipt extends Mailable
     /**
      * Get the attachments for the message.
      *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
+     * @return array<int, Attachment>
      */
     public function attachments(): array
     {

@@ -3,10 +3,12 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Mail\CustomPasswordResetMail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Mail;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -65,6 +67,6 @@ class User extends Authenticatable
         $url = config('app.frontend_url').'/admin/reset-password?token='.$token.'&email='.urlencode($this->email);
         $expire = config('auth.passwords.'.config('auth.defaults.passwords').'.expire');
 
-        \Illuminate\Support\Facades\Mail::to($this->email)->send(new \App\Mail\CustomPasswordResetMail($url, $expire));
+        Mail::to($this->email)->send(new CustomPasswordResetMail($url, $expire));
     }
 }

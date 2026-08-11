@@ -8,6 +8,7 @@ use App\Models\Service;
 use App\Traits\HandlesStandardCrud;
 use App\Traits\HasUniqueSlug;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ServiceController extends Controller
 {
@@ -69,8 +70,8 @@ class ServiceController extends Controller
 
     protected function clearCache(): void
     {
-        \Illuminate\Support\Facades\Cache::forget('all_services');
-        \Illuminate\Support\Facades\Cache::forget('all_pillars');
-        \Illuminate\Support\Facades\Cache::forget('all_pillars_admin');
+        Cache::forget('all_services');
+        Cache::forget('all_pillars');
+        Cache::forget('all_pillars_admin');
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,7 +16,7 @@ return new class extends Migration
         });
 
         // Promote all existing users to admin so current sessions are not locked out.
-        \App\Models\User::query()->update(['is_admin' => true]);
+        User::query()->update(['is_admin' => true]);
     }
 
     public function down(): void

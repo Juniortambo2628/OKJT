@@ -2,11 +2,14 @@
 
 namespace App\Mail;
 
+use App\Models\SiteSetting;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Blade;
 
 class ConsultationRequestAdminNotification extends Mailable
 {
@@ -37,7 +40,7 @@ class ConsultationRequestAdminNotification extends Mailable
      */
     public function content(): Content
     {
-        $customTemplate = \App\Models\SiteSetting::where('key', 'email_template_admin')->first();
+        $customTemplate = SiteSetting::where('key', 'email_template_admin')->first();
 
         if ($customTemplate && ! empty($customTemplate->value)) {
             // Check if it already has layout stuff, if not we use dynamic view
@@ -45,14 +48,14 @@ class ConsultationRequestAdminNotification extends Mailable
                 return new Content(
                     view: 'emails.dynamic',
                     with: [
-                        'dynamicContent' => \Illuminate\Support\Facades\Blade::render($customTemplate->value, ['requestData' => $this->requestData]),
+                        'dynamicContent' => Blade::render($customTemplate->value, ['requestData' => $this->requestData]),
                     ]
                 );
             } else {
                 // If it has extends, we still need a way to render it as a view
                 // For simplicity, we'll assume most won't add extends in the simple editor
                 return new Content(
-                    htmlString: \Illuminate\Support\Facades\Blade::render($customTemplate->value, ['requestData' => $this->requestData])
+                    htmlString: Blade::render($customTemplate->value, ['requestData' => $this->requestData])
                 );
             }
         }
@@ -65,7 +68,7 @@ class ConsultationRequestAdminNotification extends Mailable
     /**
      * Get the attachments for the message.
      *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
+     * @return array<int, Attachment>
      */
     public function attachments(): array
     {

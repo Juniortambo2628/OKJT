@@ -7,6 +7,7 @@ use App\Http\Resources\ProjectResource;
 use App\Traits\HandlesStandardCrud;
 use App\Traits\HasUniqueSlug;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ProjectController extends Controller
 {
@@ -23,9 +24,9 @@ class ProjectController extends Controller
 
     protected function clearCache(): void
     {
-        \Illuminate\Support\Facades\Cache::forget('projects_all');
-        \Illuminate\Support\Facades\Cache::forget('projects_client');
-        \Illuminate\Support\Facades\Cache::forget('projects_flagship');
+        Cache::forget('projects_all');
+        Cache::forget('projects_client');
+        Cache::forget('projects_flagship');
     }
 
     protected function indexQuery($query)

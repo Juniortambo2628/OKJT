@@ -10,7 +10,7 @@ define('LARAVEL_START', microtime(true));
 $basePath = match (true) {
     file_exists(__DIR__.'/../../okj-core/bootstrap/app.php') => realpath(__DIR__.'/../../okj-core'),
     file_exists(__DIR__.'/../bootstrap/app.php') => realpath(__DIR__.'/..'),
-    default => throw new \Exception('Unable to locate Laravel bootstrap directory.'),
+    default => throw new Exception('Unable to locate Laravel bootstrap directory.'),
 };
 
 // Determine if the application is in maintenance mode...

@@ -8,6 +8,7 @@ use App\Mail\ConsultationRequestAdminNotification;
 use App\Mail\ConsultationRequestUserReceipt;
 use App\Traits\HandlesStandardCrud;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class ConsultationRequestController extends Controller
@@ -47,7 +48,7 @@ class ConsultationRequestController extends Controller
             Mail::to($record->email)
                 ->send(new ConsultationRequestUserReceipt($record));
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Failed to send consultation emails: '.$e->getMessage());
+            Log::error('Failed to send consultation emails: '.$e->getMessage());
         }
 
         return $record;

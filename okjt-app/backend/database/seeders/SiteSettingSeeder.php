@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\SiteSetting;
 use Illuminate\Database\Seeder;
 
 class SiteSettingSeeder extends Seeder
@@ -72,11 +73,11 @@ class SiteSettingSeeder extends Seeder
         ];
 
         // Delete legacy launch settings
-        \App\Models\SiteSetting::where('group', 'launch')->delete();
-        \App\Models\SiteSetting::where('key', 'like', 'rsvp_%')->delete();
+        SiteSetting::where('group', 'launch')->delete();
+        SiteSetting::where('key', 'like', 'rsvp_%')->delete();
 
         foreach ($settings as $setting) {
-            \App\Models\SiteSetting::updateOrCreate(
+            SiteSetting::updateOrCreate(
                 ['key' => $setting['key']],
                 $setting
             );

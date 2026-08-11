@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\SiteSettingResource;
 use App\Models\SiteSetting;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Cache;
 
 class SiteSettingController extends Controller
 {

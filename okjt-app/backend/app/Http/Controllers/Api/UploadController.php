@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 
 class UploadController extends Controller
 {
@@ -20,7 +22,7 @@ class UploadController extends Controller
 
         if ($isImage && $mime !== 'image/svg+xml') {
             // Optimize image: resize to max 1920x1920, convert to WebP, compress to 80% quality
-            $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver);
+            $manager = new ImageManager(new Driver);
             $image = $manager->read($file);
             $image->scaleDown(width: 1920, height: 1920);
             $encoded = $image->toWebp(80);

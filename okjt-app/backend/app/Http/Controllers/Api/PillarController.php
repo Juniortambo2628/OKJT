@@ -8,6 +8,7 @@ use App\Traits\HandlesStandardCrud;
 use App\Traits\HasUniqueSlug;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class PillarController extends Controller
 {
@@ -24,8 +25,8 @@ class PillarController extends Controller
 
     protected function clearCache(): void
     {
-        \Illuminate\Support\Facades\Cache::forget('all_pillars');
-        \Illuminate\Support\Facades\Cache::forget('all_pillars_admin');
+        Cache::forget('all_pillars');
+        Cache::forget('all_pillars_admin');
     }
 
     protected function indexQuery(Builder $query): Builder

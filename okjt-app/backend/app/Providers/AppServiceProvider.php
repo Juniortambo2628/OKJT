@@ -14,6 +14,7 @@ use App\Models\Testimonial;
 use App\Models\Value;
 use App\Observers\CmsModelObserver;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -26,7 +27,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         JsonResource::withoutWrapping();
-        \Illuminate\Support\Facades\Schema::defaultStringLength(191);
+        Schema::defaultStringLength(191);
 
         // Register CMS model observers for ISR cache revalidation
         $cmsModels = [
