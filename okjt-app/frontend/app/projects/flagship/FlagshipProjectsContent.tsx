@@ -12,7 +12,7 @@ import { SectionSkeleton } from '@/components/MediaSkeleton'
 import { usePageHeroMedia } from '@/hooks/use-page-hero-media'
 import PrimaryButton from '@/components/PrimaryButton'
 
-export default function ProjectsContent() {
+export default function FlagshipProjectsContent() {
     const { data: projects, isLoading } = useApi<Project[]>('/projects')
     const { videoSrc, bgImage } = usePageHeroMedia({ settingsKey: 'hero_projects_media' })
     const heroMedia = videoSrc ?? bgImage
@@ -22,15 +22,9 @@ export default function ProjectsContent() {
         return projects.filter(p => p.type === 'flagship' && p.is_active)
     }, [projects])
 
-    const clientProjects = React.useMemo(() => {
-        if (!projects) return []
-        return projects.filter(p => p.type === 'client' && p.is_active)
-    }, [projects])
-
     const navSections = [
         { id: 'hero', label: 'Intro' },
         { id: 'flagship-projects', label: 'Flagship' },
-        { id: 'client-projects', label: 'Client Work' },
         { id: 'process', label: 'Methodology' },
     ]
 
@@ -38,65 +32,39 @@ export default function ProjectsContent() {
         <BaseLayout
             navSections={navSections}
             heroMedia={heroMedia}
-            tagline="Our Portfolio"
-            title="Transforming Ideas <br />Into Digital Reality."
-            subtitle="Explore our complete portfolio, from highly specialized flagship products to tailored client solutions."
+            tagline="Flagship Work"
+            title="Engineering the <br />Future of Digital."
+            subtitle="Explore our bespoke flagship projects — highly specialized digital products built for scale, performance, and maximum impact."
         >
             {/* Flagship Projects Section */}
-            {flagshipProjects.length > 0 && (
-                <ParallaxSection
-                    id="flagship-projects"
-                    badgeText="FLAGSHIP WORK"
-                    title="Flagship Projects"
-                    subtitle="Bespoke digital products built for scale and impact."
-                    heightClass="min-h-[200vh]"
-                    contentMaxWidth="max-w-[1400px]"
-                >
-                    {isLoading ? (
-                        <SectionSkeleton />
-                    ) : (
-                        <HorizontalCarousel className="h-full">
-                            {flagshipProjects.map((item) => (
-                                <CarouselCard
-                                    key={item.id}
-                                    title={item.title}
-                                    description={item.tagline || item.description?.replace(/<[^>]*>?/gm, '').substring(0, 120)}
-                                    image={item.image ? getMediaUrl(item.image) : undefined}
-                                    href={`/projects/${item.slug}`}
-                                />
-                            ))}
-                        </HorizontalCarousel>
-                    )}
-                </ParallaxSection>
-            )}
-
-            {/* Client Projects Section */}
-            {clientProjects.length > 0 && (
-                <ParallaxSection
-                    id="client-projects"
-                    badgeText="CLIENT WORK"
-                    title="Client Projects"
-                    subtitle="Tailored solutions that drive real business outcomes."
-                    heightClass="min-h-[200vh]"
-                    contentMaxWidth="max-w-[1400px]"
-                >
-                    {isLoading ? (
-                        <SectionSkeleton />
-                    ) : (
-                        <HorizontalCarousel className="h-full">
-                            {clientProjects.map((item) => (
-                                <CarouselCard
-                                    key={item.id}
-                                    title={item.title}
-                                    description={item.tagline || item.description?.replace(/<[^>]*>?/gm, '').substring(0, 120)}
-                                    image={item.image ? getMediaUrl(item.image) : undefined}
-                                    href={`/projects/${item.slug}`}
-                                />
-                            ))}
-                        </HorizontalCarousel>
-                    )}
-                </ParallaxSection>
-            )}
+            <ParallaxSection
+                id="flagship-projects"
+                badgeText="FLAGSHIP WORK"
+                title="Flagship Projects"
+                subtitle="Bespoke digital products built for scale and impact."
+                heightClass="min-h-[200vh]"
+                contentMaxWidth="max-w-[1400px]"
+            >
+                {isLoading ? (
+                    <SectionSkeleton />
+                ) : flagshipProjects.length === 0 ? (
+                    <div className="flex items-center justify-center h-full text-white/60 text-xl">
+                        Our flagship projects are currently being synchronized.
+                    </div>
+                ) : (
+                    <HorizontalCarousel className="h-full">
+                        {flagshipProjects.map((item) => (
+                            <CarouselCard
+                                key={item.id}
+                                title={item.title}
+                                description={item.tagline || item.description?.replace(/<[^>]*>?/gm, '').substring(0, 120)}
+                                image={item.image ? getMediaUrl(item.image) : undefined}
+                                href={`/projects/${item.slug}`}
+                            />
+                        ))}
+                    </HorizontalCarousel>
+                )}
+            </ParallaxSection>
 
             {/* Methodology Section */}
             <ParallaxSection

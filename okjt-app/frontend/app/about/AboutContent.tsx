@@ -151,13 +151,6 @@ export default function AboutContent() {
                                             {member.bio}
                                         </p>
                                     </div>
-
-                                    {member.qualifications && (
-                                        <div>
-                                            <h4 className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] mb-3">Professional Credentials</h4>
-                                            <p className="text-muted-foreground text-sm italic">{member.qualifications}</p>
-                                        </div>
-                                    )}
                                 </div>
                             </DialogContent>
                         </Dialog>

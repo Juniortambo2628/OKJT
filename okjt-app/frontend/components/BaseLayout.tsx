@@ -35,6 +35,8 @@ export interface BaseLayoutProps {
     navSections?: NavSection[]
     /** Whether the page is still loading hero content */
     loading?: boolean
+    /** Optional content rendered between ParallaxNav and Footer (e.g. HomeBottomBar) */
+    bottomBar?: React.ReactNode
 }
 
 export default function BaseLayout({
@@ -48,7 +50,8 @@ export default function BaseLayout({
     breadcrumbs,
     heroChildren,
     navSections,
-    loading
+    loading,
+    bottomBar
 }: BaseLayoutProps) {
     const isVideo = heroMedia?.endsWith('.mp4') || heroMedia?.endsWith('.webm')
 
@@ -56,20 +59,18 @@ export default function BaseLayout({
         <main className={cn("flex min-h-screen flex-col bg-background w-full overflow-x-clip relative", className)}>
             <Navbar />
 
-            {(title || tagline || subtitle || heroMedia) && (
-                <Hero
-                    tagline={tagline}
-                    title={title}
-                    subtitle={subtitle}
-                    videos={isVideo && heroMedia ? [heroMedia] : undefined}
-                    bgImage={!isVideo ? heroMedia : undefined}
-                    cta={cta}
-                    breadcrumbs={breadcrumbs}
-                    loading={loading}
-                >
-                    {heroChildren}
-                </Hero>
-            )}
+            <Hero
+                tagline={tagline}
+                title={title}
+                subtitle={subtitle}
+                videos={isVideo && heroMedia ? [heroMedia] : undefined}
+                bgImage={!isVideo ? heroMedia : undefined}
+                cta={cta}
+                breadcrumbs={breadcrumbs}
+                loading={loading}
+            >
+                {heroChildren}
+            </Hero>
 
             <div className="relative bg-black w-full overflow-visible">
                 {children}
@@ -78,6 +79,8 @@ export default function BaseLayout({
             {navSections && navSections.length > 1 && (
                 <ParallaxNav sections={navSections} />
             )}
+
+            {bottomBar}
 
             <Footer />
         </main>

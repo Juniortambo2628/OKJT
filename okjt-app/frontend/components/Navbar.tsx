@@ -113,20 +113,17 @@ const Navbar = () => {
             })
         })
 
-        // Add Flagship Projects to megamenu if available
-        if (projects && Array.isArray(projects) && projects.length > 0) {
-            result.unshift({
-                title: 'Flagship Projects',
-                href: '/projects?type=flagship',
-                items: projects.filter((p: any) => p.type === 'flagship' && p.is_active).slice(0, 5).map((p: any) => ({
-                    name: p.title,
-                    href: `/projects/${p.slug}`
-                }))
-            })
-        }
-
         return result
-    }, [services, projects])
+    }, [services])
+
+    // Flagship projects for Our Work mega menu
+    const flagshipProjects = React.useMemo(() => {
+        if (!projects || !Array.isArray(projects)) return []
+        return projects.filter((p: any) => p.type === 'flagship' && p.is_active).slice(0, 5).map((p: any) => ({
+            name: p.title,
+            href: `/projects/${p.slug}`
+        }))
+    }, [projects])
 
     useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 20)
@@ -220,37 +217,45 @@ const Navbar = () => {
             {/* Services Mega Menu */}
             {activeMegaMenu === 'services' && dynamicServiceCategories.length > 0 && (
                 <div
-                    className="hidden lg:block absolute top-[100%] left-1/2 -translate-x-1/2 w-full max-w-[900px] bg-background rounded-2xl border border-border shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] transition-all overflow-hidden mt-4"
+                    className="hidden lg:block absolute top-[100%] left-1/2 -translate-x-1/2 w-full max-w-[820px] bg-background rounded-2xl border border-border shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] transition-all overflow-hidden mt-4"
                     onMouseEnter={() => setActiveMegaMenu('services')}
                     onMouseLeave={() => setActiveMegaMenu(null)}
                 >
                     <div className="flex">
                         {/* Left Column (Featured) */}
-                        <div className="w-[35%] bg-secondary/20 p-8 border-r border-border flex flex-col justify-between">
+                        <div className="w-[28%] bg-secondary/20 p-6 border-r border-border flex flex-col justify-between">
                             <div>
-                                <Briefcase className="h-6 w-6 text-primary mb-6" />
-                                <h3 className="text-2xl font-bold tracking-tight text-foreground mb-4">Need engineering advice today?</h3>
-                                <p className="text-muted-foreground text-sm mb-8 leading-relaxed">Speak directly with an experienced engineer about your project.</p>
+                                <Briefcase className="h-5 w-5 text-primary mb-4" />
+                                <h3 className="text-lg font-bold tracking-tight text-foreground mb-2">Need engineering advice?</h3>
+                                <p className="text-muted-foreground text-xs mb-6 leading-relaxed">Speak directly with an experienced engineer.</p>
                             </div>
-                            <Button className="w-full bg-[#14110b] text-white hover:bg-[#14110b]/90 rounded-xl py-6 flex items-center justify-start gap-3">
-                                    <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-                                        <Briefcase className="h-4 w-4 text-primary" />
-                                    </div>
-                                <span className="font-semibold text-sm">Speak with an Expert</span>
-                            </Button>
+                            <div className="space-y-2">
+                                <Button className="w-full bg-[#14110b] text-white hover:bg-[#14110b]/90 rounded-xl py-4 flex items-center justify-start gap-2" asChild>
+                                    <Link href="/services">
+                                        <div className="h-7 w-7 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                                            <Briefcase className="h-3.5 w-3.5 text-primary" />
+                                        </div>
+                                        <span className="font-semibold text-xs">View All Services</span>
+                                    </Link>
+                                </Button>
+                                <Button className="w-full bg-white/5 text-foreground hover:bg-white/10 rounded-xl py-4 flex items-center justify-start gap-2" asChild>
+                                    <Link href="/contact">
+                                        <span className="font-semibold text-xs pl-9">Speak with an Expert</span>
+                                    </Link>
+                                </Button>
+                            </div>
                         </div>
                         
-                        {/* Right Columns (Links) */}
-                        <div className="w-[65%] p-8 grid grid-cols-2 gap-x-8 gap-y-10">
-                            {dynamicServiceCategories.slice(0, 4).map((cat) => (
+                        {/* Right Columns (Links) — 3-col grid for compactness */}
+                        <div className="w-[72%] p-6 grid grid-cols-3 gap-x-6 gap-y-6">
+                            {dynamicServiceCategories.map((cat) => (
                                 <div key={cat.title}>
-                                    <h4 className="text-[10px] font-bold text-primary uppercase tracking-widest mb-4">{cat.title}</h4>
-                                    <ul className="space-y-1">
+                                    <h4 className="text-[9px] font-bold text-primary uppercase tracking-widest mb-2">{cat.title}</h4>
+                                    <ul className="space-y-0.5">
                                         {cat.items.map((item) => (
                                             <li key={item.name}>
-                                                <Link href={item.href} className="block group p-3 -mx-3 rounded-lg hover:bg-secondary/50 transition-colors">
-                                                    <div className="font-bold text-foreground text-sm mb-1">{item.name}</div>
-                                                    <div className="text-muted-foreground text-[12px] leading-snug line-clamp-2">Expert guidance and execution for ambitious businesses.</div>
+                                                <Link href={item.href} className="block group p-2 -mx-2 rounded-md hover:bg-secondary/50 transition-colors">
+                                                    <div className="font-semibold text-foreground text-xs">{item.name}</div>
                                                 </Link>
                                             </li>
                                         ))}
@@ -265,60 +270,73 @@ const Navbar = () => {
             {/* Our Work Mega Menu */}
             {activeMegaMenu === 'work' && (
                 <div
-                    className="hidden lg:block absolute top-[100%] left-1/2 -translate-x-1/2 w-full max-w-[900px] bg-background rounded-2xl border border-border shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] transition-all overflow-hidden mt-4"
+                    className="hidden lg:block absolute top-[100%] left-1/2 -translate-x-1/2 w-full max-w-[820px] bg-background rounded-2xl border border-border shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] transition-all overflow-hidden mt-4"
                     onMouseEnter={() => setActiveMegaMenu('work')}
                     onMouseLeave={() => setActiveMegaMenu(null)}
                 >
                     <div className="flex">
                         {/* Left Column (Featured) */}
-                        <div className="w-[35%] bg-secondary/20 p-8 border-r border-border flex flex-col justify-between">
+                        <div className="w-[28%] bg-secondary/20 p-6 border-r border-border flex flex-col justify-between">
                             <div>
-                                <BookOpen className="h-6 w-6 text-primary mb-6" />
-                                <h3 className="text-2xl font-bold tracking-tight text-foreground mb-4">Ready to start a project?</h3>
-                                <p className="text-muted-foreground text-sm mb-8 leading-relaxed">View our projects and see how we've helped other businesses scale.</p>
+                                <BookOpen className="h-5 w-5 text-primary mb-4" />
+                                <h3 className="text-lg font-bold tracking-tight text-foreground mb-2">Ready to start?</h3>
+                                <p className="text-muted-foreground text-xs mb-6 leading-relaxed">View our projects and see how we help businesses scale.</p>
                             </div>
-                            <Button className="w-full bg-[#14110b] text-white hover:bg-[#14110b]/90 rounded-xl py-6 flex items-center justify-start gap-3" asChild>
+                            <Button className="w-full bg-[#14110b] text-white hover:bg-[#14110b]/90 rounded-xl py-4 flex items-center justify-start gap-2" asChild>
                                 <Link href="/projects">
-                                    <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-                                        <BookOpen className="h-4 w-4 text-primary" />
+                                    <div className="h-7 w-7 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                                        <BookOpen className="h-3.5 w-3.5 text-primary" />
                                     </div>
-                                    <span className="font-semibold text-sm">View Projects</span>
+                                    <span className="font-semibold text-xs">View All Projects</span>
                                 </Link>
                             </Button>
                         </div>
                         
                         {/* Right Columns (Links) */}
-                        <div className="w-[65%] p-8 grid grid-cols-2 gap-x-8 gap-y-10">
+                        <div className="w-[72%] p-6 grid grid-cols-3 gap-x-6 gap-y-6">
+                            {/* Flagship Projects */}
                             <div>
-                                <h4 className="text-[10px] font-bold text-primary uppercase tracking-widest mb-4">OUR PROJECTS</h4>
-                                <ul className="space-y-1">
+                                <h4 className="text-[9px] font-bold text-primary uppercase tracking-widest mb-2">Flagship</h4>
+                                <ul className="space-y-0.5">
                                     <li>
-                                        <Link href="/projects?type=flagship" className="block group p-3 -mx-3 rounded-lg hover:bg-secondary/50 transition-colors">
-                                            <div className="font-bold text-foreground text-sm mb-1">Solutions</div>
-                                            <div className="text-muted-foreground text-[12px] leading-snug">Explore our flagship projects and innovative solutions.</div>
+                                        <Link href="/projects/flagship" className="block group p-2 -mx-2 rounded-md hover:bg-secondary/50 transition-colors">
+                                            <div className="font-semibold text-foreground text-xs">All Flagship</div>
                                         </Link>
                                     </li>
+                                    {flagshipProjects.map((item) => (
+                                        <li key={item.name}>
+                                            <Link href={item.href} className="block group p-2 -mx-2 rounded-md hover:bg-secondary/50 transition-colors">
+                                                <div className="font-semibold text-foreground text-xs">{item.name}</div>
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            {/* Client Projects */}
+                            <div>
+                                <h4 className="text-[9px] font-bold text-primary uppercase tracking-widest mb-2">Client Work</h4>
+                                <ul className="space-y-0.5">
                                     <li>
-                                        <Link href="/projects?type=client" className="block group p-3 -mx-3 rounded-lg hover:bg-secondary/50 transition-colors">
-                                            <div className="font-bold text-foreground text-sm mb-1">Client Work</div>
-                                            <div className="text-muted-foreground text-[12px] leading-snug">Browse our complete portfolio of projects.</div>
+                                        <Link href="/projects" className="block group p-2 -mx-2 rounded-md hover:bg-secondary/50 transition-colors">
+                                            <div className="font-semibold text-foreground text-xs">All Projects</div>
                                         </Link>
                                     </li>
                                 </ul>
                             </div>
+
+                            {/* Knowledge Base */}
                             <div>
-                                <h4 className="text-[10px] font-bold text-primary uppercase tracking-widest mb-4">KNOWLEDGE BASE</h4>
-                                <ul className="space-y-1">
+                                <h4 className="text-[9px] font-bold text-primary uppercase tracking-widest mb-2">Knowledge</h4>
+                                <ul className="space-y-0.5">
                                     <li>
-                                        <Link href="/insights" className="block group p-3 -mx-3 rounded-lg hover:bg-secondary/50 transition-colors">
-                                            <div className="font-bold text-foreground text-sm mb-1">Insights & News</div>
-                                            <div className="text-muted-foreground text-[12px] leading-snug">Read our latest thoughts and technical articles.</div>
+                                        <Link href="/insights" className="block group p-2 -mx-2 rounded-md hover:bg-secondary/50 transition-colors">
+                                            <div className="font-semibold text-foreground text-xs">Insights & News</div>
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link href="/our-approach" className="block group p-3 -mx-3 rounded-lg hover:bg-secondary/50 transition-colors">
-                                            <div className="font-bold text-foreground text-sm mb-1">Our Approach</div>
-                                            <div className="text-muted-foreground text-[12px] leading-snug">Explore the interactive pillar overview.</div>
+                                        <Link href="/our-approach" className="block group p-2 -mx-2 rounded-md hover:bg-secondary/50 transition-colors">
+                                            <div className="font-semibold text-foreground text-xs">Our Approach</div>
                                         </Link>
                                     </li>
                                 </ul>
@@ -334,6 +352,7 @@ const Navbar = () => {
                     {/* Services Sections */}
                     <div className="pb-2 border-b border-border/50">
                         <h3 className="text-primary font-bold text-[13px] uppercase tracking-wider mb-3">Services</h3>
+                        <Link href="/services" className="block text-foreground text-sm py-1.5 hover:text-primary pl-2 font-semibold mb-2" onClick={() => setIsMobileMenuOpen(false)}>View All Services</Link>
                         {dynamicServiceCategories.map((cat) => (
                             <div key={cat.title} className="mb-4 pl-2 border-l-2 border-border/50">
                                 <h4 className="text-foreground font-medium text-sm mb-2">{cat.title}</h4>
@@ -355,8 +374,8 @@ const Navbar = () => {
                     <div className="pb-2 border-b border-border/50">
                         <h3 className="text-primary font-bold text-[13px] uppercase tracking-wider mb-3">Our Work</h3>
                         <div className="pl-2 border-l-2 border-border/50 flex flex-col gap-2">
-                            <Link href="/projects" className="block text-muted-foreground text-sm py-1 hover:text-foreground pl-2" onClick={() => setIsMobileMenuOpen(false)}>Solutions</Link>
-                            <Link href="/projects" className="block text-muted-foreground text-sm py-1 hover:text-foreground pl-2" onClick={() => setIsMobileMenuOpen(false)}>Projects</Link>
+                            <Link href="/projects/flagship" className="block text-muted-foreground text-sm py-1 hover:text-foreground pl-2" onClick={() => setIsMobileMenuOpen(false)}>Flagship Projects</Link>
+                            <Link href="/projects" className="block text-muted-foreground text-sm py-1 hover:text-foreground pl-2" onClick={() => setIsMobileMenuOpen(false)}>All Projects</Link>
                             <Link href="/insights" className="block text-muted-foreground text-sm py-1 hover:text-foreground pl-2" onClick={() => setIsMobileMenuOpen(false)}>Insights</Link>
                             <Link href="/our-approach" className="block text-muted-foreground text-sm py-1 hover:text-foreground pl-2" onClick={() => setIsMobileMenuOpen(false)}>Our Approach</Link>
                         </div>

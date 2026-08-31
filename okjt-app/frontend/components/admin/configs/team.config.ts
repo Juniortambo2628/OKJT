@@ -15,7 +15,6 @@ export const teamConfig: AdminResourceConfig<TeamMember> = {
     name: '',
     role: '',
     bio: '',
-    qualifications: '',
     linkedin: '',
     image: '',
     order: 0,
@@ -31,7 +30,6 @@ export const teamConfig: AdminResourceConfig<TeamMember> = {
   fields: [
     { key: 'name', label: 'Full Name', type: 'text', required: true },
     { key: 'role', label: 'Role / Title', type: 'text', required: true },
-    { key: 'qualifications', label: 'Qualifications', type: 'text' },
     { key: 'linkedin', label: 'LinkedIn URL', type: 'text', placeholder: 'https://linkedin.com/in/...' },
     { key: 'image', label: 'Profile Photo', type: 'image', imageMaxSizeMB: 10 },
     { key: 'order', label: 'Display Order', type: 'number' },

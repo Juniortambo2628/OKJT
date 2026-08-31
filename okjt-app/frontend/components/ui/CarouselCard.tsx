@@ -9,6 +9,7 @@ interface CarouselCardProps {
     title: string
     description?: string
     image?: string | null
+    fallbackImage?: string | null
     href?: string
     className?: string
     children?: React.ReactNode
@@ -18,11 +19,25 @@ export default function CarouselCard({
     title,
     description,
     image,
+    fallbackImage,
     href,
     className,
     children
 }: CarouselCardProps) {
-    const hasImage = !!image
+    const [imgSrc, setImgSrc] = React.useState(image || undefined)
+    const hasImage = !!imgSrc
+
+    React.useEffect(() => {
+        setImgSrc(image || undefined)
+    }, [image])
+
+    const handleError = () => {
+        if (fallbackImage && imgSrc !== fallbackImage) {
+            setImgSrc(fallbackImage)
+        } else {
+            setImgSrc(undefined)
+        }
+    }
 
     const content = (
         <div
@@ -36,8 +51,9 @@ export default function CarouselCard({
             {hasImage ? (
                 <>
                     <img
-                        src={image}
+                        src={imgSrc}
                         alt={title}
+                        onError={handleError}
                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/40" />
@@ -46,6 +62,11 @@ export default function CarouselCard({
                 <>
                     <div className="absolute inset-0 bg-gradient-to-br from-white/[0.08] via-white/[0.03] to-primary/5" />
                     <div className="absolute inset-0 backdrop-blur-2xl" />
+                    <div className="absolute inset-0 flex items-center justify-center opacity-[0.06] pointer-events-none">
+                        <svg viewBox="0 0 200 60" className="w-48 h-auto fill-current text-white">
+                            <text x="10" y="45" fontSize="40" fontWeight="bold" fontFamily="system-ui, sans-serif">OKJTech</text>
+                        </svg>
+                    </div>
                 </>
             )}
 

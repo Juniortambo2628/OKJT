@@ -46,7 +46,7 @@ const StatsSection = () => {
         <ParallaxSection
             id="stats"
             bgMedia={backgroundMedia || getSetting('bg_home_stats')}
-            heightClass="min-h-[230vh]"
+            heightClass="min-h-[150vh]"
             badgeText={sectionTagline || "KEY PERFORMANCE METRICS"}
             title={sectionTitle}
             contentMaxWidth="max-w-[1400px]"

@@ -3,18 +3,14 @@
 import React from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Home, Search } from 'lucide-react'
+import { ArrowLeft, Home } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
+import BaseLayout from '@/components/BaseLayout'
 
 export default function NotFound() {
     return (
-        <main className="flex min-h-screen flex-col bg-[#050a1b] text-white">
-            <Navbar />
-            
+        <BaseLayout className="bg-[#050a1b] text-white">
             <section className="flex-1 flex flex-col items-center justify-center relative overflow-hidden px-6 py-32">
-                {/* Background Decor */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
                 <div className="absolute top-1/4 right-1/4 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[100px] pointer-events-none" />
                 
@@ -59,12 +55,9 @@ export default function NotFound() {
                     </div>
                 </motion.div>
                 
-                {/* Decorative Elements */}
                 <div className="absolute bottom-20 left-10 w-40 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
                 <div className="absolute top-40 right-10 w-40 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
             </section>
-            
-            <Footer />
-        </main>
+        </BaseLayout>
     )
 }

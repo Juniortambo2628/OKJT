@@ -1,14 +1,11 @@
 "use client"
 
-import React, { useState, useMemo } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
-import Image from 'next/image'
+import React, { useMemo } from 'react'
 import Link from 'next/link'
 import { ArrowRight, Code2, Palette, LineChart } from 'lucide-react'
 import { useSettings } from '@/hooks/use-settings'
 import ParallaxSection from '@/components/ParallaxSection'
 import FadeIn from '@/components/animations/FadeIn'
-import { EASE_OUT_EXPO } from '@/components/animations/FadeIn'
 
 const ValueProposition = () => {
     const { getSetting } = useSettings()
@@ -19,43 +16,30 @@ const ValueProposition = () => {
 
     const pillars = useMemo(() => [
         {
-            id: 'pillar-1',
             title: getSetting('vp_pillar1_title') || 'Technology',
             description: getSetting('vp_pillar1_description'),
             icon: Code2,
-            image: getSetting('vp_pillar1_image'),
             href: '/services',
             stats: getSetting('vp_pillar1_stats'),
             tag: getSetting('vp_pillar1_tag'),
         },
         {
-            id: 'pillar-2',
             title: getSetting('vp_pillar2_title') || 'Design',
             description: getSetting('vp_pillar2_description'),
             icon: Palette,
-            image: getSetting('vp_pillar2_image'),
             href: '/services',
             stats: getSetting('vp_pillar2_stats'),
             tag: getSetting('vp_pillar2_tag'),
         },
         {
-            id: 'pillar-3',
             title: getSetting('vp_pillar3_title') || 'Strategy',
             description: getSetting('vp_pillar3_description'),
             icon: LineChart,
-            image: getSetting('vp_pillar3_image'),
             href: '/services',
             stats: getSetting('vp_pillar3_stats'),
             tag: getSetting('vp_pillar3_tag'),
         },
     ], [getSetting])
-
-    const [activeTabTitle, setActiveTabTitle] = useState(pillars[0].title)
-
-    const activePillar = useMemo(() => {
-        return pillars.find(p => p.title === activeTabTitle) || pillars[0]
-    }, [pillars, activeTabTitle])
-    const Icon = activePillar.icon
 
     const bgMedia = getSetting('bg_home_value_proposition')
 
@@ -63,80 +47,47 @@ const ValueProposition = () => {
         <ParallaxSection
             id="value-proposition"
             bgMedia={bgMedia}
-            heightClass="min-h-[230vh]"
+            heightClass="min-h-[130vh]"
             badgeText={tagline}
             title={title}
             subtitle={subtitle}
             contentMaxWidth="max-w-[1400px]"
-            toolbarTitle="Core Values"
-            tabs={pillars.map(p => p.title)}
-            activeTab={activeTabTitle}
-            onTabChange={setActiveTabTitle}
         >
-            <AnimatePresence mode="wait">
-                <motion.div
-                    key={activePillar.id}
-                    initial={{ opacity: 0, y: 24 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -24 }}
-                    transition={{ duration: 0.5, ease: EASE_OUT_EXPO }}
-                    className="flex flex-col lg:flex-row gap-8 lg:gap-16 pt-4"
-                >
-                    {/* Text Content */}
-                    <div className="flex-1 flex flex-col justify-center items-start text-left">
-                        <Icon className="h-12 w-12 text-primary mb-6 drop-shadow-lg" />
-                        {activePillar.tag && (
-                            <FadeIn direction="up" distance={16} blur={false}>
-                                <span className="inline-block px-4 py-1.5 rounded-full bg-foreground/10 border border-foreground/10 text-foreground/80 text-xs font-bold uppercase tracking-widest mb-6">
-                                    {activePillar.tag}
-                                </span>
-                            </FadeIn>
-                        )}
-                        <h3 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
-                            {activePillar.title}
-                        </h3>
-                        <p className="text-foreground/70 text-base md:text-lg leading-relaxed mb-8">
-                            {activePillar.description}
-                        </p>
-
-                        {activePillar.stats && (
-                            <div className="text-primary font-bold text-xl mb-8">
-                                {activePillar.stats}
-                            </div>
-                        )}
-
-                        <Link
-                            href={activePillar.href}
-                            className="inline-flex items-center gap-2 text-foreground font-bold uppercase tracking-wider text-sm hover:text-primary transition-colors group"
-                        >
-                            Learn More
-                            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                        </Link>
-                    </div>
-
-                    {/* Image Content */}
-                    <FadeIn
-                        className="flex-1"
-                        direction="right"
-                        distance={40}
-                        delay={0.15}
-                        duration={0.9}
-                    >
-                        <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl border border-foreground/10 bg-foreground/5">
-                            {activePillar.image ? (
-                                <Image
-                                    src={activePillar.image}
-                                    alt={activePillar.title}
-                                    fill
-                                    className="object-cover"
-                                />
-                            ) : (
-                                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-background" />
-                            )}
-                        </div>
-                    </FadeIn>
-                </motion.div>
-            </AnimatePresence>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+                {pillars.map((pillar, index) => {
+                    const Icon = pillar.icon
+                    return (
+                        <FadeIn key={pillar.title} direction="up" distance={24} delay={index * 0.1}>
+                            <Link
+                                href={pillar.href}
+                                className="group block h-full bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-2xl p-8 hover:border-primary/40 hover:bg-white/[0.06] transition-all duration-300"
+                            >
+                                <Icon className="h-10 w-10 text-primary mb-5 drop-shadow-lg" />
+                                {pillar.tag && (
+                                    <span className="inline-block px-3 py-1 rounded-full bg-foreground/10 border border-foreground/10 text-foreground/80 text-[10px] font-bold uppercase tracking-widest mb-4">
+                                        {pillar.tag}
+                                    </span>
+                                )}
+                                <h3 className="text-2xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
+                                    {pillar.title}
+                                </h3>
+                                <p className="text-foreground/60 text-sm leading-relaxed mb-6">
+                                    {pillar.description}
+                                </p>
+                                {pillar.stats && (
+                                    <div className="text-primary font-bold text-lg mb-6">
+                                        {pillar.stats}
+                                    </div>
+                                )}
+                                <div className="mt-auto inline-flex items-center gap-2 text-foreground/70 font-bold uppercase tracking-wider text-xs group-hover:text-primary transition-colors">
+                                    Learn More
+                                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                                </div>
+                            </Link>
+                        </FadeIn>
+                    )
+                })}
+            </div>
         </ParallaxSection>
     )
 }

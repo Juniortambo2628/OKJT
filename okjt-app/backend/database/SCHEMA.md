@@ -241,7 +241,6 @@ Generated after all migrations have been applied.
 | name | varchar(255) | NOT NULL |
 | role | varchar(255) | NOT NULL |
 | bio | text | NULLABLE |
-| qualifications | varchar(255) | NULLABLE |
 | linkedin | varchar(255) | NULLABLE |
 | image | varchar(255) | NULLABLE |
 | order | integer | DEFAULT 0 |

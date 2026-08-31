@@ -137,7 +137,6 @@ export interface TeamMember {
   name: string;
   role: string;
   bio: string | null;
-  qualifications: string | null;
   linkedin: string | null;
   image: string | null;
   order: number;
@@ -213,4 +212,10 @@ export interface AuthResponse {
 
 export interface PasswordResetResponse {
   message: string;
+}
+
+export interface SearchResult {
+  services: { id: number; title: string; slug: string; category: string; description: string | null }[];
+  insights: { id: number; title: string; slug: string; category: string | null; excerpt: string | null }[];
+  projects: { id: number; title: string; slug: string; client_name: string | null; category: string | null }[];
 }

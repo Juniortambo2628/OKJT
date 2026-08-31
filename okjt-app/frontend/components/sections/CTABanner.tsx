@@ -22,7 +22,7 @@ const CTABanner = () => {
         <ParallaxSection
             id="cta"
             bgMedia={bgMedia}
-            heightClass="min-h-[230vh]"
+            heightClass="min-h-[170vh]"
             contentMaxWidth="max-w-[1400px]"
             badgeText={badgeText}
             title={title}

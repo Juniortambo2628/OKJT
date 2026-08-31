@@ -14,7 +14,6 @@ class TeamMember extends Model
         'name',
         'role',
         'bio',
-        'qualifications',
         'linkedin',
         'image',
         'order',

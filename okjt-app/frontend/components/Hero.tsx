@@ -459,11 +459,11 @@ const Hero = ({
                                     </Button>
                                 </motion.div>
                             )}
-
-                            {/* Extra children (e.g. breadcrumbs, metadata) */}
-                            {children}
                         </div>
                     </div>
+
+                    {/* Extra children rendered full-width (e.g. carousel) */}
+                    {children}
 
                     {/* Optional trust bar */}
                     {showTrustBar && !isLoading && <TrustBar clients={clients} />}

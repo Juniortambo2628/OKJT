@@ -24,7 +24,7 @@ const InsightsSection = () => {
             <ParallaxSection
                 id="insights"
                 bgMedia={bgMedia}
-                heightClass="min-h-[230vh]"
+                heightClass="min-h-[150vh]"
                 badgeText="Technical Insights"
                 title="Latest Articles & News"
             >
@@ -43,7 +43,7 @@ const InsightsSection = () => {
         <ParallaxSection
             id="insights"
             bgMedia={bgMedia}
-            heightClass="min-h-[230vh]"
+            heightClass="min-h-[150vh]"
             contentMaxWidth="max-w-[1400px]"
             badgeText="Technical Insights"
             title="Latest Articles & News"
