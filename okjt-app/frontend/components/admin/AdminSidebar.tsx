@@ -30,6 +30,7 @@ import {
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/components/AuthProvider'
 import { useApi } from '@/hooks/use-api'
+import { useMounted } from '@/hooks/use-mounted'
 import { useTheme } from 'next-themes'
 import { AdminThemeToggle } from './AdminThemeToggle'
 
@@ -47,11 +48,7 @@ const AdminSidebar = () => {
     }
 
     const { theme } = useTheme()
-    const [mounted, setMounted] = React.useState(false)
-
-    React.useEffect(() => {
-        setMounted(true)
-    }, [])
+    const mounted = useMounted()
 
     const logoWhiteBg = getSetting('logo_light', '/logos/OKJT-Logos/OKJTechLogo-Black_Transparent.png')
     const logoBlackBg = getSetting('logo_dark', '/logos/OKJT-Logos/OKJTechLogo-White_Transparent.png')

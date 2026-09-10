@@ -20,14 +20,12 @@ import {
 } from "@/components/ui/select"
 import ImageUploader from '@/components/admin/ImageUploader'
 import { SiteSetting } from '@/types/api'
-import { useToast } from '@/hooks/use-toast'
 import { Reorder } from 'framer-motion'
 import { getMediaUrl } from '@/lib/utils'
 import SettingsHeader from '@/components/admin/core/SettingsHeader'
 
 const AdminSettingsPage = () => {
     const { settingsByGroup, localSettings, updateSetting, handleSave, isLoading, isSaving, mutate } = useSiteSettings()
-    const { toast } = useToast()
     const [navLinks, setNavLinks] = useState<{name: string, href: string}[]>([])
 
     // Sync nav links when data loads
@@ -62,11 +60,6 @@ const AdminSettingsPage = () => {
         { key: 'hero_pillar_ui_ux_design', label: 'Pillar: UI/UX Design Hero', type: 'media' },
         { key: 'hero_pillar_digital_strategy', label: 'Pillar: Digital Strategy Hero', type: 'media' },
     ]
-
-    const heroSettingByKey = heroSettingsList.reduce<Record<string, typeof heroSettingsList[number]>>((acc, setting) => {
-        acc[setting.key] = setting
-        return acc
-    }, {})
 
     const getHeroAccept = (type: string) => {
         if (type === 'video') return ['.mp4', '.webm']

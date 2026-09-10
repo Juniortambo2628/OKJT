@@ -6,16 +6,10 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
-import { Trash2, Mail, MoreVertical } from 'lucide-react'
+import { Trash2, Mail } from 'lucide-react'
 import { Rsvp } from '@/types/api'
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import AdminResourceTemplate from '@/components/admin/core/AdminResourceTemplate'
 import { ResourceTableRow } from '@/components/admin/ResourceTableRow'
 import { rsvpsConfig } from '@/components/admin/configs/rsvps.config'

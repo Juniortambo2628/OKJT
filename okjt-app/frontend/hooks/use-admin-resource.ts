@@ -115,7 +115,7 @@ export function useAdminResource<T extends { id: number, created_at?: string }>(
             mutate()
             triggerRevalidation()
             setSelectedIds(prev => prev.filter(i => i !== id))
-        } catch (err: any) {
+        } catch {
             toast({ variant: "destructive", title: "Error", description: `Failed to delete ${resourceName.toLowerCase()}` })
         }
     }
@@ -130,7 +130,7 @@ export function useAdminResource<T extends { id: number, created_at?: string }>(
             setSelectedIds([])
             mutate()
             triggerRevalidation()
-        } catch (err) {
+        } catch {
             toast({ variant: "destructive", title: "Error", description: "Bulk delete failed." })
         }
     }
@@ -171,7 +171,7 @@ export function useAdminResource<T extends { id: number, created_at?: string }>(
             
             return 0
         })
-    }, [data, searchTerm, activeFilter, sortBy, sortOrder, filterFn, sortFns])
+    }, [data, searchTerm, activeFilter, sortBy, sortOrder, filterFn, sortFns, statusField])
 
     return {
         // Data

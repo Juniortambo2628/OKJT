@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import AdminLayout from '@/components/admin/AdminLayout'
 import { useSiteSettings } from '@/hooks/use-site-settings'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -16,14 +16,14 @@ const AdminWidgetsPage = () => {
     const [faqData, setFaqData] = useState<{keywords: string[], answer: string}[]>([])
     const [quickReplies, setQuickReplies] = useState<string[]>([])
 
-    useEffect(() => {
-        if (localSettings.chatbot_faq_data) {
-            try { setFaqData(JSON.parse(localSettings.chatbot_faq_data || '[]')) } catch (e) {}
-        }
-        if (localSettings.chatbot_quick_replies) {
-            try { setQuickReplies(JSON.parse(localSettings.chatbot_quick_replies || '[]')) } catch (e) {}
-        }
-    }, [localSettings])
+    // Parse the JSON blobs into local editable arrays once the settings load.
+    // One-shot (not per-render / per-keystroke) so it doesn't clobber edits.
+    const [parsed, setParsed] = useState(false)
+    if (!parsed && Object.keys(localSettings).length > 0) {
+        setParsed(true)
+        try { setFaqData(JSON.parse(localSettings.chatbot_faq_data || '[]')) } catch { /* keep default */ }
+        try { setQuickReplies(JSON.parse(localSettings.chatbot_quick_replies || '[]')) } catch { /* keep default */ }
+    }
 
     const handleSaveWithExtras = () => {
         handleSave((settings, local) => {

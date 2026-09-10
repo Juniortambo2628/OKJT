@@ -20,7 +20,6 @@ interface ParallaxSectionProps {
     onTabChange?: (tab: string) => void
     id?: string
     children?: React.ReactNode
-    index?: number
     contentMaxWidth?: string
     loading?: boolean
     className?: string
@@ -47,7 +46,6 @@ export default function ParallaxSection({
     onTabChange,
     id,
     children,
-    index,
     contentMaxWidth = PARALLAX_DEFAULTS.contentMaxWidth,
     loading = false,
     className

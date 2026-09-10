@@ -104,7 +104,7 @@ const AdminPillarsPage = () => {
                                     <div className="flex items-center gap-4">
                                         {pillar.image ? (
                                             <div className="w-10 h-10 rounded bg-secondary overflow-hidden shrink-0 border border-border/50">
-                                                <img src={pillar.image} className="w-full h-full object-cover" />
+                                                <img src={pillar.image} alt="" className="w-full h-full object-cover" />
                                             </div>
                                         ) : (
                                             <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">

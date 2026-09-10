@@ -14,9 +14,9 @@ const CustomCursor = () => {
         const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0
         if (isTouchDevice) return
 
-        setIsVisible(true)
-
         const updateMousePosition = (e: MouseEvent) => {
+            // Reveal on the first real pointer movement — avoids a flash at (0,0).
+            setIsVisible(true)
             setMousePosition({ x: e.clientX, y: e.clientY })
         }
 

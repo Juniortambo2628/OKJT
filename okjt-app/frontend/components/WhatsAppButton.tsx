@@ -1,7 +1,6 @@
 "use client"
 
 import React from 'react'
-import { MessageCircle } from 'lucide-react'
 import { useSettings } from '@/hooks/use-settings'
 
 interface WhatsAppButtonProps {
