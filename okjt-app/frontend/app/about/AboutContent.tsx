@@ -32,14 +32,14 @@ export default function AboutContent() {
     // Keeping them honest here means the page still reads right even if the
     // admin CMS is briefly unreachable at request time.
     const title = getSetting('about_title', 'Design-led web engineering,\nbuilt around ecosystems.')
-    const tagline = getSetting('about_tagline', 'The OKJTechnologies Story')
-    const story = getSetting('about_story', 'OKJTechnologies is a one-person studio out of Nairobi, run by Kevin Tambo. I build full-stack web applications end to end — concept, UI, engineering, deployment and ongoing administration — mostly in Laravel, Next.js / React and the classic LAMP stack. Before I write code I map the ecosystem the software has to live in, so every stakeholder has an aligned reason to participate.')
+    const tagline = getSetting('about_tagline', 'How the work gets done')
+    const story = getSetting('about_story', 'OKJTechnologies is a Nairobi web-application practice. The work is full-stack and end to end — concept, interface, engineering, deployment and ongoing administration — mostly in Laravel, Next.js / React and the classic LAMP stack. Every build starts by mapping the ecosystem the software has to live in, so each stakeholder has an aligned reason to participate. It is a one-person studio, run by Kevin Tambo.')
     const missionTitle = getSetting('about_mission_title', 'Ecosystem mapping before a line of code.')
-    const missionText1 = getSetting('about_mission_text1', 'The way I approach every engagement is shaped by an ecosystem-mapping practice I picked up on the Afrilabs capacity-building programme in Addis Ababa. Before scoping, I map out every stakeholder — client, end user, regulator, partner, community — who could be affected by or beneficial to the proposition.')
-    const missionText2 = getSetting('about_mission_text2', 'I then design the solution so each of those stakeholders has a clearly aligned way to benefit from it. Combined with AI-accelerated development, it is how a one-person studio ships the same class of application a small team would take on.')
+    const missionText1 = getSetting('about_mission_text1', 'Every engagement is shaped by an ecosystem-mapping practice from the Afrilabs capacity-building programme in Addis Ababa. Before scoping, the map covers every stakeholder — client, end user, regulator, partner, community — who could be affected by or beneficial to the proposition.')
+    const missionText2 = getSetting('about_mission_text2', 'The solution is then designed so each of those stakeholders has a clearly aligned way to benefit from it. Combined with AI-accelerated development, it is how a one-person studio ships the same class of application a small team would take on.')
 
     const lhTitle = getSetting('about_lawyers_hub_title', "Two years in Africa's LegalTech engine room")
-    const lhBody = getSetting('about_lawyers_hub_body', 'From February 2023 to December 2024 I was Software Developer, Justice Innovation at the Lawyers Hub in Nairobi. It is the largest single body of work in my professional history, and it is where the ecosystem-mapping habit stopped being a workshop idea and became how I build.')
+    const lhBody = getSetting('about_lawyers_hub_body', "Between February 2023 and December 2024, the studio’s founder held the role of Software Developer, Justice Innovation at the Lawyers Hub in Nairobi. It is the largest single body of work behind OKJTechnologies, and where the ecosystem-mapping habit went from workshop idea to standard practice.")
     const lhPoints = getSetting('about_lawyers_hub_points', [
         'Spearheaded development of the Lawyers Hub Digital Policy website (lawyershub.org), the cornerstone resource for Kenya\'s digital-policy community.',
         'Designed and shipped the Africa Law Tech Festival platform — online ticketing, live notifications and event mapping for the annual festival.',
@@ -49,8 +49,8 @@ export default function AboutContent() {
         'Co-organised the Boda-Boda Law Project field research in Kisumu and Namanga and contributed to the published report.',
     ].join('|')).split('|').map((p) => p.trim()).filter(Boolean)
 
-    const teamTitle = getSetting('about_team_title', 'One founder. One practitioner. All the accountability.')
-    const teamSubtitle = getSetting('about_team_subtitle', 'OKJTechnologies is deliberately a one-person studio. Every project is designed, built, deployed and administered by the same person — no hand-offs, no dropped context, one point of accountability from concept to production.')
+    const teamTitle = getSetting('about_team_title', 'One continuous thread, concept to production')
+    const teamSubtitle = getSetting('about_team_subtitle', 'Every project is designed, built, deployed and administered as one continuous piece of work — no hand-offs between teams, no context dropped between phases, one point of accountability. OKJTechnologies is deliberately a one-person studio.')
     const ctaTitle = getSetting('about_cta_title', 'Have a system you want built end to end?')
     const ctaSubtitle = getSetting('about_cta_subtitle', "Whether it's a customer-facing application, an internal dashboard, or a national-scale concept still at problem-statement stage, I'd like to hear about it. Start with a short brief and we'll map the ecosystem together.")
 

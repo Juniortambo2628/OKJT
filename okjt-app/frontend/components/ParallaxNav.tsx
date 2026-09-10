@@ -92,25 +92,25 @@ export default function ParallaxNav({ sections }: ParallaxNavProps) {
             animate={{ y: 0, opacity: isScrolling ? 1 : 0.4 }}
             whileHover={{ opacity: 1 }}
             transition={{ opacity: { duration: 0.5 } }}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] bg-background/40 backdrop-blur-xl border border-foreground/15 rounded-full px-4 py-2.5 flex items-center gap-3 shadow-2xl overflow-hidden transition-colors"
+            className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[60] bg-background/40 backdrop-blur-xl border border-foreground/15 rounded-full px-2.5 py-1.5 flex items-center gap-1.5 shadow-2xl overflow-hidden transition-colors"
         >
             {sections.map((section, index) => (
                 <button
                     key={section.id}
                     onClick={() => scrollToSection(section.id)}
-                    className="group relative flex items-center justify-center p-1"
+                    className="group relative flex items-center justify-center p-0.5"
                 >
                     {activeIndex === index ? (
-                        <div className="w-6 h-2 rounded-full bg-foreground/30 overflow-hidden relative transition-all duration-500">
-                            <div 
-                                className="absolute top-0 left-0 bottom-0 bg-foreground transition-all duration-75 ease-out shadow-[0_0_8px_rgba(255,255,255,0.5)]" 
+                        <div className="w-5 h-1.5 rounded-full bg-foreground/30 overflow-hidden relative transition-all duration-500">
+                            <div
+                                className="absolute top-0 left-0 bottom-0 bg-foreground transition-all duration-75 ease-out shadow-[0_0_8px_rgba(255,255,255,0.5)]"
                                 style={{ width: 'calc(var(--active-progress, 0) * 100%)' }}
                             />
                         </div>
                     ) : (
-                        <div className="w-2 h-2 rounded-full bg-foreground/20 hover:bg-foreground/50 transition-all duration-300" />
+                        <div className="w-1.5 h-1.5 rounded-full bg-foreground/20 hover:bg-foreground/50 transition-all duration-300" />
                     )}
-                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 px-3 py-1.5 bg-foreground text-background text-[10px] font-bold rounded uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-md">
+                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-3 py-1.5 bg-foreground text-background text-[10px] font-bold rounded uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-md">
                         {section.label}
                     </span>
                 </button>

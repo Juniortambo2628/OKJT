@@ -225,16 +225,18 @@ const HeroBackground = ({
         setVideoIndex((prev) => (prev + 1) % videos.length)
     }
 
-    // Preload the current and next video for seamless switching
+    // Warm the next video so the crossfade doesn't stutter. `<link rel="preload"
+    // as="fetch">` triggers a "preloaded but not used" console warning because the
+    // <video> never reads it via fetch(); a hidden <video preload="auto"> primes
+    // the same HTTP cache entry without the warning.
     useEffect(() => {
         if (videos.length <= 1) return
         const nextIndex = (videoIndex + 1) % videos.length
-        const link = document.createElement('link')
-        link.rel = 'preload'
-        link.as = 'fetch'
-        link.href = videos[nextIndex]
-        document.head.appendChild(link)
-        return () => { document.head.removeChild(link) }
+        const warm = document.createElement('video')
+        warm.preload = 'auto'
+        warm.muted = true
+        warm.src = videos[nextIndex]
+        return () => { warm.removeAttribute('src'); warm.load() }
     }, [videoIndex, videos])
 
     return (
@@ -351,16 +353,15 @@ const Hero = ({
         )
     }, [titleProp, titleLine1, titleLine2, rotatingWords, prefersReducedMotion])
 
-    // Preload the first hero video
+    // Warm the first hero video (see note on the crossfade preload above — a
+    // hidden <video> avoids the "preloaded but not used" warning `as="fetch"` throws).
     useEffect(() => {
-        if (videos[0]) {
-            const link = document.createElement('link')
-            link.rel = 'preload'
-            link.as = 'fetch'
-            link.href = videos[0]
-            document.head.appendChild(link)
-            return () => { document.head.removeChild(link) }
-        }
+        if (!videos[0]) return
+        const warm = document.createElement('video')
+        warm.preload = 'auto'
+        warm.muted = true
+        warm.src = videos[0]
+        return () => { warm.removeAttribute('src'); warm.load() }
     }, [videos])
 
     return (

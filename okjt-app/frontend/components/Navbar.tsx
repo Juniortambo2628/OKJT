@@ -1,12 +1,12 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Menu, X, ChevronDown, Briefcase, BookOpen } from 'lucide-react'
+import { Menu, X, ChevronDown, Briefcase, BookOpen, MessageSquare } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import PrimaryButton from '@/components/PrimaryButton'
-import { cn } from '@/lib/utils'
+import { cn, getMediaUrl } from '@/lib/utils'
 import SearchDialog from './SearchDialog'
 import { ThemeToggle } from './ThemeToggle'
 import { useApi } from '@/hooks/use-api'
@@ -22,6 +22,21 @@ const Navbar = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [activeMegaMenu, setActiveMegaMenu] = useState<'services' | 'work' | null>(null)
     const [mounted, setMounted] = useState(false)
+
+    // Mega-menu hover intent: keep the panel open briefly after the cursor
+    // leaves so it doesn't vanish while the user is travelling to an item.
+    const megaMenuCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+    const openMegaMenu = (menu: 'services' | 'work') => {
+        if (megaMenuCloseTimer.current) clearTimeout(megaMenuCloseTimer.current)
+        setActiveMegaMenu(menu)
+    }
+    const scheduleMegaMenuClose = () => {
+        if (megaMenuCloseTimer.current) clearTimeout(megaMenuCloseTimer.current)
+        megaMenuCloseTimer.current = setTimeout(() => setActiveMegaMenu(null), 400)
+    }
+    useEffect(() => () => {
+        if (megaMenuCloseTimer.current) clearTimeout(megaMenuCloseTimer.current)
+    }, [])
 
     const logoWhiteBg = branding.logo_light
     const logoBlackBg = branding.logo_dark
@@ -119,9 +134,10 @@ const Navbar = () => {
     // Flagship projects for Our Work mega menu
     const flagshipProjects = React.useMemo(() => {
         if (!projects || !Array.isArray(projects)) return []
-        return projects.filter((p: any) => p.type === 'flagship' && p.is_active).slice(0, 5).map((p: any) => ({
+        return projects.filter((p: any) => p.type === 'flagship' && p.is_active).slice(0, 4).map((p: any) => ({
             name: p.title,
-            href: `/projects/${p.slug}`
+            href: `/projects/${p.slug}`,
+            image: p.image ? getMediaUrl(p.image) : null,
         }))
     }, [projects])
 
@@ -139,7 +155,7 @@ const Navbar = () => {
                     ? "bg-background/40 backdrop-blur-xl border-b-[0.5px] border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.1)] py-3" 
                     : "bg-transparent py-5"
             )}
-            onMouseLeave={() => setActiveMegaMenu(null)}
+            onMouseLeave={scheduleMegaMenuClose}
         >
             <div className="max-w-[1400px] mx-auto flex items-center justify-between">
                 <Link href="/" className="flex items-center gap-2 relative z-50 shrink-0">
@@ -166,7 +182,7 @@ const Navbar = () => {
                     {/* Services Dropdown Trigger */}
                     <button
                         className="text-[12px] font-bold uppercase tracking-widest hover:text-primary transition-colors text-foreground/90 flex items-center gap-1"
-                        onMouseEnter={() => setActiveMegaMenu('services')}
+                        onMouseEnter={() => openMegaMenu('services')}
                         aria-label="Services Menu"
                         aria-haspopup="true"
                         aria-expanded={activeMegaMenu === 'services'}
@@ -177,7 +193,7 @@ const Navbar = () => {
                     {/* Our Work Dropdown Trigger */}
                     <button
                         className="text-[12px] font-bold uppercase tracking-widest hover:text-primary transition-colors text-foreground/90 flex items-center gap-1"
-                        onMouseEnter={() => setActiveMegaMenu('work')}
+                        onMouseEnter={() => openMegaMenu('work')}
                         aria-label="Our Work Menu"
                         aria-haspopup="true"
                         aria-expanded={activeMegaMenu === 'work'}
@@ -217,9 +233,9 @@ const Navbar = () => {
             {/* Services Mega Menu */}
             {activeMegaMenu === 'services' && dynamicServiceCategories.length > 0 && (
                 <div
-                    className="hidden lg:block absolute top-[100%] left-1/2 -translate-x-1/2 w-full max-w-[820px] bg-background rounded-2xl border border-border shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] transition-all overflow-hidden mt-4"
-                    onMouseEnter={() => setActiveMegaMenu('services')}
-                    onMouseLeave={() => setActiveMegaMenu(null)}
+                    className="hidden lg:block absolute top-[100%] left-1/2 -translate-x-1/2 w-full max-w-[820px] bg-background rounded-2xl border border-border shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] transition-all overflow-hidden mt-1"
+                    onMouseEnter={() => openMegaMenu('services')}
+                    onMouseLeave={scheduleMegaMenuClose}
                 >
                     <div className="flex">
                         {/* Left Column (Featured) */}
@@ -240,7 +256,10 @@ const Navbar = () => {
                                 </Button>
                                 <Button className="w-full bg-white/5 text-foreground hover:bg-white/10 rounded-xl py-4 flex items-center justify-start gap-2" asChild>
                                     <Link href="/contact">
-                                        <span className="font-semibold text-xs pl-9">Speak with an Expert</span>
+                                        <div className="h-7 w-7 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                                            <MessageSquare className="h-3.5 w-3.5 text-primary" />
+                                        </div>
+                                        <span className="font-semibold text-xs">Contact Us</span>
                                     </Link>
                                 </Button>
                             </div>
@@ -270,9 +289,9 @@ const Navbar = () => {
             {/* Our Work Mega Menu */}
             {activeMegaMenu === 'work' && (
                 <div
-                    className="hidden lg:block absolute top-[100%] left-1/2 -translate-x-1/2 w-full max-w-[820px] bg-background rounded-2xl border border-border shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] transition-all overflow-hidden mt-4"
-                    onMouseEnter={() => setActiveMegaMenu('work')}
-                    onMouseLeave={() => setActiveMegaMenu(null)}
+                    className="hidden lg:block absolute top-[100%] left-1/2 -translate-x-1/2 w-full max-w-[820px] bg-background rounded-2xl border border-border shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] transition-all overflow-hidden mt-1"
+                    onMouseEnter={() => openMegaMenu('work')}
+                    onMouseLeave={scheduleMegaMenuClose}
                 >
                     <div className="flex">
                         {/* Left Column (Featured) */}
@@ -294,41 +313,37 @@ const Navbar = () => {
                         
                         {/* Right Columns (Links) */}
                         <div className="w-[72%] p-6 grid grid-cols-3 gap-x-6 gap-y-6">
-                            {/* Flagship Projects */}
-                            <div>
+                            {/* Flagship Projects — with thumbnails */}
+                            <div className="col-span-2">
                                 <h4 className="text-[9px] font-bold text-primary uppercase tracking-widest mb-2">Flagship</h4>
-                                <ul className="space-y-0.5">
-                                    <li>
-                                        <Link href="/projects/flagship" className="block group p-2 -mx-2 rounded-md hover:bg-secondary/50 transition-colors">
-                                            <div className="font-semibold text-foreground text-xs">All Flagship</div>
-                                        </Link>
-                                    </li>
+                                <ul className="grid grid-cols-2 gap-1">
                                     {flagshipProjects.map((item) => (
                                         <li key={item.name}>
-                                            <Link href={item.href} className="block group p-2 -mx-2 rounded-md hover:bg-secondary/50 transition-colors">
-                                                <div className="font-semibold text-foreground text-xs">{item.name}</div>
+                                            <Link href={item.href} className="flex items-center gap-2.5 group p-1.5 -mx-1.5 rounded-md hover:bg-secondary/50 transition-colors">
+                                                {item.image ? (
+                                                    <img src={item.image} alt="" className="h-9 w-14 rounded object-cover shrink-0 border border-border/50" />
+                                                ) : (
+                                                    <div className="h-9 w-14 rounded bg-secondary/40 shrink-0 border border-border/50" />
+                                                )}
+                                                <div className="font-semibold text-foreground text-xs leading-tight line-clamp-2">{item.name}</div>
                                             </Link>
                                         </li>
                                     ))}
                                 </ul>
+                                <Link href="/projects/flagship" className="inline-block mt-2 text-[10px] font-bold text-primary uppercase tracking-widest hover:underline">
+                                    All flagship projects →
+                                </Link>
                             </div>
 
-                            {/* Client Projects */}
+                            {/* Client Work + Knowledge */}
                             <div>
-                                <h4 className="text-[9px] font-bold text-primary uppercase tracking-widest mb-2">Client Work</h4>
+                                <h4 className="text-[9px] font-bold text-primary uppercase tracking-widest mb-2">More</h4>
                                 <ul className="space-y-0.5">
                                     <li>
                                         <Link href="/projects" className="block group p-2 -mx-2 rounded-md hover:bg-secondary/50 transition-colors">
                                             <div className="font-semibold text-foreground text-xs">All Projects</div>
                                         </Link>
                                     </li>
-                                </ul>
-                            </div>
-
-                            {/* Knowledge Base */}
-                            <div>
-                                <h4 className="text-[9px] font-bold text-primary uppercase tracking-widest mb-2">Knowledge</h4>
-                                <ul className="space-y-0.5">
                                     <li>
                                         <Link href="/insights" className="block group p-2 -mx-2 rounded-md hover:bg-secondary/50 transition-colors">
                                             <div className="font-semibold text-foreground text-xs">Insights & News</div>
