@@ -196,21 +196,21 @@ Fields per project:
 - **Year:** 2023.
 - **Stack:** LAMP.
 - **Category / tags:** EventTech · Ticketing · LegalTech.
-- **Live URL:** https://lawyershub.org/africa-law-tech-festival
+- **Live URL:** https://www.africalawtech.com
 - **Description:** I designed the Africa Law Tech Festival platform — the site that runs online ticketing, live notifications and event mapping for the annual festival (11,000+ attendees across editions per lawyershub.org).
 
 ### 3. AI Policy Lab (ALTF 2024)
 - **Type:** Employer project — contributed to UI/UX.
 - **Status:** Delivered.
 - **Year:** 2024.
-- **Live URL:** https://lawyershub.org/africa-law-tech-festival *(2024 edition)*
+- **Live URL:** https://www.aipolicy.africa/
 - **Description:** I contributed to UI/UX design for the AI Policy Lab — a virtual learning facility for AI‑policy capacity building across Europe and Africa, introduced at the 2024 festival edition (*Artificial Intelligence and the Year of Education*, Aug 26–27 2024).
 
 ### 4. Africa Law Tech University (ALTU) platform
 - **Type:** Employer project.
 - **Year:** 2023–2024.
-- **Live URL:** *(sub‑property of lawyershub.org — please confirm exact URL)*
-- **Description:** I designed the Africa Law Tech University platform, centralising capacity‑building activities for the Africa Digital Policy Institute.
+- **Live URL:** ALTU never launched under its original name — the direction was folded into the **Africa Digital Policy Institute** course platform, which is live: https://www.lawyershub.org/adpi-courses
+- **Description:** I designed the Africa Law Tech University platform (which became the Africa Digital Policy Institute course platform), centralising capacity‑building activities for the Institute.
 
 ### 5. Digital Trade Hackathon site (`DigitalTrade.Africa` / `ALTF2023-Hackathon`)
 - **Tagline:** Landing site for the 2023 Digital Trade tech‑policy hackathon at the Africa Law Tech Festival.
@@ -241,7 +241,7 @@ Fields per project:
 - **Stack:** PHP 8.1, Bootstrap 5, custom PHP components, Vite, Phinx migrations, Rector / PHP‑CS‑Fixer / PHPStan / PHPMD in dev.
 - **Category / tags:** LegalTech · Corporate site · Admin & client dashboards.
 - **Repo:** `Juniortambo2628/DGLegal` (private).
-- **Live URL:** https://dglegal.co.ke *[please confirm]*
+- **Live URL:** https://dglegal.co.ke
 - **Description:** I designed and built the website for Dickson, Gitonga Advocates LLP. It ships a public marketing site plus two authenticated portals: an **admin dashboard** (consultation requests, blog posts, team members, publications, firm activity) and a **client dashboard** (case management, correspondence, file uploads, notifications). The publications page has search, filter and pagination.
 - **DB correction:** current DB copy claims a Kenya‑Law scraper / automated cause‑list feed — that isn't in the repo. Remove that claim.
 
@@ -251,7 +251,7 @@ Fields per project:
 - **Stack:** Laravel 11+, Vite, React 19, Tailwind CSS 4, Framer Motion, Recharts, React Router, FilePond, Swiper, React CountUp.
 - **Category / tags:** Civil engineering · Corporate portfolio · CMS.
 - **Repo:** `Juniortambo2628/TAMCON` (public).
-- **Live URL:** https://tamcon.co.ke *[please confirm]*
+- **Live URL:** https://tamconsonsult.com
 - **Description:** I designed and built a public portfolio site and a companion admin CMS for TAMCON Consulting Engineers. The interactive front end uses Framer Motion for scroll animations and Swiper for project galleries; the client can publish new projects and media through the CMS without touching code.
 
 ### 9. South Ring Autos Workshop Management (`South-Ring-Autos`)
@@ -260,7 +260,7 @@ Fields per project:
 - **Stack:** Laravel (backend + Blade / Vite front end).
 - **Category / tags:** Automotive · Workshop management · Client portal.
 - **Repo:** `Juniortambo2628/South-Ring-Autos` (public).
-- **Live URL:** https://southringautos.co.ke *[please confirm]*
+- **Live URL:** https://southringautos.com
 - **Description:** I built an integrated workshop management system for South Ring Autos covering online bookings, vehicle service tracking, service reminders and digital documentation, with a role‑based admin area for the workshop team.
 
 ### 10. Nyalife Women's Health Clinic — Website
@@ -268,7 +268,7 @@ Fields per project:
 - **Type:** Client. **Status:** Live. **Year:** 2024.
 - **Stack:** LAMP (cPanel hosted).
 - **Category / tags:** HealthTech · Clinic marketing.
-- **Live URL:** https://nyalifewomen.co.ke *[please confirm]*
+- **Live URL:** https://nyalifewomensclinic.net
 - **Description:** I designed and shipped the public website for Nyalife Women's Health Clinic — services overview, doctor profiles, appointment intake and contact.
 
 ### 11. Nyalife Hospital Management System (`Nyalife-HMS-System`)
@@ -277,16 +277,16 @@ Fields per project:
 - **Stack:** Laravel 11+, Vite, Playwright e2e tests, PHPUnit, Rector, ESLint / Stylelint, cPanel deployment scripts.
 - **Category / tags:** HealthTech · Clinic operations · Patient records.
 - **Repo:** `Juniortambo2628/Nyalife-HMS-System` (public).
-- **Live URL:** https://hms.nyalifewomen.co.ke *[please confirm]*
-- **Description:** I built a private clinical administration system for Nyalife Women's Health Clinic: patient records, appointment scheduling, clinical file handling and role‑based access. Playwright end‑to‑end tests and a cPanel deployment pipeline ship with the repo.
+- **Live URL:** https://nyalifewomensclinic.net *(the HMS runs behind the same domain — see the Tibu note in §28: Nyalife HMS is the first live instance of the Tibu product concept).*
+- **Description:** I built a private clinical administration system for Nyalife Women's Health Clinic: patient records, appointment scheduling, clinical file handling and role‑based access. Playwright end‑to‑end tests and a cPanel deployment pipeline ship with the repo. This system is the **first live instance of the Tibu product concept** (§28) — the strategy is to onboard facilities one at a time through this HMS, and use the growing network as the substrate for cross‑facility patient‑record sharing.
 
 ### 12. HUCAA — Hekima University College Alumni Association
 - **Tagline:** Alumni association platform, currently at wireframe stage.
 - **Type:** Client. **Status:** In development — wireframe / concept only in the repo. **Year:** started 2025.
 - **Category / tags:** EdTech · Alumni portal · Community.
 - **Repo:** `Juniortambo2628/HUCAA` (private).
-- **Live URL:** *(not deployed yet — wireframe stage)*
-- **Description:** I'm designing an alumni networking portal for Hekima University College Alumni Association. Wireframes are complete; build to follow. **The current DB claim of "Live WebSockets Chat" / "thousands of alumni connected" is wrong — that has not been built.**
+- **Live URL:** https://alumni.hekima.ac.ke
+- **Description:** I built the alumni networking portal for Hekima University College Alumni Association — it's live, and I'm iterating on it now as a personal portfolio project using my current stack (Laravel + React). **The current DB claim of "Live WebSockets Chat" / "thousands of alumni connected" is still wrong for the current version — describe only what's actually shipped.**
 
 ### 13. Global Harmony Initiative (`GHI`)
 - **Tagline:** NGO website with programme content, donations and admin.
@@ -294,7 +294,7 @@ Fields per project:
 - **Stack:** Laravel 13 + Inertia + React (Breeze), Stripe PHP SDK for donations, WebAuthn (passkeys), Intervention Image, DomPDF, Guzzle.
 - **Category / tags:** NGO · Non‑profit · Donations.
 - **Repo:** `Juniortambo2628/GHI` (public).
-- **Live URL:** https://globalharmonyinitiative.org *[please confirm]*
+- **Live URL:** https://globalharmonyinitiative.com
 - **Description:** I designed and built the Global Harmony Initiative website — a nonprofit platform combining programme content, secure Stripe‑backed donations, WebAuthn passkey admin login, and admin tooling for content and correspondence.
 
 ### 14. Wisdom Capital Agricultural Products — E‑commerce
@@ -302,7 +302,7 @@ Fields per project:
 - **Type:** Client. **Status:** Live. **Year:** 2024.
 - **Stack:** LAMP (PHP + MySQL) with a React front‑end layer, SMTP mail integration.
 - **Category / tags:** Agritech · E‑commerce · SMB dashboards.
-- **Live URL:** *(please provide — I don't have it)*
+- **Live URL:** https://wisdomcapital.co.ke
 - **Description:** I built an ordering and delivery site for Wisdom Capital's agricultural products, plus an admin dashboard for sales, payment status and regional distribution tracking.
 
 ### 15. Reytati Communications
@@ -310,7 +310,7 @@ Fields per project:
 - **Type:** Client. **Status:** Live. **Year:** 2024.
 - **Stack:** LAMP + React front end, dynamic testimonial + service catalog admin.
 - **Category / tags:** Marketing agency · Corporate site.
-- **Live URL:** *(please provide — I don't have it)*
+- **Live URL:** http://reytaticomms.com
 - **Description:** I built a single‑page interactive site for Reytati Communications with a lead‑capture form, dynamic service catalog and admin panel for updating testimonials and service copy.
 
 ### 16. Mizizi Sugarcane Juice (`Mizizi`)
@@ -319,7 +319,7 @@ Fields per project:
 - **Stack:** PHP + MySQL, jQuery / Bootstrap components, **Leaflet.js + OpenStreetMap / Nominatim** for the map‑based address picker.
 - **Category / tags:** Food & Beverage · E‑commerce · Geolocation.
 - **Repo:** `Juniortambo2628/Mizizi` (private).
-- **Live URL:** https://mizizi.co.ke *[please confirm]*
+- **Live URL:** https://mizizi.okjtech.co.ke
 - **Description:** I built the Mizizi sugarcane‑juice ordering site — product showcase, guest and registered checkout, user profiles, order tracking, and an interactive Leaflet + OpenStreetMap picker so buyers pin the exact delivery location. Precise lat/lon is stored per order and shown on the admin's tracking view.
 
 ### 17. OKJTechnologies portfolio website (`OKJT`) — *this project*
@@ -331,7 +331,7 @@ Fields per project:
 - **Stack — v2 rebuild (`new-changes`):** Vite + React + TS + Tailwind + i18next front end · Laravel + Sanctum + Spatie (Activitylog, Tags, MediaLibrary), Laravel Scout + Meilisearch, Maatwebsite Excel, Spatie Backup. Simpler schema (`PortfolioProject`, `HeroSlide`, `TrustedClient`, `ContactSubmission`, `Comment`, `SiteSetting`).
 - **Category / tags:** Studio site · Portfolio · Full‑stack.
 - **Repo:** `Juniortambo2628/OKJT` (public).
-- **Live URL:** https://okjtech.co.ke · API: https://api.okjtech.co.ke
+- **Live URL:** https://okjtech.co.ke *(the API endpoint on `api.okjtech.co.ke` is not published — exposing an admin API base URL in public copy widens the attack surface for probing / credential‑stuffing; keep it out of user‑facing content.)*
 - **Description:** OKJTechnologies' own studio site — a decoupled application: a Next.js/Vite front end consuming a Laravel API, with an admin CMS for every content type on the site. The `new-changes` rebuild is a leaner, faster version around a search‑indexed `PortfolioProject` model with activity logging and a media library.
 
 ### 18. The Football Experience (`TFE`)
@@ -341,7 +341,7 @@ Fields per project:
 - **Stack:** Laravel (backend), Vite front end.
 - **Category / tags:** Travel · Sports.
 - **Repo:** `Juniortambo2628/TFE` (public).
-- **Live URL:** https://tfe.okjtech.co.ke *[please confirm]*
+- **Live URL:** https://tfe.okjtech.co.ke
 - **Description:** I'm building the platform for The Football Experience — a travel product for African fans attending international football events — in partnership with Terik Tours. Scope covers event catalog, itinerary planning, payment tracking and social discovery. **The current DB copy claims virtual wallet ledgers / installment financing / encryption — those features are on the roadmap, not in the repo. Describe the actual current build only.**
 
 ### 19. Tena Digital Onboarding Platform (`Tena-host`)
@@ -350,7 +350,7 @@ Fields per project:
 - **Stack:** Laravel + Inertia + React 18, TypeScript, Tailwind CSS 4, WebAuthn passkeys (`@laravel/passkeys`), TanStack Table, Recharts, Framer Motion, FilePond, React‑Email, React Quill.
 - **Category / tags:** FinTech · KYC / onboarding · Admin analytics.
 - **Repo:** `Juniortambo2628/Tena-host` (public).
-- **Live URL:** https://tena.okjtech.co.ke *[please confirm]*
+- **Live URL:** https://tena.host
 - **Description:** I built the Tena onboarding platform — a progressive‑disclosure registration flow, an admin analytics dashboard with Recharts, WebAuthn passkey login, tabular data management with TanStack Table, and transactional email built with React‑Email components.
 
 ### 20. Najenga — Construction collaboration platform (`Najenga`)
@@ -370,7 +370,7 @@ Fields per project:
 - **Stack:** React 19 + Vite, Tailwind 4, Framer Motion, react‑router, TanStack Query, react‑hook‑form, i18next, Leaflet + react‑leaflet, FilePond, html5‑qrcode, jsPDF + jszip + html‑to‑image, Recharts, react‑quill, Laravel Echo + Pusher. Playwright visual tests.
 - **Category / tags:** Events · Weddings · Real‑time · Multi‑language.
 - **Repo:** `Juniortambo2628/naoa-dt` (public).
-- **Live URL:** https://dntwed.okjtech.co.ke *(current demo)* · https://naoa.okjtech.co.ke *[please confirm — is this the new deploy?]*
+- **Live URLs:** https://dntwed.okjtech.co.ke *(current demo — an instance of Naoa built for the DnT wedding)* · https://naoa.okjtech.co.ke *(planned as the public product landing page with a SaaS approach — sign‑up, per‑event instance spin‑up, per‑couple subdomain)*
 - **Description:** Wedding platform with live photo galleries, QR guest check‑in, an interactive venue map, real‑time updates via Laravel Echo + Pusher, and a downloadable "digital scrapbook" export assembled client‑side (html‑to‑image / jsPDF / jszip). Front end is internationalised with i18next.
 
 ### 22. Kuba Home Services (`Kuba-hs`)
@@ -379,7 +379,7 @@ Fields per project:
 - **Stack:** Next.js 16 (App Router) + React 19 + TypeScript, Tailwind 4, Radix UI, Framer Motion, Recharts, Stripe, Laravel Echo + Pusher, FilePond, React Calendly. Backend: Laravel + Sanctum.
 - **Category / tags:** Marketplace · Services · Real‑time chat · Payments.
 - **Repo:** `Juniortambo2628/Kuba-hs` (public).
-- **Live URL:** https://kuba.okjtech.co.ke *[please confirm]*
+- **Live URL:** https://kuba.co.ke
 - **Categories supported:** Cleaning & Maintenance · Electrical · Health & Wellness · Personal & Grooming · Education & Training · Food & Hospitality · Professional Services · Legal Services · Technology & IT · HR · Financial · Commercial Real Estate · Commercial Logistics.
 - **Description:** Service‑provider marketplace with client and provider dashboards, quote‑request flows, in‑platform real‑time messaging (Laravel Echo + Pusher), Stripe payments and Calendly booking. Deploys via cPanel with GitHub Actions.
 
@@ -389,7 +389,7 @@ Fields per project:
 - **Stack:** Laravel + Inertia + React 18 + Tailwind, WebAuthn passkeys (`@simplewebauthn/browser`), Leaflet.
 - **Category / tags:** E‑commerce · Passkey auth · Brand site.
 - **Repo:** `Juniortambo2628/shop-silversky` (private).
-- **Live URL:** https://shop.silversky.co.ke *[please confirm]* / staging: https://silversky.okjtech.co.ke *[please confirm]*
+- **Live URL:** https://shop.silversky.co.ke
 - **Description:** Silversky e‑commerce build — full brand‑system implementation (8 vector logo variants documented and matched to the brand guide), WebAuthn passkey login, Leaflet‑based location features.
 
 ### 24. OmniShop — Solar & Storage Live Kenya 2026 exhibitor catalog (`shop-omnispace3d`)
@@ -398,7 +398,7 @@ Fields per project:
 - **Stack:** Python standalone server, catalog + cart + admin, printable packing lists, CSV export, PayPal checkout.
 - **Category / tags:** Events · E‑commerce · Self‑hostable.
 - **Repo:** `Juniortambo2628/shop-omnispace3d` (public).
-- **Live URL:** *(client‑hosted — please provide the deployed URL or note that it runs locally)*
+- **Live URL:** https://omnispace3d.com *(client's own domain — OmniShop is deployed under it for the event)*
 - **Description:** OmniShop, the exhibitor ordering site for Solar and Storage Live Kenya 2026. Exhibitors browse a 190‑product catalog, place orders and get a receipt; the admin panel handles order status (Pending → Approved → Invoiced → Fulfilled), prints category‑grouped packing lists, and exports orders to CSV. Packaged for a non‑technical client with a plain‑English guide and a one‑click `.bat` launcher.
 
 ### 25. Nissi Insights (`nissi-insights`)
@@ -407,7 +407,7 @@ Fields per project:
 - **Stack:** Next.js 16, React 19, TypeScript, Tailwind, Radix UI, Framer Motion, **Tiptap** rich‑text editor, SWR, react‑dropzone. Jest tests.
 - **Category / tags:** Content platform · Publishing · Admin CMS.
 - **Repo:** `Juniortambo2628/nissi-insights` (public).
-- **Live URL:** https://nissiinsights.co.ke *[please confirm]*
+- **Live URL:** https://nissi-insights.com
 - **Description:** Nissi Insights — a Next.js content platform with a Tiptap rich editor, tag / category management, image uploads with dropzone + browser compression, and an SWR‑backed admin dashboard.
 
 ### 26. gm‑project (`gm-project`)
@@ -416,15 +416,21 @@ Fields per project:
 - **Stack:** Next.js 16 + React 19 + TypeScript + Tailwind + Radix UI + Framer Motion + Recharts + FilePond + Stripe + React Calendly + Laravel Echo + Pusher.
 - **Category / tags:** SaaS · Consulting · Payments · Scheduling.
 - **Repo:** `Juniortambo2628/gm-project` (public).
-- **Live URL:** *(please confirm — this is a private engagement; the client's public name should replace "gm‑project" in any public listing)*
+- **Live URL:** https://gm-coaching.com *(the client's public name — use "GM Coaching" or the client's preferred display name in the site copy, not the internal `gm-project` slug.)*
 - **Description:** Full‑stack platform with a Next.js front end and Laravel backend — Stripe checkout, Calendly booking, real‑time updates via Pusher, dashboards with Recharts, file uploads through FilePond.
 
 ### 27. Culture Monitor (`culture-monitor`)
 - **Status:** Repo initialised, empty scaffold — do not feature until there's something to show.
 
-### 28. Tibu — HealthTech concept
-- **Type:** Concept. **Status:** Concept / problem‑statement stage. **Year:** 2025+.
-- **Description:** A concept for a national‑scale patient‑record system for Kenya, addressing paper‑based records, unequal access to care, and lack of interoperability between hospitals across levels 3–6. Currently a problem statement and design brief only — should be presented as *Concept*, not shipped software. **Remove the "100% Policy Visibility" stat from the DB — it isn't real.**
+### 28. Tibu — HealthTech product (parent of Nyalife HMS)
+- **Type:** Flagship product concept — parent of a live implementation. **Status:** Concept at the national scale; **first instance live** as the Nyalife Hospital Management System (§11). **Year:** 2025+.
+- **Category / tags:** HealthTech · Interoperability · National health infrastructure · Flagship.
+- **Live URL:** No standalone Tibu URL yet — the current implementation runs as https://nyalifewomensclinic.net (Nyalife HMS).
+- **Description:** Tibu is the **parent product concept**; the Nyalife HMS is its **first live instance**. The strategy is *ecosystem by adoption*:
+  1. Onboard facilities one at a time via the HMS — each facility gets a fully useful clinical administration system on day one (patient records, appointments, clinical files, RBAC).
+  2. As more facilities adopt it, the underlying data schema becomes the substrate for **cross‑facility patient‑record sharing** — a patient's history follows them wherever they present, regardless of the facility's tier (Level 3 to Level 6, public or private).
+  3. The wider Tibu objectives — interoperability across the referral chain, equal quality of documentation across socioeconomic strata, consolidated countrywide insights for research and NGO reporting — become reachable *because* the network already exists.
+  This is a direct application of the ecosystem‑mapping approach in §1: every stakeholder (patient, practitioner, facility, referral partner, national health authority, NGO/UN researcher) has an aligned reason to participate before we ask any of them to. **Present Tibu as "the product Nyalife HMS is running on" — not as vapourware, and not as a separate unrelated concept. Remove the "100% Policy Visibility" stat from the DB.**
 
 ---
 
