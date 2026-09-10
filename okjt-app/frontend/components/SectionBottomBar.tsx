@@ -3,8 +3,28 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
+import type { NavSection } from '@/lib/nav-sections'
+import { useCookieConsent } from '@/components/CookieConsentProvider'
 
-const HomeBottomBar = () => {
+interface SectionBottomBarProps {
+    sections: NavSection[]
+}
+
+/**
+ * Persistent labelled jump bar pinned to the bottom of every page that passes
+ * a `navSections` list to BaseLayout. The first entry (the hero/intro) is
+ * dropped — you don't jump "up to the top" from a bar that's already at the
+ * bottom of the viewport.
+ *
+ * Hidden while the cookie-consent banner is showing so the two never stack on
+ * top of each other at `bottom-0` (see CookieConsent — banner is z-[110]).
+ */
+const SectionBottomBar = ({ sections }: SectionBottomBarProps) => {
+    const { showBanner } = useCookieConsent()
+
+    const items = sections.slice(1)
+    if (items.length < 2 || showBanner) return null
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 50 }}
@@ -14,18 +34,12 @@ const HomeBottomBar = () => {
         >
             <div className="max-w-[1400px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 pointer-events-auto">
                 <span className="text-white/40 text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] whitespace-nowrap shrink-0 hidden sm:block">
-                    Discover More
+                    Jump to
                 </span>
                 <div className="flex items-center justify-center gap-6 sm:gap-8 lg:gap-12 flex-wrap">
-                    {[
-                        { id: 'value-proposition', label: 'Core Values' },
-                        { id: 'stats', label: 'Impact Metrics' },
-                        { id: 'services', label: 'Our Services' },
-                        { id: 'insights', label: 'Advisory Notes' },
-                        { id: 'cta', label: 'Get Started' }
-                    ].map((section) => (
-                        <button 
-                            key={section.id} 
+                    {items.map((section) => (
+                        <button
+                            key={section.id}
                             onClick={(e) => {
                                 e.preventDefault();
                                 const el = document.getElementById(section.id);
@@ -48,4 +62,4 @@ const HomeBottomBar = () => {
     )
 }
 
-export default HomeBottomBar
+export default SectionBottomBar

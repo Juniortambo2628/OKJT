@@ -17,6 +17,8 @@ const InsightsSection = () => {
     const { getSetting } = useSettings()
     const [activeTab, setActiveTab] = useState('Featured')
     const bgMedia = getSetting('bg_home_insights')
+    const sectionTagline = getSetting('insights_tagline') || 'Insights'
+    const sectionTitle = getSetting('insights_title') || 'Notes & articles'
 
     if (isLoading) return <SectionSkeleton />
     if (isError || !insights || insights.length === 0) {
@@ -25,8 +27,8 @@ const InsightsSection = () => {
                 id="insights"
                 bgMedia={bgMedia}
                 heightClass="min-h-[150vh]"
-                badgeText="Technical Insights"
-                title="Latest Articles & News"
+                badgeText={sectionTagline}
+                title={sectionTitle}
             >
                 <FadeIn className="w-full text-center bg-foreground/5 border border-foreground/10 rounded-[2rem] p-12" direction="up" distance={24} blur={false}>
                     <p className="text-foreground/60">The latest research notes and advisory updates will appear here as they are published.</p>
@@ -45,8 +47,8 @@ const InsightsSection = () => {
             bgMedia={bgMedia}
             heightClass="min-h-[150vh]"
             contentMaxWidth="max-w-[1400px]"
-            badgeText="Technical Insights"
-            title="Latest Articles & News"
+            badgeText={sectionTagline}
+            title={sectionTitle}
             toolbarTitle="Filter Insights"
             tabs={['Featured', 'Latest']}
             activeTab={activeTab}

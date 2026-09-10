@@ -3,7 +3,7 @@
 import React from 'react'
 import { useSettings } from '@/hooks/use-settings'
 import { useApi } from '@/hooks/use-api'
-import { Linkedin } from 'lucide-react'
+import { Linkedin, Check } from 'lucide-react'
 import FadeIn from '@/components/animations/FadeIn'
 import { StaggerContainer, StaggerItem } from '@/components/animations/Stagger'
 import {
@@ -38,12 +38,24 @@ export default function AboutContent() {
     const missionText1 = getSetting('about_mission_text1', 'The way I approach every engagement is shaped by an ecosystem-mapping practice I picked up on the Afrilabs capacity-building programme in Addis Ababa. Before scoping, I map out every stakeholder — client, end user, regulator, partner, community — who could be affected by or beneficial to the proposition.')
     const missionText2 = getSetting('about_mission_text2', 'I then design the solution so each of those stakeholders has a clearly aligned way to benefit from it. Combined with AI-accelerated development, it is how a one-person studio ships the same class of application a small team would take on.')
 
+    const lhTitle = getSetting('about_lawyers_hub_title', "Two years in Africa's LegalTech engine room")
+    const lhBody = getSetting('about_lawyers_hub_body', 'From February 2023 to December 2024 I was Software Developer, Justice Innovation at the Lawyers Hub in Nairobi. It is the largest single body of work in my professional history, and it is where the ecosystem-mapping habit stopped being a workshop idea and became how I build.')
+    const lhPoints = getSetting('about_lawyers_hub_points', [
+        'Spearheaded development of the Lawyers Hub Digital Policy website (lawyershub.org), the cornerstone resource for Kenya\'s digital-policy community.',
+        'Designed and shipped the Africa Law Tech Festival platform — online ticketing, live notifications and event mapping for the annual festival.',
+        'Contributed to every issue of the Daily Bulletin and to all of the Africa digital-policy maps published during my tenure.',
+        'Supported delivery of ADPI trainings — the Africa Data Protection Course and the CIPP/E certification.',
+        'Chaired the ALTF 2023 hackathon on digital trade under the AfCFTA, which produced 11 shortlisted innovations.',
+        'Co-organised the Boda-Boda Law Project field research in Kisumu and Namanga and contributed to the published report.',
+    ].join('|')).split('|').map((p) => p.trim()).filter(Boolean)
+
     const teamTitle = getSetting('about_team_title', 'One founder. One practitioner. All the accountability.')
     const teamSubtitle = getSetting('about_team_subtitle', 'OKJTechnologies is deliberately a one-person studio. Every project is designed, built, deployed and administered by the same person — no hand-offs, no dropped context, one point of accountability from concept to production.')
     const ctaTitle = getSetting('about_cta_title', 'Have a system you want built end to end?')
     const ctaSubtitle = getSetting('about_cta_subtitle', "Whether it's a customer-facing application, an internal dashboard, or a national-scale concept still at problem-statement stage, I'd like to hear about it. Start with a short brief and we'll map the ecosystem together.")
 
     const bgMission = getSetting('bg_about_mission')
+    const bgLawyersHub = getSetting('bg_about_lawyers_hub')
     const bgValues = getSetting('bg_about_values')
     const bgTeam = getSetting('bg_about_team')
     const bgCta = getSetting('bg_about_cta')
@@ -76,6 +88,31 @@ export default function AboutContent() {
                         <div className="absolute inset-0 bg-primary/10 mix-blend-color" />
                     </FadeIn>
                 </div>
+            </ParallaxSection>
+
+            {/* Lawyers Hub — LegalTech contribution record (Feb 2023 – Dec 2024) */}
+            <ParallaxSection
+                id="about-lawyers-hub"
+                bgMedia={bgLawyersHub}
+                heightClass="min-h-[220vh]"
+                badgeText="EXPERIENCE"
+                title={lhTitle}
+                subtitle={lhBody}
+                contentMaxWidth="max-w-[1100px]"
+            >
+                <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full" staggerDelay={0.08}>
+                    {lhPoints.map((point, i) => (
+                        <StaggerItem
+                            key={i}
+                            className="flex items-start gap-4 bg-black/20 border border-white/5 p-6 rounded-2xl hover:border-primary/30 transition-all"
+                        >
+                            <span className="w-9 h-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+                                <Check className="h-4 w-4 text-primary" />
+                            </span>
+                            <p className="text-white/75 leading-relaxed text-sm">{point}</p>
+                        </StaggerItem>
+                    ))}
+                </StaggerContainer>
             </ParallaxSection>
 
             {/* Values */}

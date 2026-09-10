@@ -5,6 +5,7 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import Hero from '@/components/Hero'
 import ParallaxNav from '@/components/ParallaxNav'
+import SectionBottomBar from '@/components/SectionBottomBar'
 import { cn } from '@/lib/utils'
 
 import { NavSection } from '@/lib/nav-sections'
@@ -31,11 +32,11 @@ export interface BaseLayoutProps {
     breadcrumbs?: BreadcrumbItem[]
     /** Extra content rendered inside the hero after the CTA */
     heroChildren?: React.ReactNode
-    /** Section list for the persistent jump toolbar */
+    /** Section list for the persistent jump toolbar + labelled bottom bar */
     navSections?: NavSection[]
     /** Whether the page is still loading hero content */
     loading?: boolean
-    /** Optional content rendered between ParallaxNav and Footer (e.g. HomeBottomBar) */
+    /** Optional extra content rendered between the bottom bar and the Footer */
     bottomBar?: React.ReactNode
 }
 
@@ -77,7 +78,10 @@ export default function BaseLayout({
             </div>
 
             {navSections && navSections.length > 1 && (
-                <ParallaxNav sections={navSections} />
+                <>
+                    <ParallaxNav sections={navSections} />
+                    <SectionBottomBar sections={navSections} />
+                </>
             )}
 
             {bottomBar}
