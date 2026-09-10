@@ -71,7 +71,7 @@ class AccurateContentSeeder extends Seeder
             ],
             [
                 'key' => 'about_story',
-                'value' => "OKJTechnologies is a one-person studio out of Nairobi, run by Kevin Tambo. I build full-stack web applications end to end — concept, UI, engineering, deployment and ongoing administration — mostly in Laravel, Next.js / React and the classic LAMP stack, with AI-accelerated tooling in the loop. Before I write code I map the ecosystem the software has to live in, so every stakeholder — client, end user, regulator, adjacent partner — has an aligned reason to participate.",
+                'value' => 'OKJTechnologies is a one-person studio out of Nairobi, run by Kevin Tambo. I build full-stack web applications end to end — concept, UI, engineering, deployment and ongoing administration — mostly in Laravel, Next.js / React and the classic LAMP stack, with AI-accelerated tooling in the loop. Before I write code I map the ecosystem the software has to live in, so every stakeholder — client, end user, regulator, adjacent partner — has an aligned reason to participate.',
                 'type' => 'textarea',
                 'group' => 'about',
             ],
@@ -83,7 +83,7 @@ class AccurateContentSeeder extends Seeder
             ],
             [
                 'key' => 'about_mission_text1',
-                'value' => "The way I approach every engagement is shaped by an ecosystem-mapping practice I picked up on the Afrilabs capacity-building programme <em>Leveraging Stakeholder Relationships through Ecosystem Mapping and Building</em> (Addis Ababa, Ethiopia), which I attended and earned a certificate for while working with the Lawyers Hub. Before scoping, I map out every stakeholder who could be affected by or beneficial to the proposition — the paying client, the end user, the regulator, adjacent service providers, upstream and downstream data holders, the wider community.",
+                'value' => 'The way I approach every engagement is shaped by an ecosystem-mapping practice I picked up on the Afrilabs capacity-building programme <em>Leveraging Stakeholder Relationships through Ecosystem Mapping and Building</em> (Addis Ababa, Ethiopia), which I attended and earned a certificate for while working with the Lawyers Hub. Before scoping, I map out every stakeholder who could be affected by or beneficial to the proposition — the paying client, the end user, the regulator, adjacent service providers, upstream and downstream data holders, the wider community.',
                 'type' => 'textarea',
                 'group' => 'about',
             ],
@@ -101,13 +101,13 @@ class AccurateContentSeeder extends Seeder
             ],
             [
                 'key' => 'about_team_subtitle',
-                'value' => "OKJTechnologies is deliberately a one-person studio. Every project is designed, built, deployed and administered by the same person — no hand-offs, no dropped context, one point of accountability from concept to production.",
+                'value' => 'OKJTechnologies is deliberately a one-person studio. Every project is designed, built, deployed and administered by the same person — no hand-offs, no dropped context, one point of accountability from concept to production.',
                 'type' => 'textarea',
                 'group' => 'about',
             ],
             [
                 'key' => 'about_cta_title',
-                'value' => "Have a system you want built end to end?",
+                'value' => 'Have a system you want built end to end?',
                 'type' => 'text',
                 'group' => 'about',
             ],
@@ -127,7 +127,7 @@ class AccurateContentSeeder extends Seeder
             ],
             [
                 'key' => 'hero_subtitle',
-                'value' => "I design and build bespoke, high-performance web applications, robust APIs and clean admin systems — solo, end to end, in Laravel, Next.js and React.",
+                'value' => 'I design and build bespoke, high-performance web applications, robust APIs and clean admin systems — solo, end to end, in Laravel, Next.js and React.',
                 'type' => 'textarea',
                 'group' => 'homepage',
             ],
@@ -203,25 +203,25 @@ class AccurateContentSeeder extends Seeder
             [
                 'icon' => 'Network',
                 'title' => 'Ecosystem mapping first',
-                'description' => "Before I write code I map every stakeholder — client, end user, regulator, partner, community — and design the solution so each has an aligned way to benefit. This is the Afrilabs stakeholder-mapping approach applied to software.",
+                'description' => 'Before I write code I map every stakeholder — client, end user, regulator, partner, community — and design the solution so each has an aligned way to benefit. This is the Afrilabs stakeholder-mapping approach applied to software.',
                 'order' => 1,
             ],
             [
                 'icon' => 'User',
                 'title' => 'Solo accountability',
-                'description' => "One person owns the work end to end — concept, UI, engineering, deployment, ongoing administration. No hand-offs, no dropped context, one point of contact.",
+                'description' => 'One person owns the work end to end — concept, UI, engineering, deployment, ongoing administration. No hand-offs, no dropped context, one point of contact.',
                 'order' => 2,
             ],
             [
                 'icon' => 'Zap',
                 'title' => 'AI-accelerated delivery',
-                'description' => "Emerging AI tooling in the loop lets a one-person studio ship the same class of application a small team would take on, without cutting corners on architecture or design.",
+                'description' => 'Emerging AI tooling in the loop lets a one-person studio ship the same class of application a small team would take on, without cutting corners on architecture or design.',
                 'order' => 3,
             ],
             [
                 'icon' => 'Palette',
                 'title' => 'Design and function together',
-                'description' => "Aesthetic clarity that supports the goal, not decoration. Every element earns its place.",
+                'description' => 'Aesthetic clarity that supports the goal, not decoration. Every element earns its place.',
                 'order' => 4,
             ],
             [
@@ -233,7 +233,7 @@ class AccurateContentSeeder extends Seeder
             [
                 'icon' => 'TrendingUp',
                 'title' => 'Built to be handed over',
-                'description' => "Cleanly documented, deployed on infrastructure the client can operate, with admin surfaces that non-technical owners can drive themselves.",
+                'description' => 'Cleanly documented, deployed on infrastructure the client can operate, with admin surfaces that non-technical owners can drive themselves.',
                 'order' => 6,
             ],
         ];
@@ -784,7 +784,7 @@ class AccurateContentSeeder extends Seeder
                 'title' => 'Ecosystem mapping before you write a line of code',
                 'category' => 'Strategy',
                 'excerpt' => 'The Afrilabs stakeholder-mapping framework, why I run it before scoping any build, and how it changes what I build.',
-                'content' => <<<HTML
+                'content' => <<<'HTML'
 <h2>Why mapping the ecosystem is the first commit</h2>
 <p>The single most useful thing I ever learned about building software wasn't taught in a Computer Science lecture. It came from the <em>Leveraging Stakeholder Relationships through Ecosystem Mapping and Building</em> programme run by Afrilabs in Addis Ababa, which I attended while working with the Lawyers Hub. The premise is simple: before you build anything, map every stakeholder who could be affected by or beneficial to the proposition, and design the solution so each one has a clearly aligned way to benefit from it.</p>
 
@@ -810,8 +810,8 @@ HTML,
             [
                 'title' => "Two years inside Africa's LegalTech engine room — what I learned at the Lawyers Hub",
                 'category' => 'LegalTech',
-                'excerpt' => "Daily bulletins, policy maps, festival platforms, ADPI trainings, boda-boda field research. What the LegalTech sector actually needs technically — from someone who was in the engine room.",
-                'content' => <<<HTML
+                'excerpt' => 'Daily bulletins, policy maps, festival platforms, ADPI trainings, boda-boda field research. What the LegalTech sector actually needs technically — from someone who was in the engine room.',
+                'content' => <<<'HTML'
 <h2>What "LegalTech" actually looks like in practice</h2>
 <p>From February 2023 to December 2024 I was Software Developer, Justice Innovation at the Lawyers Hub in Nairobi. Two years in the engine room of what is, quietly, the busiest LegalTech shop on the continent. Here's what that job actually involved and what I learned.</p>
 
