@@ -12,6 +12,7 @@ use App\Models\Testimonial;
 use App\Models\User;
 use App\Models\Value;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -45,6 +46,10 @@ class AccurateContentSeeder extends Seeder
             $this->reseedProjects();
             $this->reseedInsights();
         });
+
+        // The API caches the settings/content responses; drop them so the
+        // reseed is visible without a manual `php artisan cache:clear`.
+        Cache::flush();
 
         Log::info('AccurateContentSeeder: reseed complete.');
     }
@@ -131,11 +136,182 @@ class AccurateContentSeeder extends Seeder
                 'type' => 'textarea',
                 'group' => 'homepage',
             ],
+            // Rotating headline — drop the abstract "Scale. / Impact. / Complexity."
+            // gimmick for something concrete about what actually gets shipped.
+            [
+                'key' => 'hero_title_line1',
+                'value' => 'Full-stack web',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'hero_rotating_words',
+                'value' => 'applications.,APIs.,admin systems.',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'hero_title_line2',
+                'value' => 'Built solo, end to end.',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+
+            // --- Homepage "how I work" section (was: Three Pillars of Trusted Intelligence) ---
+            [
+                'key' => 'vp_section_tagline',
+                'value' => 'How I work',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'vp_section_title',
+                'value' => 'One person, the whole stack',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
             [
                 'key' => 'vp_section_subtitle',
-                'value' => 'Architectural discipline and aesthetic mastery, delivered as one system by one person.',
+                'value' => 'Design, engineering, deployment and ongoing administration — handled by the same person, with no hand-offs and no dropped context.',
                 'type' => 'textarea',
                 'group' => 'homepage',
+            ],
+            [
+                'key' => 'vp_pillar1_tag',
+                'value' => 'Build',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'vp_pillar1_title',
+                'value' => 'Web application engineering',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'vp_pillar1_description',
+                'value' => 'Laravel and Next.js / React applications built from the schema up — auth, admin, APIs, background jobs, plus deployment and ongoing cPanel and domain administration.',
+                'type' => 'textarea',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'vp_pillar2_tag',
+                'value' => 'Design',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'vp_pillar2_title',
+                'value' => 'Interface & experience design',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'vp_pillar2_description',
+                'value' => 'The interface is designed by the same hand that ships it — design system, motion, responsive layout and accessibility, not a hand-off from a separate designer.',
+                'type' => 'textarea',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'vp_pillar3_tag',
+                'value' => 'Strategy',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'vp_pillar3_title',
+                'value' => 'Ecosystem-led strategy',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'vp_pillar3_description',
+                'value' => 'Before scoping, I map every stakeholder the software touches — client, user, regulator, partner, community — so each has an aligned reason to use it. A practice picked up on the Afrilabs programme in Addis Ababa.',
+                'type' => 'textarea',
+                'group' => 'homepage',
+            ],
+
+            // --- Homepage section headings — match the bottom-bar labels ------
+            [
+                'key' => 'stats_tagline',
+                'value' => 'Snapshot',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'stats_title',
+                'value' => 'The studio at a glance',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'services_tagline',
+                'value' => 'Services',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'services_title',
+                'value' => 'What I build',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'insights_tagline',
+                'value' => 'Insights',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'insights_title',
+                'value' => 'Notes & articles',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'cta_badge',
+                'value' => 'Contact',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'cta_title',
+                'value' => 'Start a project',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'cta_subtitle',
+                'value' => "Tell me what you're trying to build. I'll come back with an ecosystem map and a scope.",
+                'type' => 'textarea',
+                'group' => 'homepage',
+            ],
+
+            // --- About page: Lawyers Hub contribution block ------------------
+            [
+                'key' => 'about_lawyers_hub_title',
+                'value' => 'Two years in Africa\'s LegalTech engine room',
+                'type' => 'text',
+                'group' => 'about',
+            ],
+            [
+                'key' => 'about_lawyers_hub_body',
+                'value' => 'From February 2023 to December 2024 I was Software Developer, Justice Innovation at the Lawyers Hub in Nairobi. It is the largest single body of work in my professional history, and it is where the ecosystem-mapping habit stopped being a workshop idea and became how I build.',
+                'type' => 'textarea',
+                'group' => 'about',
+            ],
+            [
+                'key' => 'about_lawyers_hub_points',
+                'value' => implode('|', [
+                    'Spearheaded development of the Lawyers Hub Digital Policy website (lawyershub.org), the cornerstone resource for Kenya\'s digital-policy community.',
+                    'Designed and shipped the Africa Law Tech Festival platform — online ticketing, live notifications and event mapping for the annual festival.',
+                    'Contributed to every issue of the Daily Bulletin and to all of the Africa digital-policy maps published during my tenure.',
+                    'Supported delivery of ADPI trainings — the Africa Data Protection Course and the CIPP/E certification.',
+                    'Chaired the ALTF 2023 hackathon on digital trade under the AfCFTA, which produced 11 shortlisted innovations.',
+                    'Co-organised the Boda-Boda Law Project field research in Kisumu and Namanga and contributed to the published report.',
+                ]),
+                'type' => 'textarea',
+                'group' => 'about',
             ],
         ];
 
@@ -845,57 +1021,209 @@ HTML,
                 'title' => 'Chairing a hackathon on digital trade at ALTF 2023',
                 'category' => 'LegalTech · Events',
                 'excerpt' => 'What I saw watching 11 teams try to solve AfCFTA problems in 48 hours; where policy hackathons succeed and where they don\'t.',
-                'content' => '<p><em>Full write-up to follow.</em> Draft outline: setting the brief (Digital Trade in Africa under the AfCFTA), what the 11 shortlisted teams actually built, the pattern of what worked in 48 hours vs what needed longer, and the lasting learnings I now apply when scoping client projects.</p>',
-                'is_published' => false,
+                'content' => <<<'HTML'
+<h2>The brief: solve the Single Digital Market in a weekend</h2>
+<p>At the 2023 Africa Law Tech Festival — <em>Digital Trade in Africa: The AfCFTA and the Single Digital Market</em>, Nairobi, 12&ndash;13 July 2023 — I chaired the hackathon under the Lawyers Hub justice-innovation team. Eleven teams were shortlisted. Chairing it meant setting the problem framing, keeping the judging honest, and spending two days watching very smart people run at a very big problem with very little time.</p>
+
+<h3>What the teams actually built</h3>
+<p>The strongest entries were narrow. A tool to check whether a given good qualified for AfCFTA preferential tariff treatment under the rules of origin. A directory that mapped which member states had actually domesticated which parts of the digital-trade protocol. A dispute-logging prototype for cross-border e-commerce returns. None of them "solved digital trade in Africa" — they each took one concrete friction a trader or a regulator hits and made it ten minutes shorter.</p>
+<p>The weaker entries tried to be platforms. A single portal for all intra-African trade. A continental digital-identity layer. Ideas that are genuinely needed, and genuinely impossible to prototype meaningfully in 48 hours, so the demos were mockups narrating a future rather than software doing a thing.</p>
+
+<h3>The pattern: scope is the whole game</h3>
+<p>The split was almost perfectly predictable from the problem statement each team wrote on day one. Teams that could finish the sentence "by Sunday, a user will be able to ___" shipped something you could click. Teams whose sentence was "by Sunday, we will have designed a system that ___" shipped slides.</p>
+<p>That is not a knock on ambition. The platform-scale problems are the important ones. But a hackathon rewards the teams who find the smallest true version of a big problem, and policy hackathons in particular tend to attract framings that are too big to test.</p>
+
+<h3>What I took back to client work</h3>
+<p>I now scope every client project the same way I wish more of those teams had. The first shipped version has to be <strong>a real thing</strong>, not a step toward a real thing. On <a href="https://najenga.okjtech.co.ke">Najenga</a> that meant "an engineer can annotate a PDF drawing and an architect sees the pin" before any of the timeline, OCR or chat features. On the Nyalife HMS it meant "this one clinic runs its whole day on this" before any talk of cross-facility interoperability. Ship the narrow true thing; earn the right to the platform.</p>
+
+<h3>Where policy hackathons genuinely work</h3>
+<p>They are excellent at three things: surfacing which frictions practitioners actually feel (the tariff and domestication tools came from people who had hit those walls personally), building a small bench of people who now understand the protocol in detail, and giving policymakers in the room concrete artefacts to point at. They are bad at producing deployable systems, and they should stop being judged as if that were the goal.</p>
+HTML,
             ],
             [
                 'title' => 'CIPP/E, ADPI and building for data protection in Kenyan LegalTech',
                 'category' => 'LegalTech · Data Protection',
                 'excerpt' => 'Supporting delivery of the Africa Data Protection Course and CIPP/E training taught me the compliance surface. Here\'s how I bake it into small-team builds.',
-                'content' => '<p><em>Full write-up to follow.</em> Draft outline: what ADPI\'s data-protection trainings cover, how it maps to Kenya\'s Data Protection Act, and the practical patterns I use on client work (RBAC, ACL, WebAuthn passkey login as in GHI and Tena, careful audit logging).</p>',
-                'is_published' => false,
+                'content' => <<<'HTML'
+<h2>Where my data-protection literacy actually came from</h2>
+<p>While I was at the Lawyers Hub I supported delivery of the Africa Digital Policy Institute's two flagship data-protection trainings: the Africa Data Protection Course (data protection, compliance and data security) and the Certified Information Privacy Professional/Europe (CIPP/E) certification. Supporting delivery meant handling the platform and operations, but it also meant sitting in the room for the content. That is where a lot of what I now do by reflex on client builds comes from.</p>
+
+<h3>The compliance surface, briefly</h3>
+<p>Kenya's Data Protection Act, 2019 tracks the GDPR closely enough that the CIPP/E material maps over cleanly: lawful basis for processing, purpose limitation, data minimisation, the rights of the data subject (access, rectification, erasure, portability), breach notification timelines, and the special care owed to sensitive categories &mdash; health data above all. If you have built for GDPR, you have most of what the Kenyan Act asks for; the differences are in the details of registration with the Office of the Data Protection Commissioner and cross-border transfer conditions.</p>
+
+<h3>How it shows up in code</h3>
+<p>I do not treat compliance as a document you write at the end. It shows up as engineering habits from the first migration:</p>
+<ul>
+    <li><strong>Role-based access control and per-record ACLs as a default</strong>, not a later hardening pass. On <a href="https://globalharmonyinitiative.org">Global Harmony Initiative</a> and the Tena onboarding platform, no screen renders data the current role has no lawful reason to see.</li>
+    <li><strong>WebAuthn passkey login</strong> where the data warrants it. GHI, Tena and the Silversky build all use passkeys &mdash; phishing-resistant, no shared secret to leak, and a better answer to "was this really the authorised user" than an SMS code.</li>
+    <li><strong>Audit logging that records who read what, not only who changed what.</strong> For health and legal data, access is the event that matters. Spatie Activitylog on the Laravel projects; a dedicated table where it needs to be queryable.</li>
+    <li><strong>Data minimisation in the schema.</strong> If a field is not needed for the stated purpose, it does not get a column. The cheapest way to protect data you were never asked to hold is to not collect it.</li>
+    <li><strong>Real deletion paths.</strong> Soft deletes for operational safety, but a genuine erasure route that actually removes the record and its derivatives when a data subject is entitled to it.</li>
+</ul>
+
+<h3>Why a solo studio should care about this at all</h3>
+<p>Small builds are where corners get cut, and health and legal clients are exactly the ones who cannot afford the cut corner. Being the person who supported CIPP/E and the Africa Data Protection Course &mdash; rather than the person who read a blog post about the GDPR &mdash; is a large part of why LegalTech and HealthTech clients are comfortable handing a one-person studio their most sensitive data.</p>
+HTML,
             ],
             [
                 'title' => 'A solo-founder stack: Laravel + Next.js + AI-accelerated development',
                 'category' => 'Engineering Practice',
                 'excerpt' => 'The exact tooling and workflow that lets one person ship the same class of application a small team would take on.',
-                'content' => '<p><em>Full write-up to follow.</em> Draft outline: the stack itself, where AI accelerates and where it doesn\'t, the code-review discipline that keeps quality honest without a second engineer, and the operational habits (cPanel deploys, backup routines) that keep the studio running solo.</p>',
-                'is_published' => false,
+                'content' => <<<'HTML'
+<h2>One person, the same class of application</h2>
+<p>OKJTechnologies is a one-person studio. The projects in the portfolio &mdash; hospital management, a construction-coordination platform, KYC onboarding with analytics, several e-commerce builds &mdash; are the kind of work usually staffed by a small team. This is the stack and the discipline that make that possible without the quality quietly slipping.</p>
+
+<h3>The stack</h3>
+<ul>
+    <li><strong>Backend: Laravel.</strong> Almost every recent project is Laravel 11 or 12 &mdash; Sanctum for auth, Eloquent, queues, the scheduler, Spatie packages (Activitylog, Media Library, Tags) where they earn their place. The framework does the boring 80% so my time goes on the domain-specific 20%.</li>
+    <li><strong>Frontend: Next.js / React, or Inertia + React.</strong> Next.js with the App Router for public sites that need ISR and SEO; Laravel + Inertia + React where the app is behind a login and there is no SEO argument. Tailwind throughout, Framer Motion for movement, Radix for accessible primitives.</li>
+    <li><strong>Classic LAMP</strong> is still the right call for some client work &mdash; a cPanel-hosted PHP + MySQL site the client's existing host can run without me in the loop.</li>
+    <li><strong>Deployment: cPanel and GitHub Actions.</strong> Unglamorous, well understood, and something the client can be handed.</li>
+</ul>
+
+<h3>Where AI accelerates &mdash; and where it doesn't</h3>
+<p>AI tooling in the loop is a real multiplier on the parts of the job that are broad but shallow: scaffolding CRUD, writing the first pass of a migration and its model, generating test fixtures, translating a Figma-ish description into a Tailwind component, explaining an unfamiliar library's API, and doing the tedious 20-file rename that a refactor implies.</p>
+<p>It does <strong>not</strong> replace judgement on the parts that are narrow but deep: the data model for a domain I am still learning, the ecosystem map, the security boundaries, the "should this even be a feature" call, and the debugging of a problem that only shows up in production. Those are still the job. AI makes the surrounding work fast enough that I have more time for them, not less.</p>
+
+<h3>The discipline that stands in for a second engineer</h3>
+<ol>
+    <li><strong>Static analysis is not optional.</strong> PHPStan / Larastan, PHP-CS-Fixer, ESLint and TypeScript in strict-ish mode. The tools are the colleague who reviews the mechanical half of every change.</li>
+    <li><strong>Tests where they buy confidence.</strong> Playwright end-to-end on the flows that would embarrass me if they broke (the Nyalife HMS and Naoa both ship with Playwright suites); PHPUnit on the domain logic. Not 100% coverage &mdash; coverage of the things that matter.</li>
+    <li><strong>Review my own diffs as a stranger.</strong> Every change gets read once more on the branch, out of the editor, before it merges.</li>
+    <li><strong>Operational routine.</strong> Backups (Spatie Backup on the Laravel projects), a known deploy path, and a written runbook for each client so "the developer is unavailable" is an inconvenience, not a crisis.</li>
+</ol>
+
+<h3>The honest limit</h3>
+<p>What one person plus AI tooling cannot do is be in two places at once during an incident, or bring a second genuinely independent perspective to a hard design call. I am candid with clients about that. For everything up to that line &mdash; which covers the large majority of what small and mid-size organisations need built &mdash; the solo stack ships the same class of application, and ships it faster.</p>
+HTML,
             ],
             [
                 'title' => 'Designing for HealthTech in Kenya — Tibu, and the problem statement behind it',
                 'category' => 'HealthTech',
                 'excerpt' => 'Why the Nyalife HMS is not a client site but the first live instance of a national-scale product concept.',
-                'content' => '<p><em>Full write-up to follow.</em> Draft outline: the Tibu problem statement (paper records, unequal access, no interoperability across facility levels 3–6), why ecosystem-by-adoption beats top-down interoperability, and how the Nyalife HMS is architected to be the first substrate node in that network.</p>',
-                'is_published' => false,
+                'content' => <<<'HTML'
+<h2>The problem statement</h2>
+<p>Kenyan healthcare still runs largely on paper. A patient's history lives in a physical file at whichever facility created it. When that patient presents at a different hospital &mdash; a referral, a move, an emergency away from home &mdash; the receiving clinicians start from nothing: no medication history, no allergies, no prior imaging, no idea what has already been ruled out. There is no shared, real-time picture of bed availability or specialist coverage across facilities, so referrals are made by phone and hope. The patients who lose the most from this are the ones with the least ability to advocate for themselves.</p>
+<p>Tibu is my concept for addressing that: a patient-record system designed to work across facility levels 3 to 6, so a person's record follows them rather than staying in a filing cabinet. Right now it is a problem statement and a design brief, not shipped software &mdash; and it should be described that way.</p>
+
+<h3>Why top-down interoperability doesn't get built</h3>
+<p>The obvious shape for Tibu is a national interoperability project: define the standard, mandate it, connect everyone. That is also the shape that almost never ships. No individual hospital adopts a system whose primary pitch is "one day you will be interoperable with everyone else." The benefit is collective and deferred; the cost &mdash; migrating records, retraining staff, changing every workflow &mdash; is local and immediate. So nobody moves first.</p>
+
+<h3>Ecosystem-by-adoption instead</h3>
+<p>The approach I am taking flips it. Build a Hospital Management System that is completely worth running for a single facility, on its own terms, on day one &mdash; patient records, scheduling, clinical file handling, role-based access, billing. A facility adopts it because it makes <em>their</em> Tuesday better, not because of a network they cannot see yet.</p>
+<p>Then, as more facilities independently adopt the same system for the same local reasons, the shared substrate is simply <em>already there</em>. Cross-facility record sharing, referrals and consolidated public-health insight become a configuration step on top of an installed base, not a greenfield megaproject. The network is an emergent property of a genuinely useful product, not a precondition for it.</p>
+
+<h3>The first live instance: Nyalife</h3>
+<p>The <a href="https://nyalifewomen.co.ke">Nyalife Women's Clinic</a> Hospital Management System is that first instance &mdash; in production, running the clinic's real operations. Built on Laravel 11 with Playwright end-to-end tests and a cPanel deployment pipeline. It is a real client system that pays for itself as a client system. It is also, architecturally, the first node: patient identity, encounter and clinical-record models are designed so that a future sharing layer is an addition, not a rewrite.</p>
+
+<h3>What has to be true before Tibu is more than a concept</h3>
+<ol>
+    <li>Several facilities running the same HMS, each for their own reasons.</li>
+    <li>A patient-identity approach that works without assuming a national digital ID is universally present.</li>
+    <li>A data-protection and consent model that satisfies the Data Protection Act for the most sensitive category of data there is &mdash; designed in from the start, covered in a separate article.</li>
+    <li>Clinician trust that the shared record is accurate and current, which is a product and process problem at least as much as a technical one.</li>
+</ol>
+<p>Until those hold, Tibu is presented as what it is: a concept, with one live instance proving the first step.</p>
+HTML,
             ],
             [
                 'title' => 'Building an alumni network from scratch — HUCAA design decisions in the wireframe stage',
                 'category' => 'EdTech · Process',
                 'excerpt' => 'Behind-the-scenes of how I scope a system I have not yet built — the questions I ask before writing a migration.',
-                'content' => '<p><em>Full write-up to follow.</em> Draft outline: the specific ecosystem-mapping questions I ran through with HUCAA (alumni, current students, faculty, administration), and how the resulting wireframes shaped the live version now at alumni.hekima.ac.ke.</p>',
-                'is_published' => false,
+                'content' => <<<'HTML'
+<h2>Scoping a system before writing a migration</h2>
+<p>The Hekima University College Alumni Association project started, like everything here, on a whiteboard rather than in an editor. This is what that stage actually looks like &mdash; the questions I work through before a single table exists.</p>
+
+<h3>Who are the stakeholders, and what does each one get?</h3>
+<p>Running the Afrilabs ecosystem-mapping exercise on an alumni network surfaces four groups with genuinely different needs:</p>
+<ul>
+    <li><strong>Alumni</strong> want to find each other, keep a directory entry that is theirs to control, hear about events worth attending, and not be spammed. Their reason to keep a profile current has to be selfish &mdash; a useful directory &mdash; not "the association would like you to."</li>
+    <li><strong>The association / administration</strong> wants an accurate, reachable membership, a way to run events and communications, and ideally a giving pipeline. Their risk is building a database that decays because nobody has a reason to update it.</li>
+    <li><strong>Current students</strong> are future alumni and near-term beneficiaries &mdash; mentorship, opportunities. Designing them in early avoids a painful bolt-on later.</li>
+    <li><strong>Faculty</strong> sit across both worlds and are often the actual social glue between cohorts.</li>
+</ul>
+
+<h3>The decisions that fall out of that</h3>
+<ol>
+    <li><strong>The directory is the product.</strong> Everything else &mdash; events, news, giving &mdash; hangs off a directory that alumni maintain because it is genuinely useful to them. If the directory is an afterthought, the data rots.</li>
+    <li><strong>Alumni own their record.</strong> Granular privacy controls per field, a real export, and self-service edits. The association gets reach; the alumnus keeps control. Both stakeholders are satisfied at once.</li>
+    <li><strong>Claim, don't invite-only.</strong> Seed the directory from existing records as unclaimed stubs, let people claim and verify their own entry. Lower friction than pure invitation, more accurate than a free-for-all.</li>
+    <li><strong>Model cohorts and faculties as first-class.</strong> The way alumni actually navigate a network is "my year" and "my department", so those are structural, not tags.</li>
+    <li><strong>Keep the first release small.</strong> Directory, claim/verify, profile privacy, basic events. Mentorship matching, giving campaigns and a jobs board are clearly on the map but explicitly out of release one.</li>
+</ol>
+
+<h3>Where it stands</h3>
+<p>HUCAA is at the wireframe stage &mdash; the flows above are drawn, the data model follows from them, and the build comes next. The current live claim of a real-time chat with thousands of alumni connected is not accurate; that has not been built. What exists is a well-scoped design, which in my experience is the part that most determines whether the finished system is used or abandoned. Related, live: I have been iterating on a personal alumni portfolio build at <a href="https://alumni.hekima.ac.ke">alumni.hekima.ac.ke</a>.</p>
+HTML,
             ],
             [
                 'title' => 'OmniShop: a plain-English e-commerce site you can run from a .bat file',
                 'category' => 'E-commerce · Delivery Practice',
                 'excerpt' => 'Building software for a non-technical client who has to operate it themselves.',
-                'content' => '<p><em>Full write-up to follow.</em> Draft outline: what changes when the person running the software cannot open a terminal, why the plain-English README + one-click launcher matters, and the trade-offs of choosing a Python-standalone architecture for a 190-product event catalog with a 6-week timeline.</p>',
-                'is_published' => false,
+                'content' => <<<'HTML'
+<h2>When the operator can't open a terminal</h2>
+<p>OmniShop is the exhibitor ordering site I built for <a href="https://okjtech.co.ke">OmniSpace 3D Events</a> for Solar &amp; Storage Live Kenya 2026: a roughly 190-product catalogue, cart, checkout, and an admin panel that moves an order through Pending &rarr; Approved &rarr; Invoiced &rarr; Fulfilled, prints category-grouped packing lists and exports to CSV. The constraint that shaped every decision: the person running it during the show is not a developer and will not have me on call.</p>
+
+<h3>What changes when the client operates it themselves</h3>
+<ul>
+    <li><strong>"Deploy" has to mean "double-click".</strong> The whole thing ships as a self-contained Python application with a one-click <code>.bat</code> launcher. Start it, a local server comes up, the catalogue and admin are in the browser. No runtime to install, no environment variables, no build step.</li>
+    <li><strong>The manual is part of the product.</strong> A plain-English guide written for someone who has never seen an admin panel &mdash; screenshots, "if X happens, do Y", and the three things that are genuinely important not to get wrong. It shipped in the same repo as the code and got as much review attention.</li>
+    <li><strong>Fewer moving parts beats elegant architecture.</strong> A standalone server with a file-backed store is not how I would build a scalable SaaS. For a fixed catalogue, a six-week timeline and a non-technical operator, it is exactly right: nothing to misconfigure, trivial to back up (copy the folder), and it runs on the laptop that is already at the stand.</li>
+    <li><strong>Every destructive action asks twice</strong>, and the states are named in words the operator uses, not in status codes.</li>
+</ul>
+
+<h3>The trade-offs I made on purpose</h3>
+<p>No live payment capture in the core flow &mdash; PayPal checkout for those who want it, but the real workflow is order now, invoice later, because that is how trade-show procurement actually happens. No user accounts for buyers beyond what an order needs. No cloud dependency, so it works even if the venue Wi-Fi does not. Each of these would be the wrong call for a permanent storefront and the right call for a six-week event tool.</p>
+
+<h3>The general lesson</h3>
+<p>"Who operates this, and what can they do unaided at 9am on the busiest day" is a design input, not a support afterthought. When the honest answer is "a non-technical person, alone", the architecture, the defaults and the documentation all have to bend toward that &mdash; and a smaller, blunter system that the operator fully understands beats a sophisticated one they are afraid to touch.</p>
+HTML,
             ],
             [
                 'title' => 'Real-time coordination on construction sites — Najenga\'s spatial annotation architecture',
                 'category' => 'PropTech',
                 'excerpt' => 'Annotorious over PDFs, coordinate timelines, Tesseract OCR — why we chose each piece and what still needs testing.',
-                'content' => '<p><em>Full write-up to follow.</em> Draft outline: the four-role coordination problem (site engineer, architect, PM, client), why spatial annotation on the drawing beats comment threads, and what OCR-indexed documents unlock for referring back to old revisions.</p>',
-                'is_published' => false,
+                'content' => <<<'HTML'
+<h2>The coordination problem Najenga is built for</h2>
+<p><a href="https://najenga.okjtech.co.ke">Najenga</a> is a construction-project coordination platform. The problem it addresses is that four roles &mdash; the site engineer, the architect, the project manager and the client &mdash; all need to talk about the same drawing, and they are almost never in the same room, the same software, or the same level of technical fluency. Today that conversation happens over WhatsApp photos, marked-up printouts and email threads where "the beam near the entrance" means four different beams to four people.</p>
+
+<h3>Why spatial annotation beats a comment thread</h3>
+<p>The core move is to attach the conversation to a coordinate on the drawing, not to a line in a thread. Najenga uses <strong>Annotorious</strong> over rendered PDF and image drawings: you draw a box or drop a pin on the actual location, and the discussion, photos and status hang off that point. "The beam near the entrance" becomes an unambiguous pin at (x, y) on sheet A-201 rev C. When the drawing is revised, annotations carry their coordinates so you can see what a given spot looked like three revisions ago and what was said about it then.</p>
+
+<h3>The pieces, and why each one is there</h3>
+<ul>
+    <li><strong>Annotorious + react-pdf</strong> &mdash; render the drawing in the browser and let any role annotate it without CAD software. The lowest-friction way to get a client and a site engineer marking up the same artefact.</li>
+    <li><strong>A coordinate-anchored timeline</strong> &mdash; every annotation is an event with a position and a time, so the project history is navigable both "what happened when" and "what happened here".</li>
+    <li><strong>Tesseract.js OCR over uploaded documents</strong> &mdash; specs, RFIs and old drawings come in as scans. OCR makes them searchable, so "find every document that mentions this grid reference" works instead of scrolling a folder.</li>
+    <li><strong>AG&#8209;Grid and xlsx export</strong> &mdash; QSs and PMs live in spreadsheets; the data has to leave the platform cleanly.</li>
+    <li><strong>Chat with @mentions</strong> (react-mentions, react-chat-elements) scoped to a project or an annotation, so notifications are about a place, not a channel.</li>
+</ul>
+
+<h3>Where it is, and what still needs testing</h3>
+<p>Najenga is in development with a staging environment live. The parts I am still hardening: annotation-to-coordinate stability across drawing revisions when a sheet is re-scaled or re-cropped; OCR accuracy on poor-quality site scans (Tesseract is good, not magic); and the permissions model for the client role &mdash; enough visibility to stay informed, not so much that every in-progress engineering conversation is exposed. Those are the questions a real pilot on a live project has to answer before I would call it done.</p>
+HTML,
             ],
             [
                 'title' => 'Booking with Kenyan farmers — the Wisdom Capital delivery stack',
                 'category' => 'Agritech · E-commerce',
                 'excerpt' => 'Order lifecycle, payment reconciliation, regional distribution tracking for an agricultural producer.',
-                'content' => '<p><em>Full write-up to follow.</em> Draft outline: what a D2C agricultural stack has to handle that a normal e-commerce stack doesn\'t (harvest schedules, regional distribution windows, payment reconciliation across mobile-money channels), and how the admin dashboard is shaped by those constraints.</p>',
-                'is_published' => false,
+                'content' => <<<'HTML'
+<h2>Why an agricultural storefront isn't just a storefront</h2>
+<p>Wisdom Capital is a Kenyan agricultural producer I built an ordering and delivery platform for &mdash; a LAMP stack with a React front end and an admin dashboard for sales, payment status and regional distribution. On the surface it is e-commerce. In practice a direct-to-consumer agricultural stack has to handle several things a normal online shop never thinks about.</p>
+
+<h3>What's different</h3>
+<ul>
+    <li><strong>Supply is a schedule, not a number.</strong> Availability is governed by harvest and processing cycles, so "in stock" is really "will be available in this window". The catalogue has to express future availability without either overselling or hiding a product that will be ready on Thursday.</li>
+    <li><strong>Delivery is regional and batched.</strong> Orders are not shipped one-by-one the moment they are placed &mdash; they are consolidated into distribution runs by region and day. The order lifecycle has an extra state between "paid" and "shipped": assigned to a run.</li>
+    <li><strong>Payment reconciliation spans channels.</strong> Money arrives by mobile money and by bank transfer, sometimes in part payments, sometimes referencing the wrong order. The admin needs a reconciliation view that matches incoming payments to orders and flags the ones that do not line up, rather than assuming a clean one-payment-one-order world.</li>
+</ul>
+
+<h3>How that shaped the admin dashboard</h3>
+<p>The dashboard is built around three questions the operator asks every morning: <em>what has been ordered and paid for</em>, <em>what goes on which distribution run</em>, and <em>which payments still need chasing or matching</em>. Orders can be filtered and grouped by region and by run; payment status is its own column with an explicit "unreconciled" state; and the distribution view is effectively a manifest per region per day that doubles as the driver's list.</p>
+
+<h3>The general point</h3>
+<p>An off-the-shelf store assumes instant stock, per-order shipping and clean payments. Sell perishable produce direct to consumers in Kenya and none of those three hold. The interesting engineering is in modelling the producer's actual operating rhythm &mdash; harvest windows, regional runs, messy multi-channel payments &mdash; and making the admin tool match how the business already works rather than forcing the business to work like the software.</p>
+HTML,
             ],
         ];
     }
