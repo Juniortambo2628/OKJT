@@ -63,19 +63,24 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   let maintenanceSettings = null;
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-    const apiUrl = baseUrl.replace('localhost', '127.0.0.1');
-    const response = await fetch(`${apiUrl}/site-settings/maintenance`, { next: { tags: ['okjt-content'] } });
-    if (response.ok && response.headers.get('content-type')?.includes('application/json')) {
-      maintenanceSettings = await response.json();
-    } else {
-      console.warn(`Maintenance settings API returned non-JSON response or status ${response.status}`);
+  // Skip the maintenance probe when no API URL is configured — e.g. a CI or
+  // preview build with no backend reachable. It would just fail with
+  // ECONNREFUSED on localhost and spam the build log once per prerendered page;
+  // maintenance mode stays off, which is the right default.
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL.replace('localhost', '127.0.0.1');
+      const response = await fetch(`${apiUrl}/site-settings/maintenance`, { next: { tags: ['okjt-content'] } });
+      if (response.ok && response.headers.get('content-type')?.includes('application/json')) {
+        maintenanceSettings = await response.json();
+      } else {
+        console.warn(`Maintenance settings API returned non-JSON response or status ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Failed to fetch maintenance settings in RootLayout:', error);
     }
-  } catch (error) {
-    console.error('Failed to fetch maintenance settings in RootLayout:', error);
   }
-  
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
