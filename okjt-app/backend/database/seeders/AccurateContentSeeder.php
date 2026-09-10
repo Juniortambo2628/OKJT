@@ -11,6 +11,8 @@ use App\Models\TeamMember;
 use App\Models\Testimonial;
 use App\Models\User;
 use App\Models\Value;
+use App\Services\RevalidationService;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -38,20 +40,30 @@ class AccurateContentSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::transaction(function () {
-            $this->reseedSiteSettings();
-            $this->reseedStats();
-            $this->reseedValues();
-            $this->reseedTeam();
-            $this->clearTestimonials();
-            $this->reseedClients();
-            $this->reseedProjects();
-            $this->reseedInsights();
+        // withoutEvents: the CmsModelObserver fires a frontend revalidation HTTP
+        // call on every created/updated/deleted model. During a reseed that's
+        // ~100 blocking calls, and on a host where the frontend isn't reachable
+        // it previously aborted the whole transaction. Skip them here and do a
+        // single revalidation at the end instead.
+        Model::withoutEvents(function () {
+            DB::transaction(function () {
+                $this->reseedSiteSettings();
+                $this->reseedStats();
+                $this->reseedValues();
+                $this->reseedTeam();
+                $this->clearTestimonials();
+                $this->reseedClients();
+                $this->reseedProjects();
+                $this->reseedInsights();
+            });
         });
 
         // The API caches the settings/content responses; drop them so the
         // reseed is visible without a manual `php artisan cache:clear`.
         Cache::flush();
+
+        // One best-effort revalidation now that all content is in place.
+        app(RevalidationService::class)->revalidateAll();
 
         Log::info('AccurateContentSeeder: reseed complete.');
     }
@@ -72,13 +84,13 @@ class AccurateContentSeeder extends Seeder
             ],
             [
                 'key' => 'about_tagline',
-                'value' => 'The OKJTechnologies Story',
+                'value' => 'How the work gets done',
                 'type' => 'text',
                 'group' => 'about',
             ],
             [
                 'key' => 'about_story',
-                'value' => 'OKJTechnologies is a one-person studio out of Nairobi, run by Kevin Tambo. I build full-stack web applications end to end — concept, UI, engineering, deployment and ongoing administration — mostly in Laravel, Next.js / React and the classic LAMP stack, with AI-accelerated tooling in the loop. Before I write code I map the ecosystem the software has to live in, so every stakeholder — client, end user, regulator, adjacent partner — has an aligned reason to participate.',
+                'value' => 'OKJTechnologies is a Nairobi web-application practice. The work is full-stack and end to end — concept, interface, engineering, deployment and ongoing administration — mostly in Laravel, Next.js / React and the classic LAMP stack, with AI-accelerated tooling in the loop. Every build starts by mapping the ecosystem the software has to live in, so each stakeholder — client, end user, regulator, adjacent partner — has an aligned reason to participate. It is a one-person studio, run by Kevin Tambo.',
                 'type' => 'textarea',
                 'group' => 'about',
             ],
@@ -90,25 +102,25 @@ class AccurateContentSeeder extends Seeder
             ],
             [
                 'key' => 'about_mission_text1',
-                'value' => 'The way I approach every engagement is shaped by an ecosystem-mapping practice I picked up on the Afrilabs capacity-building programme <em>Leveraging Stakeholder Relationships through Ecosystem Mapping and Building</em> (Addis Ababa, Ethiopia), which I attended and earned a certificate for while working with the Lawyers Hub. Before scoping, I map out every stakeholder who could be affected by or beneficial to the proposition — the paying client, the end user, the regulator, adjacent service providers, upstream and downstream data holders, the wider community.',
+                'value' => 'Every engagement is shaped by an ecosystem-mapping practice from the Afrilabs capacity-building programme <em>Leveraging Stakeholder Relationships through Ecosystem Mapping and Building</em> (Addis Ababa, Ethiopia). Before scoping, the map covers every stakeholder who could be affected by or beneficial to the proposition — the paying client, the end user, the regulator, adjacent service providers, upstream and downstream data holders, the wider community.',
                 'type' => 'textarea',
                 'group' => 'about',
             ],
             [
                 'key' => 'about_mission_text2',
-                'value' => "I then design the solution so each of those stakeholders has a clearly aligned way to benefit from it. That mapping is what turns a website into a working system inside its own context. Combined with AI-accelerated development, it's how a one-person studio ships the same class of application a small team would take on.",
+                'value' => 'The solution is then designed so each of those stakeholders has a clearly aligned way to benefit from it. That mapping is what turns a website into a working system inside its own context — and, combined with AI-accelerated development, is how a one-person studio ships the same class of application a small team would take on.',
                 'type' => 'textarea',
                 'group' => 'about',
             ],
             [
                 'key' => 'about_team_title',
-                'value' => 'One founder. One practitioner. All the accountability.',
+                'value' => 'One continuous thread, concept to production',
                 'type' => 'text',
                 'group' => 'about',
             ],
             [
                 'key' => 'about_team_subtitle',
-                'value' => 'OKJTechnologies is deliberately a one-person studio. Every project is designed, built, deployed and administered by the same person — no hand-offs, no dropped context, one point of accountability from concept to production.',
+                'value' => 'Every project is designed, built, deployed and administered as one continuous piece of work — no hand-offs between teams, no context dropped between phases, one point of accountability. OKJTechnologies is deliberately a one-person studio.',
                 'type' => 'textarea',
                 'group' => 'about',
             ],
@@ -134,7 +146,7 @@ class AccurateContentSeeder extends Seeder
             ],
             [
                 'key' => 'hero_subtitle',
-                'value' => 'I design and build bespoke, high-performance web applications, robust APIs and clean admin systems — solo, end to end, in Laravel, Next.js and React.',
+                'value' => 'Bespoke, high-performance web applications, robust APIs and clean admin systems — designed and built end to end in Laravel, Next.js and React.',
                 'type' => 'textarea',
                 'group' => 'homepage',
             ],
@@ -154,7 +166,7 @@ class AccurateContentSeeder extends Seeder
             ],
             [
                 'key' => 'hero_title_line2',
-                'value' => 'Built solo, end to end.',
+                'value' => 'Built end to end.',
                 'type' => 'text',
                 'group' => 'homepage',
             ],
@@ -162,19 +174,19 @@ class AccurateContentSeeder extends Seeder
             // --- Homepage "how I work" section (was: Three Pillars of Trusted Intelligence) ---
             [
                 'key' => 'vp_section_tagline',
-                'value' => 'How I work',
+                'value' => 'The approach',
                 'type' => 'text',
                 'group' => 'homepage',
             ],
             [
                 'key' => 'vp_section_title',
-                'value' => 'One person, the whole stack',
+                'value' => 'One continuous build, concept to production',
                 'type' => 'text',
                 'group' => 'homepage',
             ],
             [
                 'key' => 'vp_section_subtitle',
-                'value' => 'Design, engineering, deployment and ongoing administration — handled by the same person, with no hand-offs and no dropped context.',
+                'value' => 'Design, engineering, deployment and ongoing administration run as one process — no hand-offs between teams, no context lost between phases.',
                 'type' => 'textarea',
                 'group' => 'homepage',
             ],
@@ -210,7 +222,7 @@ class AccurateContentSeeder extends Seeder
             ],
             [
                 'key' => 'vp_pillar2_description',
-                'value' => 'The interface is designed by the same hand that ships it — design system, motion, responsive layout and accessibility, not a hand-off from a separate designer.',
+                'value' => 'Design and implementation stay together — design system, motion, responsive layout and accessibility resolved as one piece of work, not thrown over a wall.',
                 'type' => 'textarea',
                 'group' => 'homepage',
             ],
@@ -228,7 +240,7 @@ class AccurateContentSeeder extends Seeder
             ],
             [
                 'key' => 'vp_pillar3_description',
-                'value' => 'Before scoping, I map every stakeholder the software touches — client, user, regulator, partner, community — so each has an aligned reason to use it. A practice picked up on the Afrilabs programme in Addis Ababa.',
+                'value' => 'Every stakeholder the software touches — client, user, regulator, partner, community — is mapped before scoping, so each has an aligned reason to use it. An approach from the Afrilabs programme in Addis Ababa.',
                 'type' => 'textarea',
                 'group' => 'homepage',
             ],
@@ -298,7 +310,7 @@ class AccurateContentSeeder extends Seeder
             ],
             [
                 'key' => 'about_lawyers_hub_body',
-                'value' => 'From February 2023 to December 2024 I was Software Developer, Justice Innovation at the Lawyers Hub in Nairobi. It is the largest single body of work in my professional history, and it is where the ecosystem-mapping habit stopped being a workshop idea and became how I build.',
+                'value' => "Between February 2023 and December 2024, the studio's founder held the role of Software Developer, Justice Innovation at the Lawyers Hub in Nairobi. It is the largest single body of work behind OKJTechnologies, and where the ecosystem-mapping habit went from workshop idea to standard practice.",
                 'type' => 'textarea',
                 'group' => 'about',
             ],
@@ -335,31 +347,31 @@ class AccurateContentSeeder extends Seeder
 
         $stats = [
             [
-                'label' => 'Building for the web',
-                'value' => 'Since 2021',
-                'description' => 'Full-time web application development from Nairobi.',
-                'icon' => 'Calendar',
+                'label' => 'Sectors delivered in',
+                'value' => '11',
+                'description' => 'LegalTech, HealthTech, PropTech, FinTech, e-commerce, events, NGO, agritech, automotive, EdTech and marketplace work.',
+                'icon' => 'Layers',
                 'order' => 1,
             ],
             [
-                'label' => 'Studio + client projects',
+                'label' => 'Projects shipped',
                 'value' => '20+',
-                'description' => 'Shipped across LegalTech, HealthTech, PropTech, FinTech, e-commerce, events and NGO work.',
-                'icon' => 'Layers',
+                'description' => 'Studio and client engagements taken from concept to production.',
+                'icon' => 'CheckCircle',
                 'order' => 2,
             ],
             [
                 'label' => 'Primary stack',
                 'value' => 'Laravel · Next.js · React',
-                'description' => 'Plus LAMP for classic client work, and AI-accelerated tooling in the loop.',
+                'description' => 'Plus the classic LAMP stack for established client sites, with AI-accelerated tooling in the loop.',
                 'icon' => 'Code2',
                 'order' => 3,
             ],
             [
-                'label' => 'Studio headcount',
-                'value' => 'One founder',
-                'description' => 'A deliberate one-person studio. Same person from concept to production.',
-                'icon' => 'User',
+                'label' => 'Delivering since',
+                'value' => '2021',
+                'description' => 'Continuous full-stack web delivery out of Nairobi.',
+                'icon' => 'Calendar',
                 'order' => 4,
             ],
         ];
@@ -381,13 +393,13 @@ class AccurateContentSeeder extends Seeder
             [
                 'icon' => 'Network',
                 'title' => 'Ecosystem mapping first',
-                'description' => 'Before I write code I map every stakeholder — client, end user, regulator, partner, community — and design the solution so each has an aligned way to benefit. This is the Afrilabs stakeholder-mapping approach applied to software.',
+                'description' => 'Every stakeholder the software touches — client, end user, regulator, partner, community — is mapped before code, and the solution is designed so each has an aligned way to benefit. The Afrilabs stakeholder-mapping approach applied to software.',
                 'order' => 1,
             ],
             [
                 'icon' => 'User',
-                'title' => 'Solo accountability',
-                'description' => 'One person owns the work end to end — concept, UI, engineering, deployment, ongoing administration. No hand-offs, no dropped context, one point of contact.',
+                'title' => 'One thread of accountability',
+                'description' => 'The work is owned end to end — concept, interface, engineering, deployment, ongoing administration. No hand-offs, no dropped context, one point of contact.',
                 'order' => 2,
             ],
             [
@@ -434,7 +446,7 @@ class AccurateContentSeeder extends Seeder
         TeamMember::create([
             'name' => 'Kevin Tambo',
             'role' => 'Founder · Web Application Developer',
-            'bio' => "Founder of OKJTechnologies. I design, build, deploy and administer full-stack web applications for clients across LegalTech, HealthTech, PropTech, FinTech, e-commerce, events and non-profit sectors, working solo in Laravel, Next.js / React and the classic LAMP stack.\n\nMy approach is shaped by an ecosystem-mapping practice I picked up on the Afrilabs capacity-building programme in Addis Ababa: before writing code I map every stakeholder the software touches — client, end user, regulator, partner, community — and design the system so each has an aligned reason to participate.\n\nBefore OKJTechnologies I was Software Developer, Justice Innovation at the Lawyers Hub, where I spearheaded the Digital Policy site, designed the Africa Law Tech Festival and AI Policy Lab platforms, chaired a hackathon at ALTF 2023, and supported delivery of the Africa Digital Policy Institute's data-protection trainings (Africa Data Protection Course and CIPP/E).",
+            'bio' => "Founder of OKJTechnologies. The work spans full-stack web applications for clients across LegalTech, HealthTech, PropTech, FinTech, e-commerce, events and non-profit sectors — designed, built, deployed and administered solo in Laravel, Next.js / React and the classic LAMP stack.\n\nThe approach is shaped by an ecosystem-mapping practice from the Afrilabs capacity-building programme in Addis Ababa: before code, every stakeholder the software touches — client, end user, regulator, partner, community — is mapped, and the system is designed so each has an aligned reason to participate.\n\nBefore OKJTechnologies came the role of Software Developer, Justice Innovation at the Lawyers Hub — spearheading the Digital Policy site, designing the Africa Law Tech Festival and AI Policy Lab platforms, chairing a hackathon at ALTF 2023, and supporting delivery of the Africa Digital Policy Institute's data-protection trainings (Africa Data Protection Course and CIPP/E).",
             'linkedin' => 'https://www.linkedin.com/in/kevin-tambo',
             'image' => 'https://api.okjtech.co.ke/api/storage/uploads/kt-img-okjt-2_6a551f2fe55bc.webp',
             'order' => 1,
@@ -677,7 +689,7 @@ class AccurateContentSeeder extends Seeder
                 'is_featured' => false,
             ],
             [
-                'type' => 'flagship',
+                'type' => 'client',
                 'title' => 'Nyalife Hospital Management System — first live instance of Tibu',
                 'client_name' => "Nyalife Women's Health Clinic",
                 'tagline' => 'Clinical administration portal, running as the first live instance of the Tibu product.',
@@ -767,7 +779,7 @@ class AccurateContentSeeder extends Seeder
                 'is_featured' => false,
             ],
             [
-                'type' => 'flagship',
+                'type' => 'client',
                 'title' => 'OKJTechnologies — Studio Site (okjtech.co.ke)',
                 'client_name' => 'OKJTechnologies',
                 'tagline' => 'This site. Next.js 16 + Laravel 12, ISR with webhook-based revalidation.',
@@ -782,19 +794,19 @@ class AccurateContentSeeder extends Seeder
                 'is_featured' => true,
             ],
             [
-                'type' => 'client',
+                'type' => 'flagship',
                 'title' => 'The Football Experience (in partnership with Terik Tours)',
                 'client_name' => 'The Football Experience · Terik Tours',
                 'tagline' => 'Travel platform helping fans in Africa access global football events.',
                 'category' => 'Travel · Sports',
                 'technologies' => ['Laravel', 'Vite'],
-                'description' => 'I\'m building the platform for The Football Experience — a travel product for African fans attending international football events — in partnership with Terik Tours. Scope covers event catalog, itinerary planning, payment tracking and social discovery.',
+                'description' => 'A travel platform for The Football Experience — helping African fans attend international football events — built in partnership with Terik Tours. Scope covers event catalog, itinerary planning, payment tracking and social discovery.',
                 'problem' => 'African fans wanting to travel to international matches have no dedicated planning + payment platform, and the operator needs one place to run inventory, bookings and payment tracking.',
                 'methodology' => 'Laravel backend with a Vite/React front end; scope built out incrementally with Terik Tours as the domain partner.',
                 'outcome' => 'In development. Staging live at tfe.okjtech.co.ke.',
                 'image' => 'https://api.okjtech.co.ke/api/storage/uploads/TFE-logo-1_6a552777b4c46.webp',
                 'url' => 'https://tfe.okjtech.co.ke',
-                'is_featured' => false,
+                'is_featured' => true,
             ],
             [
                 'type' => 'client',
@@ -843,7 +855,7 @@ class AccurateContentSeeder extends Seeder
                 'is_featured' => true,
             ],
             [
-                'type' => 'flagship',
+                'type' => 'client',
                 'title' => 'Kuba Home Services — Marketplace',
                 'client_name' => 'Kuba',
                 'tagline' => 'Vetted home & business services marketplace across 13 categories.',
