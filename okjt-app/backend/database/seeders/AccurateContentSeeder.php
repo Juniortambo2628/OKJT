@@ -28,7 +28,9 @@ use Illuminate\Support\Str;
  * - No fabricated stats, testimonials, or feature claims. Live URLs and stacks
  *   are drawn from the real repos and confirmed by the user.
  * - Idempotent: safe to run more than once (site_settings and clients use
- *   updateOrCreate; everything else is fully rewritten each run).
+ *   updateOrCreate; everything else is fully rewritten each run). All wipes go
+ *   through withTrashed() so a row soft-deleted in the admin can't survive as a
+ *   ghost and later collide on a unique column (e.g. projects.slug).
  *
  * Run: `php artisan db:seed --class=AccurateContentSeeder`
  */
@@ -329,7 +331,7 @@ class AccurateContentSeeder extends Seeder
 
     private function reseedStats(): void
     {
-        Stat::query()->forceDelete();
+        Stat::withTrashed()->forceDelete();
 
         $stats = [
             [
@@ -373,7 +375,7 @@ class AccurateContentSeeder extends Seeder
 
     private function reseedValues(): void
     {
-        Value::query()->forceDelete();
+        Value::withTrashed()->forceDelete();
 
         $values = [
             [
@@ -427,7 +429,7 @@ class AccurateContentSeeder extends Seeder
     {
         // Remove every existing team member (including soft-deleted fake ones
         // "Eluid Kibet" and "Brenda Wanjiku") to make the reseed idempotent.
-        TeamMember::query()->forceDelete();
+        TeamMember::withTrashed()->forceDelete();
 
         TeamMember::create([
             'name' => 'Kevin Tambo',
@@ -447,7 +449,7 @@ class AccurateContentSeeder extends Seeder
 
     private function clearTestimonials(): void
     {
-        Testimonial::query()->forceDelete();
+        Testimonial::withTrashed()->forceDelete();
     }
 
     // ------------------------------------------------------------------
@@ -477,7 +479,9 @@ class AccurateContentSeeder extends Seeder
         ];
 
         foreach ($clients as $row) {
-            Client::updateOrCreate(
+            // withTrashed so a previously soft-deleted client with the same name
+            // is reused (and un-deleted) rather than colliding on the unique name.
+            $client = Client::withTrashed()->updateOrCreate(
                 ['name' => $row['name']],
                 [
                     'website' => $row['website'],
@@ -486,6 +490,10 @@ class AccurateContentSeeder extends Seeder
                     'order' => $row['order'],
                 ],
             );
+
+            if ($client->trashed()) {
+                $client->restore();
+            }
         }
     }
 
@@ -495,7 +503,7 @@ class AccurateContentSeeder extends Seeder
 
     private function reseedProjects(): void
     {
-        Project::query()->forceDelete();
+        Project::withTrashed()->forceDelete();
 
         foreach ($this->projectRows() as $order => $row) {
             Project::create(array_merge($row, [
@@ -933,7 +941,7 @@ class AccurateContentSeeder extends Seeder
 
     private function reseedInsights(): void
     {
-        Insight::query()->forceDelete();
+        Insight::withTrashed()->forceDelete();
 
         $adminId = User::query()->orderBy('id')->value('id') ?? 1;
         $now = now();
