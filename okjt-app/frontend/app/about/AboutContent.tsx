@@ -27,17 +27,21 @@ export default function AboutContent() {
     const { videoSrc, bgImage, mediaLoading } = usePageHeroMedia({ settingsKey: 'hero_about_media' })
     const heroMedia = videoSrc ?? bgImage
     
-    const title = getSetting('about_title', 'Design-led Web Engineering\nfor impact.')
-    const tagline = getSetting('about_tagline', 'The OKJTech Story')
-    const story = getSetting('about_story', 'OKJTech is a premier design-led web engineering firm dedicated to building high-performance software, intuitive interfaces, and scalable digital platforms for visionary global brands.')
-    const missionTitle = getSetting('about_mission_title', 'Bridging the gap between imagination and implementation.')
-    const missionText1 = getSetting('about_mission_text1', 'We believe that great technology is invisible. It should empower, solve, and scale without friction. At OKJTech, we blend aesthetic excellence with functional precision to build digital products that move the needle.')
-    const missionText2 = getSetting('about_mission_text2', 'Our engineering team brings together deep technical expertise, innovative design thinking, and a commitment to delivery to ensure your digital infrastructure is ready for the future.')
+    // Fallback defaults match the AccurateContentSeeder — a one-person studio,
+    // ecosystem-mapping framing, no fabricated "team" / "we" language.
+    // Keeping them honest here means the page still reads right even if the
+    // admin CMS is briefly unreachable at request time.
+    const title = getSetting('about_title', 'Design-led web engineering,\nbuilt around ecosystems.')
+    const tagline = getSetting('about_tagline', 'The OKJTechnologies Story')
+    const story = getSetting('about_story', 'OKJTechnologies is a one-person studio out of Nairobi, run by Kevin Tambo. I build full-stack web applications end to end — concept, UI, engineering, deployment and ongoing administration — mostly in Laravel, Next.js / React and the classic LAMP stack. Before I write code I map the ecosystem the software has to live in, so every stakeholder has an aligned reason to participate.')
+    const missionTitle = getSetting('about_mission_title', 'Ecosystem mapping before a line of code.')
+    const missionText1 = getSetting('about_mission_text1', 'The way I approach every engagement is shaped by an ecosystem-mapping practice I picked up on the Afrilabs capacity-building programme in Addis Ababa. Before scoping, I map out every stakeholder — client, end user, regulator, partner, community — who could be affected by or beneficial to the proposition.')
+    const missionText2 = getSetting('about_mission_text2', 'I then design the solution so each of those stakeholders has a clearly aligned way to benefit from it. Combined with AI-accelerated development, it is how a one-person studio ships the same class of application a small team would take on.')
 
-    const teamTitle = getSetting('about_team_title', 'Led by hands-on engineers.')
-    const teamSubtitle = getSetting('about_team_subtitle', 'Our team combines deep technical expertise with creative design thinking to deliver exceptional digital products.')
-    const ctaTitle = getSetting('about_cta_title', "Let's build the future together.")
-    const ctaSubtitle = getSetting('about_cta_subtitle', 'Whether you need a custom web application, a design overhaul, or a technical strategy — our team is ready to scale your impact.')
+    const teamTitle = getSetting('about_team_title', 'One founder. One practitioner. All the accountability.')
+    const teamSubtitle = getSetting('about_team_subtitle', 'OKJTechnologies is deliberately a one-person studio. Every project is designed, built, deployed and administered by the same person — no hand-offs, no dropped context, one point of accountability from concept to production.')
+    const ctaTitle = getSetting('about_cta_title', 'Have a system you want built end to end?')
+    const ctaSubtitle = getSetting('about_cta_subtitle', "Whether it's a customer-facing application, an internal dashboard, or a national-scale concept still at problem-statement stage, I'd like to hear about it. Start with a short brief and we'll map the ecosystem together.")
 
     const bgMission = getSetting('bg_about_mission')
     const bgValues = getSetting('bg_about_values')
