@@ -16,9 +16,15 @@ export default function CountUp({ target, suffix = '', duration = 1.5, className
     const [count, setCount] = useState(0)
     const prefersReducedMotion = useReducedMotion()
 
-    const numericValue = parseInt(target.replace(/[^0-9]/g, ''), 10)
-    const prefix = target.match(/^[^0-9]*/)?.[0] || ''
-    const originalSuffix = target.match(/[^0-9]*$/)?.[0] || suffix
+    // Only treat the value as "countable" when it's a single run of digits with
+    // optional non-digit prefix/suffix (e.g. "20+", "Since 2021", "99.99%").
+    // Anything else (e.g. "Laravel · Next.js · React") is rendered verbatim.
+    const countMatch = target.match(/^(\D*)(\d[\d,]*)(\D*)$/)
+    const numericValue = countMatch ? parseInt(countMatch[2].replace(/,/g, ''), 10) : NaN
+    const prefix = countMatch?.[1] ?? ''
+    const originalSuffix = countMatch?.[3] || suffix
+    // Don't group years/small counts with a thousands separator ("2,021").
+    const format = (n: number) => (numericValue >= 10000 ? n.toLocaleString() : String(n))
 
     useEffect(() => {
         if (!isInView || isNaN(numericValue)) return
@@ -47,9 +53,13 @@ export default function CountUp({ target, suffix = '', duration = 1.5, className
         return () => cancelAnimationFrame(animationFrame)
     }, [isInView, numericValue, duration, prefersReducedMotion])
 
+    if (isNaN(numericValue)) {
+        return <span ref={ref} className={className}>{target}</span>
+    }
+
     return (
         <span ref={ref} className={className}>
-            {prefix}{isInView ? count.toLocaleString() : '0'}{originalSuffix}
+            {prefix}{isInView ? format(count) : '0'}{originalSuffix}
         </span>
     )
 }

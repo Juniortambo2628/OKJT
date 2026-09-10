@@ -2,6 +2,7 @@
 
 import React, { useRef, useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { useCookieConsent } from '@/components/CookieConsentProvider'
 
 interface SectionInfo {
     id: string
@@ -13,6 +14,7 @@ interface ParallaxNavProps {
 }
 
 export default function ParallaxNav({ sections }: ParallaxNavProps) {
+    const { showBanner } = useCookieConsent()
     const [activeIndex, setActiveIndex] = useState(0)
     const [isScrolling, setIsScrolling] = useState(false)
     const navRef = useRef<HTMLDivElement>(null)
@@ -80,7 +82,8 @@ export default function ParallaxNav({ sections }: ParallaxNavProps) {
         }
     }
 
-    if (sections.length <= 1) return null
+    // Keep clear of the cookie-consent banner, which also pins to the bottom.
+    if (sections.length <= 1 || showBanner) return null
 
     return (
         <motion.div

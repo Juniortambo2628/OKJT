@@ -3,7 +3,6 @@ import InsightsSection from "@/components/sections/InsightsSection";
 import StatsSection from "@/components/sections/StatsSection";
 import ValueProposition from "@/components/sections/ValueProposition";
 import CTABanner from "@/components/sections/CTABanner";
-import HomeBottomBar from "@/components/HomeBottomBar";
 import FlagshipHeroCarousel from "@/components/FlagshipHeroCarousel";
 
 import SWRProvider from '@/components/SWRProvider';
@@ -51,7 +50,7 @@ export default async function Home() {
       '/team-members': teamMembers,
       '/pillars': pillars,
     }}>
-      <BaseLayout navSections={HOME_NAV_SECTIONS} bottomBar={<HomeBottomBar />} heroChildren={<FlagshipHeroCarousel />}>
+      <BaseLayout navSections={HOME_NAV_SECTIONS} heroChildren={<FlagshipHeroCarousel />}>
         <ValueProposition />
         <StatsSection />
         <ServicesSection />

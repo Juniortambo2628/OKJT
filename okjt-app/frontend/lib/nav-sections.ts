@@ -5,24 +5,25 @@ export interface NavSection {
 
 export const HOME_NAV_SECTIONS: NavSection[] = [
     { id: 'hero', label: 'Intro' },
-    { id: 'value-proposition', label: 'Core Values' },
-    { id: 'stats', label: 'Impact Metrics' },
-    { id: 'services', label: 'Our Services' },
-    { id: 'insights', label: 'Advisory Notes' },
-    { id: 'cta', label: 'Get Started' },
+    { id: 'value-proposition', label: 'Approach' },
+    { id: 'stats', label: 'Snapshot' },
+    { id: 'services', label: 'Services' },
+    { id: 'insights', label: 'Insights' },
+    { id: 'cta', label: 'Contact' },
 ]
 
 export const ABOUT_NAV_SECTIONS: NavSection[] = [
     { id: 'hero', label: 'Intro' },
-    { id: 'about-mission', label: 'Mission' },
+    { id: 'about-mission', label: 'Approach' },
+    { id: 'about-lawyers-hub', label: 'Lawyers Hub' },
     { id: 'about-values', label: 'Values' },
-    { id: 'about-team', label: 'Team' },
+    { id: 'about-team', label: 'Studio' },
     { id: 'about-cta', label: 'Contact' },
 ]
 
 export const CONTACT_NAV_SECTIONS: NavSection[] = [
     { id: 'contact-hero', label: 'Intro' },
-    { id: 'contact-form', label: 'Get in Touch' },
+    { id: 'contact-form', label: 'Message' },
     { id: 'contact-info', label: 'Details' },
 ]
 
@@ -36,7 +37,7 @@ export const CLIENT_IMPACT_NAV_SECTIONS: NavSection[] = [
 
 export const INSIGHTS_NAV_SECTIONS: NavSection[] = [
     { id: 'hero', label: 'Intro' },
-    { id: 'insights-grid', label: 'Research Notes' },
+    { id: 'insights-grid', label: 'Articles' },
 ]
 
 export const INSIGHT_DETAIL_NAV_SECTIONS: NavSection[] = [
