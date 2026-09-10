@@ -46,7 +46,7 @@ export default function ProjectFormFields({ form, setForm }: ProjectFormFieldsPr
                     <Input className="bg-background border-border text-foreground" value={form.url || ''} onChange={(e) => setForm({ ...form, url: e.target.value })} placeholder="e.g. https://project-link.com" />
                 </div>
                 <div className="space-y-2 md:col-span-2">
-                    <Label className="text-muted-foreground">Subtitle / Tagline (e.g. "Bridging the gap between tech and policy")</Label>
+                    <Label className="text-muted-foreground">Subtitle / Tagline (e.g. &ldquo;Bridging the gap between tech and policy&rdquo;)</Label>
                     <Input className="bg-background border-border text-foreground" value={form.tagline || ''} onChange={(e) => setForm({ ...form, tagline: e.target.value })} placeholder="e.g. Documenting love as it happens." />
                 </div>
                 <div className="space-y-2">

@@ -1,7 +1,7 @@
 "use client"
 
 import React from 'react'
-import { ExternalLink, ImageIcon, User } from 'lucide-react'
+import { ImageIcon, User } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Insight } from '@/types/api'

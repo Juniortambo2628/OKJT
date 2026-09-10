@@ -6,25 +6,22 @@ import Image from 'next/image'
 import { ArrowRight, Linkedin, Twitter, Github, Facebook } from 'lucide-react'
 import { useApi } from '@/hooks/use-api'
 import { useSettings } from '@/hooks/use-settings'
+import { useMounted } from '@/hooks/use-mounted'
 import { useTheme } from 'next-themes'
 
 const Footer = () => {
     const { theme } = useTheme()
-    const [mounted, setMounted] = React.useState(false)
+    const mounted = useMounted()
     const [email, setEmail] = React.useState('')
     const [subscribed, setSubscribed] = React.useState(false)
     const [subscribing, setSubscribing] = React.useState(false)
     const { branding, contact, getSetting, socials: socialLinks } = useSettings()
     const { data: services } = useApi('/services')
- 
+
     const logoWhiteBg = branding.logo_light
     const logoBlackBg = branding.logo_dark
     const contactEmail = contact.email
     const contactAddress = contact.address
-
-    React.useEffect(() => {
-        setMounted(true)
-    }, [])
 
     const logo = theme === 'light' ? logoWhiteBg : logoBlackBg
 

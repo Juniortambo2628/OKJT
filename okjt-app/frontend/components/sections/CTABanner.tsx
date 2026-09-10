@@ -1,7 +1,6 @@
 "use client"
 
 import React from 'react'
-import { Button } from '@/components/ui/button'
 import { Sparkles, Mail } from 'lucide-react'
 import { useSettings } from '@/hooks/use-settings'
 import ParallaxSection from '@/components/ParallaxSection'

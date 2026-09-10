@@ -11,17 +11,18 @@ import SearchDialog from './SearchDialog'
 import { ThemeToggle } from './ThemeToggle'
 import { useApi } from '@/hooks/use-api'
 import { useSettings } from '@/hooks/use-settings'
+import { useMounted } from '@/hooks/use-mounted'
 import { useTheme } from 'next-themes'
 
 const Navbar = () => {
     const { theme } = useTheme()
-    const { branding, getSetting, isLoading: isSettingsLoading } = useSettings()
+    const { branding, getSetting } = useSettings()
     const { data: services } = useApi('/services')
     const { data: projects } = useApi('/projects')
     const [isScrolled, setIsScrolled] = useState(false)
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [activeMegaMenu, setActiveMegaMenu] = useState<'services' | 'work' | null>(null)
-    const [mounted, setMounted] = useState(false)
+    const mounted = useMounted()
 
     // Mega-menu hover intent: keep the panel open briefly after the cursor
     // leaves so it doesn't vanish while the user is travelling to an item.
@@ -40,20 +41,11 @@ const Navbar = () => {
 
     const logoWhiteBg = branding.logo_light
     const logoBlackBg = branding.logo_dark
-    
-    // Stabilize logo for hydration
-    const [logo, setLogo] = useState(logoWhiteBg)
-    
-    useEffect(() => {
-        setMounted(true)
-    }, [])
 
-    useEffect(() => {
-        if (mounted) {
-            setLogo(theme === 'light' ? logoWhiteBg : logoBlackBg)
-        }
-    }, [theme, mounted, logoWhiteBg, logoBlackBg])
-    
+    // Render the light-bg logo on the server / first paint (stable for hydration),
+    // then the theme-appropriate one once mounted.
+    const logo = mounted ? (theme === 'light' ? logoWhiteBg : logoBlackBg) : logoWhiteBg
+
     const navLinksJson = getSetting('main_nav_links', '[]')
 
     const navLinks = React.useMemo<{name: string, href: string}[]>(() => {

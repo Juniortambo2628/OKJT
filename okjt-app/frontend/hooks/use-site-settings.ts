@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { useSettings } from './use-settings'
 import api from '@/lib/api'
 import { useToast } from '@/hooks/use-toast'
@@ -22,15 +22,18 @@ export function useSiteSettings() {
         return grouped
     }, [allSettings])
 
-    useEffect(() => {
-        if (allSettings.length > 0) {
-            const flat: Record<string, string> = {}
-            allSettings.forEach((s) => {
-                flat[s.key] = s.value || ''
-            })
-            setLocalSettings(flat)
-        }
-    }, [allSettings])
+    // Seed the editable copy from the fetched settings once they arrive.
+    // Adjust-during-render + a one-shot flag: this must NOT re-run on every SWR
+    // revalidation, or it would wipe the admin's unsaved edits.
+    const [seeded, setSeeded] = useState(false)
+    if (!seeded && allSettings.length > 0) {
+        setSeeded(true)
+        const flat: Record<string, string> = {}
+        allSettings.forEach((s) => {
+            flat[s.key] = s.value || ''
+        })
+        setLocalSettings(flat)
+    }
 
     const updateSetting = useCallback((key: string, value: string) => {
         setLocalSettings(prev => ({ ...prev, [key]: value }))

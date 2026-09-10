@@ -4,7 +4,7 @@ import React from 'react'
 import AdminLayout from '@/components/admin/AdminLayout'
 import { useApi } from '@/hooks/use-api'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Eye, Users, TrendingUp, Globe, Clock, ExternalLink } from 'lucide-react'
+import { Eye, Users, TrendingUp, Globe, Clock } from 'lucide-react'
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
 const AdminDashboardPage = () => {
@@ -62,8 +62,8 @@ const AdminDashboardPage = () => {
                                 <div className="h-[250px] w-full bg-secondary/5 animate-pulse rounded-lg flex items-center justify-center">
                                     <div className="w-full h-full p-4 flex flex-col justify-end gap-2">
                                         <div className="flex items-end justify-between gap-2 h-full">
-                                            {[1,2,3,4,5,6,7,8,9,10].map(i => (
-                                                <div key={i} className="bg-primary/10 rounded-t w-full" style={{ height: `${Math.random() * 60 + 20}%` }} />
+                                            {[42, 68, 35, 74, 52, 61, 45, 70, 38, 58].map((h, i) => (
+                                                <div key={i} className="bg-primary/10 rounded-t w-full" style={{ height: `${h}%` }} />
                                             ))}
                                         </div>
                                         <div className="h-2 w-full bg-secondary/10 rounded" />

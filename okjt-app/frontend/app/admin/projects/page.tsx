@@ -9,7 +9,6 @@ import AdminResourceTemplate from '@/components/admin/core/AdminResourceTemplate
 import ProjectFormFields from '@/components/admin/forms/ProjectFormFields'
 import { ResourceCard } from '@/components/admin/ResourceCard'
 import { ResourceTableRow } from '@/components/admin/ResourceTableRow'
-import { StatusBadge } from '@/components/admin/StatusBadge'
 
 const AdminProjectsPage = () => {
     return (

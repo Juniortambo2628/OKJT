@@ -23,16 +23,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const token = localStorage.getItem('auth_token')
         if (token) {
             api.defaults.headers.common['Authorization'] = `Bearer ${token}`
-            api.get('/user')
+        }
+        // Route both the token and no-token cases through a promise so the only
+        // setIsLoading call is in .finally() (never synchronous in the effect body).
+        const settle = token
+            ? api.get('/user')
                 .then(res => setUser(res.data))
                 .catch(() => {
                     localStorage.removeItem('auth_token')
                     delete api.defaults.headers.common['Authorization']
                 })
-                .finally(() => setIsLoading(false))
-        } else {
-            setIsLoading(false)
-        }
+            : Promise.resolve()
+        settle.finally(() => setIsLoading(false))
     }, [])
 
     const login = async (credentials: any) => {
