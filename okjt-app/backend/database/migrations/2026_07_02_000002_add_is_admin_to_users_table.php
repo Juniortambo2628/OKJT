@@ -1,8 +1,8 @@
 <?php
 
-use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -16,7 +16,10 @@ return new class extends Migration
         });
 
         // Promote all existing users to admin so current sessions are not locked out.
-        User::query()->update(['is_admin' => true]);
+        // Query builder, not Eloquent: on a fresh `migrate` this runs before
+        // `users.deleted_at` exists, and the User model's SoftDeletes scope would
+        // add `where deleted_at is null` against a column that isn't there yet.
+        DB::table('users')->update(['is_admin' => true]);
     }
 
     public function down(): void
