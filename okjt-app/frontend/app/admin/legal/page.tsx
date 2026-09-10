@@ -1,8 +1,9 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import AdminLayout from '@/components/admin/AdminLayout'
 import { useSiteSettings } from '@/hooks/use-site-settings'
+import { useMounted } from '@/hooks/use-mounted'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { ShieldCheck, FileText, Cookie } from 'lucide-react'
 import RichTextEditor from '@/components/admin/RichTextEditor'
@@ -11,11 +12,7 @@ import SettingsHeader from '@/components/admin/core/SettingsHeader'
 const LegalSettingsPage = () => {
     const { localSettings, updateSetting, handleSave, isLoading, isSaving } = useSiteSettings()
     const [activeTab, setActiveTab] = useState('privacy')
-    const [mounted, setMounted] = useState(false)
-
-    useEffect(() => {
-        setMounted(true)
-    }, [])
+    const mounted = useMounted()
 
     const handleSaveLegal = async () => {
         await handleSave((settings, local) => {

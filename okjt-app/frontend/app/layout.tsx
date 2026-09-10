@@ -46,7 +46,7 @@ export async function generateMetadata() {
         apple: favicon || '/logos/OKJT-Logos/OKJTechLogo-Black_BG-favicon.png',
       },
     };
-  } catch (error) {
+  } catch {
     return {
       title: "OKJTech — Design-led Web Engineering",
       description: "Design-centered, user-first web experiences that are fast, responsive, and built to drive results.",

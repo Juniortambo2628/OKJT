@@ -93,7 +93,7 @@ const RegisterPage = () => {
                         id="password_confirmation"
                         type="password"
                         value={passwordConfirmation}
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={(e) => setPasswordConfirmation(e.target.value)}
                         required
                         autoComplete="new-password"
                         className="bg-background/50"

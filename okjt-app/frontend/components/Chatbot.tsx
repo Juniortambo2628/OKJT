@@ -62,6 +62,8 @@ const Chatbot = () => {
     const [isTyping, setIsTyping] = useState(false)
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const inputRef = useRef<HTMLInputElement>(null)
+    const msgIdRef = useRef(0)
+    const nextMsgId = () => (msgIdRef.current += 1)
     const isAssistantEnabled = isEnabled('okjt_assistant_enabled')
 
     useEffect(() => {
@@ -93,16 +95,16 @@ const Chatbot = () => {
         const msg = text || input.trim()
         if (!msg) return
 
-        const userMsg: Message = { id: Date.now(), role: 'user', text: msg }
+        const userMsg: Message = { id: nextMsgId(), role: 'user', text: msg }
         setMessages(prev => [...prev, userMsg])
         setInput('')
         setIsTyping(true)
 
         setTimeout(() => {
             const answer = findAnswer(msg)
-            setMessages(prev => [...prev, { id: Date.now() + 1, role: 'bot', text: answer }])
+            setMessages(prev => [...prev, { id: nextMsgId(), role: 'bot', text: answer }])
             setIsTyping(false)
-        }, 800 + Math.random() * 500)
+        }, 1000)
     }
 
     if (isLoading || !isAssistantEnabled) return null

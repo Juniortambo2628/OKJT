@@ -37,13 +37,20 @@ export default function SearchDialog() {
         return () => clearTimeout(timer)
     }, [query, fetchResults])
 
-    useEffect(() => {
-        if (open) {
-            setTimeout(() => inputRef.current?.focus(), 100)
-        } else {
+    // Clear the query/results as the dialog closes — adjust during render.
+    const [prevOpen, setPrevOpen] = useState(open)
+    if (open !== prevOpen) {
+        setPrevOpen(open)
+        if (!open) {
             setQuery('')
             setResults(null)
         }
+    }
+
+    useEffect(() => {
+        if (!open) return
+        const t = setTimeout(() => inputRef.current?.focus(), 100)
+        return () => clearTimeout(t)
     }, [open])
 
     const totalResults = results

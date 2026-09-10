@@ -26,26 +26,36 @@ export const useCookieConsent = () => {
 
 const STORAGE_KEY = 'okjt_cookie_consent'
 
+const DEFAULT_CONSENT: Record<ConsentCategory, boolean> = {
+    essential: true,
+    analytics: false,
+    marketing: false,
+}
+
+function readStoredConsent(): Record<ConsentCategory, boolean> | null {
+    if (typeof window === 'undefined') return null
+    try {
+        const stored = localStorage.getItem(STORAGE_KEY)
+        return stored ? JSON.parse(stored) : null
+    } catch {
+        return null
+    }
+}
+
 export const CookieConsentProvider = ({ children }: { children: React.ReactNode }) => {
-    const [consent, setConsent] = useState<Record<ConsentCategory, boolean>>({
-        essential: true,
-        analytics: false,
-        marketing: false,
-    })
+    // Consent doesn't drive any server-rendered markup, so it can be read from
+    // storage during init — the choice then applies immediately on reload.
+    const [consent, setConsent] = useState<Record<ConsentCategory, boolean>>(
+        () => readStoredConsent() ?? DEFAULT_CONSENT,
+    )
     const [showBanner, setShowBanner] = useState(false)
     const [showPreferences, setShowPreferences] = useState(false)
 
     useEffect(() => {
-        const stored = localStorage.getItem(STORAGE_KEY)
-        if (stored) {
-            try {
-                setConsent(JSON.parse(stored))
-            } catch {
-                setShowBanner(true)
-            }
-        } else {
-            setShowBanner(true)
-        }
+        // The banner does drive visible markup, so it can only appear after
+        // hydration to avoid a mismatch.
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time post-hydration check
+        if (!readStoredConsent()) setShowBanner(true)
     }, [])
 
     const saveToStorage = useCallback((c: Record<ConsentCategory, boolean>) => {

@@ -27,12 +27,8 @@ export default function CountUp({ target, suffix = '', duration = 1.5, className
     const format = (n: number) => (numericValue >= 10000 ? n.toLocaleString() : String(n))
 
     useEffect(() => {
-        if (!isInView || isNaN(numericValue)) return
-
-        if (prefersReducedMotion) {
-            setCount(numericValue)
-            return
-        }
+        // Reduced motion: no animation — the final value is rendered directly below.
+        if (!isInView || isNaN(numericValue) || prefersReducedMotion) return
 
         let startTime: number | null = null
         let animationFrame: number
@@ -57,9 +53,11 @@ export default function CountUp({ target, suffix = '', duration = 1.5, className
         return <span ref={ref} className={className}>{target}</span>
     }
 
+    const displayValue = prefersReducedMotion ? numericValue : count
+
     return (
         <span ref={ref} className={className}>
-            {prefix}{isInView ? format(count) : '0'}{originalSuffix}
+            {prefix}{isInView ? format(displayValue) : '0'}{originalSuffix}
         </span>
     )
 }

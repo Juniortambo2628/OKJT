@@ -9,7 +9,7 @@ import { useSettings } from '@/hooks/use-settings'
 import { useApi } from '@/hooks/use-api'
 import { getMediaUrl } from '@/lib/utils'
 import { DEFAULT_HERO_VIDEO } from '@/lib/config'
-import { HeroSkeleton, SkeletonBlock, SkeletonText } from './MediaSkeleton'
+import { SkeletonBlock, SkeletonText } from './MediaSkeleton'
 import { cn } from '@/lib/utils'
 
 interface HeroCta {
@@ -62,14 +62,6 @@ const staggerContainer = {
     }
 }
 
-const scaleIn = {
-    hidden: { opacity: 0, scale: 1.08 },
-    visible: {
-        opacity: 1,
-        scale: 1,
-        transition: { duration: 1.4, ease: EASE_IN_OUT_SMOOTH }
-    }
-}
 
 // ------------------------------------------------------------------
 // Inline breadcrumbs for detail pages

@@ -120,7 +120,8 @@ const RichTextEditor = ({ value, onChange, label, className }: RichTextEditorPro
         immediatelyRender: false,
         extensions: [
             StarterKit.configure({
-                // @ts-ignore — ensure no duplicate 'link' extension
+                // Disable StarterKit's bundled link so the standalone Link
+                // extension below is the only one registered.
                 link: false,
             }),
             Link.configure({

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import AdminLayout from '@/components/admin/AdminLayout'
 import { useApi } from '@/hooks/use-api'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Mail, Eye, Code, CheckCircle2, AlertCircle, Sparkles, Layout, Loader2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -14,13 +14,13 @@ import api from '@/lib/api'
 import SettingsHeader from '@/components/admin/core/SettingsHeader'
 
 const EmailSettingsPage = () => {
-    const { data: emailTemplates, mutate, isLoading } = useApi<any[]>('/email-templates')
+    const { data: emailTemplates, mutate } = useApi<any[]>('/email-templates')
     const [formValues, setFormValues] = useState<Record<string, string>>({
         'email_template_admin': '',
         'email_template_user': ''
     })
     const [isSaving, setIsSaving] = useState(false)
-    const [saveSuccess, setSaveSuccess] = useState(false)
+    const [, setSaveSuccess] = useState(false)
     const [activeTemplate, setActiveTemplate] = useState('admin_notification')
     const [editorMode, setEditorMode] = useState<'visual' | 'code'>('visual')
     const [previewHtml, setPreviewHtml] = useState<string>('')
@@ -36,32 +36,39 @@ const EmailSettingsPage = () => {
         buttonText: 'View in Dashboard'
     })
 
+    // Seed the raw template values once the API responds — adjust during render
+    // so it doesn't re-run (and overwrite edits) on every revalidation.
+    const [formSeeded, setFormSeeded] = useState(false)
+    if (!formSeeded && emailTemplates) {
+        setFormSeeded(true)
+        setFormValues(prev => {
+            const flat = { ...prev }
+            emailTemplates.forEach((s: any) => { flat[s.key] = s.value || '' })
+            return flat
+        })
+    }
+
+    // Re-derive the visual-editor fields whenever the active template (or its
+    // source content) changes. This genuinely needs to react to a tab switch.
     useEffect(() => {
-        if (emailTemplates) {
-            const flat: Record<string, string> = {}
-            emailTemplates.forEach((s: any) => {
-                flat[s.key] = s.value || ''
-            })
-            setFormValues(prev => ({ ...prev, ...flat }))
-            
-            // Attempt to sync visual fields from existing code if possible
-            // This is a simplified regex-based extractor for our known patterns
-            const currentContent = flat[activeTemplate === 'admin_notification' ? 'email_template_admin' : 'email_template_user'] || ''
-            if (currentContent) {
-                const badgeMatch = currentContent.match(/class="badge"[^>]*>([^<]+)<\/div>/)
-                const titleMatch = currentContent.match(/<h1>([^<]+)<\/h1>/)
-                const introMatch = currentContent.match(/<\/h1>\s*<p>([^<]+)<\/p>/)
-                const buttonMatch = currentContent.match(/>([^<]+)<\/a>/)
-                
-                setVisualFields({
-                    badge: badgeMatch ? badgeMatch[1] : 'New Action Required',
-                    title: titleMatch ? titleMatch[1] : 'New Notification',
-                    intro: introMatch ? introMatch[1] : '',
-                    buttonText: buttonMatch ? buttonMatch[1] : 'View Details',
-                    body: visualFields.body // We keep body as is for now as it's harder to parse table structures
-                })
-            }
-        }
+        if (!emailTemplates) return
+        const key = activeTemplate === 'admin_notification' ? 'email_template_admin' : 'email_template_user'
+        const currentContent = emailTemplates.find((s: any) => s.key === key)?.value || ''
+        if (!currentContent) return
+
+        const badgeMatch = currentContent.match(/class="badge"[^>]*>([^<]+)<\/div>/)
+        const titleMatch = currentContent.match(/<h1>([^<]+)<\/h1>/)
+        const introMatch = currentContent.match(/<\/h1>\s*<p>([^<]+)<\/p>/)
+        const buttonMatch = currentContent.match(/>([^<]+)<\/a>/)
+
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- derive visual fields on tab/content change
+        setVisualFields(prev => ({
+            badge: badgeMatch ? badgeMatch[1] : 'New Action Required',
+            title: titleMatch ? titleMatch[1] : 'New Notification',
+            intro: introMatch ? introMatch[1] : '',
+            buttonText: buttonMatch ? buttonMatch[1] : 'View Details',
+            body: prev.body, // table structures are harder to parse — keep as-is
+        }))
     }, [emailTemplates, activeTemplate])
 
     const generateBladeFromVisual = () => {
@@ -92,7 +99,7 @@ const EmailSettingsPage = () => {
             mutate()
             setSaveSuccess(true)
             setTimeout(() => setSaveSuccess(false), 3000)
-        } catch (err) {
+        } catch {
             alert('Failed to save email settings')
         } finally {
             setIsSaving(false)
@@ -136,7 +143,7 @@ const EmailSettingsPage = () => {
             await api.delete(`/email-templates/${templateKey}`)
             setFormValues(prev => ({ ...prev, [templateKey]: '' }))
             mutate()
-        } catch (err) {
+        } catch {
             alert('Failed to delete email template')
         } finally {
             setIsSaving(false)

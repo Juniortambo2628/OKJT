@@ -2,12 +2,10 @@
 
 import React, { useMemo } from 'react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
 import { useApi } from '@/hooks/use-api'
 import { Project } from '@/types/api'
 import { getMediaUrl } from '@/lib/utils'
 
-const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const
 
 const FlagshipHeroCarousel = () => {
     const { data: projects } = useApi<Project[]>('/projects')

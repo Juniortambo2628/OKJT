@@ -25,11 +25,14 @@ export default function CarouselCard({
     children
 }: CarouselCardProps) {
     const [imgSrc, setImgSrc] = React.useState(image || undefined)
-    const hasImage = !!imgSrc
-
-    React.useEffect(() => {
+    // Reset the (possibly fallback-swapped) src when the incoming image prop
+    // changes — adjust-during-render, not an effect.
+    const [prevImage, setPrevImage] = React.useState(image)
+    if (image !== prevImage) {
+        setPrevImage(image)
         setImgSrc(image || undefined)
-    }, [image])
+    }
+    const hasImage = !!imgSrc
 
     const handleError = () => {
         if (fallbackImage && imgSrc !== fallbackImage) {
