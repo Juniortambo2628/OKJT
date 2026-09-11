@@ -21,12 +21,6 @@ const FlagshipHeroCarousel = () => {
 
     return (
         <div className="relative w-full py-6 overflow-hidden">
-            <div className="max-w-[1400px] mx-auto px-6 md:px-10 lg:px-16 mb-5">
-                <p className="text-foreground/30 text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-center">
-                    Featured Flagship Projects
-                </p>
-            </div>
-
             <div className="relative">
                 <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-black/60 to-transparent z-10 pointer-events-none" />
                 <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-black/60 to-transparent z-10 pointer-events-none" />
@@ -36,9 +30,10 @@ const FlagshipHeroCarousel = () => {
                         <Link
                             key={`${project.id}-${index}`}
                             href={`/projects/${project.slug}`}
-                            className="flex-shrink-0 w-[140px] sm:w-[160px] md:w-[180px] group"
+                            className="flex-shrink-0 w-[92px] sm:w-[104px] md:w-[116px] group"
+                            aria-label={project.title}
                         >
-                            <div className="relative aspect-[16/10] rounded-lg overflow-hidden border border-white/5 group-hover:border-primary/30 transition-all duration-300">
+                            <div className="relative aspect-[1/1.1] rounded-lg overflow-hidden border border-white/5 group-hover:border-primary/30 transition-all duration-300">
                                 {project.image ? (
                                     <img
                                         src={getMediaUrl(project.image)}
@@ -49,10 +44,14 @@ const FlagshipHeroCarousel = () => {
                                     <div className="absolute inset-0 bg-gradient-to-br from-white/[0.06] via-white/[0.02] to-primary/5" />
                                 )}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+
+                                {/* Glass pill tooltip — shown on hover instead of a static label */}
+                                <div className="absolute inset-x-1.5 bottom-1.5 flex justify-center pointer-events-none">
+                                    <span className="max-w-full truncate rounded-full bg-white/10 backdrop-blur-md border border-white/20 px-2.5 py-1 text-[10px] font-semibold text-white shadow-lg opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                                        {project.title}
+                                    </span>
+                                </div>
                             </div>
-                            <p className="text-foreground/50 text-[10px] sm:text-xs mt-2 text-center line-clamp-1 group-hover:text-foreground/80 transition-colors">
-                                {project.title}
-                            </p>
                         </Link>
                     ))}
                 </div>
