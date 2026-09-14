@@ -57,9 +57,9 @@ export default function ProjectDetailContent({
             fallbackStackText={isClient ? 'Proprietary Architecture' : 'Proprietary IP'}
 
             primaryActionUrl={project?.url}
-            primaryActionLabel={isClient ? 'Visit Website' : 'Launch Product'}
+            primaryActionLabel="Visit"
             primaryActionIcon={isClient ? undefined : Rocket}
-            secondaryActionLabel={isClient ? 'Request Similar Work' : 'Inquire for Bespoke Ops'}
+            secondaryActionLabel="Get in Touch"
 
             focusAreasTitle={isClient ? 'Focus Areas' : 'Product DNA'}
             focusAreas={isClient

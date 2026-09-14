@@ -61,6 +61,7 @@ export default function BaseLayout({
             <Navbar />
 
             <Hero
+                id="hero"
                 tagline={tagline}
                 title={title}
                 subtitle={subtitle}

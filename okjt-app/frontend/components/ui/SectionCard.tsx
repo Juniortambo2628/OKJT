@@ -37,7 +37,7 @@ export function SectionCard({
             exit={{ opacity: 0, y: 30 }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             className={cn(
-                "w-full h-[75vh] flex flex-col bg-white/[0.03] backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-6 sm:p-8 md:p-10 shadow-2xl overflow-hidden",
+                "w-full h-[75vh] flex flex-col bg-white/[0.03] backdrop-blur-3xl border border-white/10 rounded-2xl p-6 sm:p-8 md:p-10 shadow-2xl overflow-hidden",
                 className
             )}
         >
