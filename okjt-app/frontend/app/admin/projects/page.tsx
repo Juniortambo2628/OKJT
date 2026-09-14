@@ -25,6 +25,7 @@ const AdminProjectsPage = () => {
                 tagline: '',
                 category: '',
                 technologies: [],
+                focus_areas: [],
                 significant_figure: '',
                 description: '',
                 problem: '',

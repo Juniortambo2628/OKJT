@@ -7,9 +7,15 @@ import { cn } from '@/lib/utils'
 interface HorizontalCarouselProps {
     children: React.ReactNode
     className?: string
+    /** Optional Tailwind class controlling each slot's width. Defaults to
+     *  ~one-third of the container so three cards fit; pass a wider class
+     *  when a section has fewer, larger cards. Accepts a function so widths
+     *  can vary per slot (e.g. a two-card layout where the second card is
+     *  wider than the first). */
+    slotClassName?: string | ((index: number, count: number) => string)
 }
 
-export default function HorizontalCarousel({ children, className }: HorizontalCarouselProps) {
+export default function HorizontalCarousel({ children, className, slotClassName }: HorizontalCarouselProps) {
     const scrollRef = useRef<HTMLDivElement>(null)
 
     const scroll = (direction: 'left' | 'right') => {
@@ -36,14 +42,22 @@ export default function HorizontalCarousel({ children, className }: HorizontalCa
                 className="flex gap-4 h-full overflow-x-auto snap-x snap-mandatory scrollbar-hide py-1"
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
-                {items.map((child, index) => (
-                    <div
-                        key={index}
-                        className="flex-shrink-0 snap-start h-full w-[calc(33.333%-0.667rem)] min-w-[280px]"
-                    >
-                        {child}
-                    </div>
-                ))}
+                {items.map((child, index) => {
+                    const resolvedSlot = typeof slotClassName === 'function'
+                        ? slotClassName(index, items.length)
+                        : slotClassName
+                    return (
+                        <div
+                            key={index}
+                            className={cn(
+                                "flex-shrink-0 snap-start h-full min-w-[280px]",
+                                resolvedSlot ?? "w-[calc(33.333%-0.667rem)]"
+                            )}
+                        >
+                            {child}
+                        </div>
+                    )
+                })}
             </div>
 
             <button

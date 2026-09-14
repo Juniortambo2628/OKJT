@@ -62,9 +62,11 @@ export default function ProjectDetailContent({
             secondaryActionLabel="Get in Touch"
 
             focusAreasTitle="Focus Areas"
-            focusAreas={isClient
-                ? ['Digital transformation', 'Workflow automation', 'Interface and experience']
-                : ['Scalable architecture', 'Data integrity and security', 'Human-centred workflows']
+            focusAreas={(Array.isArray(project?.focus_areas) && project.focus_areas.length > 0)
+                ? project.focus_areas
+                : (isClient
+                    ? ['Digital transformation', 'Workflow automation', 'Interface and experience']
+                    : ['Scalable architecture', 'Data integrity and security', 'Human-centred workflows'])
             }
 
             // Testimonial

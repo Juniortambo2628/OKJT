@@ -59,14 +59,27 @@ export default function ProjectFormFields({ form, setForm }: ProjectFormFieldsPr
                 </div>
             </div>
 
-            <div className="space-y-2">
-                <Label className="text-muted-foreground">Technologies (comma separated)</Label>
-                <Input 
-                    className="bg-background border-border text-foreground" 
-                    value={Array.isArray(form.technologies) ? form.technologies.join(', ') : (form.technologies || '')} 
-                    onChange={(e) => setForm({ ...form, technologies: e.target.value.split(',').map(t => t.trim()) })} 
-                    placeholder="e.g. React, Laravel, PostgreSQL" 
-                />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <Label className="text-muted-foreground">Technologies (comma separated)</Label>
+                    <Input
+                        className="bg-background border-border text-foreground"
+                        value={Array.isArray(form.technologies) ? form.technologies.join(', ') : (form.technologies || '')}
+                        onChange={(e) => setForm({ ...form, technologies: e.target.value.split(',').map(t => t.trim()).filter(Boolean) })}
+                        placeholder="e.g. React, Laravel, PostgreSQL"
+                    />
+                    <p className="text-[11px] text-muted-foreground">Shown as stack badges above the project title on the overview card.</p>
+                </div>
+                <div className="space-y-2">
+                    <Label className="text-muted-foreground">Focus areas (comma separated, 3 recommended)</Label>
+                    <Input
+                        className="bg-background border-border text-foreground"
+                        value={Array.isArray(form.focus_areas) ? form.focus_areas.join(', ') : (form.focus_areas || '')}
+                        onChange={(e) => setForm({ ...form, focus_areas: e.target.value.split(',').map(t => t.trim()).filter(Boolean) })}
+                        placeholder="e.g. Scalable architecture, Data integrity and security, Human-centred workflows"
+                    />
+                    <p className="text-[11px] text-muted-foreground">Rendered as check-mark bullets in the project hero.</p>
+                </div>
             </div>
             
             <RichTextEditor 
