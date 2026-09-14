@@ -106,15 +106,12 @@ export default function AboutContent() {
 
     const teamTitle = getSetting('about_team_title', 'One continuous thread, concept to production')
     const teamSubtitle = getSetting('about_team_subtitle', 'Every project is designed, built, deployed and administered as one continuous piece of work — no hand-offs between teams, no context dropped between phases, one point of accountability. OKJTechnologies is deliberately a one-person studio.')
-    const ctaTitle = getSetting('about_cta_title', 'Have a system you want built end to end?')
-    const ctaSubtitle = getSetting('about_cta_subtitle', "Whether it's a customer-facing application, an internal dashboard, or a national-scale concept still at problem-statement stage, I'd like to hear about it. Start with a short brief and we'll map the ecosystem together.")
 
     const bgMission = getSetting('bg_about_mission')
     // Kept for CMS backwards-compat: existing key drives the experience section background
     const bgExperience = getSetting('bg_about_experience', getSetting('bg_about_lawyers_hub'))
     const bgValues = getSetting('bg_about_values')
     const bgTeam = getSetting('bg_about_team')
-    const bgCta = getSetting('bg_about_cta')
 
     return (
         <BaseLayout
@@ -277,16 +274,6 @@ export default function AboutContent() {
                 </HorizontalCarousel>
             </ParallaxSection>
 
-            {/* CTA */}
-            <ParallaxSection
-                id="about-cta"
-                bgMedia={bgCta}
-                heightClass="min-h-[170vh]"
-                contentMaxWidth="max-w-[1400px]"
-                title={ctaTitle}
-                subtitle={ctaSubtitle}
-                cta={{ label: 'Request a Quote', href: '/contact' }}
-            />
         </BaseLayout>
     )
 }

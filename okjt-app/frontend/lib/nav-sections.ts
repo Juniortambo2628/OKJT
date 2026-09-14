@@ -18,7 +18,6 @@ export const ABOUT_NAV_SECTIONS: NavSection[] = [
     { id: 'about-experience', label: 'Experience' },
     { id: 'about-values', label: 'Values' },
     { id: 'about-team', label: 'Studio' },
-    { id: 'about-cta', label: 'Contact' },
 ]
 
 export const CONTACT_NAV_SECTIONS: NavSection[] = [

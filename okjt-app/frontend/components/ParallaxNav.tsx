@@ -96,13 +96,17 @@ export default function ParallaxNav({ sections }: ParallaxNavProps) {
                 style={{ scaleX: scrollYProgress }}
             />
 
+            {/* Container width stays constant regardless of active label — every
+                dot has the same footprint, so the whole indicator is truly centered
+                in the viewport. The active pill is rendered as a floating badge
+                above the active dot rather than inline. */}
             <motion.div
                 ref={navRef}
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: isScrolling ? 1 : 0.4 }}
                 whileHover={{ opacity: 1 }}
                 transition={{ opacity: { duration: 0.5 } }}
-                className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[60] bg-background/40 backdrop-blur-xl border border-foreground/15 rounded-full px-2.5 py-1.5 flex items-center gap-1.5 shadow-2xl transition-colors"
+                className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[60] bg-background/40 backdrop-blur-xl border border-foreground/15 rounded-full px-3 py-2 flex items-center gap-3 shadow-2xl transition-colors"
             >
                 {sections.map((section, index) => {
                     const isActive = activeIndex === index
@@ -110,18 +114,21 @@ export default function ParallaxNav({ sections }: ParallaxNavProps) {
                         <button
                             key={section.id}
                             onClick={() => scrollToSection(section.id)}
-                            className="group relative flex items-center justify-center"
+                            className="group relative flex items-center justify-center w-2 h-2"
                             aria-label={section.label}
                             aria-current={isActive || undefined}
                         >
-                            {isActive ? (
-                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-foreground text-background text-[10px] font-bold uppercase tracking-widest shadow-md whitespace-nowrap">
+                            <span
+                                className={`block rounded-full transition-all duration-300 ${
+                                    isActive
+                                        ? 'w-2 h-2 bg-foreground shadow-[0_0_8px_rgba(255,255,255,0.5)]'
+                                        : 'w-1.5 h-1.5 bg-foreground/25 group-hover:bg-foreground/60'
+                                }`}
+                            />
+                            {isActive && (
+                                <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-foreground text-background text-[10px] font-bold uppercase tracking-widest shadow-md whitespace-nowrap pointer-events-none">
                                     <span className="w-1.5 h-1.5 rounded-full bg-primary" />
                                     {activeLabel}
-                                </span>
-                            ) : (
-                                <span className="p-0.5 block">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-foreground/20 group-hover:bg-foreground/60 transition-all duration-300 block" />
                                 </span>
                             )}
                             {!isActive && (
