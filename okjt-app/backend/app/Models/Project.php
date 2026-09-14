@@ -18,6 +18,7 @@ class Project extends Model
         'tagline',
         'category',
         'technologies',
+        'focus_areas',
         'significant_figure',
         'description',
         'problem',
@@ -36,6 +37,7 @@ class Project extends Model
 
     protected $casts = [
         'technologies' => 'array',
+        'focus_areas' => 'array',
         'gallery' => 'array',
         'is_active' => 'boolean',
         'is_featured' => 'boolean',

@@ -171,6 +171,7 @@ class ProjectSeeder extends Seeder
                 'client_name' => 'Najenga',
                 'category' => 'PropTech / Collaborative Software',
                 'technologies' => ['HTML5 Canvas API', 'Interactive Timelines', 'Document Systems'],
+                'focus_areas' => ['Centralised documentation', 'Shared accounting', 'Real-time collaboration'],
                 'description' => 'Najenga is a construction-project coordination platform used by site engineers, architects, project managers and clients to centralise drawings, budgets, timelines and conversations in one place.',
                 'significant_figure' => 'HTML5 Canvas Markup',
                 'problem' => '<p>The project addresses challenges in construction management such as decentralised documentation, unstructured accounting and limited collaboration opportunities during construction projects, leading to mismanagement of funds or timeline delays among other challenges.</p>',

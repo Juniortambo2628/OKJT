@@ -1,6 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, Globe, Code2, Quote, CheckCircle2, ChevronRight, LayoutGrid } from 'lucide-react'
+import { ArrowRight, Globe, Quote, CheckCircle2, ChevronRight, LayoutGrid } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import SocialShare from '@/components/SocialShare'
@@ -191,21 +191,36 @@ export default function DetailLayout({
     }, [testimonialQuote, gallery, relatedItems])
 
     const heroChildren = (
-        <div className="flex flex-wrap items-center gap-8 pt-8 border-t border-white/10">
-            {significantFigure && (
-                <div className="flex flex-col">
-                    <span className="text-[10px] text-white/50 uppercase tracking-widest mb-1">{significantFigureLabel}</span>
-                    <span className="text-2xl font-mono text-primary font-bold">{significantFigure}</span>
+        <div className="flex flex-col gap-6 pt-8 border-t border-white/10">
+            <div className="flex flex-wrap items-center gap-8">
+                {significantFigure && (
+                    <div className="flex flex-col">
+                        <span className="text-[10px] text-white/50 uppercase tracking-widest mb-1">{significantFigureLabel}</span>
+                        <span className="text-2xl font-mono text-primary font-bold">{significantFigure}</span>
+                    </div>
+                )}
+                {category && (
+                    <div className="flex flex-col">
+                        <span className="text-[10px] text-white/50 uppercase tracking-widest mb-1">{categoryLabel}</span>
+                        <span className="text-white font-bold">{category}</span>
+                    </div>
+                )}
+                {focusAreas && focusAreas.length > 0 && (
+                    <div className="flex flex-col gap-2">
+                        <span className="text-[10px] text-white/50 uppercase tracking-widest">{focusAreasTitle}</span>
+                        <ul className="flex flex-wrap gap-x-5 gap-y-1.5">
+                            {focusAreas.map((item, i) => (
+                                <li key={i} className="flex items-center gap-2 text-sm text-white/80">
+                                    <CheckCircle2 size={14} className="text-primary flex-shrink-0" />
+                                    <span>{item}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+                <div className="ml-auto">
+                    <SocialShare title={title} slug={slug} type={socialShareType} />
                 </div>
-            )}
-            {category && (
-                <div className="flex flex-col">
-                    <span className="text-[10px] text-white/50 uppercase tracking-widest mb-1">{categoryLabel}</span>
-                    <span className="text-white font-bold">{category}</span>
-                </div>
-            )}
-            <div className="ml-auto">
-                <SocialShare title={title} slug={slug} type={socialShareType} />
             </div>
         </div>
     )
@@ -251,9 +266,15 @@ export default function DetailLayout({
                 heightClass="min-h-[220vh]"
                 contentMaxWidth="max-w-[1400px]"
             >
-                <HorizontalCarousel className="h-full">
-                    {/* Card 1 — Overview: image + description with copy pulled
-                        up so long text stays inside the card. */}
+                <HorizontalCarousel
+                    className="h-full"
+                    slotClassName={(index) => index === 0
+                        ? 'w-[calc(38%-0.5rem)]'
+                        : 'w-[calc(62%-0.5rem)]'
+                    }
+                >
+                    {/* Card 1 — Overview: image + stack badges above title +
+                        description, all pulled up so long text stays inside. */}
                     <div className="h-full w-full rounded-2xl overflow-hidden border border-white/10 bg-black/40 shadow-lg relative flex flex-col">
                         <CardActionRow
                             primaryActionUrl={primaryActionUrl}
@@ -267,81 +288,62 @@ export default function DetailLayout({
                             ) : (
                                 <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-black/40 to-black/60" />
                             )}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/20" />
-                            <div className="absolute inset-x-0 bottom-0 top-16 p-5 flex flex-col justify-end">
-                                <h3 className="text-white text-lg font-bold mb-2 line-clamp-2">{title}</h3>
-                                {description && (
-                                    <div
-                                        className="text-[13px] text-white/80 leading-relaxed prose prose-invert max-w-none prose-p:text-white/80 prose-p:text-[13px] prose-p:my-1 line-clamp-[8]"
-                                        dangerouslySetInnerHTML={{ __html: description }}
-                                    />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/75 to-black/25" />
+                            <div className="absolute inset-x-0 bottom-0 top-16 p-5 flex flex-col justify-end gap-3">
+                                {technologies && Array.isArray(technologies) && technologies.length > 0 && (
+                                    <div className="flex flex-wrap gap-1.5">
+                                        {technologies.map((tech: string, i: number) => (
+                                            <span
+                                                key={i}
+                                                className="px-2 py-0.5 bg-white/5 text-primary text-[9px] font-bold uppercase tracking-widest border border-white/10 rounded"
+                                            >
+                                                {tech}
+                                            </span>
+                                        ))}
+                                    </div>
                                 )}
+                                <div>
+                                    <h3 className="text-white text-lg font-bold mb-2 line-clamp-2">{title}</h3>
+                                    {description && (
+                                        <div
+                                            className="text-[13px] text-white/80 leading-relaxed prose prose-invert max-w-none prose-p:text-white/80 prose-p:text-[13px] prose-p:my-1 line-clamp-[7]"
+                                            dangerouslySetInnerHTML={{ __html: description }}
+                                        />
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Card 2 — Scope: challenge + solution */}
+                    {/* Card 2 — Scope: challenge + solution. Wider slot so the
+                        content rarely needs to scroll. */}
                     <div className="h-full w-full rounded-2xl bg-black/30 border border-white/10 p-6 md:p-8 flex flex-col">
                         <div className="flex items-center gap-2 mb-4 flex-shrink-0">
                             <span className="text-primary text-[10px] font-bold uppercase tracking-widest">Scope</span>
                         </div>
-                        <div className="overflow-y-auto custom-scrollbar pr-2 flex-1 min-h-0 space-y-6">
+                        <div className="overflow-y-auto custom-scrollbar pr-2 flex-1 min-h-0 grid grid-cols-1 md:grid-cols-2 gap-6">
                             {challengeHtml && (
                                 <div>
                                     <div className="inline-block px-3 py-1 bg-white/10 border border-white/15 text-primary text-xs font-semibold rounded-full mb-3 uppercase tracking-widest">
                                         {challengeTitle}
                                     </div>
                                     <div
-                                        className="text-white/75 leading-relaxed text-sm md:text-base font-light prose dark:prose-invert max-w-none prose-p:text-white/75 prose-strong:text-white"
+                                        className="text-white/75 leading-relaxed text-sm md:text-[15px] font-light prose dark:prose-invert max-w-none prose-p:text-white/75 prose-strong:text-white"
                                         dangerouslySetInnerHTML={{ __html: challengeHtml }}
                                     />
                                 </div>
                             )}
                             {impactHtml && (
-                                <div className="pt-6 border-t border-white/5">
+                                <div>
                                     <div className="inline-block px-3 py-1 bg-white/10 border border-white/15 text-primary text-xs font-semibold rounded-full mb-3 uppercase tracking-widest">
                                         {impactTitle}
                                     </div>
                                     <div
-                                        className="text-white/75 leading-relaxed text-sm md:text-base font-light prose dark:prose-invert max-w-none prose-p:text-white/75 prose-strong:text-white"
+                                        className="text-white/75 leading-relaxed text-sm md:text-[15px] font-light prose dark:prose-invert max-w-none prose-p:text-white/75 prose-strong:text-white"
                                         dangerouslySetInnerHTML={{ __html: impactHtml }}
                                     />
                                 </div>
                             )}
-                        </div>
-                    </div>
-
-                    {/* Card 3 — Details: stack + focus areas */}
-                    <div className="h-full w-full rounded-2xl bg-black/30 border border-white/10 p-6 md:p-8 flex flex-col">
-                        <div className="flex items-center gap-2 mb-4 flex-shrink-0">
-                            <Code2 size={16} className="text-primary" />
-                            <span className="text-primary text-[10px] font-bold uppercase tracking-widest">{sidebarStackTitle}</span>
-                        </div>
-                        <div className="overflow-y-auto custom-scrollbar pr-2 flex-1 min-h-0 space-y-6">
-                            <div>
-                                <div className="flex flex-wrap gap-2">
-                                    {technologies && Array.isArray(technologies) && technologies.length > 0 ? (
-                                        technologies.map((tech: string, i: number) => (
-                                            <span key={i} className="px-3 py-1 bg-white/5 text-primary text-[10px] font-bold uppercase tracking-widest border border-white/5 rounded">
-                                                {tech}
-                                            </span>
-                                        ))
-                                    ) : (
-                                        <span className="text-white/50 text-xs italic">{fallbackStackText}</span>
-                                    )}
-                                </div>
-                            </div>
-                            <div className="pt-5 border-t border-white/5">
-                                <span className="text-primary text-[10px] font-bold uppercase tracking-widest mb-3 block">{focusAreasTitle}</span>
-                                <ul className="space-y-2.5">
-                                    {focusAreas.map((item, i) => (
-                                        <li key={i} className="flex items-start gap-3 text-sm text-white/75">
-                                            <CheckCircle2 size={14} className="text-primary mt-0.5 flex-shrink-0" />
-                                            <span>{item}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
                         </div>
                     </div>
                 </HorizontalCarousel>

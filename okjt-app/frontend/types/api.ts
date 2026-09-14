@@ -61,6 +61,7 @@ export interface Project {
   tagline: string | null;
   category: string | null;
   technologies: string[] | null;
+  focus_areas: string[] | null;
   significant_figure: string | null;
   description: string | null;
   problem: string | null;
