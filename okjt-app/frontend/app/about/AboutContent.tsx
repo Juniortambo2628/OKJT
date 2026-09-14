@@ -3,7 +3,8 @@
 import React from 'react'
 import { useSettings } from '@/hooks/use-settings'
 import { useApi } from '@/hooks/use-api'
-import { Linkedin, Check } from 'lucide-react'
+import Link from 'next/link'
+import { Linkedin, Check, ArrowRight } from 'lucide-react'
 import FadeIn from '@/components/animations/FadeIn'
 import { StaggerContainer, StaggerItem } from '@/components/animations/Stagger'
 import {
@@ -38,16 +39,70 @@ export default function AboutContent() {
     const missionText1 = getSetting('about_mission_text1', 'Every engagement is shaped by an ecosystem-mapping practice from the Afrilabs capacity-building programme in Addis Ababa. Before scoping, the map covers every stakeholder — client, end user, regulator, partner, community — who could be affected by or beneficial to the proposition.')
     const missionText2 = getSetting('about_mission_text2', 'The solution is then designed so each of those stakeholders has a clearly aligned way to benefit from it. Combined with AI-accelerated development, it is how a one-person studio ships the same class of application a small team would take on.')
 
-    const lhTitle = getSetting('about_lawyers_hub_title', "Two years in Africa's LegalTech engine room")
-    const lhBody = getSetting('about_lawyers_hub_body', "Between February 2023 and December 2024, the studio’s founder held the role of Software Developer, Justice Innovation at the Lawyers Hub in Nairobi. It is the largest single body of work behind OKJTechnologies, and where the ecosystem-mapping habit went from workshop idea to standard practice.")
-    const lhPoints = getSetting('about_lawyers_hub_points', [
-        'Spearheaded development of the Lawyers Hub Digital Policy website (lawyershub.org), the cornerstone resource for Kenya\'s digital-policy community.',
-        'Designed and shipped the Africa Law Tech Festival platform — online ticketing, live notifications and event mapping for the annual festival.',
-        'Contributed to every issue of the Daily Bulletin and to all of the Africa digital-policy maps published during my tenure.',
-        'Supported delivery of ADPI trainings — the Africa Data Protection Course and the CIPP/E certification.',
-        'Chaired the ALTF 2023 hackathon on digital trade under the AfCFTA, which produced 11 shortlisted innovations.',
-        'Co-organised the Boda-Boda Law Project field research in Kisumu and Namanga and contributed to the published report.',
-    ].join('|')).split('|').map((p) => p.trim()).filter(Boolean)
+    const expTitle = getSetting('about_experience_title', 'Where the capability was built')
+    const expSubtitle = getSetting('about_experience_subtitle', 'Selected work across the disciplines that shape every OKJTech engagement — each linked to the project it powers.')
+
+    // Categories: sub-areas of demonstrated capability. Each item links to a project or insight.
+    // Kept as a static shape here so the fallback holds when the CMS is briefly unreachable;
+    // CMS drives the values via `about_experience_categories` (JSON) once configured.
+    type ExpCategory = { key: string, label: string, items: { title: string, summary: string, href: string, tag?: string }[] }
+    const defaultCategories: ExpCategory[] = [
+        {
+            key: 'digital-policy',
+            label: 'Digital Policy',
+            items: [
+                { title: 'Lawyers Hub Digital Policy site', summary: 'Cornerstone Kenya digital-policy resource — architecture, engineering, ongoing administration.', href: '/projects', tag: 'Platform' },
+                { title: 'Africa Law Tech Festival platform', summary: 'Online ticketing, live notifications, event mapping — annual festival, continental audience.', href: '/projects', tag: 'Event tech' },
+                { title: 'ADPI training delivery', summary: 'Delivered the Africa Data Protection Course and the CIPP/E certification programme.', href: '/projects', tag: 'Training' },
+            ],
+        },
+        {
+            key: 'ui-ux',
+            label: 'UI / UX',
+            items: [
+                { title: 'Najenga — construction coordination', summary: 'Annotate architectural drawings, run project timelines, OCR PDFs, export to Excel, chat with @mentions.', href: '/projects/najenga-construction-collaboration-platform', tag: 'Product' },
+                { title: 'Naoa — digital wedding platform', summary: 'End-to-end experience: invitations, RSVPs, gifting, live guest updates.', href: '/projects', tag: 'Product' },
+                { title: 'Tibu — HealthTech interface', summary: 'Interface design for clinical workflows across desktop and mobile touchpoints.', href: '/projects', tag: 'Interface' },
+            ],
+        },
+        {
+            key: 'engineering',
+            label: 'Web Engineering',
+            items: [
+                { title: 'Laravel + Next.js flagship stack', summary: 'Schema-first backends, typed APIs, App Router frontends — auth, admin, background jobs, deploys.', href: '/services', tag: 'Stack' },
+                { title: 'Deployment & administration', summary: 'cPanel + domain admin, CI to production, monitoring and ongoing maintenance.', href: '/services', tag: 'Ops' },
+            ],
+        },
+        {
+            key: 'ecosystem',
+            label: 'Ecosystem Strategy',
+            items: [
+                { title: 'Ecosystem mapping practice', summary: 'Stakeholder mapping before scoping — client, user, regulator, partner, community — each with an aligned reason to participate.', href: '/our-approach', tag: 'Method' },
+                { title: 'Boda-Boda Law Project', summary: 'Co-organised field research in Kisumu and Namanga; contributed to the published report.', href: '/projects', tag: 'Research' },
+            ],
+        },
+    ]
+
+    const configuredCategoriesRaw = getSetting('about_experience_categories', '')
+    const categories = React.useMemo<ExpCategory[]>(() => {
+        try {
+            if (configuredCategoriesRaw && typeof configuredCategoriesRaw === 'string') {
+                const parsed = JSON.parse(configuredCategoriesRaw)
+                if (Array.isArray(parsed) && parsed.length > 0) return parsed as ExpCategory[]
+            } else if (Array.isArray(configuredCategoriesRaw)) {
+                return configuredCategoriesRaw as any
+            }
+        } catch { /* fall through to default */ }
+        return defaultCategories
+    }, [configuredCategoriesRaw])
+
+    const [activeCategory, setActiveCategory] = React.useState<string>(categories[0]?.key ?? '')
+    React.useEffect(() => {
+        if (!categories.find((c) => c.key === activeCategory) && categories[0]) {
+            setActiveCategory(categories[0].key)
+        }
+    }, [categories, activeCategory])
+    const activeItems = categories.find((c) => c.key === activeCategory)?.items ?? []
 
     const teamTitle = getSetting('about_team_title', 'One continuous thread, concept to production')
     const teamSubtitle = getSetting('about_team_subtitle', 'Every project is designed, built, deployed and administered as one continuous piece of work — no hand-offs between teams, no context dropped between phases, one point of accountability. OKJTechnologies is deliberately a one-person studio.')
@@ -55,7 +110,8 @@ export default function AboutContent() {
     const ctaSubtitle = getSetting('about_cta_subtitle', "Whether it's a customer-facing application, an internal dashboard, or a national-scale concept still at problem-statement stage, I'd like to hear about it. Start with a short brief and we'll map the ecosystem together.")
 
     const bgMission = getSetting('bg_about_mission')
-    const bgLawyersHub = getSetting('bg_about_lawyers_hub')
+    // Kept for CMS backwards-compat: existing key drives the experience section background
+    const bgExperience = getSetting('bg_about_experience', getSetting('bg_about_lawyers_hub'))
     const bgValues = getSetting('bg_about_values')
     const bgTeam = getSetting('bg_about_team')
     const bgCta = getSetting('bg_about_cta')
@@ -90,29 +146,51 @@ export default function AboutContent() {
                 </div>
             </ParallaxSection>
 
-            {/* Lawyers Hub — LegalTech contribution record (Feb 2023 – Dec 2024) */}
+            {/* Experience — categorized capability with links back to projects */}
             <ParallaxSection
-                id="about-lawyers-hub"
-                bgMedia={bgLawyersHub}
+                id="about-experience"
+                bgMedia={bgExperience}
                 heightClass="min-h-[220vh]"
                 badgeText="EXPERIENCE"
-                title={lhTitle}
-                subtitle={lhBody}
-                contentMaxWidth="max-w-[1100px]"
+                title={expTitle}
+                subtitle={expSubtitle}
+                contentMaxWidth="max-w-[1400px]"
             >
-                <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full" staggerDelay={0.08}>
-                    {lhPoints.map((point, i) => (
-                        <StaggerItem
-                            key={i}
-                            className="flex items-start gap-4 bg-black/20 border border-white/5 p-6 rounded-2xl hover:border-primary/30 transition-all"
-                        >
-                            <span className="w-9 h-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
-                                <Check className="h-4 w-4 text-primary" />
-                            </span>
-                            <p className="text-white/75 leading-relaxed text-sm">{point}</p>
-                        </StaggerItem>
-                    ))}
-                </StaggerContainer>
+                <div className="w-full h-full flex flex-col min-h-0">
+                    <div className="flex flex-wrap gap-2 mb-6 flex-shrink-0">
+                        {categories.map((cat) => (
+                            <button
+                                key={cat.key}
+                                onClick={() => setActiveCategory(cat.key)}
+                                className={`px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-widest transition-all ${
+                                    activeCategory === cat.key
+                                        ? 'bg-primary text-[#14110b]'
+                                        : 'bg-white/5 text-white/70 border border-white/10 hover:bg-white/10'
+                                }`}
+                            >
+                                {cat.label}
+                            </button>
+                        ))}
+                    </div>
+                    <StaggerContainer key={activeCategory} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 flex-1 min-h-0 overflow-hidden" staggerDelay={0.06}>
+                        {activeItems.map((it, i) => (
+                            <StaggerItem
+                                key={i}
+                                className="group bg-black/20 border border-white/5 p-6 rounded-2xl hover:border-primary/30 transition-all flex flex-col"
+                            >
+                                {it.tag && (
+                                    <span className="text-primary text-[10px] font-bold uppercase tracking-widest mb-3">{it.tag}</span>
+                                )}
+                                <h3 className="text-white font-bold text-base mb-2 leading-tight">{it.title}</h3>
+                                <p className="text-white/70 text-sm leading-relaxed mb-4 flex-1">{it.summary}</p>
+                                <Link href={it.href} className="text-primary text-xs font-bold uppercase tracking-widest inline-flex items-center gap-1 mt-auto group-hover:underline">
+                                    View <Check className="h-3 w-3 opacity-0 transition-opacity" />
+                                    <ArrowRight className="h-3 w-3" />
+                                </Link>
+                            </StaggerItem>
+                        ))}
+                    </StaggerContainer>
+                </div>
             </ParallaxSection>
 
             {/* Values */}
@@ -124,20 +202,20 @@ export default function AboutContent() {
                 title="Our Core Values"
                 contentMaxWidth="max-w-[1400px]"
             >
-                <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full" staggerDelay={0.08}>
-                        {values?.map((val) => {
-                            const IconComponent = (iconMap as any)[val.icon || 'Shield'] || (iconMap as any).Shield
-                            return (
-                                <StaggerItem key={val.id} className="bg-black/20 border border-white/5 p-8 hover:border-primary/30 transition-all group rounded-2xl">
-                                    <div className="w-12 h-12 bg-primary/5 border border-primary/10 flex items-center justify-center mb-8 group-hover:bg-primary group-hover:text-black transition-all duration-300 rounded-xl">
-                                        <IconComponent className="h-6 w-6 text-primary group-hover:text-black transition-colors" />
-                                    </div>
-                                    <h3 className="text-xl font-bold text-white mb-4">{val.title}</h3>
-                                    <p className="text-white/70 leading-relaxed text-sm">{val.description}</p>
-                                </StaggerItem>
-                            )
-                        })}
-                </StaggerContainer>
+                <HorizontalCarousel className="h-full">
+                    {values?.map((val) => {
+                        const IconComponent = (iconMap as any)[val.icon || 'Shield'] || (iconMap as any).Shield
+                        return (
+                            <div key={val.id} className="h-full w-full bg-black/20 border border-white/5 p-8 hover:border-primary/30 transition-all group rounded-2xl flex flex-col">
+                                <div className="w-12 h-12 bg-primary/5 border border-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-black transition-all duration-300 rounded-xl shrink-0">
+                                    <IconComponent className="h-6 w-6 text-primary group-hover:text-black transition-colors" />
+                                </div>
+                                <h3 className="text-xl font-bold text-white mb-3">{val.title}</h3>
+                                <p className="text-white/70 leading-relaxed text-sm">{val.description}</p>
+                            </div>
+                        )
+                    })}
+                </HorizontalCarousel>
             </ParallaxSection>
 
             {/* Team */}

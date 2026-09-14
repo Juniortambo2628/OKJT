@@ -24,6 +24,35 @@ function NarrativeBlock({ title, html, className }: { title: string, html: strin
     )
 }
 
+function NarrativeTabs({ items }: { items: { title: string, html: string }[] }) {
+    const [active, setActive] = React.useState(0)
+    if (items.length === 0) return null
+    return (
+        <div className="border border-white/5 bg-black/20 rounded-2xl p-6 md:p-8 flex flex-col min-h-0 flex-1">
+            <div className="flex flex-wrap gap-2 mb-5 flex-shrink-0">
+                {items.map((it, i) => (
+                    <button
+                        key={i}
+                        onClick={() => setActive(i)}
+                        className={`px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-widest transition-all ${
+                            active === i
+                                ? 'bg-primary text-[#14110b]'
+                                : 'bg-white/5 text-white/70 border border-white/10 hover:bg-white/10'
+                        }`}
+                    >
+                        {items[i].title}
+                    </button>
+                ))}
+            </div>
+            <div
+                key={active}
+                className="text-white/70 leading-relaxed text-sm md:text-base font-light prose dark:prose-invert max-w-none prose-p:text-white/70 prose-strong:text-white overflow-y-auto pr-2 custom-scrollbar flex-1 min-h-0"
+                dangerouslySetInnerHTML={{ __html: items[active].html }}
+            />
+        </div>
+    )
+}
+
 interface DetailLayoutProps {
     isLoading: boolean
     isError: boolean
@@ -215,36 +244,38 @@ export default function DetailLayout({
                 id="details-overview"
                 bgMedia={heroMedia}
                 heightClass="min-h-[220vh]"
+                contentMaxWidth="max-w-[1400px]"
             >
-                <div className="max-w-[1200px] mx-auto px-6 w-full">
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-                        <div className="lg:col-span-8 space-y-12">
+                <div className="w-full h-full">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-full min-h-0">
+                        <div className="lg:col-span-8 min-w-0 flex flex-col gap-6 overflow-hidden">
                             {/* Short Description Highlight */}
                             {description && (
                                 <FadeIn direction="left" distance={24}>
-                                    <div className="p-8 bg-black/20 rounded-xl">
-                                        <div className="inline-block px-3 py-1 bg-white/10 backdrop-blur-md border border-white/15 text-primary text-xs font-semibold rounded-full mb-4">
+                                    <div className="p-6 bg-black/20 rounded-xl">
+                                        <div className="inline-block px-3 py-1 bg-white/10 backdrop-blur-md border border-white/15 text-primary text-xs font-semibold rounded-full mb-3">
                                             Overview
                                         </div>
                                         <div
-                                            className="text-lg md:text-xl font-light text-white/90 leading-relaxed italic prose prose-invert max-w-none prose-p:italic prose-p:text-white/90"
+                                            className="text-base md:text-lg font-light text-white/90 leading-relaxed prose prose-invert max-w-none prose-p:text-white/90 line-clamp-4"
                                             dangerouslySetInnerHTML={{ __html: description }}
                                         />
                                     </div>
                                 </FadeIn>
                             )}
 
-                            {/* Narrative Blocks */}
-                            <StaggerContainer className="space-y-12 border border-white/5 bg-black/20 rounded-2xl p-8 md:p-12" staggerDelay={0.12}>
-                                {challengeHtml && <NarrativeBlock title={challengeTitle} html={challengeHtml} />}
-                                {approachHtml && <NarrativeBlock title={approachTitle} html={approachHtml} className="pt-8 border-t border-white/5" />}
-                                {impactHtml && <NarrativeBlock title={impactTitle} html={impactHtml} className="pt-8 border-t border-white/5" />}
-                            </StaggerContainer>
+                            {/* Narrative Blocks — horizontal tabs to keep container height stable */}
+                            <NarrativeTabs
+                                items={[
+                                    challengeHtml ? { title: challengeTitle, html: challengeHtml } : null,
+                                    impactHtml ? { title: impactTitle, html: impactHtml } : null,
+                                ].filter(Boolean) as { title: string, html: string }[]}
+                            />
                         </div>
 
                         {/* Sidebar Info */}
-                        <div className="lg:col-span-4">
-                            <div className="sticky top-32 space-y-8">
+                        <div className="lg:col-span-4 min-w-0">
+                            <div className="sticky top-32 space-y-6">
                                 {/* Thumbnail Image above stack */}
                                 {projectImage && (
                                     <div className="relative aspect-video rounded-2xl overflow-hidden border border-white/10 bg-black/40 shadow-lg">

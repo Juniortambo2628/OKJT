@@ -225,13 +225,13 @@ const Navbar = () => {
             {/* Services Mega Menu */}
             {activeMegaMenu === 'services' && dynamicServiceCategories.length > 0 && (
                 <div
-                    className="hidden lg:block absolute top-[100%] left-1/2 -translate-x-1/2 w-full max-w-[820px] bg-background rounded-2xl border border-border shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] transition-all overflow-hidden mt-1"
+                    className="hidden lg:block absolute top-[100%] left-1/2 -translate-x-1/2 w-full max-w-[1120px] bg-background rounded-2xl border border-border shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] transition-all overflow-hidden mt-1"
                     onMouseEnter={() => openMegaMenu('services')}
                     onMouseLeave={scheduleMegaMenuClose}
                 >
                     <div className="flex">
                         {/* Left Column (Featured) */}
-                        <div className="w-[28%] bg-secondary/20 p-6 border-r border-border flex flex-col justify-between">
+                        <div className="w-[24%] bg-secondary/20 p-6 border-r border-border flex flex-col justify-between">
                             <div>
                                 <Briefcase className="h-5 w-5 text-primary mb-4" />
                                 <h3 className="text-lg font-bold tracking-tight text-foreground mb-2">Need engineering advice?</h3>
@@ -258,15 +258,15 @@ const Navbar = () => {
                         </div>
                         
                         {/* Right Columns (Links) — 3-col grid for compactness */}
-                        <div className="w-[72%] p-6 grid grid-cols-3 gap-x-6 gap-y-6">
+                        <div className="w-[76%] p-6 grid grid-cols-3 gap-x-6 gap-y-6">
                             {dynamicServiceCategories.map((cat) => (
-                                <div key={cat.title}>
-                                    <h4 className="text-[9px] font-bold text-primary uppercase tracking-widest mb-2">{cat.title}</h4>
+                                <div key={cat.title} className="min-w-0">
+                                    <h4 className="text-[9px] font-bold text-primary uppercase tracking-widest mb-2 truncate">{cat.title}</h4>
                                     <ul className="space-y-0.5">
                                         {cat.items.map((item) => (
-                                            <li key={item.name}>
+                                            <li key={item.name} className="min-w-0">
                                                 <Link href={item.href} className="block group p-2 -mx-2 rounded-md hover:bg-secondary/50 transition-colors">
-                                                    <div className="font-semibold text-foreground text-xs">{item.name}</div>
+                                                    <div className="font-semibold text-foreground text-xs truncate whitespace-nowrap" title={item.name}>{item.name}</div>
                                                 </Link>
                                             </li>
                                         ))}
@@ -281,13 +281,13 @@ const Navbar = () => {
             {/* Our Work Mega Menu */}
             {activeMegaMenu === 'work' && (
                 <div
-                    className="hidden lg:block absolute top-[100%] left-1/2 -translate-x-1/2 w-full max-w-[820px] bg-background rounded-2xl border border-border shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] transition-all overflow-hidden mt-1"
+                    className="hidden lg:block absolute top-[100%] left-1/2 -translate-x-1/2 w-full max-w-[1120px] bg-background rounded-2xl border border-border shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] transition-all overflow-hidden mt-1"
                     onMouseEnter={() => openMegaMenu('work')}
                     onMouseLeave={scheduleMegaMenuClose}
                 >
                     <div className="flex">
                         {/* Left Column (Featured) */}
-                        <div className="w-[28%] bg-secondary/20 p-6 border-r border-border flex flex-col justify-between">
+                        <div className="w-[24%] bg-secondary/20 p-6 border-r border-border flex flex-col justify-between">
                             <div>
                                 <BookOpen className="h-5 w-5 text-primary mb-4" />
                                 <h3 className="text-lg font-bold tracking-tight text-foreground mb-2">Ready to start?</h3>
@@ -304,20 +304,20 @@ const Navbar = () => {
                         </div>
                         
                         {/* Right Columns (Links) */}
-                        <div className="w-[72%] p-6 grid grid-cols-3 gap-x-6 gap-y-6">
-                            {/* Flagship Projects — with thumbnails */}
-                            <div className="col-span-2">
+                        <div className="w-[76%] p-6 grid grid-cols-3 gap-x-6 gap-y-6">
+                            {/* Flagship Projects — with square thumbnails, single column */}
+                            <div className="col-span-2 min-w-0">
                                 <h4 className="text-[9px] font-bold text-primary uppercase tracking-widest mb-2">Flagship</h4>
-                                <ul className="grid grid-cols-2 gap-1">
+                                <ul className="flex flex-col gap-1">
                                     {flagshipProjects.map((item) => (
-                                        <li key={item.name}>
-                                            <Link href={item.href} className="flex items-center gap-2.5 group p-1.5 -mx-1.5 rounded-md hover:bg-secondary/50 transition-colors">
+                                        <li key={item.name} className="min-w-0">
+                                            <Link href={item.href} className="flex items-center gap-3 group p-1.5 -mx-1.5 rounded-md hover:bg-secondary/50 transition-colors">
                                                 {item.image ? (
-                                                    <img src={item.image} alt="" className="h-9 w-14 rounded object-cover shrink-0 border border-border/50" />
+                                                    <img src={item.image} alt="" className="h-11 w-11 rounded object-cover shrink-0 border border-border/50" />
                                                 ) : (
-                                                    <div className="h-9 w-14 rounded bg-secondary/40 shrink-0 border border-border/50" />
+                                                    <div className="h-11 w-11 rounded bg-secondary/40 shrink-0 border border-border/50" />
                                                 )}
-                                                <div className="font-semibold text-foreground text-xs leading-tight line-clamp-2">{item.name}</div>
+                                                <div className="font-semibold text-foreground text-xs leading-tight truncate whitespace-nowrap min-w-0 flex-1" title={item.name}>{item.name}</div>
                                             </Link>
                                         </li>
                                     ))}

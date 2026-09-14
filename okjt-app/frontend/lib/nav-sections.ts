@@ -15,7 +15,7 @@ export const HOME_NAV_SECTIONS: NavSection[] = [
 export const ABOUT_NAV_SECTIONS: NavSection[] = [
     { id: 'hero', label: 'Intro' },
     { id: 'about-mission', label: 'Approach' },
-    { id: 'about-lawyers-hub', label: 'Lawyers Hub' },
+    { id: 'about-experience', label: 'Experience' },
     { id: 'about-values', label: 'Values' },
     { id: 'about-team', label: 'Studio' },
     { id: 'about-cta', label: 'Contact' },
@@ -50,4 +50,10 @@ export const SERVICE_DETAIL_NAV_SECTIONS: NavSection[] = [
     { id: 'service-details', label: 'Overview' },
     { id: 'service-benefits', label: 'Benefits' },
     { id: 'service-cta', label: 'Contact' },
+]
+
+export const PROJECTS_INDEX_NAV_SECTIONS: NavSection[] = [
+    { id: 'hero', label: 'Intro' },
+    { id: 'flagship-projects', label: 'Flagship' },
+    { id: 'client-projects', label: 'Client Work' },
 ]

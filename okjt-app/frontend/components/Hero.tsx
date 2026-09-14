@@ -429,12 +429,20 @@ const Hero = ({
                             {isLoading ? (
                                 <SkeletonText lines={3} className="mb-8" />
                             ) : subtitle && (
-                                <motion.p
-                                    variants={fadeUp}
-                                    className="text-base md:text-lg text-foreground/60 mb-8 font-medium leading-relaxed"
-                                >
-                                    {subtitle}
-                                </motion.p>
+                                typeof subtitle === 'string' && /<[a-z][\s\S]*>/i.test(subtitle) ? (
+                                    <motion.div
+                                        variants={fadeUp}
+                                        className="text-base md:text-lg text-foreground/60 mb-8 font-medium leading-relaxed prose prose-invert max-w-none prose-p:text-foreground/60 prose-p:leading-relaxed"
+                                        dangerouslySetInnerHTML={{ __html: subtitle }}
+                                    />
+                                ) : (
+                                    <motion.p
+                                        variants={fadeUp}
+                                        className="text-base md:text-lg text-foreground/60 mb-8 font-medium leading-relaxed"
+                                    >
+                                        {subtitle}
+                                    </motion.p>
+                                )
                             )}
 
                             {/* CTA Button */}
