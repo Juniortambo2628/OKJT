@@ -3,11 +3,11 @@
 import React, { useRef } from 'react'
 import { useApi } from '@/hooks/use-api'
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
+// scroll-progress bar is rendered globally by ParallaxNav / BaseLayout
 import { Pillar } from '@/types/api'
 import { usePageHeroMedia } from '@/hooks/use-page-hero-media'
 import { SkeletonBlock, SectionSkeleton } from '@/components/MediaSkeleton'
 import BaseLayout from '@/components/BaseLayout'
-import ParallaxNav from '@/components/ParallaxNav'
 
 const PillarSection = ({ pillar, index }: { pillar: Pillar, index: number }) => {
     const sectionRef = useRef(null)
@@ -75,7 +75,7 @@ const PillarSection = ({ pillar, index }: { pillar: Pillar, index: number }) => 
                 >
                     <div className="w-full text-center flex flex-col items-center justify-center space-y-6 sm:space-y-8 select-none">
                         <span className="inline-block bg-white/10 backdrop-blur-md border border-white/10 px-6 py-2.5 rounded-full text-primary font-bold tracking-[0.25em] uppercase text-[10px] sm:text-xs shadow-sm select-none">
-                            FOUNDATION 0{index + 1}
+                            APPROACH 0{index + 1}
                         </span>
                         
                         <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold text-white tracking-tight leading-tight max-w-3xl drop-shadow-2xl">
@@ -116,7 +116,6 @@ const PillarSection = ({ pillar, index }: { pillar: Pillar, index: number }) => 
 
 export default function OurApproachContent() {
     const { data: pillars, isLoading } = useApi<Pillar[]>('/pillars')
-    const { scrollYProgress } = useScroll()
     const { videoSrc, bgImage, mediaLoading } = usePageHeroMedia({ settingsKey: 'hero_products_media' })
     const heroMedia = videoSrc ?? bgImage
 
@@ -128,29 +127,28 @@ export default function OurApproachContent() {
         )
     }
 
+    const navSections = React.useMemo(() => (
+        pillars && pillars.length > 0
+            ? [{ id: 'hero', label: 'Intro' }, ...pillars.map(p => ({ id: `pillar-${p.slug}`, label: p.title }))]
+            : undefined
+    ), [pillars])
+
     return (
         <BaseLayout
             heroMedia={heroMedia}
             tagline="Our Approach"
             title="Engineering <br />Excellence."
-            subtitle="High-performance software and digital engineering with measurable outcomes. Explore our engineering foundations."
+            subtitle="High-performance software and digital engineering with measurable outcomes."
             loading={mediaLoading}
+            navSections={navSections}
         >
-            <motion.div 
-                className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary/80 via-primary to-primary/80 z-[100] origin-left shadow-[0_0_8px_rgba(224,180,68,0.5)]"
-                style={{ scaleX: scrollYProgress }}
-            />
-
             {pillars && pillars.length > 0 ? (
-                <>
-                    {pillars.map((pillar, index) => (
-                        <PillarSection key={pillar.id} pillar={pillar} index={index} />
-                    ))}
-                    <ParallaxNav sections={pillars.map(p => ({ id: `pillar-${p.slug}`, label: p.title }))} />
-                </>
+                pillars.map((pillar, index) => (
+                    <PillarSection key={pillar.id} pillar={pillar} index={index} />
+                ))
             ) : (
                 <div className="min-h-screen flex items-center justify-center">
-                    <p className="text-muted-foreground">No foundations found.</p>
+                    <p className="text-muted-foreground">No approach sections found.</p>
                 </div>
             )}
         </BaseLayout>

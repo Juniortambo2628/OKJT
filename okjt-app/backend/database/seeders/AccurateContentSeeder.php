@@ -174,7 +174,7 @@ class AccurateContentSeeder extends Seeder
             // --- Homepage "how I work" section (was: Three Pillars of Trusted Intelligence) ---
             [
                 'key' => 'vp_section_tagline',
-                'value' => 'The approach',
+                'value' => 'THE APPROACH',
                 'type' => 'text',
                 'group' => 'homepage',
             ],
@@ -284,46 +284,74 @@ class AccurateContentSeeder extends Seeder
             ],
             [
                 'key' => 'cta_badge',
-                'value' => 'Contact',
+                'value' => 'GET IN TOUCH',
                 'type' => 'text',
                 'group' => 'homepage',
             ],
             [
                 'key' => 'cta_title',
-                'value' => 'Start a project',
+                'value' => "Let's build the next one together.",
                 'type' => 'text',
                 'group' => 'homepage',
             ],
             [
                 'key' => 'cta_subtitle',
-                'value' => "Tell me what you're trying to build. I'll come back with an ecosystem map and a scope.",
+                'value' => "Bring the brief — we'll map the ecosystem, scope the build and give you a realistic path to production.",
                 'type' => 'textarea',
                 'group' => 'homepage',
             ],
 
-            // --- About page: Lawyers Hub contribution block ------------------
+            // --- About page: Experience section (categorized capability) -----
             [
-                'key' => 'about_lawyers_hub_title',
-                'value' => 'Two years in Africa\'s LegalTech engine room',
+                'key' => 'about_experience_title',
+                'value' => 'Where the capability was built',
                 'type' => 'text',
                 'group' => 'about',
             ],
             [
-                'key' => 'about_lawyers_hub_body',
-                'value' => "Between February 2023 and December 2024, the studio's founder held the role of Software Developer, Justice Innovation at the Lawyers Hub in Nairobi. It is the largest single body of work behind OKJTechnologies, and where the ecosystem-mapping habit went from workshop idea to standard practice.",
+                'key' => 'about_experience_subtitle',
+                'value' => 'Selected work across the disciplines that shape every OKJTech engagement — each linked to the project it powers.',
                 'type' => 'textarea',
                 'group' => 'about',
             ],
             [
-                'key' => 'about_lawyers_hub_points',
-                'value' => implode('|', [
-                    'Spearheaded development of the Lawyers Hub Digital Policy website (lawyershub.org), the cornerstone resource for Kenya\'s digital-policy community.',
-                    'Designed and shipped the Africa Law Tech Festival platform — online ticketing, live notifications and event mapping for the annual festival.',
-                    'Contributed to every issue of the Daily Bulletin and to all of the Africa digital-policy maps published during my tenure.',
-                    'Supported delivery of ADPI trainings — the Africa Data Protection Course and the CIPP/E certification.',
-                    'Chaired the ALTF 2023 hackathon on digital trade under the AfCFTA, which produced 11 shortlisted innovations.',
-                    'Co-organised the Boda-Boda Law Project field research in Kisumu and Namanga and contributed to the published report.',
-                ]),
+                'key' => 'about_experience_categories',
+                'value' => json_encode([
+                    [
+                        'key' => 'digital-policy',
+                        'label' => 'Digital Policy',
+                        'items' => [
+                            ['title' => 'Lawyers Hub Digital Policy site', 'summary' => 'Cornerstone Kenya digital-policy resource — architecture, engineering, ongoing administration.', 'href' => '/projects', 'tag' => 'Platform'],
+                            ['title' => 'Africa Law Tech Festival platform', 'summary' => 'Online ticketing, live notifications, event mapping — annual festival, continental audience.', 'href' => '/projects', 'tag' => 'Event tech'],
+                            ['title' => 'ADPI training delivery', 'summary' => 'Delivered the Africa Data Protection Course and the CIPP/E certification programme.', 'href' => '/projects', 'tag' => 'Training'],
+                        ],
+                    ],
+                    [
+                        'key' => 'ui-ux',
+                        'label' => 'UI / UX',
+                        'items' => [
+                            ['title' => 'Najenga — construction coordination', 'summary' => 'Annotate architectural drawings, run project timelines, OCR PDFs, export to Excel, chat with @mentions.', 'href' => '/projects/najenga-construction-collaboration-platform', 'tag' => 'Product'],
+                            ['title' => 'Naoa — digital wedding platform', 'summary' => 'End-to-end experience: invitations, RSVPs, gifting, live guest updates.', 'href' => '/projects', 'tag' => 'Product'],
+                            ['title' => 'Tibu — HealthTech interface', 'summary' => 'Interface design for clinical workflows across desktop and mobile touchpoints.', 'href' => '/projects', 'tag' => 'Interface'],
+                        ],
+                    ],
+                    [
+                        'key' => 'engineering',
+                        'label' => 'Web Engineering',
+                        'items' => [
+                            ['title' => 'Laravel + Next.js flagship stack', 'summary' => 'Schema-first backends, typed APIs, App Router frontends — auth, admin, background jobs, deploys.', 'href' => '/services', 'tag' => 'Stack'],
+                            ['title' => 'Deployment & administration', 'summary' => 'cPanel + domain admin, CI to production, monitoring and ongoing maintenance.', 'href' => '/services', 'tag' => 'Ops'],
+                        ],
+                    ],
+                    [
+                        'key' => 'ecosystem',
+                        'label' => 'Ecosystem Strategy',
+                        'items' => [
+                            ['title' => 'Ecosystem mapping practice', 'summary' => 'Stakeholder mapping before scoping — client, user, regulator, partner, community — each with an aligned reason to participate.', 'href' => '/our-approach', 'tag' => 'Method'],
+                            ['title' => 'Boda-Boda Law Project', 'summary' => 'Co-organised field research in Kisumu and Namanga; contributed to the published report.', 'href' => '/projects', 'tag' => 'Research'],
+                        ],
+                    ],
+                ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
                 'type' => 'textarea',
                 'group' => 'about',
             ],

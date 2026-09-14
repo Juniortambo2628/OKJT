@@ -5,7 +5,7 @@ import { useSettings } from '@/hooks/use-settings'
 import { usePageHeroMedia } from '@/hooks/use-page-hero-media'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Calendar, Clock, Globe, Briefcase, CheckCircle2 } from 'lucide-react'
+import { Calendar, Clock, Globe, Briefcase } from 'lucide-react'
 
 import { useApi } from '@/hooks/use-api'
 import { Service } from '@/types/api'
@@ -223,32 +223,14 @@ export default function ContactContent() {
                 overlayOpacity={0.75}
                 contentMaxWidth="max-w-[1400px]"
             >
-                <div className="w-full max-w-4xl mx-auto">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        <FadeIn direction="left" distance={24}>
-                            <h5 className="font-bold text-primary text-[10px] uppercase tracking-[0.3em] mb-6">What to expect</h5>
-                            <StaggerContainer className="space-y-4" staggerDelay={0.08}>
-                                {[
-                                    'Specialist matching based on your sector and geography.',
-                                    'Initial 30-minute discovery session.',
-                                    'Confidential needs assessment and capability overview.',
-                                    'Strategic proposal for high-impact engagement.'
-                                ].map((item, idx) => (
-                                    <StaggerItem key={idx} className="flex items-start gap-3 text-sm text-white/70">
-                                        <CheckCircle2 className="h-4 w-4 text-emerald-400 mt-0.5 shrink-0" />
-                                        <span>{item}</span>
-                                    </StaggerItem>
-                                ))}
-                            </StaggerContainer>
-                        </FadeIn>
-                        <FadeIn direction="right" distance={24} delay={0.15} className="p-8 border border-white/10 bg-black/20 flex flex-col justify-center rounded-2xl">
-                            <h4 className="font-bold text-white mb-2 italic">Prefer a direct line?</h4>
-                            <p className="text-sm text-white/60 mb-6 leading-relaxed">Our partners are available for priority discussions via our local regional office.</p>
-                            <a href={`tel:${getSetting('contact_phone', '+254 700 000 000').replace(/\s/g, '')}`} className="text-xl font-bold text-primary hover:underline transition-all">
-                                {getSetting('contact_phone', '+254 700 000 000')}
-                            </a>
-                        </FadeIn>
-                    </div>
+                <div className="w-full max-w-3xl mx-auto">
+                    <FadeIn direction="up" distance={24} className="p-10 border border-white/10 bg-black/20 flex flex-col items-center text-center rounded-2xl">
+                        <h4 className="font-bold text-white text-2xl mb-3">Prefer a direct line?</h4>
+                        <p className="text-sm text-white/60 mb-6 leading-relaxed max-w-md">Skip the form — reach out directly and we'll route you to the right conversation.</p>
+                        <a href={`tel:${getSetting('contact_phone', '+254 700 000 000').replace(/\s/g, '')}`} className="text-2xl font-bold text-primary hover:underline transition-all">
+                            {getSetting('contact_phone', '+254 700 000 000')}
+                        </a>
+                    </FadeIn>
                 </div>
             </ParallaxSection>
         </BaseLayout>

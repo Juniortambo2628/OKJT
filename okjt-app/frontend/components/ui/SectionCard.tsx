@@ -55,9 +55,16 @@ export function SectionCard({
                         </h2>
                     )}
                     {subtitle && (
-                        <p className="text-white/60 text-base md:text-lg leading-relaxed max-w-2xl mb-6">
-                            {subtitle}
-                        </p>
+                        typeof subtitle === 'string' && /<[a-z][\s\S]*>/i.test(subtitle) ? (
+                            <div
+                                className="text-white/60 text-base md:text-lg leading-relaxed max-w-2xl mb-6 prose prose-invert max-w-none prose-p:text-white/60 prose-p:leading-relaxed"
+                                dangerouslySetInnerHTML={{ __html: subtitle }}
+                            />
+                        ) : (
+                            <p className="text-white/60 text-base md:text-lg leading-relaxed max-w-2xl mb-6">
+                                {subtitle}
+                            </p>
+                        )
                     )}
                     {cta && (
                         <PrimaryButton href={cta.href} variant="outline" size="sm" showArrow>

@@ -10,7 +10,6 @@ import CarouselCard from '@/components/ui/CarouselCard'
 import HorizontalCarousel from '@/components/ui/HorizontalCarousel'
 import { SectionSkeleton } from '@/components/MediaSkeleton'
 import { usePageHeroMedia } from '@/hooks/use-page-hero-media'
-import PrimaryButton from '@/components/PrimaryButton'
 
 export default function ProjectsContent() {
     const { data: projects, isLoading } = useApi<Project[]>('/projects')
@@ -31,7 +30,6 @@ export default function ProjectsContent() {
         { id: 'hero', label: 'Intro' },
         { id: 'flagship-projects', label: 'Flagship' },
         { id: 'client-projects', label: 'Client Work' },
-        { id: 'process', label: 'Methodology' },
     ]
 
     return (
@@ -98,38 +96,6 @@ export default function ProjectsContent() {
                 </ParallaxSection>
             )}
 
-            {/* Methodology Section */}
-            <ParallaxSection
-                id="process"
-                badgeText="OUR METHODOLOGY"
-                title="How We Deliver Excellence"
-                subtitle="A rigorous, engineering-led approach to product development and digital transformation."
-                heightClass="min-h-[170vh]"
-                contentMaxWidth="max-w-[1400px]"
-            >
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div className="bg-black/20 p-8 border border-white/5 hover:border-primary/40 rounded-2xl transition-all">
-                        <div className="text-primary font-bold text-xl mb-4">01. Discovery</div>
-                        <h3 className="text-white text-lg font-bold mb-3">Strategic Alignment</h3>
-                        <p className="text-white/60 text-sm leading-relaxed">We deep-dive into your business objectives, target audience, and technical constraints to architect a comprehensive roadmap.</p>
-                    </div>
-                    <div className="bg-black/20 p-8 border border-white/5 hover:border-primary/40 rounded-2xl transition-all">
-                        <div className="text-primary font-bold text-xl mb-4">02. Execution</div>
-                        <h3 className="text-white text-lg font-bold mb-3">Iterative Engineering</h3>
-                        <p className="text-white/60 text-sm leading-relaxed">Our engineers and designers work in agile sprints, delivering testable features rapidly while ensuring code quality and scalability.</p>
-                    </div>
-                    <div className="bg-black/20 p-8 border border-white/5 hover:border-primary/40 rounded-2xl transition-all">
-                        <div className="text-primary font-bold text-xl mb-4">03. Scale</div>
-                        <h3 className="text-white text-lg font-bold mb-3">Optimization & Growth</h3>
-                        <p className="text-white/60 text-sm leading-relaxed">Post-launch, we monitor analytics, optimize performance, and scale infrastructure to support your growing user base.</p>
-                    </div>
-                </div>
-                <div className="mt-16 text-center">
-                    <PrimaryButton href="/contact" size="lg" className="px-12 h-14" showArrow>
-                        Discuss Your Next Project
-                    </PrimaryButton>
-                </div>
-            </ParallaxSection>
         </BaseLayout>
     )
 }
