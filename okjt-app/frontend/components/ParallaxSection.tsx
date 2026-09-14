@@ -57,18 +57,21 @@ export default function ParallaxSection({
         offset: ["start start", "end end"]
     })
 
+    // Softer spring so the sticky card doesn't fight the scroll thumb on
+    // touch devices — higher damping, lower stiffness, larger restDelta.
     const smoothProgress = useSpring(scrollYProgress, {
-        stiffness: 100,
-        damping: 26,
-        mass: 0.5,
-        restDelta: 0.001
+        stiffness: 60,
+        damping: 30,
+        mass: 0.4,
+        restDelta: 0.005,
     })
 
-    const bgScale = useTransform(smoothProgress, [0, 1], [1.01, 1.08])
+    const bgScale = useTransform(smoothProgress, [0, 1], [1.01, 1.05])
     const bgOpacity = useTransform(smoothProgress, [0, 0.02, 1], [0, 1, 1])
 
-    const cardOpacity = useTransform(smoothProgress, [0.0, 0.06, 0.88, 1.0], [0, 1, 1, 0])
-    const cardY = useTransform(smoothProgress, [0.0, 0.06, 0.88, 1.0], [60, 0, 0, -40])
+    // Card fade windows widened at the tail so the exit is gentler.
+    const cardOpacity = useTransform(smoothProgress, [0.0, 0.05, 0.85, 1.0], [0, 1, 1, 0])
+    const cardY = useTransform(smoothProgress, [0.0, 0.05, 0.85, 1.0], [30, 0, 0, -20])
 
     const resolvedBgMedia = bgMedia || PARALLAX_DEFAULTS.fallbackBgMedia
     const isVideo = resolvedBgMedia?.endsWith('.mp4') || resolvedBgMedia?.endsWith('.webm')
@@ -79,7 +82,7 @@ export default function ParallaxSection({
             ref={sectionRef}
             className={`relative w-full overflow-visible ${heightClass}`}
         >
-            <div className="sticky top-0 h-screen w-full flex flex-col justify-end pb-24 md:pb-32 lg:pb-36 overflow-hidden">
+            <div className="sticky top-0 h-screen w-full flex flex-col justify-end pb-16 md:pb-28 lg:pb-32 overflow-hidden">
                 {/* Background Media */}
                 <motion.div
                     className="absolute inset-0 z-0"
@@ -110,7 +113,7 @@ export default function ParallaxSection({
                         y: cardY,
                         willChange: 'transform, opacity'
                     }}
-                    className={`relative z-10 w-full ${contentMaxWidth} mx-auto px-6 pointer-events-auto`}
+                    className={`relative z-10 w-full ${contentMaxWidth} mx-auto px-4 md:px-6 pointer-events-auto`}
                 >
                     {loading ? (
                         <div className="w-full h-[75vh] rounded-[2.5rem] bg-white/5 backdrop-blur-3xl border border-white/10 p-8">

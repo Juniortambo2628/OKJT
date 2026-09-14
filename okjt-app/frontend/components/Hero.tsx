@@ -380,7 +380,7 @@ const Hero = ({
             />
 
             {/* Content — pushed to the bottom of the viewport */}
-            <div className="relative z-10 mt-auto px-6 md:px-10 lg:px-16 pb-24 md:pb-32 lg:pb-40">
+            <div className="relative z-10 mt-auto px-4 md:px-10 lg:px-16 pb-16 md:pb-28 lg:pb-36">
                 <motion.div
                     className="max-w-[1400px] mx-auto w-full"
                     variants={staggerContainer}
@@ -388,7 +388,7 @@ const Hero = ({
                     animate="visible"
                 >
                     {/* Split-column bottom layout */}
-                    <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 lg:gap-16">
+                    <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 lg:gap-16">
 
                         {/* Left column — Breadcrumbs + Pill badge + Headline */}
                         <div className="lg:max-w-[60%] xl:max-w-[55%]">
@@ -396,23 +396,23 @@ const Hero = ({
 
                             {/* Pill Badge */}
                             {isLoading ? (
-                                <SkeletonBlock className="h-9 w-48 rounded-full mb-8" />
+                                <SkeletonBlock className="h-8 w-40 rounded-full mb-5" />
                             ) : tagline && (
                                 <motion.div
                                     variants={fadeUp}
-                                    className="inline-flex items-center gap-2.5 bg-foreground/10 backdrop-blur-md border border-foreground/15 rounded-full px-5 py-2 mb-8 cursor-pointer hover:bg-foreground/15 transition-colors group"
+                                    className="inline-flex items-center gap-2 bg-foreground/10 backdrop-blur-md border border-foreground/15 rounded-full px-3.5 md:px-5 py-1.5 md:py-2 mb-5 md:mb-8 cursor-pointer hover:bg-foreground/15 transition-colors group"
                                 >
-                                    <span className="w-7 h-7 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center">
+                                    <span className="w-6 h-6 md:w-7 md:h-7 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center">
                                         <Play className="h-3 w-3 text-foreground/90 fill-current ml-0.5" />
                                     </span>
-                                    <span className="text-foreground/80 text-sm font-medium">{tagline}</span>
+                                    <span className="text-foreground/80 text-xs md:text-sm font-medium">{tagline}</span>
                                 </motion.div>
                             )}
 
                             {/* Headline */}
                             <motion.h1
                                 variants={fadeUp}
-                                className="text-4xl sm:text-5xl md:text-6xl lg:text-[4.5rem] xl:text-[5rem] font-bold tracking-tight leading-[1.05] text-foreground"
+                                className="text-3xl sm:text-4xl md:text-6xl lg:text-[4.5rem] xl:text-[5rem] font-bold tracking-tight leading-[1.05] text-foreground"
                             >
                                 {isLoading ? (
                                     <div className="space-y-4">
@@ -435,13 +435,13 @@ const Hero = ({
                                 typeof subtitle === 'string' && /<[a-z][\s\S]*>/i.test(subtitle) ? (
                                     <motion.div
                                         variants={fadeUp}
-                                        className="text-base md:text-lg text-foreground/60 mb-8 font-medium leading-relaxed prose prose-invert max-w-none prose-p:text-foreground/60 prose-p:leading-relaxed"
+                                        className="text-sm md:text-lg text-foreground/60 mb-5 md:mb-8 font-medium leading-relaxed prose prose-invert max-w-none prose-p:text-foreground/60 prose-p:leading-relaxed"
                                         dangerouslySetInnerHTML={{ __html: subtitle }}
                                     />
                                 ) : (
                                     <motion.p
                                         variants={fadeUp}
-                                        className="text-base md:text-lg text-foreground/60 mb-8 font-medium leading-relaxed"
+                                        className="text-sm md:text-lg text-foreground/60 mb-5 md:mb-8 font-medium leading-relaxed"
                                     >
                                         {subtitle}
                                     </motion.p>
@@ -453,7 +453,7 @@ const Hero = ({
                                 <motion.div variants={fadeUp}>
                                     <Button
                                         size="lg"
-                                        className="h-12 px-8 text-sm font-semibold rounded-full bg-foreground/10 backdrop-blur-md border border-foreground/15 text-foreground hover:bg-foreground/20 transition-all group shadow-lg"
+                                        className="h-10 md:h-12 px-6 md:px-8 text-xs md:text-sm font-semibold rounded-full bg-foreground/10 backdrop-blur-md border border-foreground/15 text-foreground hover:bg-foreground/20 transition-all group shadow-lg"
                                         asChild
                                     >
                                         <Link href={resolvedCta.href}>
