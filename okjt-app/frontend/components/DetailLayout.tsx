@@ -9,45 +9,17 @@ import { StaggerContainer, StaggerItem } from '@/components/animations/Stagger'
 import ParallaxSection from '@/components/ParallaxSection'
 import BaseLayout from '@/components/BaseLayout'
 import PrimaryButton from '@/components/PrimaryButton'
+import HorizontalCarousel from '@/components/ui/HorizontalCarousel'
 
-function NarrativeBlock({ title, html, className }: { title: string, html: string, className?: string }) {
+function OverviewCard({ badgeText, html }: { badgeText: string, html: string }) {
     return (
-        <StaggerItem className={className}>
-            <div className="inline-block px-3 py-1 bg-white/10 backdrop-blur-md border border-white/15 text-primary text-xs font-semibold rounded-full mb-6">
-                {title}
+        <div className="h-full w-full rounded-2xl bg-black/30 border border-white/10 p-6 md:p-8 flex flex-col">
+            <div className="inline-block px-3 py-1 bg-white/10 backdrop-blur-md border border-white/15 text-primary text-xs font-semibold rounded-full mb-4 self-start uppercase tracking-widest">
+                {badgeText}
             </div>
             <div
-                className="text-white/70 leading-relaxed text-sm md:text-base font-light prose dark:prose-invert max-w-none prose-p:leading-relaxed prose-p:text-white/70 prose-strong:text-white"
+                className="text-white/75 leading-relaxed text-sm md:text-base font-light prose dark:prose-invert max-w-none prose-p:leading-relaxed prose-p:text-white/75 prose-strong:text-white overflow-y-auto pr-2 custom-scrollbar flex-1 min-h-0"
                 dangerouslySetInnerHTML={{ __html: html }}
-            />
-        </StaggerItem>
-    )
-}
-
-function NarrativeTabs({ items }: { items: { title: string, html: string }[] }) {
-    const [active, setActive] = React.useState(0)
-    if (items.length === 0) return null
-    return (
-        <div className="border border-white/5 bg-black/20 rounded-2xl p-6 md:p-8 flex flex-col min-h-0 flex-1">
-            <div className="flex flex-wrap gap-2 mb-5 flex-shrink-0">
-                {items.map((it, i) => (
-                    <button
-                        key={i}
-                        onClick={() => setActive(i)}
-                        className={`px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-widest transition-all ${
-                            active === i
-                                ? 'bg-primary text-[#14110b]'
-                                : 'bg-white/5 text-white/70 border border-white/10 hover:bg-white/10'
-                        }`}
-                    >
-                        {items[i].title}
-                    </button>
-                ))}
-            </div>
-            <div
-                key={active}
-                className="text-white/70 leading-relaxed text-sm md:text-base font-light prose dark:prose-invert max-w-none prose-p:text-white/70 prose-strong:text-white overflow-y-auto pr-2 custom-scrollbar flex-1 min-h-0"
-                dangerouslySetInnerHTML={{ __html: items[active].html }}
             />
         </div>
     )
@@ -239,108 +211,82 @@ export default function DetailLayout({
             breadcrumbs={breadcrumbs}
             heroChildren={heroChildren}
         >
-            {/* Overview / Content sections */}
+            {/* Overview / Content sections — horizontal carousel keeps the
+                container height fixed at ~75vh regardless of copy length. */}
             <ParallaxSection
                 id="details-overview"
                 bgMedia={heroMedia}
                 heightClass="min-h-[220vh]"
                 contentMaxWidth="max-w-[1400px]"
             >
-                <div className="w-full h-full">
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-full min-h-0">
-                        <div className="lg:col-span-8 min-w-0 flex flex-col gap-6 overflow-hidden">
-                            {/* Short Description Highlight */}
-                            {description && (
-                                <FadeIn direction="left" distance={24}>
-                                    <div className="p-6 bg-black/20 rounded-xl">
-                                        <div className="inline-block px-3 py-1 bg-white/10 backdrop-blur-md border border-white/15 text-primary text-xs font-semibold rounded-full mb-3">
-                                            Overview
-                                        </div>
-                                        <div
-                                            className="text-base md:text-lg font-light text-white/90 leading-relaxed prose prose-invert max-w-none prose-p:text-white/90 line-clamp-4"
-                                            dangerouslySetInnerHTML={{ __html: description }}
-                                        />
-                                    </div>
-                                </FadeIn>
-                            )}
-
-                            {/* Narrative Blocks — horizontal tabs to keep container height stable */}
-                            <NarrativeTabs
-                                items={[
-                                    challengeHtml ? { title: challengeTitle, html: challengeHtml } : null,
-                                    impactHtml ? { title: impactTitle, html: impactHtml } : null,
-                                ].filter(Boolean) as { title: string, html: string }[]}
-                            />
-                        </div>
-
-                        {/* Sidebar Info */}
-                        <div className="lg:col-span-4 min-w-0">
-                            <div className="sticky top-32 space-y-6">
-                                {/* Thumbnail Image above stack */}
-                                {projectImage && (
-                                    <div className="relative aspect-video rounded-2xl overflow-hidden border border-white/10 bg-black/40 shadow-lg">
-                                        <Image
-                                            src={projectImage}
-                                            alt={title}
-                                            fill
-                                            className="object-cover"
-                                        />
-                                    </div>
-                                )}
-
-                                <div className="p-8 bg-black/20 border border-white/5 rounded-2xl shadow-sm">
-                                    <h3 className="text-white font-bold mb-6 flex items-center gap-2">
-                                        <Code2 size={18} className="text-primary" /> {sidebarStackTitle}
-                                    </h3>
-                                    <div className="flex flex-wrap gap-2 mb-8">
-                                        {technologies && Array.isArray(technologies) ? (
-                                            technologies.map((tech: string, i: number) => (
-                                                <span key={i} className="px-3 py-1 bg-white/5 text-primary text-[10px] font-bold uppercase tracking-widest border border-white/5 rounded">
-                                                    {tech}
-                                                </span>
-                                            ))
-                                        ) : (
-                                            <span className="text-white/50 text-xs italic">{fallbackStackText}</span>
-                                        )}
-                                    </div>
-
-                                    <div className="space-y-4 pt-6 border-t border-white/5">
-                                        {primaryActionUrl && primaryActionLabel && (
-                                            <PrimaryButton
-                                                href={primaryActionUrl}
-                                                showArrow={false}
-                                                className="w-full h-12 gap-2 font-bold uppercase tracking-widest text-[10px] bg-primary text-[#14110b] hover:bg-primary/90"
-                                            >
-                                                <PrimaryActionIcon size={14} /> {primaryActionLabel}
-                                            </PrimaryButton>
-                                        )}
-                                        <PrimaryButton
-                                            href="/contact"
-                                            variant="outline"
-                                            showArrow={false}
-                                            className="w-full h-12 gap-2 font-bold uppercase tracking-widest text-[10px] border-white/10 bg-transparent text-white/80 hover:text-white hover:border-primary"
-                                        >
-                                            {secondaryActionLabel} <ArrowRight size={14} />
-                                        </PrimaryButton>
-                                    </div>
-                                </div>
-
-                                {/* Focus / DNA List */}
-                                <div className="p-8 bg-black/20 border border-white/5 rounded-2xl">
-                                    <h4 className="text-xs font-bold text-white/50 uppercase tracking-widest mb-4">{focusAreasTitle}</h4>
-                                    <ul className="space-y-3">
-                                        {focusAreas.map((item, i) => (
-                                            <li key={i} className="flex items-center gap-3 text-sm text-white/70">
-                                                <CheckCircle2 size={14} className="text-primary" />
-                                                {item}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
+                <HorizontalCarousel className="h-full">
+                    {description && (
+                        <OverviewCard badgeText="Overview" html={description} />
+                    )}
+                    {challengeHtml && (
+                        <OverviewCard badgeText={challengeTitle} html={challengeHtml} />
+                    )}
+                    {impactHtml && (
+                        <OverviewCard badgeText={impactTitle} html={impactHtml} />
+                    )}
+                    {projectImage && (
+                        <div className="h-full w-full rounded-2xl overflow-hidden border border-white/10 bg-black/40 shadow-lg relative">
+                            <Image src={projectImage} alt={title} fill className="object-cover" />
+                            <div className="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-black/90 to-transparent">
+                                <span className="text-primary text-[10px] font-bold uppercase tracking-widest">Snapshot</span>
+                                <h3 className="text-white text-lg font-bold mt-1">{title}</h3>
                             </div>
                         </div>
+                    )}
+
+                    <div className="h-full w-full p-6 md:p-8 bg-black/30 border border-white/10 rounded-2xl shadow-sm flex flex-col">
+                        <h3 className="text-white font-bold mb-5 flex items-center gap-2 flex-shrink-0">
+                            <Code2 size={18} className="text-primary" /> {sidebarStackTitle}
+                        </h3>
+                        <div className="flex flex-wrap gap-2 mb-6 overflow-y-auto custom-scrollbar min-h-0 flex-1">
+                            {technologies && Array.isArray(technologies) && technologies.length > 0 ? (
+                                technologies.map((tech: string, i: number) => (
+                                    <span key={i} className="px-3 py-1 bg-white/5 text-primary text-[10px] font-bold uppercase tracking-widest border border-white/5 rounded h-max">
+                                        {tech}
+                                    </span>
+                                ))
+                            ) : (
+                                <span className="text-white/50 text-xs italic">{fallbackStackText}</span>
+                            )}
+                        </div>
+                        <div className="space-y-3 pt-5 border-t border-white/5 flex-shrink-0">
+                            {primaryActionUrl && primaryActionLabel && (
+                                <PrimaryButton
+                                    href={primaryActionUrl}
+                                    showArrow={false}
+                                    className="w-full h-11 gap-2 font-bold uppercase tracking-widest text-[10px] bg-primary text-[#14110b] hover:bg-primary/90"
+                                >
+                                    <PrimaryActionIcon size={14} /> {primaryActionLabel}
+                                </PrimaryButton>
+                            )}
+                            <PrimaryButton
+                                href="/contact"
+                                variant="outline"
+                                showArrow={false}
+                                className="w-full h-11 gap-2 font-bold uppercase tracking-widest text-[10px] border-white/10 bg-transparent text-white/80 hover:text-white hover:border-primary"
+                            >
+                                {secondaryActionLabel} <ArrowRight size={14} />
+                            </PrimaryButton>
+                        </div>
                     </div>
-                </div>
+
+                    <div className="h-full w-full p-6 md:p-8 bg-black/30 border border-white/10 rounded-2xl flex flex-col">
+                        <h4 className="text-xs font-bold text-white/50 uppercase tracking-widest mb-4 flex-shrink-0">{focusAreasTitle}</h4>
+                        <ul className="space-y-3 overflow-y-auto custom-scrollbar min-h-0 flex-1 pr-2">
+                            {focusAreas.map((item, i) => (
+                                <li key={i} className="flex items-start gap-3 text-sm text-white/75">
+                                    <CheckCircle2 size={14} className="text-primary mt-0.5 flex-shrink-0" />
+                                    <span>{item}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                </HorizontalCarousel>
             </ParallaxSection>
 
             {/* Testimonial Section */}
