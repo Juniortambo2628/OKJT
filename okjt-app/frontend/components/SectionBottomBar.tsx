@@ -65,7 +65,7 @@ const SectionBottomBar = ({ sections }: SectionBottomBarProps) => {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1 }}
-            className="fixed bottom-0 left-0 w-full z-[100] pt-4 pb-4 md:pb-6 px-6 md:px-10 lg:px-16 pointer-events-none"
+            className="hidden md:block fixed bottom-0 left-0 w-full z-[80] pt-4 pb-4 md:pb-6 px-6 md:px-10 lg:px-16 pointer-events-none"
         >
             <div className="max-w-[1400px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 pointer-events-auto">
                 <span className="text-white/40 text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] whitespace-nowrap shrink-0 hidden sm:block">
