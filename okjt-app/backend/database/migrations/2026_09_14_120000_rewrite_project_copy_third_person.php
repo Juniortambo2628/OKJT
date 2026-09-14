@@ -2,7 +2,6 @@
 
 use App\Models\Project;
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Rewrite project documentation into a third-person, project-centric voice.
@@ -31,21 +30,21 @@ return new class extends Migration
         // applied on the raw HTML strings — order matters (longer matches first)
         // so "We designed" flips before "We".
         $swaps = [
-            'We architected'  => 'The project is architected',
-            'We engineered'   => 'The project is engineered',
-            'We implemented'  => 'The project implements',
-            'We designed'     => 'The project is designed',
-            'We built'        => 'The project was built',
-            'We formulated'   => 'The project formulates',
-            'We managed'      => 'The project manages',
-            'We optimized'    => 'The project optimises',
-            'We wrote'        => 'The project ships',
-            'I architected'   => 'The project is architected',
-            'I engineered'    => 'The project is engineered',
-            'I implemented'   => 'The project implements',
-            'I designed'      => 'The project is designed',
-            'I built'         => 'The project was built',
-            'I centralized'   => 'The project centralises',
+            'We architected' => 'The project is architected',
+            'We engineered' => 'The project is engineered',
+            'We implemented' => 'The project implements',
+            'We designed' => 'The project is designed',
+            'We built' => 'The project was built',
+            'We formulated' => 'The project formulates',
+            'We managed' => 'The project manages',
+            'We optimized' => 'The project optimises',
+            'We wrote' => 'The project ships',
+            'I architected' => 'The project is architected',
+            'I engineered' => 'The project is engineered',
+            'I implemented' => 'The project implements',
+            'I designed' => 'The project is designed',
+            'I built' => 'The project was built',
+            'I centralized' => 'The project centralises',
             'we ' => 'the project ',
             ' I ' => ' the project ',
         ];
