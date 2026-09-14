@@ -40,31 +40,33 @@ export function SectionCard({
                 // No border / no shadow — the child cards do the framing.
                 // A transparent container keeps the outer "box" from showing
                 // through around the rounded corners of the inner cards.
-                "w-full h-[75vh] flex flex-col bg-transparent p-0 sm:p-2 md:p-4 overflow-hidden",
+                // Height shrinks on mobile so headline + card don't push the
+                // container past the viewport.
+                "w-full h-[80vh] md:h-[75vh] flex flex-col bg-transparent p-0 sm:p-2 md:p-4 overflow-hidden",
                 className
             )}
         >
             <div className="flex flex-col h-full">
                 {/* Header block */}
-                <div className="flex-shrink-0 mb-6 md:mb-8">
+                <div className="flex-shrink-0 mb-4 md:mb-8">
                     {badgeText && (
-                        <span className="text-primary font-bold text-xs uppercase tracking-[0.2em] mb-3 block">
+                        <span className="text-primary font-bold text-[10px] md:text-xs uppercase tracking-[0.2em] mb-2 md:mb-3 block">
                             {badgeText}
                         </span>
                     )}
                     {title && (
-                        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-[1.1] max-w-4xl mb-4">
+                        <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-[1.1] max-w-4xl mb-3 md:mb-4">
                             {title}
                         </h2>
                     )}
                     {subtitle && (
                         typeof subtitle === 'string' && /<[a-z][\s\S]*>/i.test(subtitle) ? (
                             <div
-                                className="text-white/60 text-base md:text-lg leading-relaxed max-w-2xl mb-6 prose prose-invert max-w-none prose-p:text-white/60 prose-p:leading-relaxed"
+                                className="text-white/60 text-sm md:text-lg leading-relaxed max-w-2xl mb-4 md:mb-6 prose prose-invert max-w-none prose-p:text-white/60 prose-p:leading-relaxed"
                                 dangerouslySetInnerHTML={{ __html: subtitle }}
                             />
                         ) : (
-                            <p className="text-white/60 text-base md:text-lg leading-relaxed max-w-2xl mb-6">
+                            <p className="text-white/60 text-sm md:text-lg leading-relaxed max-w-2xl mb-4 md:mb-6">
                                 {subtitle}
                             </p>
                         )

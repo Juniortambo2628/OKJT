@@ -14,6 +14,36 @@ import { useSettings } from '@/hooks/use-settings'
 import { useMounted } from '@/hooks/use-mounted'
 import { useTheme } from 'next-themes'
 
+/**
+ * Collapsible header used by the mobile menu so the top-level groups
+ * (Services / Our Work) don't force the visitor to scroll a wall of links.
+ */
+function MobileGroup({ label, isOpen, onToggle, children }: {
+    label: string
+    isOpen: boolean
+    onToggle: () => void
+    children: React.ReactNode
+}) {
+    return (
+        <div className="border-t border-border/40 first:border-t-0">
+            <button
+                type="button"
+                onClick={onToggle}
+                className="w-full flex items-center justify-between py-3 text-[13px] font-bold uppercase tracking-wider text-primary"
+                aria-expanded={isOpen}
+            >
+                <span>{label}</span>
+                <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+            </button>
+            {isOpen && (
+                <div className="pb-3 pl-1 flex flex-col">
+                    {children}
+                </div>
+            )}
+        </div>
+    )
+}
+
 const Navbar = () => {
     const { theme } = useTheme()
     const { branding, getSetting } = useSettings()
@@ -22,6 +52,10 @@ const Navbar = () => {
     const [isScrolled, setIsScrolled] = useState(false)
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [activeMegaMenu, setActiveMegaMenu] = useState<'services' | 'work' | null>(null)
+    // Mobile menu: at most one category expanded at a time; the parent "Services"
+    // or "Our Work" group is expanded via these top-level keys.
+    const [mobileOpenGroup, setMobileOpenGroup] = useState<'services' | 'work' | null>(null)
+    const [mobileOpenCategory, setMobileOpenCategory] = useState<string | null>(null)
     const mounted = useMounted()
 
     // Mega-menu hover intent: keep the panel open briefly after the cursor
@@ -355,52 +389,80 @@ const Navbar = () => {
                 </div>
             )}
 
-            {/* Mobile Menu */}
+            {/* Mobile Menu — collapsible group headers so the menu stays short */}
             {isMobileMenuOpen && (
-                <div className="lg:hidden fixed top-[56px] inset-x-0 bg-background border-b border-border shadow-2xl p-5 flex flex-col gap-3 max-h-[calc(100vh-56px)] overflow-y-auto z-[90]">
-                    {/* Services Sections */}
-                    <div className="pb-2 border-b border-border/50">
-                        <h3 className="text-primary font-bold text-[13px] uppercase tracking-wider mb-3">Services</h3>
-                        <Link href="/services" className="block text-foreground text-sm py-1.5 hover:text-primary pl-2 font-semibold mb-2" onClick={() => setIsMobileMenuOpen(false)}>View All Services</Link>
-                        {dynamicServiceCategories.map((cat) => (
-                            <div key={cat.title} className="mb-4 pl-2 border-l-2 border-border/50">
-                                <h4 className="text-foreground font-medium text-sm mb-2">{cat.title}</h4>
-                                {cat.items.map((item) => (
-                                    <Link
-                                        key={item.name}
-                                        href={item.href}
-                                        className="block text-muted-foreground text-sm py-1.5 hover:text-foreground pl-2"
-                                        onClick={() => setIsMobileMenuOpen(false)}
-                                    >
-                                        {item.name}
-                                    </Link>
-                                ))}
-                            </div>
+                <div className="lg:hidden fixed top-[56px] inset-x-0 bg-background border-b border-border shadow-2xl px-4 py-4 flex flex-col max-h-[calc(100vh-56px)] overflow-y-auto z-[90]">
+                    <MobileGroup
+                        label="Services"
+                        isOpen={mobileOpenGroup === 'services'}
+                        onToggle={() => setMobileOpenGroup(mobileOpenGroup === 'services' ? null : 'services')}
+                    >
+                        <Link
+                            href="/services"
+                            className="flex items-center justify-between text-foreground text-sm py-2 hover:text-primary font-semibold"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                            View All Services
+                        </Link>
+                        <div className="flex flex-col">
+                            {dynamicServiceCategories.map((cat) => {
+                                const isOpen = mobileOpenCategory === cat.title
+                                return (
+                                    <div key={cat.title} className="border-t border-border/40">
+                                        <button
+                                            type="button"
+                                            onClick={() => setMobileOpenCategory(isOpen ? null : cat.title)}
+                                            className="w-full flex items-center justify-between py-2.5 text-sm font-semibold text-foreground/90 hover:text-primary"
+                                            aria-expanded={isOpen}
+                                        >
+                                            <span>{cat.title}</span>
+                                            <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180 text-primary' : 'text-muted-foreground'}`} />
+                                        </button>
+                                        {isOpen && (
+                                            <div className="pb-2 pl-3 border-l-2 border-primary/30 ml-1 flex flex-col">
+                                                {cat.items.map((item) => (
+                                                    <Link
+                                                        key={item.name}
+                                                        href={item.href}
+                                                        className="block text-muted-foreground text-sm py-1.5 hover:text-foreground pl-2"
+                                                        onClick={() => setIsMobileMenuOpen(false)}
+                                                    >
+                                                        {item.name}
+                                                    </Link>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </MobileGroup>
+
+                    <MobileGroup
+                        label="Our Work"
+                        isOpen={mobileOpenGroup === 'work'}
+                        onToggle={() => setMobileOpenGroup(mobileOpenGroup === 'work' ? null : 'work')}
+                    >
+                        <Link href="/projects/flagship" className="block text-muted-foreground text-sm py-2 hover:text-foreground" onClick={() => setIsMobileMenuOpen(false)}>Flagship Projects</Link>
+                        <Link href="/projects" className="block text-muted-foreground text-sm py-2 hover:text-foreground" onClick={() => setIsMobileMenuOpen(false)}>All Projects</Link>
+                        <Link href="/insights" className="block text-muted-foreground text-sm py-2 hover:text-foreground" onClick={() => setIsMobileMenuOpen(false)}>Insights</Link>
+                        <Link href="/our-approach" className="block text-muted-foreground text-sm py-2 hover:text-foreground" onClick={() => setIsMobileMenuOpen(false)}>Our Approach</Link>
+                    </MobileGroup>
+
+                    <div className="border-t border-border/40 pt-2">
+                        {coreNavLinks.map((link) => (
+                            <Link
+                                key={link.name}
+                                href={link.href}
+                                className="text-foreground font-bold text-[12px] uppercase tracking-wider py-3 flex items-center justify-between hover:text-primary"
+                                onClick={() => setIsMobileMenuOpen(false)}
+                            >
+                                {link.name}
+                            </Link>
                         ))}
                     </div>
 
-                    {/* Our Work Section */}
-                    <div className="pb-2 border-b border-border/50">
-                        <h3 className="text-primary font-bold text-[13px] uppercase tracking-wider mb-3">Our Work</h3>
-                        <div className="pl-2 border-l-2 border-border/50 flex flex-col gap-2">
-                            <Link href="/projects/flagship" className="block text-muted-foreground text-sm py-1 hover:text-foreground pl-2" onClick={() => setIsMobileMenuOpen(false)}>Flagship Projects</Link>
-                            <Link href="/projects" className="block text-muted-foreground text-sm py-1 hover:text-foreground pl-2" onClick={() => setIsMobileMenuOpen(false)}>All Projects</Link>
-                            <Link href="/insights" className="block text-muted-foreground text-sm py-1 hover:text-foreground pl-2" onClick={() => setIsMobileMenuOpen(false)}>Insights</Link>
-                            <Link href="/our-approach" className="block text-muted-foreground text-sm py-1 hover:text-foreground pl-2" onClick={() => setIsMobileMenuOpen(false)}>Our Approach</Link>
-                        </div>
-                    </div>
-
-                    {coreNavLinks.map((link) => (
-                        <Link
-                            key={link.name}
-                            href={link.href}
-                            className="text-primary font-bold text-[13px] uppercase tracking-wider py-2 block hover:text-foreground"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                            {link.name}
-                        </Link>
-                    ))}
-                    <div className="w-full mt-4" onClick={() => setIsMobileMenuOpen(false)}>
+                    <div className="w-full mt-3" onClick={() => setIsMobileMenuOpen(false)}>
                         <PrimaryButton href="/contact" size="md" className="w-full" showArrow>
                             Start a Project
                         </PrimaryButton>

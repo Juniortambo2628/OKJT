@@ -106,7 +106,10 @@ export default function ParallaxNav({ sections }: ParallaxNavProps) {
                 animate={{ y: 0, opacity: isScrolling ? 1 : 0.4 }}
                 whileHover={{ opacity: 1 }}
                 transition={{ opacity: { duration: 0.5 } }}
-                className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[60] bg-background/40 backdrop-blur-xl border border-foreground/15 rounded-full px-3 py-2 flex items-center gap-3 shadow-2xl transition-colors"
+                // Center + sit close to the bottom of the viewport on every
+                // device. `max-w-[calc(100vw-1.5rem)]` guarantees the pill never
+                // pushes past the screen edge on small screens.
+                className="fixed bottom-3 md:bottom-6 left-1/2 -translate-x-1/2 z-[60] max-w-[calc(100vw-1.5rem)] bg-background/50 backdrop-blur-xl border border-foreground/15 rounded-full px-2.5 py-1.5 md:px-3 md:py-2 flex items-center justify-center gap-2 md:gap-3 shadow-2xl transition-colors"
             >
                 {sections.map((section, index) => {
                     const isActive = activeIndex === index
@@ -126,9 +129,9 @@ export default function ParallaxNav({ sections }: ParallaxNavProps) {
                                 }`}
                             />
                             {isActive && (
-                                <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-foreground text-background text-[10px] font-bold uppercase tracking-widest shadow-md whitespace-nowrap pointer-events-none">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                                    {activeLabel}
+                                <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-foreground text-background text-[10px] font-bold uppercase tracking-widest shadow-md whitespace-nowrap pointer-events-none max-w-[80vw] overflow-hidden">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
+                                    <span className="truncate">{activeLabel}</span>
                                 </span>
                             )}
                             {!isActive && (
