@@ -265,9 +265,12 @@ const HeroBackground = ({
                 </motion.div>
             ) : null}
 
-            {/* Overlays for depth and readability */}
-            <div className="absolute inset-0 bg-gradient-to-b from-primary/20 via-background/60 to-background" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(235,200,130,0.15)_0%,transparent_80%)]" />
+            {/* Overlays — darker at top and bottom so the nav bar and the
+                bottom section indicator stay legible over any hero image
+                or video. */}
+            <div className="absolute inset-0 bg-black/45" />
+            <div className="absolute inset-0 bg-gradient-to-b from-background via-black/30 to-background" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(235,200,130,0.12)_0%,transparent_80%)]" />
         </motion.div>
     )
 }

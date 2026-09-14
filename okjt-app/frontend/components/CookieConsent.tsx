@@ -25,7 +25,7 @@ const CookieConsent = () => {
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: 100, opacity: 0 }}
                     transition={{ type: 'spring', damping: 25 }}
-                    className="fixed bottom-0 left-0 right-0 z-[110] p-4 md:p-6"
+                    className="fixed bottom-0 left-0 right-0 z-[200] p-4 md:p-6"
                 >
                     <div className="max-w-5xl mx-auto bg-background border border-border rounded-xl shadow-2xl shadow-black/50 p-6 md:p-8">
                         <div className="flex flex-col md:flex-row items-start gap-6">
@@ -70,7 +70,7 @@ const CookieConsent = () => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-[120] flex items-center justify-center p-4"
+                    className="fixed inset-0 z-[210] flex items-center justify-center p-4"
                  >
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowPreferences(false)} />
                     <motion.div

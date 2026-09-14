@@ -44,11 +44,11 @@ export default function ProjectDetailContent({
 
             // Content
             description={project?.description}
-            challengeTitle={isClient ? 'the challenge' : 'the problem'}
+            challengeTitle="Challenge"
             challengeHtml={project?.problem}
-            approachTitle={isClient ? 'strategic approach' : 'our approach'}
+            approachTitle="Approach"
             approachHtml={project?.methodology}
-            impactTitle={isClient ? 'tangible impact' : 'objective'}
+            impactTitle="Solution"
             impactHtml={project?.outcome}
 
             // Sidebar
@@ -61,10 +61,10 @@ export default function ProjectDetailContent({
             primaryActionIcon={isClient ? undefined : Rocket}
             secondaryActionLabel="Get in Touch"
 
-            focusAreasTitle={isClient ? 'Focus Areas' : 'Product DNA'}
+            focusAreasTitle="Focus Areas"
             focusAreas={isClient
-                ? ['Digital Transformation', 'Workflow Automation', 'UI/UX Optimization']
-                : ['Architectural Scalability', 'Enterprise-Grade Security', 'User-Centric Engineering']
+                ? ['Digital transformation', 'Workflow automation', 'Interface and experience']
+                : ['Scalable architecture', 'Data integrity and security', 'Human-centred workflows']
             }
 
             // Testimonial

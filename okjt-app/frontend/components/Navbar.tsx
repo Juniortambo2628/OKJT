@@ -142,14 +142,16 @@ const Navbar = () => {
     return (
         <nav
             className={cn(
-                "fixed top-0 left-0 right-0 z-50 transition-all duration-700 px-6",
-                isScrolled 
-                    ? "bg-background/40 backdrop-blur-xl border-b-[0.5px] border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.1)] py-3" 
-                    : "bg-transparent py-5"
+                "fixed top-0 left-0 right-0 z-[90] transition-all duration-500 px-4 md:px-6",
+                // Solid glass background across the board — a transparent bar
+                // over the hero image was invisible on mobile.
+                isScrolled
+                    ? "bg-background/85 backdrop-blur-xl border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.25)] py-2"
+                    : "bg-background/60 backdrop-blur-md py-3 md:py-4"
             )}
             onMouseLeave={scheduleMegaMenuClose}
         >
-            <div className="max-w-[1400px] mx-auto flex items-center justify-between">
+            <div className="max-w-[1400px] mx-auto flex items-center justify-between gap-2">
                 <Link href="/" className="flex items-center gap-2 relative z-50 shrink-0">
                     {mounted ? (
                         <Image
@@ -157,11 +159,11 @@ const Navbar = () => {
                             alt="OKJTech Logo"
                             width={180}
                             height={45}
-                            className="h-10 md:h-12 w-auto object-contain"
+                            className="h-8 md:h-12 w-auto object-contain"
                             priority
                         />
                     ) : (
-                        <div className="h-10 md:h-12 w-40 animate-pulse bg-muted/20 rounded" />
+                        <div className="h-8 md:h-12 w-32 md:w-40 animate-pulse bg-muted/20 rounded" />
                     )}
                 </Link>
 
@@ -355,7 +357,7 @@ const Navbar = () => {
 
             {/* Mobile Menu */}
             {isMobileMenuOpen && (
-                <div className="lg:hidden absolute top-full left-0 right-0 bg-background/98 backdrop-blur-xl border-b border-border p-6 flex flex-col gap-4 max-h-[80vh] overflow-y-auto">
+                <div className="lg:hidden fixed top-[56px] inset-x-0 bg-background border-b border-border shadow-2xl p-5 flex flex-col gap-3 max-h-[calc(100vh-56px)] overflow-y-auto z-[90]">
                     {/* Services Sections */}
                     <div className="pb-2 border-b border-border/50">
                         <h3 className="text-primary font-bold text-[13px] uppercase tracking-wider mb-3">Services</h3>

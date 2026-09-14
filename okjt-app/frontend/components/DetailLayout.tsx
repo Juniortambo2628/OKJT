@@ -252,7 +252,8 @@ export default function DetailLayout({
                 contentMaxWidth="max-w-[1400px]"
             >
                 <HorizontalCarousel className="h-full">
-                    {/* Card 1 — Snapshot: image + description */}
+                    {/* Card 1 — Overview: image + description with copy pulled
+                        up so long text stays inside the card. */}
                     <div className="h-full w-full rounded-2xl overflow-hidden border border-white/10 bg-black/40 shadow-lg relative flex flex-col">
                         <CardActionRow
                             primaryActionUrl={primaryActionUrl}
@@ -266,13 +267,12 @@ export default function DetailLayout({
                             ) : (
                                 <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-black/40 to-black/60" />
                             )}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
-                            <div className="absolute inset-x-0 bottom-0 p-6">
-                                <span className="text-primary text-[10px] font-bold uppercase tracking-widest">Snapshot</span>
-                                <h3 className="text-white text-xl font-bold mt-1 mb-3 line-clamp-2">{title}</h3>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/20" />
+                            <div className="absolute inset-x-0 bottom-0 top-16 p-5 flex flex-col justify-end">
+                                <h3 className="text-white text-lg font-bold mb-2 line-clamp-2">{title}</h3>
                                 {description && (
                                     <div
-                                        className="text-sm text-white/75 leading-relaxed prose prose-invert max-w-none prose-p:text-white/75 line-clamp-4"
+                                        className="text-[13px] text-white/80 leading-relaxed prose prose-invert max-w-none prose-p:text-white/80 prose-p:text-[13px] prose-p:my-1 line-clamp-[8]"
                                         dangerouslySetInnerHTML={{ __html: description }}
                                     />
                                 )}
@@ -280,10 +280,10 @@ export default function DetailLayout({
                         </div>
                     </div>
 
-                    {/* Card 2 — Story: challenge + objective/impact */}
+                    {/* Card 2 — Scope: challenge + solution */}
                     <div className="h-full w-full rounded-2xl bg-black/30 border border-white/10 p-6 md:p-8 flex flex-col">
                         <div className="flex items-center gap-2 mb-4 flex-shrink-0">
-                            <span className="text-primary text-[10px] font-bold uppercase tracking-widest">Story</span>
+                            <span className="text-primary text-[10px] font-bold uppercase tracking-widest">Scope</span>
                         </div>
                         <div className="overflow-y-auto custom-scrollbar pr-2 flex-1 min-h-0 space-y-6">
                             {challengeHtml && (
