@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import AdminLayout from '@/components/admin/AdminLayout'
 import { useSiteSettings } from '@/hooks/use-site-settings'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Layout, Zap, BarChart3, FileText, Mail, Briefcase } from 'lucide-react'
+import { Layout, Zap, BarChart3, FileText, Mail, Briefcase, Sparkles, Award } from 'lucide-react'
 import SettingsHeader from '@/components/admin/core/SettingsHeader'
 import SettingsFieldInput, { SettingsFieldConfig } from '@/components/admin/core/SettingsField'
 
@@ -24,13 +24,24 @@ const sectionConfig: { id: string; title: string; description: string; icon: Rea
     },
     {
         id: 'value_proposition',
-        title: 'Three Pillars Section',
-        description: 'The "Three Pillars of Trusted Intelligence" section.',
+        title: 'Approach Section',
+        description: 'The homepage "approach" band. Cards are pulled live from the Approach (pillars) records — edit those under Content › Approach. Only the headings live here.',
         icon: Zap,
         fields: [
-            { key: 'vp_section_tagline', label: 'Section Tagline', type: 'text', placeholder: 'e.g. What We Do' },
-            { key: 'vp_section_title', label: 'Section Title', type: 'text', placeholder: 'e.g. Three Pillars of Trusted Intelligence' },
-            { key: 'vp_section_subtitle', label: 'Section Subtitle', type: 'textarea', placeholder: 'We connect decision-makers...' },
+            { key: 'vp_section_tagline', label: 'Section Tagline', type: 'text', placeholder: 'e.g. THE APPROACH' },
+            { key: 'vp_section_title', label: 'Section Title', type: 'text', placeholder: 'e.g. One continuous build, concept to production' },
+            { key: 'vp_section_subtitle', label: 'Section Subtitle', type: 'textarea', placeholder: 'Design, engineering, deployment and ongoing administration…' },
+        ],
+    },
+    {
+        id: 'cta',
+        title: 'CTA Banner',
+        description: 'Home page bottom CTA band and direct-line card.',
+        icon: Sparkles,
+        fields: [
+            { key: 'cta_badge', label: 'Badge Text', type: 'text', placeholder: 'e.g. GET IN TOUCH' },
+            { key: 'cta_title', label: 'Title', type: 'text', placeholder: 'e.g. Let\'s build the next one together.' },
+            { key: 'cta_subtitle', label: 'Subtitle', type: 'textarea', placeholder: 'Bring the brief — we\'ll map the ecosystem…' },
         ],
     },
     {
@@ -55,6 +66,26 @@ const sectionConfig: { id: string; title: string; description: string; icon: Rea
             { key: 'about_mission_title', label: 'Mission Title', type: 'text', placeholder: 'e.g. Connecting decision-makers...' },
             { key: 'about_mission_text1', label: 'Mission Text Block 1', type: 'textarea' },
             { key: 'about_mission_text2', label: 'Mission Text Block 2', type: 'textarea' },
+            { key: 'about_team_title', label: 'Studio Title', type: 'text' },
+            { key: 'about_team_subtitle', label: 'Studio Subtitle', type: 'textarea' },
+            { key: 'about_cta_title', label: 'CTA Title', type: 'text' },
+            { key: 'about_cta_subtitle', label: 'CTA Subtitle', type: 'textarea' },
+        ],
+    },
+    {
+        id: 'experience',
+        title: 'About: Experience',
+        description: 'Capability categories rendered as tabs on the About page. Each item links back to a project or service page.',
+        icon: Award,
+        fields: [
+            { key: 'about_experience_title', label: 'Section Title', type: 'text', placeholder: 'e.g. Where the capability was built' },
+            { key: 'about_experience_subtitle', label: 'Section Subtitle', type: 'textarea', placeholder: 'Selected work across the disciplines…' },
+            {
+                key: 'about_experience_categories',
+                label: 'Categories (JSON)',
+                type: 'textarea',
+                placeholder: '[\n  {\n    "key": "digital-policy",\n    "label": "Digital Policy",\n    "items": [\n      { "title": "…", "summary": "…", "href": "/projects/…", "tag": "Platform" }\n    ]\n  }\n]',
+            },
         ],
     },
     {
