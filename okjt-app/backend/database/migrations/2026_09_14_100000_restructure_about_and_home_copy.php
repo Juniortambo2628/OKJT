@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
 use App\Models\SiteSetting;
+use Illuminate\Database\Migrations\Migration;
 
 /**
  * Content restructure that pairs with the front-end refactor on branch
@@ -161,12 +161,13 @@ return new class extends Migration
 
         foreach ($upserts as $row) {
             $existing = SiteSetting::where('key', $row['key'])->first();
-            if ($existing && !empty($existing->value)) {
+            if ($existing && ! empty($existing->value)) {
                 // Preserve any prior CMS customisation, only backfill type/group when missing.
                 $existing->fill([
                     'type' => $existing->type ?: $row['type'],
                     'group' => $existing->group ?: $row['group'],
                 ])->save();
+
                 continue;
             }
             SiteSetting::updateOrCreate(
@@ -178,7 +179,7 @@ return new class extends Migration
         // Roll the experience background forward from the legacy Lawyers Hub key
         // if the new key hasn't been set explicitly.
         $legacyBg = SiteSetting::where('key', 'bg_about_lawyers_hub')->first();
-        if ($legacyBg && !empty($legacyBg->value)) {
+        if ($legacyBg && ! empty($legacyBg->value)) {
             SiteSetting::updateOrCreate(
                 ['key' => 'bg_about_experience'],
                 [
