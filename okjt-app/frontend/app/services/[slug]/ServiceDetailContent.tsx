@@ -75,7 +75,7 @@ export default function ServiceDetailContent({ slug }: { slug: string }) {
             <ParallaxSection
                 id="service-details"
                 bgMedia={mediaUrl}
-                heightClass="min-h-[170vh]"
+                heightClass="min-h-[120vh]"
                 contentMaxWidth="max-w-[1000px]"
             >
                 <FadeIn direction="up" distance={24}>
@@ -89,7 +89,7 @@ export default function ServiceDetailContent({ slug }: { slug: string }) {
             {/* Benefits */}
             <ParallaxSection
                 id="service-benefits"
-                heightClass="min-h-[200vh]"
+                heightClass="min-h-[140vh]"
                 badgeText="WHY OKJTECH?"
                 title="Why Choose Our Expertise?"
                 subtitle="Our approach is built on rigour, transparency, and measurable impact."
@@ -112,7 +112,7 @@ export default function ServiceDetailContent({ slug }: { slug: string }) {
             {relatedServices && relatedServices.length > 0 && (
                 <ParallaxSection
                     id="service-related"
-                    heightClass="min-h-[170vh]"
+                    heightClass="min-h-[120vh]"
                     badgeText="EXPLORE MORE"
                     title={`Other ${service.category} Services`}
                     contentMaxWidth="max-w-[1400px]"
@@ -141,7 +141,7 @@ export default function ServiceDetailContent({ slug }: { slug: string }) {
             {/* CTA */}
             <ParallaxSection
                 id="service-cta"
-                heightClass="min-h-[170vh]"
+                heightClass="min-h-[120vh]"
                 contentMaxWidth="max-w-[1400px]"
             >
                 <motion.div

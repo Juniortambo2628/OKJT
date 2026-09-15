@@ -6,7 +6,6 @@ import { useApi } from '@/hooks/use-api'
 import Link from 'next/link'
 import { Linkedin, Check, ArrowRight } from 'lucide-react'
 import FadeIn from '@/components/animations/FadeIn'
-import { StaggerContainer, StaggerItem } from '@/components/animations/Stagger'
 import {
     Dialog,
     DialogContent,
@@ -126,7 +125,7 @@ export default function AboutContent() {
             <ParallaxSection
                 id="about-mission"
                 bgMedia={bgMission}
-                heightClass="min-h-[200vh]"
+                heightClass="min-h-[140vh]"
                 contentMaxWidth="max-w-[1400px]"
             >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-20 items-center w-full">
@@ -147,7 +146,7 @@ export default function AboutContent() {
             <ParallaxSection
                 id="about-experience"
                 bgMedia={bgExperience}
-                heightClass="min-h-[220vh]"
+                heightClass="min-h-[140vh]"
                 badgeText="EXPERIENCE"
                 title={expTitle}
                 subtitle={expSubtitle}
@@ -169,11 +168,15 @@ export default function AboutContent() {
                             </button>
                         ))}
                     </div>
-                    <StaggerContainer key={activeCategory} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 flex-1 min-h-0 overflow-hidden" staggerDelay={0.06}>
+                    <HorizontalCarousel
+                        key={activeCategory}
+                        className="h-full flex-1 min-h-0"
+                        slotClassName="w-[85%] sm:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-0.667rem)]"
+                    >
                         {activeItems.map((it, i) => (
-                            <StaggerItem
+                            <div
                                 key={i}
-                                className="group bg-black/20 border border-white/5 p-6 rounded-2xl hover:border-primary/30 transition-all flex flex-col"
+                                className="group bg-black/20 border border-white/5 p-6 rounded-2xl hover:border-primary/30 transition-all flex flex-col h-full w-full"
                             >
                                 {it.tag && (
                                     <span className="text-primary text-[10px] font-bold uppercase tracking-widest mb-3">{it.tag}</span>
@@ -184,9 +187,9 @@ export default function AboutContent() {
                                     View <Check className="h-3 w-3 opacity-0 transition-opacity" />
                                     <ArrowRight className="h-3 w-3" />
                                 </Link>
-                            </StaggerItem>
+                            </div>
                         ))}
-                    </StaggerContainer>
+                    </HorizontalCarousel>
                 </div>
             </ParallaxSection>
 
@@ -194,7 +197,7 @@ export default function AboutContent() {
             <ParallaxSection
                 id="about-values"
                 bgMedia={bgValues}
-                heightClass="min-h-[220vh]"
+                heightClass="min-h-[140vh]"
                 badgeText="HOW WE WORK"
                 title="Our Core Values"
                 contentMaxWidth="max-w-[1400px]"
@@ -219,7 +222,7 @@ export default function AboutContent() {
             <ParallaxSection
                 id="about-team"
                 bgMedia={bgTeam}
-                heightClass="min-h-[220vh]"
+                heightClass="min-h-[140vh]"
                 badgeText="OUR TEAM"
                 title={teamTitle}
                 subtitle={teamSubtitle}

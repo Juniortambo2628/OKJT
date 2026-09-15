@@ -22,7 +22,7 @@ const ValueProposition = () => {
         <ParallaxSection
             id="value-proposition"
             bgMedia={bgMedia}
-            heightClass="min-h-[130vh]"
+            heightClass="min-h-[120vh]"
             badgeText={tagline}
             title={title}
             subtitle={subtitle}

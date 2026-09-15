@@ -47,7 +47,7 @@ export default function ProjectsContent() {
                     badgeText="FLAGSHIP WORK"
                     title="Flagship Projects"
                     subtitle="Bespoke digital products built for scale and impact."
-                    heightClass="min-h-[200vh]"
+                    heightClass="min-h-[140vh]"
                     contentMaxWidth="max-w-[1400px]"
                 >
                     {isLoading ? (
@@ -75,7 +75,7 @@ export default function ProjectsContent() {
                     badgeText="CLIENT WORK"
                     title="Client Projects"
                     subtitle="Tailored solutions that drive real business outcomes."
-                    heightClass="min-h-[200vh]"
+                    heightClass="min-h-[140vh]"
                     contentMaxWidth="max-w-[1400px]"
                 >
                     {isLoading ? (

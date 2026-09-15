@@ -88,7 +88,7 @@ export default function InsightDetailContent({ slug }: { slug: string }) {
             <ParallaxSection
                 id="insight-content"
                 bgMedia={bgContent}
-                heightClass="min-h-[250vh]"
+                heightClass="min-h-[160vh]"
                 overlayOpacity={0.8}
                 contentMaxWidth="max-w-[900px]"
             >
@@ -114,7 +114,7 @@ export default function InsightDetailContent({ slug }: { slug: string }) {
                 <ParallaxSection
                     id="insight-related"
                     bgMedia={bgRelated}
-                    heightClass="min-h-[200vh]"
+                    heightClass="min-h-[140vh]"
                     badgeText="EXPLORE MORE"
                     title="Related Insights"
                     contentMaxWidth="max-w-[1400px]"

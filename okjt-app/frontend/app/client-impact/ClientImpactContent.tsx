@@ -35,7 +35,7 @@ export default function ClientImpactContent() {
             <ParallaxSection
                 id="impact-projects"
                 bgMedia={bgProjects}
-                heightClass="min-h-[220vh]"
+                heightClass="min-h-[140vh]"
                 overlayOpacity={0.7}
                 contentMaxWidth="max-w-[1400px]"
                 className="p-0 sm:p-0 md:p-0 overflow-hidden"
@@ -49,7 +49,7 @@ export default function ClientImpactContent() {
             <ParallaxSection
                 id="impact-testimonials"
                 bgMedia={bgTestimonials}
-                heightClass="min-h-[200vh]"
+                heightClass="min-h-[140vh]"
                 overlayOpacity={0.75}
                 contentMaxWidth="max-w-[1400px]"
                 className="p-0 sm:p-0 md:p-0 overflow-hidden"
@@ -63,7 +63,7 @@ export default function ClientImpactContent() {
             <ParallaxSection
                 id="impact-clients"
                 bgMedia={bgClients}
-                heightClass="min-h-[170vh]"
+                heightClass="min-h-[120vh]"
                 overlayOpacity={0.7}
                 contentMaxWidth="max-w-[1400px]"
                 className="p-0 sm:p-0 md:p-0 overflow-hidden bg-background/50"

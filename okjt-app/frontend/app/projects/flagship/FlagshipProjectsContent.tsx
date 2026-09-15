@@ -42,7 +42,7 @@ export default function FlagshipProjectsContent() {
                 badgeText="FLAGSHIP WORK"
                 title="Flagship Projects"
                 subtitle="Bespoke digital products built for scale and impact."
-                heightClass="min-h-[200vh]"
+                heightClass="min-h-[140vh]"
                 contentMaxWidth="max-w-[1400px]"
             >
                 {isLoading ? (
@@ -72,7 +72,7 @@ export default function FlagshipProjectsContent() {
                 badgeText="OUR METHODOLOGY"
                 title="How We Deliver Excellence"
                 subtitle="A rigorous, engineering-led approach to product development and digital transformation."
-                heightClass="min-h-[170vh]"
+                heightClass="min-h-[120vh]"
                 contentMaxWidth="max-w-[1400px]"
             >
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

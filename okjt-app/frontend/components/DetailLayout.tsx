@@ -263,7 +263,7 @@ export default function DetailLayout({
             <ParallaxSection
                 id="details-overview"
                 bgMedia={heroMedia}
-                heightClass="min-h-[220vh]"
+                heightClass="min-h-[140vh]"
                 contentMaxWidth="max-w-[1400px]"
             >
                 <HorizontalCarousel
@@ -353,7 +353,7 @@ export default function DetailLayout({
             {testimonialQuote && (
                 <ParallaxSection
                     id="details-testimonial"
-                    heightClass="min-h-[170vh]"
+                    heightClass="min-h-[120vh]"
                 >
                     <div className="max-w-[800px] mx-auto text-center">
                         <Quote className="h-12 w-12 text-primary/25 mx-auto mb-8" />
@@ -373,7 +373,7 @@ export default function DetailLayout({
             {gallery && gallery.length > 0 && (
                 <ParallaxSection
                     id="details-gallery"
-                    heightClass="min-h-[170vh]"
+                    heightClass="min-h-[120vh]"
                     badgeText={galleryTagline}
                     title={galleryTitle}
                 >
@@ -408,7 +408,7 @@ export default function DetailLayout({
             {relatedItems && relatedItems.length > 0 && (
                 <ParallaxSection
                     id="details-related"
-                    heightClass="min-h-[170vh]"
+                    heightClass="min-h-[120vh]"
                 >
                     <div className="max-w-[1200px] mx-auto w-full">
                         <FadeIn direction="up" distance={20} className="flex items-center justify-between mb-12">

@@ -38,7 +38,7 @@ const ServicesSection = () => {
         <ParallaxSection
             id="services"
             bgMedia={bgMedia}
-            heightClass="min-h-[150vh]"
+            heightClass="min-h-[125vh]"
             contentMaxWidth="max-w-[1400px]"
             badgeText={sectionTagline || "SERVICES"}
             title={sectionTitle}

@@ -85,7 +85,7 @@ export default function ContactContent() {
             <ParallaxSection
                 id="contact-form"
                 bgMedia={bgForm}
-                heightClass="min-h-[300vh]"
+                heightClass="min-h-[160vh]"
                 overlayOpacity={0.8}
                 contentMaxWidth="max-w-[1400px]"
             >
@@ -219,7 +219,7 @@ export default function ContactContent() {
             <ParallaxSection
                 id="contact-info"
                 bgMedia={bgInfo}
-                heightClass="min-h-[200vh]"
+                heightClass="min-h-[140vh]"
                 overlayOpacity={0.75}
                 contentMaxWidth="max-w-[1400px]"
             >
