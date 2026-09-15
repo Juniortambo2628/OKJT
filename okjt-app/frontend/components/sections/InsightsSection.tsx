@@ -26,7 +26,7 @@ const InsightsSection = () => {
             <ParallaxSection
                 id="insights"
                 bgMedia={bgMedia}
-                heightClass="min-h-[150vh]"
+                heightClass="min-h-[125vh]"
                 badgeText={sectionTagline}
                 title={sectionTitle}
             >
@@ -45,7 +45,7 @@ const InsightsSection = () => {
         <ParallaxSection
             id="insights"
             bgMedia={bgMedia}
-            heightClass="min-h-[150vh]"
+            heightClass="min-h-[125vh]"
             contentMaxWidth="max-w-[1400px]"
             badgeText={sectionTagline}
             title={sectionTitle}

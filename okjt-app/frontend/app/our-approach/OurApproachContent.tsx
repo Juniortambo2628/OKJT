@@ -37,7 +37,7 @@ const PillarSection = ({ pillar, index }: { pillar: Pillar, index: number }) => 
     const isVideo = bgImage?.endsWith('.mp4') || bgImage?.endsWith('.webm')
 
     return (
-        <div id={`pillar-${pillar.slug}`} ref={sectionRef} className="relative min-h-[230vh] w-full overflow-visible">
+        <div id={`pillar-${pillar.slug}`} ref={sectionRef} className="relative min-h-[125vh] w-full overflow-visible">
             <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
                 {/* Background Media */}
                 <motion.div 

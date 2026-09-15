@@ -38,7 +38,7 @@ export default function InsightsContent() {
                 title="Insights & Research"
                 subtitle="Analysis and commentary from our team on the trends shaping digital."
                 cta={{ label: 'Subscribe', href: '/contact' }}
-                heightClass="min-h-[230vh]"
+                heightClass="min-h-[125vh]"
                 contentMaxWidth="max-w-[1400px]"
             >
                 {isLoading ? (

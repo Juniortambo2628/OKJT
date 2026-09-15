@@ -56,7 +56,7 @@ function StatsAccordion({ stats, tagline, title, bgMedia }: { stats: Stat[] | un
         <ParallaxSection
             id="stats"
             bgMedia={bgMedia ?? undefined}
-            heightClass="min-h-[150vh]"
+            heightClass="min-h-[125vh]"
             badgeText={tagline || 'KEY PERFORMANCE METRICS'}
             title={title}
             contentMaxWidth="max-w-[1400px]"

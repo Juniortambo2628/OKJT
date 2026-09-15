@@ -41,7 +41,7 @@ export default function ServicesIndexContent() {
                 title="Explore our services"
                 subtitle="Specialist capabilities across web engineering, design, and digital strategy."
                 cta={{ label: 'Start a Project', href: '/contact' }}
-                heightClass="min-h-[230vh]"
+                heightClass="min-h-[125vh]"
                 contentMaxWidth="max-w-[1400px]"
             >
                 {isLoading ? (
