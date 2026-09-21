@@ -10,6 +10,7 @@ import Link from 'next/link'
 import { SectionSkeleton } from '@/components/MediaSkeleton'
 import FadeIn from '@/components/animations/FadeIn'
 import { StaggerContainer, StaggerItem } from '@/components/animations/Stagger'
+import { Project } from '@/types/api'
 
 import { Card } from '@/components/ui/card'
 
@@ -20,7 +21,7 @@ const ProjectsPreview = () => {
     if (isLoading) return <SectionSkeleton />
     if (isError || !projects || projects.length === 0) return null
 
-    const clientProjects = projects.filter((p: any) => p.type === 'client')
+    const clientProjects = projects.filter((p: Project) => p.type === 'client')
     if (clientProjects.length === 0) return null
 
     const activeProject = clientProjects[activeIndex]
@@ -49,7 +50,7 @@ const ProjectsPreview = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                     {/* Tab List */}
                     <StaggerContainer className="lg:col-span-4 space-y-4" staggerDelay={0.08}>
-                        {clientProjects.map((p: any) => (
+                        {clientProjects.map((p: Project) => (
                             <StaggerItem key={p.id} direction="left" distance={20}>
                                 <button
                                     onClick={() => setActiveIndex(clientProjects.indexOf(p))}

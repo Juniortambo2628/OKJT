@@ -24,7 +24,7 @@ function CardActionRow({
 }: {
     primaryActionUrl?: string
     primaryActionLabel?: string
-    PrimaryActionIcon: React.ComponentType<any>
+    PrimaryActionIcon: React.ComponentType<{ size?: number }>
     secondaryActionLabel?: string
 }) {
     if (!primaryActionUrl && !secondaryActionLabel) return null
@@ -97,7 +97,7 @@ interface DetailLayoutProps {
     // Sidebar actions
     primaryActionUrl?: string
     primaryActionLabel?: string
-    primaryActionIcon?: React.ComponentType<any>
+    primaryActionIcon?: React.ComponentType<{ size?: number }>
     secondaryActionLabel?: string
     
     // Sidebar Focus
@@ -118,10 +118,10 @@ interface DetailLayoutProps {
     relatedTitle: string
     relatedAllLabel: string
     relatedAllLink: string
-    relatedItems?: any[]
+    relatedItems?: { id: number; image?: string; client_name?: string; tagline?: string; slug?: string }[]
     relatedLinkPrefix: string
-    getRelatedImage?: (item: any) => string
-    getRelatedTagline?: (item: any) => string
+    getRelatedImage?: (item: { id: number; image?: string }) => string
+    getRelatedTagline?: (item: { id: number; client_name?: string; tagline?: string }) => string
 }
 
 export default function DetailLayout({
@@ -145,13 +145,13 @@ export default function DetailLayout({
     description,
     challengeTitle,
     challengeHtml,
-    approachTitle,
-    approachHtml,
+    _approachTitle,
+    _approachHtml,
     impactTitle,
     impactHtml,
-    sidebarStackTitle,
+    _sidebarStackTitle,
     technologies,
-    fallbackStackText = 'Proprietary Architecture',
+    _fallbackStackText = 'Proprietary Architecture',
     primaryActionUrl,
     primaryActionLabel,
     primaryActionIcon: PrimaryActionIcon = Globe,
@@ -418,7 +418,7 @@ export default function DetailLayout({
                             </Link>
                         </FadeIn>
                         <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-10" staggerDelay={0.1}>
-                            {relatedItems.map((item: any) => {
+                            {relatedItems.map((item: { id: number; image?: string; client_name?: string; tagline?: string; slug?: string }) => {
                                 const imgSrc = getRelatedImage ? getRelatedImage(item) : item.image;
                                 const taglineText = getRelatedTagline ? getRelatedTagline(item) : (item.client_name || item.tagline);
                                 return (

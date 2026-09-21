@@ -119,6 +119,12 @@ export default function OurApproachContent() {
     const { videoSrc, bgImage, mediaLoading } = usePageHeroMedia({ settingsKey: 'hero_products_media' })
     const heroMedia = videoSrc ?? bgImage
 
+    const navSections = React.useMemo(() => (
+        pillars && pillars.length > 0
+            ? [{ id: 'hero', label: 'Intro' }, ...pillars.map(p => ({ id: `pillar-${p.slug}`, label: p.title }))]
+            : undefined
+    ), [pillars])
+
     if (isLoading) {
         return (
             <BaseLayout loading>
@@ -126,12 +132,6 @@ export default function OurApproachContent() {
             </BaseLayout>
         )
     }
-
-    const navSections = React.useMemo(() => (
-        pillars && pillars.length > 0
-            ? [{ id: 'hero', label: 'Intro' }, ...pillars.map(p => ({ id: `pillar-${p.slug}`, label: p.title }))]
-            : undefined
-    ), [pillars])
 
     return (
         <BaseLayout

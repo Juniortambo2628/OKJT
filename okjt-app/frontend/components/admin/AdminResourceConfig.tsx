@@ -50,8 +50,8 @@ export interface AdminResourceConfig<T> {
 
 export function renderFieldsFromConfig(
   fields: FieldConfig[],
-  form: Record<string, any>,
-  setForm: (form: Record<string, any>) => void
+  form: Record<string, unknown>,
+  setForm: (form: Record<string, unknown>) => void
 ) {
   return (
     <div className="space-y-4">
@@ -59,7 +59,7 @@ export function renderFieldsFromConfig(
         const value = form[field.key]
         const spanClass = field.span === 2 ? 'col-span-full' : ''
 
-        const handleChange = (val: any) => setForm({ ...form, [field.key]: val })
+        const handleChange = (val: string | number | boolean) => setForm({ ...form, [field.key]: val })
 
         let input: React.ReactNode
 

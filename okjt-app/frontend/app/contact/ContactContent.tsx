@@ -61,11 +61,12 @@ export default function ContactContent() {
                 description: "Your submission has been received. You will be contacted concerning your submission shortly. An email has been sent to the address indicated on the form confirming the same.",
             })
             form.reset()
-        } catch (err: any) {
+        } catch (err: unknown) {
+            const axiosErr = err as { response?: { data?: { message?: string } } }
             toast({
                 variant: "destructive",
                 title: "Submission Failed",
-                description: err.response?.data?.message || "Something went wrong. Please try again.",
+                description: axiosErr.response?.data?.message || "Something went wrong. Please try again.",
             })
         } finally {
             setIsSubmitting(false)
@@ -226,7 +227,7 @@ export default function ContactContent() {
                 <div className="w-full max-w-3xl mx-auto">
                     <FadeIn direction="up" distance={24} className="p-10 border border-white/10 bg-black/20 flex flex-col items-center text-center rounded-2xl">
                         <h4 className="font-bold text-white text-2xl mb-3">Prefer a direct line?</h4>
-                        <p className="text-sm text-white/60 mb-6 leading-relaxed max-w-md">Skip the form — reach out directly and we'll route you to the right conversation.</p>
+                        <p className="text-sm text-white/60 mb-6 leading-relaxed max-w-md">Skip the form — reach out directly and we&apos;ll route you to the right conversation.</p>
                         <a href={`tel:${getSetting('contact_phone', '+254 700 000 000').replace(/\s/g, '')}`} className="text-2xl font-bold text-primary hover:underline transition-all">
                             {getSetting('contact_phone', '+254 700 000 000')}
                         </a>

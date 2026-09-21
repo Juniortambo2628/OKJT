@@ -31,8 +31,9 @@ const PasswordResetPage = () => {
             await api.post('/password/reset', { email })
             setSuccess('Password reset link has been sent to your email.')
             setIsRequestSent(true)
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to send reset link. Please try again.')
+        } catch (err: unknown) {
+            const axiosErr = err as { response?: { data?: { message?: string } } }
+            setError(axiosErr.response?.data?.message || 'Failed to send reset link. Please try again.')
         } finally {
             setIsLoading(false)
         }
@@ -57,8 +58,9 @@ const PasswordResetPage = () => {
                 password_confirmation: passwordConfirmation,
             })
             setSuccess('Password has been reset successfully. You can now sign in.')
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to reset password. Please try again.')
+        } catch (err: unknown) {
+            const axiosErr = err as { response?: { data?: { message?: string } } }
+            setError(axiosErr.response?.data?.message || 'Failed to reset password. Please try again.')
         } finally {
             setIsLoading(false)
         }

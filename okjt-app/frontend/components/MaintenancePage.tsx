@@ -63,11 +63,12 @@ export default function MaintenancePage({ title, description, estimatedBack }: M
             })
             setIsSubscribed(true)
             setEmail('')
-        } catch (err: any) {
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : (err as { response?: { data?: { message?: string } } })?.response?.data?.message || "Something went wrong. Please try again."
             toast({
                 variant: "destructive",
                 title: "Error Subscribing",
-                description: err.response?.data?.message || "Something went wrong. Please try again.",
+                description: message,
             })
         } finally {
             setIsSubmitting(false)

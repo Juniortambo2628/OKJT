@@ -21,12 +21,13 @@ const LoginPage = () => {
         console.log('[LOGIN] Submitting email=', email, 'password length=', password.length);
         try {
             await login({ email, password })
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('[LOGIN] Login error caught:', err);
-            console.error('[LOGIN] err.response:', err.response);
-            console.error('[LOGIN] err.response?.data:', err.response?.data);
-            console.error('[LOGIN] err.message:', err.message);
-            setError(err.response?.data?.message || 'Failed to login. Please check your credentials.')
+            const axiosErr = err as { response?: { data?: { message?: string } }; message?: string }
+            console.error('[LOGIN] err.response:', axiosErr.response);
+            console.error('[LOGIN] err.response?.data:', axiosErr.response?.data);
+            console.error('[LOGIN] err.message:', axiosErr.message);
+            setError(axiosErr.response?.data?.message || 'Failed to login. Please check your credentials.')
         } finally {
             setIsLoading(false)
         }

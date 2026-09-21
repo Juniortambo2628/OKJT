@@ -89,11 +89,12 @@ export function useSiteSettings() {
                 description: "All configurations have been updated.",
             })
             mutate()
-        } catch (err: any) {
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Failed to save settings'
             toast({
                 variant: "destructive",
                 title: "Error",
-                description: err.response?.data?.message || err.message || 'Failed to save settings',
+                description: message,
             })
         } finally {
             setIsSaving(false)

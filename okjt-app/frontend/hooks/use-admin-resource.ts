@@ -86,12 +86,13 @@ export function useAdminResource<T extends { id: number, created_at?: string }>(
             mutate()
             triggerRevalidation()
             resetForm()
-        } catch (err: any) {
-            const validationErrors = err.response?.data?.errors
-            let description = err.response?.data?.message || `Failed to save ${resourceName.toLowerCase()}`
+        } catch (err: unknown) {
+            const axiosErr = err as { response?: { data?: { errors?: Record<string, string | string[]>; message?: string } } }
+            const validationErrors = axiosErr.response?.data?.errors
+            let description = axiosErr.response?.data?.message || `Failed to save ${resourceName.toLowerCase()}`
             if (validationErrors) {
                 const firstErrors = Object.entries(validationErrors)
-                    .map(([field, msgs]: [string, any]) => `${field}: ${Array.isArray(msgs) ? msgs[0] : msgs}`)
+                    .map(([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs[0] : msgs}`)
                     .slice(0, 3)
                     .join('\n')
                 description = firstErrors || description
@@ -150,7 +151,7 @@ export function useAdminResource<T extends { id: number, created_at?: string }>(
         return data.filter((item) => {
             const matchesSearch = filterFn(item, searchTerm)
             const matchesStatus = activeFilter === 'all' || 
-                                 (activeFilter === 'active' ? !!(item as any)[statusField] : !(item as any)[statusField])
+                                 (activeFilter === 'active' ? Boolean(item[statusField]) : !Boolean(item[statusField]))
             return matchesSearch && matchesStatus
         }).sort((a, b) => {
             const factor = sortOrder === 'asc' ? 1 : -1

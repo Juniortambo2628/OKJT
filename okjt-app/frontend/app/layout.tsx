@@ -21,7 +21,7 @@ export async function generateMetadata() {
     const apiUrl = baseUrl.replace('localhost', '127.0.0.1');
     const response = await fetch(`${apiUrl}/settings`, { next: { tags: ['okjt-content'] } });
     const settingsByGroup = await response.json();
-    const allSettings = Object.values(settingsByGroup).flat() as any[];
+    const allSettings = Object.values(settingsByGroup).flat() as { key: string; value?: string }[];
     const favicon = allSettings.find(s => s.key === 'favicon')?.value;
     
     return {

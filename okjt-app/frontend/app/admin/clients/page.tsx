@@ -113,7 +113,7 @@ const AdminClientsPage = () => {
                 </>
             )}
 
-            renderFormFields={(form, setForm) => renderFieldsFromConfig(fields, form as Record<string, any>, setForm as any)}
+            renderFormFields={(form, setForm) => renderFieldsFromConfig(fields, form as Record<string, unknown>, setForm as (form: Record<string, unknown>) => void)}
         />
     )
 }

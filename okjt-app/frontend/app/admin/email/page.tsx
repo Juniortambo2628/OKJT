@@ -12,9 +12,10 @@ import { Textarea } from '@/components/ui/textarea'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import api from '@/lib/api'
 import SettingsHeader from '@/components/admin/core/SettingsHeader'
+import { SiteSetting } from '@/types/api'
 
 const EmailSettingsPage = () => {
-    const { data: emailTemplates, mutate } = useApi<any[]>('/email-templates')
+    const { data: emailTemplates, mutate } = useApi<SiteSetting[]>('/email-templates')
     const [formValues, setFormValues] = useState<Record<string, string>>({
         'email_template_admin': '',
         'email_template_user': ''
@@ -43,7 +44,7 @@ const EmailSettingsPage = () => {
         setFormSeeded(true)
         setFormValues(prev => {
             const flat = { ...prev }
-            emailTemplates.forEach((s: any) => { flat[s.key] = s.value || '' })
+            emailTemplates.forEach((s: SiteSetting) => { flat[s.key] = s.value || '' })
             return flat
         })
     }
@@ -53,7 +54,7 @@ const EmailSettingsPage = () => {
     useEffect(() => {
         if (!emailTemplates) return
         const key = activeTemplate === 'admin_notification' ? 'email_template_admin' : 'email_template_user'
-        const currentContent = emailTemplates.find((s: any) => s.key === key)?.value || ''
+        const currentContent = emailTemplates.find((s: SiteSetting) => s.key === key)?.value || ''
         if (!currentContent) return
 
         const badgeMatch = currentContent.match(/class="badge"[^>]*>([^<]+)<\/div>/)
@@ -118,8 +119,9 @@ const EmailSettingsPage = () => {
                 content: content
             })
             setPreviewHtml(response.data.html)
-        } catch (err: any) {
-            setPreviewError(err.response?.data?.error || 'Failed to render preview')
+        } catch (err: unknown) {
+            const axiosErr = err as { response?: { data?: { error?: string } } }
+            setPreviewError(axiosErr.response?.data?.error || 'Failed to render preview')
         } finally {
             setIsPreviewLoading(false)
         }
@@ -200,7 +202,7 @@ const EmailSettingsPage = () => {
                             </TabsList>
                         </Tabs>
 
-                        <Tabs value={editorMode} onValueChange={(val: any) => setEditorMode(val)} className="w-full">
+                        <Tabs value={editorMode} onValueChange={(val: string) => setEditorMode(val as 'visual' | 'code')} className="w-full">
                             <div className="flex items-center justify-between mb-2">
                                 <Label className="text-xs uppercase tracking-widest text-muted-foreground font-bold">Editor Type</Label>
                                 <TabsList className="bg-secondary/20 border border-border h-8 p-1">

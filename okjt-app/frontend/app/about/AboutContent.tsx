@@ -20,6 +20,45 @@ import CarouselCard from '@/components/ui/CarouselCard'
 import { iconMap } from '@/components/admin/constants'
 import { ABOUT_NAV_SECTIONS } from '@/lib/nav-sections'
 
+type ExpCategory = { key: string, label: string, items: { title: string, summary: string, href: string, tag?: string }[] }
+
+const defaultCategories: ExpCategory[] = [
+    {
+        key: 'digital-policy',
+        label: 'Digital Policy',
+        items: [
+            { title: 'Lawyers Hub Digital Policy site', summary: 'Cornerstone Kenya digital-policy resource — architecture, engineering, ongoing administration.', href: '/projects', tag: 'Platform' },
+            { title: 'Africa Law Tech Festival platform', summary: 'Online ticketing, live notifications, event mapping — annual festival, continental audience.', href: '/projects', tag: 'Event tech' },
+            { title: 'ADPI training delivery', summary: 'Delivered the Africa Data Protection Course and the CIPP/E certification programme.', href: '/projects', tag: 'Training' },
+        ],
+    },
+    {
+        key: 'ui-ux',
+        label: 'UI / UX',
+        items: [
+            { title: 'Najenga — construction coordination', summary: 'Annotate architectural drawings, run project timelines, OCR PDFs, export to Excel, chat with @mentions.', href: '/projects/najenga-construction-collaboration-platform', tag: 'Product' },
+            { title: 'Naoa — digital wedding platform', summary: 'End-to-end experience: invitations, RSVPs, gifting, live guest updates.', href: '/projects', tag: 'Product' },
+            { title: 'Tibu — HealthTech interface', summary: 'Interface design for clinical workflows across desktop and mobile touchpoints.', href: '/projects', tag: 'Interface' },
+        ],
+    },
+    {
+        key: 'engineering',
+        label: 'Web Engineering',
+        items: [
+            { title: 'Laravel + Next.js flagship stack', summary: 'Schema-first backends, typed APIs, App Router frontends — auth, admin, background jobs, deploys.', href: '/services', tag: 'Stack' },
+            { title: 'Deployment & administration', summary: 'cPanel + domain admin, CI to production, monitoring and ongoing maintenance.', href: '/services', tag: 'Ops' },
+        ],
+    },
+    {
+        key: 'ecosystem',
+        label: 'Ecosystem Strategy',
+        items: [
+            { title: 'Ecosystem mapping practice', summary: 'Stakeholder mapping before scoping — client, user, regulator, partner, community — each with an aligned reason to participate.', href: '/our-approach', tag: 'Method' },
+            { title: 'Boda-Boda Law Project', summary: 'Co-organised field research in Kisumu and Namanga; contributed to the published report.', href: '/projects', tag: 'Research' },
+        ],
+    },
+]
+
 export default function AboutContent() {
     const { getSetting } = useSettings()
     const { data: team } = useApi<TeamMember[]>('/team-members')
@@ -44,43 +83,6 @@ export default function AboutContent() {
     // Categories: sub-areas of demonstrated capability. Each item links to a project or insight.
     // Kept as a static shape here so the fallback holds when the CMS is briefly unreachable;
     // CMS drives the values via `about_experience_categories` (JSON) once configured.
-    type ExpCategory = { key: string, label: string, items: { title: string, summary: string, href: string, tag?: string }[] }
-    const defaultCategories: ExpCategory[] = [
-        {
-            key: 'digital-policy',
-            label: 'Digital Policy',
-            items: [
-                { title: 'Lawyers Hub Digital Policy site', summary: 'Cornerstone Kenya digital-policy resource — architecture, engineering, ongoing administration.', href: '/projects', tag: 'Platform' },
-                { title: 'Africa Law Tech Festival platform', summary: 'Online ticketing, live notifications, event mapping — annual festival, continental audience.', href: '/projects', tag: 'Event tech' },
-                { title: 'ADPI training delivery', summary: 'Delivered the Africa Data Protection Course and the CIPP/E certification programme.', href: '/projects', tag: 'Training' },
-            ],
-        },
-        {
-            key: 'ui-ux',
-            label: 'UI / UX',
-            items: [
-                { title: 'Najenga — construction coordination', summary: 'Annotate architectural drawings, run project timelines, OCR PDFs, export to Excel, chat with @mentions.', href: '/projects/najenga-construction-collaboration-platform', tag: 'Product' },
-                { title: 'Naoa — digital wedding platform', summary: 'End-to-end experience: invitations, RSVPs, gifting, live guest updates.', href: '/projects', tag: 'Product' },
-                { title: 'Tibu — HealthTech interface', summary: 'Interface design for clinical workflows across desktop and mobile touchpoints.', href: '/projects', tag: 'Interface' },
-            ],
-        },
-        {
-            key: 'engineering',
-            label: 'Web Engineering',
-            items: [
-                { title: 'Laravel + Next.js flagship stack', summary: 'Schema-first backends, typed APIs, App Router frontends — auth, admin, background jobs, deploys.', href: '/services', tag: 'Stack' },
-                { title: 'Deployment & administration', summary: 'cPanel + domain admin, CI to production, monitoring and ongoing maintenance.', href: '/services', tag: 'Ops' },
-            ],
-        },
-        {
-            key: 'ecosystem',
-            label: 'Ecosystem Strategy',
-            items: [
-                { title: 'Ecosystem mapping practice', summary: 'Stakeholder mapping before scoping — client, user, regulator, partner, community — each with an aligned reason to participate.', href: '/our-approach', tag: 'Method' },
-                { title: 'Boda-Boda Law Project', summary: 'Co-organised field research in Kisumu and Namanga; contributed to the published report.', href: '/projects', tag: 'Research' },
-            ],
-        },
-    ]
 
     const configuredCategoriesRaw = getSetting('about_experience_categories', '')
     const categories = React.useMemo<ExpCategory[]>(() => {
@@ -89,18 +91,16 @@ export default function AboutContent() {
                 const parsed = JSON.parse(configuredCategoriesRaw)
                 if (Array.isArray(parsed) && parsed.length > 0) return parsed as ExpCategory[]
             } else if (Array.isArray(configuredCategoriesRaw)) {
-                return configuredCategoriesRaw as any
+                return configuredCategoriesRaw as ExpCategory[]
             }
         } catch { /* fall through to default */ }
         return defaultCategories
     }, [configuredCategoriesRaw])
 
-    const [activeCategory, setActiveCategory] = React.useState<string>(categories[0]?.key ?? '')
-    React.useEffect(() => {
-        if (!categories.find((c) => c.key === activeCategory) && categories[0]) {
-            setActiveCategory(categories[0].key)
-        }
-    }, [categories, activeCategory])
+    const [selectedCategoryKey, setSelectedCategoryKey] = React.useState<string>('')
+    const activeCategory = React.useMemo(() => {
+        return categories.find((c) => c.key === selectedCategoryKey)?.key ?? categories[0]?.key ?? ''
+    }, [categories, selectedCategoryKey])
     const activeItems = categories.find((c) => c.key === activeCategory)?.items ?? []
 
     const teamTitle = getSetting('about_team_title', 'One continuous thread, concept to production')
@@ -157,7 +157,7 @@ export default function AboutContent() {
                         {categories.map((cat) => (
                             <button
                                 key={cat.key}
-                                onClick={() => setActiveCategory(cat.key)}
+                                onClick={() => setSelectedCategoryKey(cat.key)}
                                 className={`px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-widest transition-all ${
                                     activeCategory === cat.key
                                         ? 'bg-primary text-[#14110b]'
@@ -204,7 +204,7 @@ export default function AboutContent() {
             >
                 <HorizontalCarousel className="h-full">
                     {values?.map((val) => {
-                        const IconComponent = (iconMap as any)[val.icon || 'Shield'] || (iconMap as any).Shield
+                        const IconComponent = iconMap[val.icon || 'Shield'] || iconMap.Shield
                         return (
                             <div key={val.id} className="h-full w-full bg-black/20 border border-white/5 p-8 hover:border-primary/30 transition-all group rounded-2xl flex flex-col">
                                 <div className="w-12 h-12 bg-primary/5 border border-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-black transition-all duration-300 rounded-xl shrink-0">

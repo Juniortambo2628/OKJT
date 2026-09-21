@@ -30,6 +30,7 @@ import {
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/components/AuthProvider'
 import { useApi } from '@/hooks/use-api'
+import { SiteSetting } from '@/types/api'
 import { useMounted } from '@/hooks/use-mounted'
 import { useTheme } from 'next-themes'
 import { AdminThemeToggle } from './AdminThemeToggle'
@@ -42,7 +43,7 @@ const AdminSidebar = () => {
     // Helper to get setting value
     const getSetting = (key: string, defaultValue: string) => {
         if (!settingsByGroup) return defaultValue
-        const allSettings = Object.values(settingsByGroup).flat() as any[]
+        const allSettings = Object.values(settingsByGroup).flat() as SiteSetting[]
         const setting = allSettings.find(s => s.key === key)
         return setting?.value || defaultValue
     }

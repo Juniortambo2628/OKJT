@@ -4,6 +4,7 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { useApi } from '@/hooks/use-api'
 import FadeIn from '@/components/animations/FadeIn'
+import { Client } from '@/types/api'
 
 const ClientsSection = () => {
     const { data: clients, isLoading, isError } = useApi('/clients')
@@ -41,7 +42,7 @@ const ClientsSection = () => {
                         },
                     }}
                 >
-                    {duplicated.map((client: any, index: number) => (
+                    {duplicated.map((client: Client, index: number) => (
                         <div
                             key={`${client.id}-${index}`}
                             className="flex items-center justify-center min-w-[200px] h-16 px-8 group"

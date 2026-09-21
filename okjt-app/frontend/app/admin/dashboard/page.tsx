@@ -149,7 +149,7 @@ const AdminDashboardPage = () => {
                             </div>
                         ) : (
                             <div className="space-y-3">
-                                {analytics?.top_referrers?.map((ref: any, i: number) => (
+                                {analytics?.top_referrers?.map((ref: { referrer: string; count: number }, i: number) => (
                                     <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/10">
                                         <div className="flex items-center gap-3">
                                             <Globe size={16} className="text-muted-foreground" />

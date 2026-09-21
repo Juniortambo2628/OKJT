@@ -109,7 +109,7 @@ const TrustBar = ({ clients }: { clients?: unknown[] }) => {
                 Trusted by visionary brands
             </p>
             <div className="flex flex-wrap items-center gap-8">
-                {activeClients.map((client: any, index) => (
+                {activeClients.map((client: { id?: number; name: string; logo?: string }, index) => (
                     <motion.div
                         key={client.id || index}
                         initial={{ opacity: 0, y: 10 }}

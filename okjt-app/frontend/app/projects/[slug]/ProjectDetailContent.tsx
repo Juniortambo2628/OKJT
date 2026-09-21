@@ -3,14 +3,15 @@
 import DetailLayout from '@/components/DetailLayout'
 import { Rocket } from 'lucide-react'
 import { getMediaUrl } from '@/lib/utils'
+import { Project } from '@/types/api'
 
 export default function ProjectDetailContent({
     project,
     relatedProjects,
     slug
 }: {
-    project: any
-    relatedProjects: any[]
+    project: Project | null
+    relatedProjects: Project[]
     slug: string
 }) {
     const isClient = project?.type === 'client'

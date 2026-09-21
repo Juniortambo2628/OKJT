@@ -11,7 +11,7 @@ interface UseApiOptions<T> {
   fallbackData?: T
 }
 
-export function useApi<T = any>(url: string | null, options: UseApiOptions<T> = {}) {
+export function useApi<T = unknown>(url: string | null, options: UseApiOptions<T> = {}) {
   const { data, error, isLoading, mutate } = useSWR<T>(url, fetcher, {
     revalidateOnFocus: false,
     shouldRetryOnError: false,

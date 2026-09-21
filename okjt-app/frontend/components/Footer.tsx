@@ -29,7 +29,7 @@ const Footer = () => {
     const dynamicServiceLinks = React.useMemo(() => {
         if (!services) return []
         // Just take the first 6 active services
-        return services.slice(0, 6).map((s: any) => ({
+        return services.slice(0, 6).map((s: { title: string; slug: string }) => ({
             name: s.title,
             href: `/services/${s.slug}`
         }))
@@ -114,7 +114,7 @@ const Footer = () => {
                     <div>
                         <h4 className="text-foreground font-bold text-sm uppercase tracking-widest mb-6">Services</h4>
                         <ul className="space-y-3">
-                            {(dynamicServiceLinks.length > 0 ? dynamicServiceLinks : []).map((link: any) => (
+                            {(dynamicServiceLinks.length > 0 ? dynamicServiceLinks : []).map((link: { name: string; href: string }) => (
                                 <li key={link.name}>
                                     <Link href={link.href} className="text-muted-foreground hover:text-foreground text-sm transition-colors">
                                         {link.name}

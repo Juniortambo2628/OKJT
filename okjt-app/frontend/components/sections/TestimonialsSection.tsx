@@ -103,7 +103,7 @@ const TestimonialsSection = () => {
 
                         {/* Dots */}
                         <div className="flex items-center gap-2">
-                            {items.map((_: any, i: number) => (
+                            {items.map((_, i: number) => (
                                 <button
                                     key={i}
                                     onClick={() => setCurrent(i)}

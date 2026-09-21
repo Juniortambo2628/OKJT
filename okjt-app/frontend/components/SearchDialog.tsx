@@ -127,7 +127,7 @@ export default function SearchDialog() {
                                             {label}
                                             <span className="text-muted-foreground/50">({items.length})</span>
                                         </div>
-                                        {items.map((item: any) => (
+                                        {items.map((item: { id: number; title: string; slug: string; category?: string; client_name?: string; description?: string; excerpt?: string }) => (
                                             <button
                                                 key={item.id}
                                                 onClick={() => navigateTo(`${basePath}/${item.slug}`)}

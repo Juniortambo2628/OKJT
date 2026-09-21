@@ -4,7 +4,7 @@ import { SWRConfig } from 'swr'
 import React from 'react'
 
 interface SWRProviderProps {
-  fallback: Record<string, any>
+  fallback: Record<string, unknown>
   children: React.ReactNode
 }
 

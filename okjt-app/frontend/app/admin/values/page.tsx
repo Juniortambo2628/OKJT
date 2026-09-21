@@ -28,7 +28,7 @@ export default function AdminValuesPage() {
             onValidate={validate}
             {...configRest}
             renderGridItem={(val, selectedIds, toggleSelect, handleEdit, handleDelete) => {
-                const IconComp = val.icon ? (iconMap as any)[val.icon] || (iconMap as any).Shield : (iconMap as any).Shield
+                const IconComp = val.icon ? iconMap[val.icon] || iconMap.Shield : iconMap.Shield
 
                 return (
                     <ResourceCard
@@ -66,7 +66,7 @@ export default function AdminValuesPage() {
             renderTableRows={(filteredValues, selectedIds, toggleSelect, handleEdit, handleDelete) => (
                 <>
                     {filteredValues?.map((val) => {
-                        const IconComp = val.icon ? (iconMap as any)[val.icon] || (iconMap as any).Shield : (iconMap as any).Shield
+                        const IconComp = val.icon ? iconMap[val.icon] || iconMap.Shield : iconMap.Shield
 
                         return (
                             <ResourceTableRow
@@ -93,7 +93,7 @@ export default function AdminValuesPage() {
                 </>
             )}
 
-            renderFormFields={(formData, setFormData) => renderFieldsFromConfig(fields, formData as Record<string, any>, setFormData as any)}
+            renderFormFields={(formData, setFormData) => renderFieldsFromConfig(fields, formData as Record<string, unknown>, setFormData as (form: Record<string, unknown>) => void)}
         />
     )
 }

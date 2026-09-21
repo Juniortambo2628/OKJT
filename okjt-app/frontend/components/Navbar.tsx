@@ -10,6 +10,7 @@ import { cn, getMediaUrl } from '@/lib/utils'
 import SearchDialog from './SearchDialog'
 import { ThemeToggle } from './ThemeToggle'
 import { useApi } from '@/hooks/use-api'
+import { Service, Project } from '@/types/api'
 import { useSettings } from '@/hooks/use-settings'
 import { useMounted } from '@/hooks/use-mounted'
 import { useTheme } from 'next-themes'
@@ -89,7 +90,7 @@ const Navbar = () => {
                     const parsed = JSON.parse(navLinksJson)
                     if (Array.isArray(parsed) && parsed.length > 0) return parsed
                 } else if (Array.isArray(navLinksJson)) {
-                    return navLinksJson as any[]
+                    return navLinksJson as { name: string; href: string }[]
                 }
             }
         } catch (e) {
@@ -121,10 +122,10 @@ const Navbar = () => {
     const dynamicServiceCategories = React.useMemo(() => {
         if (!services || !Array.isArray(services)) return []
         
-        const pillarGroups: Record<number, { title: string, href: string, items: any[] }> = {}
-        const legacyCategories: Record<string, any[]> = {}
+        const pillarGroups: Record<number, { title: string, href: string, items: { name: string, href: string }[] }> = {}
+        const legacyCategories: Record<string, { name: string, href: string }[]> = {}
 
-        services.forEach((s: any) => {
+        services.forEach((s: Service) => {
             if (s.pillar) {
                 const p = s.pillar
                 if (!pillarGroups[p.id]) {
@@ -160,7 +161,7 @@ const Navbar = () => {
     // Flagship projects for Our Work mega menu
     const flagshipProjects = React.useMemo(() => {
         if (!projects || !Array.isArray(projects)) return []
-        return projects.filter((p: any) => p.type === 'flagship' && p.is_active).slice(0, 4).map((p: any) => ({
+        return projects.filter((p: Project) => p.type === 'flagship' && p.is_active).slice(0, 4).map((p: Project) => ({
             name: p.title,
             href: `/projects/${p.slug}`,
             image: p.image ? getMediaUrl(p.image) : null,
