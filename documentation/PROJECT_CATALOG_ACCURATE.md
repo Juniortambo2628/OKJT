@@ -12,7 +12,7 @@
 
 ## Framing rules used in this document
 
-1. **Sole founder & practitioner.** OKJTechnologies is a one‑person studio. Kevin Tambo is the only developer, designer and strategist. All narrative is written in the first person singular ("I built…"), never "we / our team / lead engineer".
+1. **Objective, work-focused narrative.** All narrative is written in objective format. No first-person singular ("I built…") or plural ("we / our team / lead engineer"). The focus is on the work itself — the platform, the system, the technology. Sentences describe what was built and why, not who built it.
 2. **No fabricated statistics.** No "40+ launches", "99.99% uptime", "65% efficiency increase", "5k+ active moments", "engagement up 40%", "1k → 100k users", etc. Only verifiable facts.
 3. **No fabricated testimonials.** Every current testimonial in both the live DB *and* the `new-changes` `HeroSlideSeeder` (Luigi Sewe, Sarah Jenkins, Michael Chen, James Klovsky, Elena Rodriguez, David Okafor) is invented. Delete them.
 4. **Honest project status.** Live · In development · Concept · Employer project · Delivered.
@@ -20,17 +20,15 @@
 
 ---
 
-## 1. About Kevin — the story (rewritten around ecosystem mapping)
+## 1. About — the story (rewritten around ecosystem mapping)
 
-**Kevin Tambo — Founder, OKJTechnologies.**
+**OKJTechnologies** is a Nairobi-based web-application practice. The work is full-stack and end to end — concept, interface, engineering, deployment and ongoing administration — mostly in Laravel, Next.js / React and the classic LAMP stack, with AI-accelerated tooling in the loop.
 
-I'm a solo web application developer running OKJTechnologies out of Nairobi. I build full‑stack web applications end‑to‑end — concept, UI, engineering, deployment and ongoing cPanel/domain administration — mostly in Laravel, Next.js / React and the classic LAMP stack, with AI‑accelerated tooling in the loop.
+**The approach to every engagement is shaped by an ecosystem-mapping practice** from the Afrilabs capacity-building programme *"Leveraging Stakeholder Relationships through Ecosystem Mapping and Building"* (Addis Ababa, Ethiopia). Before scoping, the map covers every stakeholder who could be affected by or beneficial to the proposition — the paying client, the end user, the regulator, adjacent service providers, upstream/downstream data holders, the wider community — and the solution is designed so each one has a clearly aligned way to benefit from it. That mapping is what turns a website into a working system inside its own context, and it's the single biggest reason client engagements stay engaged.
 
-**The way I approach every engagement is shaped by an ecosystem‑mapping practice** I picked up on the Afrilabs capacity‑building programme *"Leveraging Stakeholder Relationships through Ecosystem Mapping and Building"* (Addis Ababa, Ethiopia), which I attended and earned a certificate for while working with the Lawyers Hub. Before I write code, I map out **every stakeholder who could be affected by or beneficial to the proposition** — the paying client, the end user, the regulator, adjacent service providers, upstream/downstream data holders, the wider community — and I design the solution so each one has a clearly aligned way to benefit from it. That mapping is what turns a website into a working system inside its own context, and it's the single biggest reason my client engagements stay engaged.
+Coupled with that: emerging AI tooling compresses the delivery cycle, so the same class of application a small team would take on can be shipped by a solo practice. Combined, ecosystem thinking + AI-accelerated development is the OKJTechnologies method.
 
-Coupled with that: I lean hard on emerging AI tooling to compress the delivery cycle, so a one‑person studio can ship the same class of application a small team would take on. Combined, ecosystem thinking + AI‑accelerated development is the OKJTechnologies method.
-
-**Sectors I've shipped in:** LegalTech · HealthTech · PropTech · FinTech · E‑commerce · Events · NGO / Advocacy · Agritech · Automotive · EdTech · Marketplace.
+**Sectors covered:** LegalTech · HealthTech · PropTech · FinTech · E‑commerce · Events · NGO / Advocacy · Agritech · Automotive · EdTech · Marketplace.
 
 **Notable credentials:**
 - **B.Sc. Computer Science**, Riara University (Second Class Honors, Upper Division).
@@ -189,7 +187,7 @@ Fields per project:
 - **Category / tags:** LegalTech · Digital Policy · Institutional website.
 - **Repo:** *(private / employer‑owned; no personal repo)*
 - **Live URL:** https://www.lawyershub.org
-- **Description:** I spearheaded development of the Lawyers Hub Digital Policy website — the cornerstone LegalTech resource for Kenya's AI‑policy, digital‑trade and Africa digital‑economy conversation. Built and maintained during my tenure as Software Developer, Justice Innovation at Lawyers Tech Hub.
+- **Description:** The Lawyers Hub Digital Policy website was the flagship LegalTech resource for Kenya's AI-policy, digital-trade and Africa digital-economy conversation. Built and maintained during the tenure as Software Developer, Justice Innovation at Lawyers Tech Hub.
 
 ### 2. Africa Law Tech Festival — Event Platform
 - **Tagline:** Ticketing, live notifications and event mapping for the annual Africa Law Tech Festival.
@@ -199,20 +197,20 @@ Fields per project:
 - **Stack:** LAMP.
 - **Category / tags:** EventTech · Ticketing · LegalTech.
 - **Live URL:** https://www.africalawtech.com
-- **Description:** I designed the Africa Law Tech Festival platform — the site that runs online ticketing, live notifications and event mapping for the annual festival (11,000+ attendees across editions per lawyershub.org).
+- **Description:** The Africa Law Tech Festival platform handles online ticketing, live notifications and event mapping for the annual festival (11,000+ attendees across editions per lawyershub.org).
 
 ### 3. AI Policy Lab (ALTF 2024)
 - **Type:** Employer project — contributed to UI/UX.
 - **Status:** Delivered.
 - **Year:** 2024.
 - **Live URL:** https://www.aipolicy.africa/
-- **Description:** I contributed to UI/UX design for the AI Policy Lab — a virtual learning facility for AI‑policy capacity building across Europe and Africa, introduced at the 2024 festival edition (*Artificial Intelligence and the Year of Education*, Aug 26–27 2024).
+- **Description:** UI/UX design contribution for the AI Policy Lab — a virtual learning facility for AI-policy capacity building across Europe and Africa, introduced at the 2024 festival edition (*Artificial Intelligence and the Year of Education*, Aug 26–27 2024).
 
 ### 4. Africa Law Tech University (ALTU) platform
 - **Type:** Employer project.
 - **Year:** 2023–2024.
 - **Live URL:** ALTU never launched under its original name — the direction was folded into the **Africa Digital Policy Institute** course platform, which is live: https://www.lawyershub.org/adpi-courses
-- **Description:** I designed the Africa Law Tech University platform (which became the Africa Digital Policy Institute course platform), centralising capacity‑building activities for the Institute.
+- **Description:** The Africa Law Tech University platform (which became the Africa Digital Policy Institute course platform) centralises capacity-building activities for the Institute.
 
 ### 5. Digital Trade Hackathon site (`DigitalTrade.Africa` / `ALTF2023-Hackathon`)
 - **Tagline:** Landing site for the 2023 Digital Trade tech‑policy hackathon at the Africa Law Tech Festival.
@@ -221,7 +219,7 @@ Fields per project:
 - **Stack:** Static HTML / CSS / JS, Bootstrap 4, TemplateMo "Plot Listing" base, CSS Africa Map plugin, jQuery.
 - **Category / tags:** LegalTech · Events · Static site.
 - **Repos:** `Juniortambo2628/DigitalTrade.Africa` (private) · `Juniortambo2628/ALTF2023-Hackathon` (public).
-- **Description:** I shipped the landing site for the Digital Trade tech‑policy hackathon at ALTF 2023 (I also **chaired the hackathon** on the justice‑innovation team — see §6.4). The site was built on a Bootstrap template with an interactive Africa map to surface participating countries. Event brief: *Digital Trade in Africa: The AfCFTA and the Single Digital Market*, Nairobi, Jul 12–13 2023.
+- **Description:** Landing site for the Digital Trade tech-policy hackathon at ALTF 2023, with the hackathon chaired on the justice-innovation team, producing 11 shortlisted innovations. The site was built on a Bootstrap template with an interactive Africa map to surface participating countries. Event brief: *Digital Trade in Africa: The AfCFTA and the Single Digital Market*, Nairobi, Jul 12–13 2023.
 
 ### 6. Boda‑Boda Law Project — Website & Report (`Bodaboda-Law`)
 - **Tagline:** Legal advisory & education platform for boda‑boda riders and cross‑border traders in Kenya / East Africa.
@@ -231,7 +229,7 @@ Fields per project:
 - **Category / tags:** LegalTech · Access to justice · Advocacy.
 - **Repo:** `Juniortambo2628/Bodaboda-Law` (private).
 - **Report URL (live):** https://www.lawyershub.org/Resources/reports *(the Boda‑Boda Law Project report is in this library)*
-- **Description:** I contributed to the Boda‑Boda Law Project — a legal advisory initiative for boda‑boda operators and cross‑border traders. I co‑organised field data collection in Kisumu and Namanga, contributed to the published report, coordinated in‑person capacity‑building trainings, and shipped the project website with a Typeform intake for real‑time legal advisory requests.
+- **Description:** The Boda-Boda Law Project — a legal advisory initiative for boda-boda operators and cross-border traders. Field data collection was co-organised in Kisumu and Namanga, the published report contributed to, in-person capacity-building trainings coordinated, and the project website shipped with a Typeform intake for real-time legal advisory requests.
 
 ---
 
@@ -244,7 +242,7 @@ Fields per project:
 - **Category / tags:** LegalTech · Corporate site · Admin & client dashboards.
 - **Repo:** `Juniortambo2628/DGLegal` (private).
 - **Live URL:** https://dglegal.co.ke
-- **Description:** I designed and built the website for Dickson, Gitonga Advocates LLP. It ships a public marketing site plus two authenticated portals: an **admin dashboard** (consultation requests, blog posts, team members, publications, firm activity) and a **client dashboard** (case management, correspondence, file uploads, notifications). The publications page has search, filter and pagination.
+- **Description:** The DGLegal website ships a public marketing site plus two authenticated portals: an **admin dashboard** (consultation requests, blog posts, team members, publications, firm activity) and a **client dashboard** (case management, correspondence, file uploads, notifications). The publications page has search, filter and pagination.
 - **DB correction:** current DB copy claims a Kenya‑Law scraper / automated cause‑list feed — that isn't in the repo. Remove that claim.
 
 ### 8. TAMCON Consulting Engineers (`TAMCON`)
@@ -254,7 +252,7 @@ Fields per project:
 - **Category / tags:** Civil engineering · Corporate portfolio · CMS.
 - **Repo:** `Juniortambo2628/TAMCON` (public).
 - **Live URL:** https://tamconsonsult.com
-- **Description:** I designed and built a public portfolio site and a companion admin CMS for TAMCON Consulting Engineers. The interactive front end uses Framer Motion for scroll animations and Swiper for project galleries; the client can publish new projects and media through the CMS without touching code.
+- **Description:** A public portfolio site and companion admin CMS for TAMCON Consulting Engineers. The interactive front end uses Framer Motion for scroll animations and Swiper for project galleries; the client can publish new projects and media through the CMS without touching code.
 
 ### 9. South Ring Autos Workshop Management (`South-Ring-Autos`)
 - **Tagline:** Web application for a Nairobi vehicle workshop — bookings, vehicle service tracking, client comms.
@@ -263,7 +261,7 @@ Fields per project:
 - **Category / tags:** Automotive · Workshop management · Client portal.
 - **Repo:** `Juniortambo2628/South-Ring-Autos` (public).
 - **Live URL:** https://southringautos.com
-- **Description:** I built an integrated workshop management system for South Ring Autos covering online bookings, vehicle service tracking, service reminders and digital documentation, with a role‑based admin area for the workshop team.
+- **Description:** An integrated workshop management system for South Ring Autos covering online bookings, vehicle service tracking, service reminders and digital documentation, with a role-based admin area for the workshop team.
 
 ### 10. Nyalife Women's Health Clinic — Website
 - **Tagline:** Clinic marketing site for a women's health facility in Nairobi.
@@ -271,7 +269,7 @@ Fields per project:
 - **Stack:** LAMP (cPanel hosted).
 - **Category / tags:** HealthTech · Clinic marketing.
 - **Live URL:** https://nyalifewomensclinic.net
-- **Description:** I designed and shipped the public website for Nyalife Women's Health Clinic — services overview, doctor profiles, appointment intake and contact.
+- **Description:** The public website for Nyalife Women's Health Clinic — services overview, doctor profiles, appointment intake and contact.
 
 ### 11. Nyalife Hospital Management System (`Nyalife-HMS-System`)
 - **Tagline:** Clinical administration portal for the Nyalife women's health clinic.
@@ -280,7 +278,7 @@ Fields per project:
 - **Category / tags:** HealthTech · Clinic operations · Patient records.
 - **Repo:** `Juniortambo2628/Nyalife-HMS-System` (public).
 - **Live URL:** https://nyalifewomensclinic.net *(the HMS runs behind the same domain — see the Tibu note in §28: Nyalife HMS is the first live instance of the Tibu product concept).*
-- **Description:** I built a private clinical administration system for Nyalife Women's Health Clinic: patient records, appointment scheduling, clinical file handling and role‑based access. Playwright end‑to‑end tests and a cPanel deployment pipeline ship with the repo. This system is the **first live instance of the Tibu product concept** (§28) — the strategy is to onboard facilities one at a time through this HMS, and use the growing network as the substrate for cross‑facility patient‑record sharing.
+- **Description:** A private clinical administration system for Nyalife Women's Health Clinic: patient records, appointment scheduling, clinical file handling and role-based access. Playwright end-to-end tests and a cPanel deployment pipeline ship with the repo. This system is the **first live instance of the Tibu product concept** (§28) — the strategy is to onboard facilities one at a time through this HMS, and use the growing network as the substrate for cross-facility patient-record sharing.
 
 ### 12. HUCAA — Hekima University College Alumni Association
 - **Tagline:** Alumni association platform, currently at wireframe stage.
@@ -288,7 +286,7 @@ Fields per project:
 - **Category / tags:** EdTech · Alumni portal · Community.
 - **Repo:** `Juniortambo2628/HUCAA` (private).
 - **Live URL:** https://alumni.hekima.ac.ke
-- **Description:** I built the alumni networking portal for Hekima University College Alumni Association — it's live, and I'm iterating on it now as a personal portfolio project using my current stack (Laravel + React). **The current DB claim of "Live WebSockets Chat" / "thousands of alumni connected" is still wrong for the current version — describe only what's actually shipped.**
+- **Description:** The alumni networking portal for Hekima University College Alumni Association — live and being iterated on as a portfolio project using the current stack (Laravel + React). **The current DB claim of "Live WebSockets Chat" / "thousands of alumni connected" is still wrong for the current version — describe only what's actually shipped.**
 
 ### 13. Global Harmony Initiative (`GHI`)
 - **Tagline:** NGO website with programme content, donations and admin.
@@ -297,7 +295,7 @@ Fields per project:
 - **Category / tags:** NGO · Non‑profit · Donations.
 - **Repo:** `Juniortambo2628/GHI` (public).
 - **Live URL:** https://globalharmonyinitiative.com
-- **Description:** I designed and built the Global Harmony Initiative website — a nonprofit platform combining programme content, secure Stripe‑backed donations, WebAuthn passkey admin login, and admin tooling for content and correspondence.
+- **Description:** The Global Harmony Initiative website — a nonprofit platform combining programme content, secure Stripe-backed donations, WebAuthn passkey admin login, and admin tooling for content and correspondence.
 
 ### 14. Wisdom Capital Agricultural Products — E‑commerce
 - **Tagline:** Direct‑to‑consumer storefront and admin dashboard for a Kenyan agricultural producer.
@@ -305,7 +303,7 @@ Fields per project:
 - **Stack:** LAMP (PHP + MySQL) with a React front‑end layer, SMTP mail integration.
 - **Category / tags:** Agritech · E‑commerce · SMB dashboards.
 - **Live URL:** https://wisdomcapital.co.ke
-- **Description:** I built an ordering and delivery site for Wisdom Capital's agricultural products, plus an admin dashboard for sales, payment status and regional distribution tracking.
+- **Description:** An ordering and delivery site for Wisdom Capital's agricultural products, plus an admin dashboard for sales, payment status and regional distribution tracking.
 
 ### 15. Reytati Communications
 - **Tagline:** Agency single‑page site and lead‑capture back end for a Nairobi communications firm.
@@ -313,7 +311,7 @@ Fields per project:
 - **Stack:** LAMP + React front end, dynamic testimonial + service catalog admin.
 - **Category / tags:** Marketing agency · Corporate site.
 - **Live URL:** http://reytaticomms.com
-- **Description:** I built a single‑page interactive site for Reytati Communications with a lead‑capture form, dynamic service catalog and admin panel for updating testimonials and service copy.
+- **Description:** A single-page interactive site for Reytati Communications with a lead-capture form, dynamic service catalog and admin panel for updating testimonials and service copy.
 
 ### 16. Mizizi Sugarcane Juice (`Mizizi`)
 - **Tagline:** Direct‑to‑consumer ordering site with map‑based delivery picker.
@@ -322,7 +320,7 @@ Fields per project:
 - **Category / tags:** Food & Beverage · E‑commerce · Geolocation.
 - **Repo:** `Juniortambo2628/Mizizi` (private).
 - **Live URL:** https://mizizi.okjtech.co.ke
-- **Description:** I built the Mizizi sugarcane‑juice ordering site — product showcase, guest and registered checkout, user profiles, order tracking, and an interactive Leaflet + OpenStreetMap picker so buyers pin the exact delivery location. Precise lat/lon is stored per order and shown on the admin's tracking view.
+- **Description:** The Mizizi sugarcane-juice ordering site — product showcase, guest and registered checkout, user profiles, order tracking, and an interactive Leaflet + OpenStreetMap picker so buyers pin the exact delivery location. Precise lat/lon is stored per order and shown on the admin's tracking view.
 
 ### 17. OKJTechnologies portfolio website (`OKJT`) — *this project*
 - **Tagline:** Studio site for OKJTechnologies with a Laravel CMS and Next.js public front end.
@@ -334,7 +332,7 @@ Fields per project:
 - **Category / tags:** Studio site · Portfolio · Full‑stack.
 - **Repo:** `Juniortambo2628/OKJT` (public).
 - **Live URL:** https://okjtech.co.ke *(the API endpoint on `api.okjtech.co.ke` is not published — exposing an admin API base URL in public copy widens the attack surface for probing / credential‑stuffing; keep it out of user‑facing content.)*
-- **Description:** OKJTechnologies' own studio site — a decoupled application: a Next.js/Vite front end consuming a Laravel API, with an admin CMS for every content type on the site. The `new-changes` rebuild is a leaner, faster version around a search‑indexed `PortfolioProject` model with activity logging and a media library.
+- **Description:** OKJTechnologies' own studio site — a decoupled application: a Next.js/Vite front end consuming a Laravel API, with an admin CMS for every content type on the site. The `new-changes` rebuild is a leaner, faster version around a search-indexed `PortfolioProject` model with activity logging and a media library.
 
 ### 18. The Football Experience (`TFE`)
 - **Tagline:** Travel platform helping fans in Africa access global football events.
@@ -344,7 +342,7 @@ Fields per project:
 - **Category / tags:** Travel · Sports.
 - **Repo:** `Juniortambo2628/TFE` (public).
 - **Live URL:** https://tfe.okjtech.co.ke
-- **Description:** I'm building the platform for The Football Experience — a travel product for African fans attending international football events — in partnership with Terik Tours. Scope covers event catalog, itinerary planning, payment tracking and social discovery. **The current DB copy claims virtual wallet ledgers / installment financing / encryption — those features are on the roadmap, not in the repo. Describe the actual current build only.**
+- **Description:** The Football Experience — a travel product for African fans attending international football events, built in partnership with Terik Tours. Scope covers event catalog, itinerary planning, payment tracking and social discovery. **The current DB copy claims virtual wallet ledgers / installment financing / encryption — those features are on the roadmap, not in the repo. Describe the actual current build only.**
 
 ### 19. Tena Digital Onboarding Platform (`Tena-host`)
 - **Tagline:** Progressive‑disclosure onboarding portal with analytics dashboard.
@@ -353,7 +351,7 @@ Fields per project:
 - **Category / tags:** FinTech · KYC / onboarding · Admin analytics.
 - **Repo:** `Juniortambo2628/Tena-host` (public).
 - **Live URL:** https://tena.host
-- **Description:** I built the Tena onboarding platform — a progressive‑disclosure registration flow, an admin analytics dashboard with Recharts, WebAuthn passkey login, tabular data management with TanStack Table, and transactional email built with React‑Email components.
+- **Description:** The Tena onboarding platform — a progressive-disclosure registration flow, an admin analytics dashboard with Recharts, WebAuthn passkey login, tabular data management with TanStack Table, and transactional email built with React-Email components.
 
 ### 20. Najenga — Construction collaboration platform (`Najenga`)
 - **Tagline:** Blueprint‑annotation and coordination web app bridging site engineers, architects, PMs and clients.
@@ -364,7 +362,7 @@ Fields per project:
 - **Category / tags:** PropTech · Construction · Collaboration · Document annotation.
 - **Repo:** `Juniortambo2628/Najenga` (public).
 - **Live URL:** https://najenga.okjtech.co.ke
-- **Description:** Construction‑project coordination platform — annotate architectural drawings directly (Annotorious over PDFs / images), work through interactive project timelines, run OCR over documents (Tesseract.js), export to Excel, and coordinate in a chat with @mentions.
+- **Description:** Najenga is a construction-project coordination platform — annotate architectural drawings directly (Annotorious over PDFs / images), work through interactive project timelines, run OCR over documents (Tesseract.js), export to Excel, and coordinate in a chat with @mentions.
 
 ### 21. Naoa (`naoa-dt`) — modern wedding platform (evolved from DnT‑Wedding)
 - **Tagline:** Digital ecosystem for weddings: live gallery, guest onboarding, digital scrapbook.
@@ -373,7 +371,7 @@ Fields per project:
 - **Category / tags:** Events · Weddings · Real‑time · Multi‑language.
 - **Repo:** `Juniortambo2628/naoa-dt` (public).
 - **Live URLs:** https://dntwed.okjtech.co.ke *(current demo — an instance of Naoa built for the DnT wedding)* · https://naoa.okjtech.co.ke *(planned as the public product landing page with a SaaS approach — sign‑up, per‑event instance spin‑up, per‑couple subdomain)*
-- **Description:** Wedding platform with live photo galleries, QR guest check‑in, an interactive venue map, real‑time updates via Laravel Echo + Pusher, and a downloadable "digital scrapbook" export assembled client‑side (html‑to‑image / jsPDF / jszip). Front end is internationalised with i18next.
+- **Description:** Naoa is a wedding platform with live photo galleries, QR guest check-in, an interactive venue map, real-time updates via Laravel Echo + Pusher, and a downloadable "digital scrapbook" export assembled client-side (html-to-image / jsPDF / jszip). Front end is internationalised with i18next.
 
 ### 22. Kuba Home Services (`Kuba-hs`)
 - **Tagline:** Service‑provider marketplace connecting clients with vetted home & business services across 13 categories.
@@ -383,7 +381,7 @@ Fields per project:
 - **Repo:** `Juniortambo2628/Kuba-hs` (public).
 - **Live URL:** https://kuba.co.ke
 - **Categories supported:** Cleaning & Maintenance · Electrical · Health & Wellness · Personal & Grooming · Education & Training · Food & Hospitality · Professional Services · Legal Services · Technology & IT · HR · Financial · Commercial Real Estate · Commercial Logistics.
-- **Description:** Service‑provider marketplace with client and provider dashboards, quote‑request flows, in‑platform real‑time messaging (Laravel Echo + Pusher), Stripe payments and Calendly booking. Deploys via cPanel with GitHub Actions.
+- **Description:** Kuba is a service-provider marketplace with client and provider dashboards, quote-request flows, in-platform real-time messaging (Laravel Echo + Pusher), Stripe payments and Calendly booking. Deploys via cPanel with GitHub Actions.
 
 ### 23. Silversky — E‑commerce (`shop-silversky`)
 - **Tagline:** Custom e‑commerce site for Silversky.
@@ -392,7 +390,7 @@ Fields per project:
 - **Category / tags:** E‑commerce · Passkey auth · Brand site.
 - **Repo:** `Juniortambo2628/shop-silversky` (private).
 - **Live URL:** https://shop.silversky.co.ke
-- **Description:** Silversky e‑commerce build — full brand‑system implementation (8 vector logo variants documented and matched to the brand guide), WebAuthn passkey login, Leaflet‑based location features.
+- **Description:** Silversky e-commerce build — full brand-system implementation (8 vector logo variants documented and matched to the brand guide), WebAuthn passkey login, Leaflet-based location features.
 
 ### 24. OmniShop — Solar & Storage Live Kenya 2026 exhibitor catalog (`shop-omnispace3d`)
 - **Tagline:** Standalone exhibitor ordering site for a trade show, ~190 products, deployable by a non‑developer.
@@ -401,7 +399,7 @@ Fields per project:
 - **Category / tags:** Events · E‑commerce · Self‑hostable.
 - **Repo:** `Juniortambo2628/shop-omnispace3d` (public).
 - **Live URL:** https://omnispace3d.com *(client's own domain — OmniShop is deployed under it for the event)*
-- **Description:** OmniShop, the exhibitor ordering site for Solar and Storage Live Kenya 2026. Exhibitors browse a 190‑product catalog, place orders and get a receipt; the admin panel handles order status (Pending → Approved → Invoiced → Fulfilled), prints category‑grouped packing lists, and exports orders to CSV. Packaged for a non‑technical client with a plain‑English guide and a one‑click `.bat` launcher.
+- **Description:** OmniShop, the exhibitor ordering site for Solar and Storage Live Kenya 2026. Exhibitors browse a 190-product catalog, place orders and get a receipt; the admin panel handles order status (Pending → Approved → Invoiced → Fulfilled), prints category-grouped packing lists, and exports orders to CSV. Packaged for a non-technical client with a plain-English guide and a one-click `.bat` launcher.
 
 ### 25. Nissi Insights (`nissi-insights`)
 - **Tagline:** Content / insights publication platform.
@@ -410,7 +408,7 @@ Fields per project:
 - **Category / tags:** Content platform · Publishing · Admin CMS.
 - **Repo:** `Juniortambo2628/nissi-insights` (public).
 - **Live URL:** https://nissi-insights.com
-- **Description:** Nissi Insights — a Next.js content platform with a Tiptap rich editor, tag / category management, image uploads with dropzone + browser compression, and an SWR‑backed admin dashboard.
+- **Description:** Nissi Insights — a Next.js content platform with a Tiptap rich editor, tag / category management, image uploads with dropzone + browser compression, and an SWR-backed admin dashboard.
 
 ### 26. gm‑project (`gm-project`)
 - **Tagline:** Full‑stack service / consulting platform with payments and scheduling.
@@ -419,7 +417,7 @@ Fields per project:
 - **Category / tags:** SaaS · Consulting · Payments · Scheduling.
 - **Repo:** `Juniortambo2628/gm-project` (public).
 - **Live URL:** https://gm-coaching.com *(the client's public name — use "GM Coaching" or the client's preferred display name in the site copy, not the internal `gm-project` slug.)*
-- **Description:** Full‑stack platform with a Next.js front end and Laravel backend — Stripe checkout, Calendly booking, real‑time updates via Pusher, dashboards with Recharts, file uploads through FilePond.
+- **Description:** GM Coaching is a full-stack platform with a Next.js front end and Laravel backend — Stripe checkout, Calendly booking, real-time updates via Pusher, dashboards with Recharts, file uploads through FilePond.
 
 ### 27. Culture Monitor (`culture-monitor`)
 - **Status:** Repo initialised, empty scaffold — do not feature until there's something to show.
@@ -430,9 +428,9 @@ Fields per project:
 - **Live URL:** No standalone Tibu URL yet — the current implementation runs as https://nyalifewomensclinic.net (Nyalife HMS).
 - **Description:** Tibu is the **parent product concept**; the Nyalife HMS is its **first live instance**. The strategy is *ecosystem by adoption*:
   1. Onboard facilities one at a time via the HMS — each facility gets a fully useful clinical administration system on day one (patient records, appointments, clinical files, RBAC).
-  2. As more facilities adopt it, the underlying data schema becomes the substrate for **cross‑facility patient‑record sharing** — a patient's history follows them wherever they present, regardless of the facility's tier (Level 3 to Level 6, public or private).
+  2. As more facilities adopt it, the underlying data schema becomes the substrate for **cross-facility patient-record sharing** — a patient's history follows them wherever they present, regardless of the facility's tier (Level 3 to Level 6, public or private).
   3. The wider Tibu objectives — interoperability across the referral chain, equal quality of documentation across socioeconomic strata, consolidated countrywide insights for research and NGO reporting — become reachable *because* the network already exists.
-  This is a direct application of the ecosystem‑mapping approach in §1: every stakeholder (patient, practitioner, facility, referral partner, national health authority, NGO/UN researcher) has an aligned reason to participate before we ask any of them to. **Present Tibu as "the product Nyalife HMS is running on" — not as vapourware, and not as a separate unrelated concept. Remove the "100% Policy Visibility" stat from the DB.**
+  This is a direct application of the ecosystem-mapping approach in §1: every stakeholder (patient, practitioner, facility, referral partner, national health authority, NGO/UN researcher) has an aligned reason to participate before any of them are asked to. **Present Tibu as "the product Nyalife HMS is running on" — not as vapourware, and not as a separate unrelated concept. Remove the "100% Policy Visibility" stat from the DB.**
 
 ---
 
@@ -449,7 +447,7 @@ Fields per project:
 | DGLegal "Kenya Law scraper / automated cause lists"                                                    | Not in the repo.                                                     | Rewrite copy from §7 above.                                       |
 | TFE "custom virtual wallet ledgers, installment financing schedulers"                                  | Roadmap, not built.                                                  | Rewrite as *in development, with Terik Tours*.                    |
 | HUCAA "Live WebSockets Chat" · "connected thousands of alumni"                                          | Repo is a wireframe folder.                                          | Rewrite as *in development / wireframe*.                          |
-| Every project description starting with "We built…" / "Our team…"                                      | I work solo.                                                         | Rewrite in first person singular.                                 |
+| Every project description starting with "We built…" / "Our team…"                                      | Objective tone required.                                           | Rewrite in work-focused, third-person format.                    |
 | The three current `insights` articles                                                                  | Fabricated content I did not write.                                  | Delete; replace with the shortlist in §9 (I can draft them).      |
 | **New‑changes** `DatabaseSeeder` sample projects ("Retail Solutions Ltd", "Prime Properties Kenya", "Savannah Grill", "MediCare Clinics", "Events Kenya") | Unsplash + lorem‑style placeholders that were never real clients.    | Re‑seed with the real catalog above (§10).                        |
 
@@ -502,9 +500,9 @@ php artisan db:seed --class=FocusAreasBackfillSeeder
 
 ### Key framing rules enforced
 
-- Solo founder narrative ("I built...", never "we")
+- Objective, work-focused narrative (no first-person "I" or "we")
 - No fabricated stats, testimonials, or team members
 - Real project statuses (Live / In development / Delivered / Concept)
 - Real URLs and stacks from actual repos
-- All project descriptions in first person singular
+- All project descriptions in third-person, focused on the platform/system
 - `focus_areas` added to every project for hero meta strip rendering
