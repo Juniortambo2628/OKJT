@@ -16,7 +16,7 @@ const WhatsAppButton = ({ phoneNumber: propPhone, message: propMsg }: WhatsAppBu
     const settingsMsg = getSetting('whatsapp_message')
 
     const phoneNumber = propPhone || settingsPhone || '447000000000'
-    const message = propMsg || settingsMsg || 'Hello, I\'d like to learn more about OKJTech web engineering services.'
+    const message = propMsg || settingsMsg || 'Hello, I would like to discuss a web project with OKJTechnologies.'
     
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
 

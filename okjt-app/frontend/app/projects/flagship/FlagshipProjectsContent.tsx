@@ -33,15 +33,15 @@ export default function FlagshipProjectsContent() {
             navSections={navSections}
             heroMedia={heroMedia}
             tagline="Flagship Work"
-            title="Engineering the <br />Future of Digital."
-            subtitle="Explore our bespoke flagship projects — highly specialized digital products built for scale, performance, and maximum impact."
+            title="Products built <br />from the ground up."
+            subtitle="Flagship products developed by OKJTechnologies, each designed around a whole ecosystem of users and partners."
         >
             {/* Flagship Projects Section */}
             <ParallaxSection
                 id="flagship-projects"
                 badgeText="FLAGSHIP WORK"
                 title="Flagship Projects"
-                subtitle="Bespoke digital products built for scale and impact."
+                subtitle="Products developed and owned by OKJTechnologies."
                 heightClass="min-h-[140vh]"
                 contentMaxWidth="max-w-[1400px]"
             >
@@ -49,7 +49,7 @@ export default function FlagshipProjectsContent() {
                     <SectionSkeleton />
                 ) : flagshipProjects.length === 0 ? (
                     <div className="flex items-center justify-center h-full text-white/60 text-xl">
-                        Our flagship projects are currently being synchronized.
+                        Flagship projects are loading.
                     </div>
                 ) : (
                     <HorizontalCarousel className="h-full">
@@ -69,27 +69,27 @@ export default function FlagshipProjectsContent() {
             {/* Methodology Section */}
             <ParallaxSection
                 id="process"
-                badgeText="OUR METHODOLOGY"
-                title="How We Deliver Excellence"
-                subtitle="A rigorous, engineering-led approach to product development and digital transformation."
+                badgeText="METHOD"
+                title="How flagship products are built"
+                subtitle="Three stages that keep each product tied to the people it serves."
                 heightClass="min-h-[120vh]"
                 contentMaxWidth="max-w-[1400px]"
             >
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div className="bg-black/20 p-8 border border-white/5 hover:border-primary/40 rounded-2xl transition-all">
-                        <div className="text-primary font-bold text-xl mb-4">01. Discovery</div>
-                        <h3 className="text-white text-lg font-bold mb-3">Strategic Alignment</h3>
-                        <p className="text-white/60 text-sm leading-relaxed">We deep-dive into your business objectives, target audience, and technical constraints to architect a comprehensive roadmap.</p>
+                        <div className="text-primary font-bold text-xl mb-4">01. Mapping</div>
+                        <h3 className="text-white text-lg font-bold mb-3">Ecosystem mapping</h3>
+                        <p className="text-white/60 text-sm leading-relaxed">Everyone the product will touch is mapped first: users, partners, regulators and the community. The first release is scoped around what each of them needs.</p>
                     </div>
                     <div className="bg-black/20 p-8 border border-white/5 hover:border-primary/40 rounded-2xl transition-all">
-                        <div className="text-primary font-bold text-xl mb-4">02. Execution</div>
-                        <h3 className="text-white text-lg font-bold mb-3">Iterative Engineering</h3>
-                        <p className="text-white/60 text-sm leading-relaxed">Our engineers and designers work in agile sprints, delivering testable features rapidly while ensuring code quality and scalability.</p>
+                        <div className="text-primary font-bold text-xl mb-4">02. Building</div>
+                        <h3 className="text-white text-lg font-bold mb-3">Short build cycles</h3>
+                        <p className="text-white/60 text-sm leading-relaxed">The product is built in short cycles, each ending with a working version that can be tested. Feedback from each cycle shapes the next.</p>
                     </div>
                     <div className="bg-black/20 p-8 border border-white/5 hover:border-primary/40 rounded-2xl transition-all">
-                        <div className="text-primary font-bold text-xl mb-4">03. Scale</div>
-                        <h3 className="text-white text-lg font-bold mb-3">Optimization & Growth</h3>
-                        <p className="text-white/60 text-sm leading-relaxed">Post-launch, we monitor analytics, optimize performance, and scale infrastructure to support your growing user base.</p>
+                        <div className="text-primary font-bold text-xl mb-4">03. Growing</div>
+                        <h3 className="text-white text-lg font-bold mb-3">Launch and growth</h3>
+                        <p className="text-white/60 text-sm leading-relaxed">After launch, usage and performance are monitored, and the platform is refined and extended as more people adopt it.</p>
                     </div>
                 </div>
                 <div className="mt-16 text-center">

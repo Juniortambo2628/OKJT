@@ -36,9 +36,9 @@ export default function ProjectsContent() {
         <BaseLayout
             navSections={navSections}
             heroMedia={heroMedia}
-            tagline="Our Portfolio"
-            title="Transforming Ideas <br />Into Digital Reality."
-            subtitle="Explore our complete portfolio, from highly specialized flagship products to tailored client solutions."
+            tagline="Portfolio"
+            title="Real platforms, <br />built end to end."
+            subtitle="Web platforms for health, law, construction, events, commerce and nonprofits. Each project shows the opportunity it responds to and what was built."
         >
             {/* Flagship Projects Section */}
             {flagshipProjects.length > 0 && (
@@ -46,7 +46,7 @@ export default function ProjectsContent() {
                     id="flagship-projects"
                     badgeText="FLAGSHIP WORK"
                     title="Flagship Projects"
-                    subtitle="Bespoke digital products built for scale and impact."
+                    subtitle="Products developed and owned by OKJTechnologies."
                     heightClass="min-h-[140vh]"
                     contentMaxWidth="max-w-[1400px]"
                 >
@@ -74,7 +74,7 @@ export default function ProjectsContent() {
                     id="client-projects"
                     badgeText="CLIENT WORK"
                     title="Client Projects"
-                    subtitle="Tailored solutions that drive real business outcomes."
+                    subtitle="Platforms designed and built for client organisations."
                     heightClass="min-h-[140vh]"
                     contentMaxWidth="max-w-[1400px]"
                 >

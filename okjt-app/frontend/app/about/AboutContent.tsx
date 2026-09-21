@@ -27,34 +27,34 @@ const defaultCategories: ExpCategory[] = [
         key: 'digital-policy',
         label: 'Digital Policy',
         items: [
-            { title: 'Lawyers Hub Digital Policy site', summary: 'Cornerstone Kenya digital-policy resource — architecture, engineering, ongoing administration.', href: '/projects', tag: 'Platform' },
-            { title: 'Africa Law Tech Festival platform', summary: 'Online ticketing, live notifications, event mapping — annual festival, continental audience.', href: '/projects', tag: 'Event tech' },
-            { title: 'ADPI training delivery', summary: 'Delivered the Africa Data Protection Course and the CIPP/E certification programme.', href: '/projects', tag: 'Training' },
+            { title: 'Lawyers Hub Digital Policy website', summary: 'A leading Kenyan resource on digital policy, from its structure and build to its ongoing care.', href: '/projects/lawyers-hub-digital-policy', tag: 'Platform' },
+            { title: 'Africa Law Tech Festival platform', summary: 'Online ticketing, live updates and event maps for an annual festival with a continental audience.', href: '/projects/africa-law-tech-festival', tag: 'Event platform' },
+            { title: 'ADPI training delivery', summary: 'Support for the Africa Data Protection Course and the CIPP/E certification programme.', href: '/projects/adpi-courses', tag: 'Training' },
         ],
     },
     {
         key: 'ui-ux',
-        label: 'UI / UX',
+        label: 'Interface Design',
         items: [
-            { title: 'Najenga — construction coordination', summary: 'Annotate architectural drawings, run project timelines, OCR PDFs, export to Excel, chat with @mentions.', href: '/projects/najenga-construction-collaboration-platform', tag: 'Product' },
-            { title: 'Naoa — digital wedding platform', summary: 'End-to-end experience: invitations, RSVPs, gifting, live guest updates.', href: '/projects', tag: 'Product' },
-            { title: 'Tibu — HealthTech interface', summary: 'Interface design for clinical workflows across desktop and mobile touchpoints.', href: '/projects', tag: 'Interface' },
+            { title: 'Najenga: construction coordination', summary: 'Drawings, budgets, timelines and team conversations brought into one shared workspace.', href: '/projects/najenga', tag: 'Product' },
+            { title: 'Naoa: digital wedding platform', summary: 'Invitations, RSVPs, gifts and live guest updates in one experience.', href: '/projects/naoa', tag: 'Product' },
+            { title: 'Tibu: healthcare interface', summary: 'Clinical workflows designed for the doctors, nurses and staff who use them on desktop and mobile.', href: '/projects/tibu', tag: 'Interface' },
         ],
     },
     {
         key: 'engineering',
         label: 'Web Engineering',
         items: [
-            { title: 'Laravel + Next.js flagship stack', summary: 'Schema-first backends, typed APIs, App Router frontends — auth, admin, background jobs, deploys.', href: '/services', tag: 'Stack' },
-            { title: 'Deployment & administration', summary: 'cPanel + domain admin, CI to production, monitoring and ongoing maintenance.', href: '/services', tag: 'Ops' },
+            { title: 'Laravel and Next.js platforms', summary: 'Complete web applications with secure sign-in, admin dashboards, automated tasks and reliable launches.', href: '/services', tag: 'Engineering' },
+            { title: 'Launch and ongoing care', summary: 'Hosting, domains, automatic deployments, monitoring and maintenance after launch.', href: '/services', tag: 'Operations' },
         ],
     },
     {
         key: 'ecosystem',
         label: 'Ecosystem Strategy',
         items: [
-            { title: 'Ecosystem mapping practice', summary: 'Stakeholder mapping before scoping — client, user, regulator, partner, community — each with an aligned reason to participate.', href: '/our-approach', tag: 'Method' },
-            { title: 'Boda-Boda Law Project', summary: 'Co-organised field research in Kisumu and Namanga; contributed to the published report.', href: '/projects', tag: 'Research' },
+            { title: 'Ecosystem mapping practice', summary: 'Everyone a platform touches is mapped before scoping, so each has a clear reason to take part.', href: '/our-approach', tag: 'Method' },
+            { title: 'Boda-Boda Law Project', summary: 'Field research in Kisumu and Namanga that informed a published legal report.', href: '/projects/boda-boda-law', tag: 'Research' },
         ],
     },
 ]
@@ -70,15 +70,15 @@ export default function AboutContent() {
     // ecosystem-mapping framing, no fabricated "team" / "we" language.
     // Keeping them honest here means the page still reads right even if the
     // admin CMS is briefly unreachable at request time.
-    const title = getSetting('about_title', 'Design-led web engineering,\nbuilt around ecosystems.')
-    const tagline = getSetting('about_tagline', 'How the work gets done')
-    const story = getSetting('about_story', 'OKJTechnologies is a Nairobi web-application practice. The work is full-stack and end to end — concept, interface, engineering, deployment and ongoing administration — mostly in Laravel, Next.js / React and the classic LAMP stack. Every build starts by mapping the ecosystem the software has to live in, so each stakeholder has an aligned reason to participate. It is a one-person studio, run by Kevin Tambo.')
-    const missionTitle = getSetting('about_mission_title', 'Ecosystem mapping before a line of code.')
-    const missionText1 = getSetting('about_mission_text1', 'Every engagement is shaped by an ecosystem-mapping practice from the Afrilabs capacity-building programme in Addis Ababa. Before scoping, the map covers every stakeholder — client, end user, regulator, partner, community — who could be affected by or beneficial to the proposition.')
-    const missionText2 = getSetting('about_mission_text2', 'The solution is then designed so each of those stakeholders has a clearly aligned way to benefit from it. Combined with AI-accelerated development, it is how a one-person studio ships the same class of application a small team would take on.')
+    const title = getSetting('about_title', 'Design-led web engineering,\nbuilt around the people it serves.')
+    const tagline = getSetting('about_tagline', 'HOW THE WORK GETS DONE')
+    const story = getSetting('about_story', 'OKJTechnologies is a web engineering studio in Nairobi. It takes projects from first idea to a live, supported platform: planning, interface design, engineering, launch and ongoing administration. The work spans hospitals, law firms, construction teams, event companies, nonprofits and online stores.')
+    const missionTitle = getSetting('about_mission_title', 'Every stakeholder is mapped before anything is built.')
+    const missionText1 = getSetting('about_mission_text1', 'Each project starts by mapping everyone the platform will touch: the client, the people who will use it every day, regulators, partners and the wider community. The method comes from the Afrilabs programme “Leveraging Stakeholder Relationships through Ecosystem Mapping and Building” in Addis Ababa.')
+    const missionText2 = getSetting('about_mission_text2', 'The platform is then designed so each of those groups has a clear reason to use it and a clear benefit from it. That is what turns a website into a working system inside its real context. Modern AI-assisted tools keep delivery fast without cutting corners.')
 
-    const expTitle = getSetting('about_experience_title', 'Where the capability was built')
-    const expSubtitle = getSetting('about_experience_subtitle', 'Selected work across the disciplines that shape every OKJTech engagement — each linked to the project it powers.')
+    const expTitle = getSetting('about_experience_title', 'Where the experience comes from')
+    const expSubtitle = getSetting('about_experience_subtitle', 'Selected work across the disciplines behind every OKJTechnologies project, each linked to the platform it shaped.')
 
     // Categories: sub-areas of demonstrated capability. Each item links to a project or insight.
     // Kept as a static shape here so the fallback holds when the CMS is briefly unreachable;
@@ -103,8 +103,8 @@ export default function AboutContent() {
     }, [categories, selectedCategoryKey])
     const activeItems = categories.find((c) => c.key === activeCategory)?.items ?? []
 
-    const teamTitle = getSetting('about_team_title', 'One continuous thread, concept to production')
-    const teamSubtitle = getSetting('about_team_subtitle', 'Every project is designed, built, deployed and administered as one continuous piece of work — no hand-offs between teams, no context dropped between phases, one point of accountability. OKJTechnologies is deliberately a one-person studio.')
+    const teamTitle = getSetting('about_team_title', 'One continuous thread, from concept to live platform')
+    const teamSubtitle = getSetting('about_team_subtitle', 'Every project is designed, built, launched and supported as one continuous piece of work. There are no hand-offs between teams and no context lost between stages, with a single point of accountability from start to finish.')
 
     const bgMission = getSetting('bg_about_mission')
     // Kept for CMS backwards-compat: existing key drives the experience section background
@@ -130,7 +130,7 @@ export default function AboutContent() {
             >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-20 items-center w-full">
                     <FadeIn direction="left" distance={30}>
-                        <span className="text-primary font-bold text-sm uppercase tracking-[0.2em] mb-4 block">Our Mission</span>
+                        <span className="text-primary font-bold text-sm uppercase tracking-[0.2em] mb-4 block">The method</span>
                         <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 leading-tight">{missionTitle}</h2>
                         <p className="text-white/70 text-base md:text-lg leading-relaxed mb-6">{missionText1}</p>
                         <p className="text-white/70 text-base md:text-lg leading-relaxed">{missionText2}</p>
@@ -198,8 +198,8 @@ export default function AboutContent() {
                 id="about-values"
                 bgMedia={bgValues}
                 heightClass="min-h-[140vh]"
-                badgeText="HOW WE WORK"
-                title="Our Core Values"
+                badgeText="HOW THE WORK IS DONE"
+                title="Working principles"
                 contentMaxWidth="max-w-[1400px]"
             >
                 <HorizontalCarousel className="h-full">

@@ -79,6 +79,10 @@ interface DetailLayoutProps {
     significantFigureLabel?: string
     category?: string
     categoryLabel?: string
+
+    // Ecosystem: who the work serves and its intended impact (HTML)
+    ecosystemTitle?: string
+    ecosystemHtml?: string
     
     // Content body
     description?: string
@@ -140,6 +144,8 @@ export default function DetailLayout({
     significantFigureLabel = 'Impact Result',
     category,
     categoryLabel = 'Sector',
+    ecosystemTitle = 'Ecosystem',
+    ecosystemHtml,
     description,
     challengeTitle,
     challengeHtml,
@@ -188,6 +194,15 @@ export default function DetailLayout({
 
     const heroChildren = (
         <div className="flex flex-col gap-6 pt-8 border-t border-white/10">
+            {ecosystemHtml && (
+                <div className="flex flex-col gap-2 max-w-4xl">
+                    <span className="text-[10px] text-white/50 uppercase tracking-widest">{ecosystemTitle}</span>
+                    <div
+                        className="text-sm md:text-[15px] text-white/80 leading-relaxed font-light prose prose-invert max-w-none prose-p:text-white/80 prose-p:my-0"
+                        dangerouslySetInnerHTML={{ __html: ecosystemHtml }}
+                    />
+                </div>
+            )}
             <div className="flex flex-wrap items-center gap-8">
                 {significantFigure && (
                     <div className="flex flex-col">
@@ -291,7 +306,7 @@ export default function DetailLayout({
                             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/75 to-black/25" />
                             <div className="absolute inset-x-0 bottom-0 top-16 p-5 flex flex-col justify-end gap-3">
                                 {technologies && Array.isArray(technologies) && technologies.length > 0 && (
-                                    <div className="flex flex-wrap gap-1.5">
+                                    <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto custom-scrollbar pr-1">
                                         {technologies.map((tech: string, i: number) => (
                                             <span
                                                 key={i}

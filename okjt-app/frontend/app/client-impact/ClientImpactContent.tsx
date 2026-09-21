@@ -28,8 +28,8 @@ export default function ClientImpactContent() {
             navSections={CLIENT_IMPACT_NAV_SECTIONS}
             heroMedia={heroMedia}
             tagline="Client Impact"
-            title="Results that build trust."
-            subtitle="Delivering measurable results across global markets through strategic advisory and deep sector expertise."
+            title="Work that clients rely on."
+            subtitle="Platforms in daily use by clinics, law firms, workshops, event companies and nonprofits, with clients’ own words where they have shared them."
         >
             {/* Projects Section wrapped in parallax */}
             <ParallaxSection

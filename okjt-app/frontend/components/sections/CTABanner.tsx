@@ -39,8 +39,8 @@ const CTABanner = () => {
     const { getSetting } = useSettings()
 
     const badgeText = getSetting('cta_badge') || 'GET IN TOUCH'
-    const title = getSetting('cta_title') || 'Let\'s build the next one together.'
-    const subtitle = getSetting('cta_subtitle') || 'Bring the brief — we\'ll map the ecosystem, scope the build and give you a realistic path to production.'
+    const title = getSetting('cta_title') || 'Have a platform in mind?'
+    const subtitle = getSetting('cta_subtitle') || 'Share a short brief. It will be mapped against the people the platform needs to serve, scoped into clear stages and returned with a realistic path to launch.'
 
     const bgMedia = getSetting('bg_home_cta')
     const email = getSetting('contact_email', 'hello@okjtech.co.ke')
@@ -73,7 +73,7 @@ const CTABanner = () => {
                             Start a Project
                         </PrimaryButton>
                         <PrimaryButton href="/projects" variant="outline" size="md" className="border-[#14110b]/30 text-[#14110b] hover:bg-[#14110b]/10 w-full justify-center">
-                            View Our Work
+                            View the Work
                         </PrimaryButton>
                     </div>
                 </div>

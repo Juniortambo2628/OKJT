@@ -17,8 +17,8 @@ export default function ServicesIndexContent() {
     const heroMedia = videoSrc ?? bgImage
     const { data: services, isLoading } = useApi<Service[]>('/services')
 
-    const servicesTitle = getSetting('services_title', 'Services that drive digital transformation.')
-    const servicesSubtitle = getSetting('services_subtitle', 'From strategy to execution, we build high-performance software, interfaces, and platforms tailored to your business.')
+    const servicesTitle = getSetting('services_title', 'Web applications, designed and built end to end.')
+    const servicesSubtitle = getSetting('services_subtitle', 'Each service covers a part of the same journey: shaping the idea, designing the experience, building the platform and keeping it running well.')
 
     const navSections = React.useMemo(() => [
         { id: 'hero', label: 'Intro' },
@@ -29,17 +29,17 @@ export default function ServicesIndexContent() {
         <BaseLayout
             navSections={navSections}
             heroMedia={heroMedia}
-            tagline="Our Services"
+            tagline="Services"
             title={servicesTitle}
             subtitle={servicesSubtitle}
-            cta={{ label: 'View All Services', href: '/services' }}
+            cta={{ label: 'Start a Project', href: '/contact' }}
             loading={settingsLoading || mediaLoading}
         >
             <ParallaxSection
                 id="services-list"
-                badgeText="What We Do"
-                title="Explore our services"
-                subtitle="Specialist capabilities across web engineering, design, and digital strategy."
+                badgeText="Services"
+                title="Explore the services"
+                subtitle="Capabilities across web engineering, interface design and technical strategy."
                 cta={{ label: 'Start a Project', href: '/contact' }}
                 heightClass="min-h-[125vh]"
                 contentMaxWidth="max-w-[1400px]"

@@ -328,7 +328,7 @@ const Navbar = () => {
                             <div>
                                 <BookOpen className="h-5 w-5 text-primary mb-4" />
                                 <h3 className="text-lg font-bold tracking-tight text-foreground mb-2">Ready to start?</h3>
-                                <p className="text-muted-foreground text-xs mb-6 leading-relaxed">View our projects and see how we help businesses scale.</p>
+                                <p className="text-muted-foreground text-xs mb-6 leading-relaxed">See platforms built for clinics, law firms, event companies and more.</p>
                             </div>
                             <Button className="w-full bg-[#14110b] text-white hover:bg-[#14110b]/90 rounded-xl py-4 flex items-center justify-start gap-2" asChild>
                                 <Link href="/projects">

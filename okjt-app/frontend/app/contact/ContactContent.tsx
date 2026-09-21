@@ -31,7 +31,7 @@ export default function ContactContent() {
 
     const { data: services } = useApi<Service[]>('/services')
     const sectors = React.useMemo(() => {
-        if (!services) return ['Software Development', 'Electronics & IoT', 'E-Commerce Solutions', 'Technical Audit']
+        if (!services) return ['Web Development', 'UI/UX Design', 'Digital Strategy']
         const uniqueSectors = new Set(services.map(s => s.category).filter(Boolean))
         return Array.from(uniqueSectors) as string[]
     }, [services])
@@ -58,7 +58,7 @@ export default function ContactContent() {
             await api.post('/consultation-requests', data)
             toast({
                 title: "Submission Received",
-                description: "Your submission has been received. You will be contacted concerning your submission shortly. An email has been sent to the address indicated on the form confirming the same.",
+                description: "Thank you. The brief has been received and a confirmation email is on its way. A reply with next steps will follow shortly.",
             })
             form.reset()
         } catch (err: unknown) {
@@ -77,9 +77,9 @@ export default function ContactContent() {
         <BaseLayout
             navSections={CONTACT_NAV_SECTIONS}
             heroMedia={heroMedia}
-            tagline="Request a Quote"
-            title="Bring your vision <br />to life."
-            subtitle="Discuss your next digital project with our engineering team. From custom software to innovative hardware, we build the future."
+            tagline="Start a Project"
+            title="Share what <br />needs building."
+            subtitle="Describe the platform, the people it should serve and the timeline. Every brief receives a reply with next steps."
             loading={settingsLoading || mediaLoading}
         >
             {/* Form Section */}
@@ -97,30 +97,30 @@ export default function ContactContent() {
                             <div className="w-16 h-16 bg-white/5 backdrop-blur-md flex items-center justify-center rounded-none border border-white/10 mx-auto mb-6">
                                 <Globe className="h-6 w-6 text-primary" />
                             </div>
-                            <h4 className="font-bold text-white mb-2">Global Expertise</h4>
-                            <p className="text-xs text-white/60 leading-relaxed">Advisors with deep experience across 40+ markets.</p>
+                            <h4 className="font-bold text-white mb-2">Proven delivery</h4>
+                            <p className="text-xs text-white/60 leading-relaxed">Platforms live in health, law, construction, events, hospitality and commerce.</p>
                         </StaggerItem>
                         <StaggerItem className="text-center">
                             <div className="w-16 h-16 bg-white/5 backdrop-blur-md flex items-center justify-center rounded-none border border-white/10 mx-auto mb-6">
                                 <Clock className="h-6 w-6 text-primary" />
                             </div>
                             <h4 className="font-bold text-white mb-2">Confidentiality</h4>
-                            <p className="text-xs text-white/60 leading-relaxed">Secure, high-stakes dialogue focused on your objectives.</p>
+                            <p className="text-xs text-white/60 leading-relaxed">Every brief and project detail is kept confidential.</p>
                         </StaggerItem>
                         <StaggerItem className="text-center">
                             <div className="w-16 h-16 bg-white/5 backdrop-blur-md flex items-center justify-center rounded-none border border-white/10 mx-auto mb-6">
                                 <Briefcase className="h-6 w-6 text-primary" />
                             </div>
-                            <h4 className="font-bold text-white mb-2">Technical Focus</h4>
-                            <p className="text-xs text-white/60 leading-relaxed">Specialists in Software Engineering, Electronics & Digital Transformation.</p>
+                            <h4 className="font-bold text-white mb-2">Technical focus</h4>
+                            <p className="text-xs text-white/60 leading-relaxed">Web applications, e-commerce, dashboards, interface design and technical strategy.</p>
                         </StaggerItem>
                     </StaggerContainer>
 
                     {/* Form Card */}
                     <div className="bg-black/20 border border-white/10 p-8 md:p-12 shadow-xl rounded-2xl">
                         <div className="mb-12">
-                            <h2 className="text-3xl font-bold text-white mb-4">Request a Proposal</h2>
-                            <p className="text-white/60 max-w-2xl">Please provide some details about your project requirements so we can prepare a tailored technical and financial proposal.</p>
+                            <h2 className="text-3xl font-bold text-white mb-4">Request a proposal</h2>
+                            <p className="text-white/60 max-w-2xl">Share a few details about the project to receive a tailored technical and financial proposal.</p>
                         </div>
 
                         <form className="space-y-10" onSubmit={handleSubmit}>
@@ -174,12 +174,12 @@ export default function ContactContent() {
                             </div>
 
                             <div className="space-y-3">
-                                <Label htmlFor="objective" className="text-sm font-bold text-white/80 uppercase tracking-tight">Primary Consultation Objective</Label>
+                                <Label htmlFor="objective" className="text-sm font-bold text-white/80 uppercase tracking-tight">What should the platform achieve?</Label>
                                 <textarea 
                                     id="objective" 
                                     name="objective"
                                     required
-                                    placeholder="Briefly describe what you would like to achieve in this session..." 
+                                    placeholder="Describe the platform, who it is for and what it should do..." 
                                     className="w-full min-h-[160px] px-4 py-3 text-sm bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-white/10 transition-all resize-none text-white placeholder:text-white/30"
                                 />
                             </div>
@@ -194,8 +194,8 @@ export default function ContactContent() {
                                         className="w-full h-14 px-4 py-2 text-sm bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-white"
                                     >
                                         <option className="text-white bg-[#0a0a0a]">Urgent (Within 48 hours)</option>
-                                        <option className="text-white bg-[#0a0a0a]">Strategic Planning (Next 2 weeks)</option>
-                                        <option className="text-white bg-[#0a0a0a]">General Exploratory</option>
+                                        <option className="text-white bg-[#0a0a0a]">Within the next 2 weeks</option>
+                                        <option className="text-white bg-[#0a0a0a]">Exploring options</option>
                                     </select>
                                 </div>
                                 <div>
@@ -227,7 +227,7 @@ export default function ContactContent() {
                 <div className="w-full max-w-3xl mx-auto">
                     <FadeIn direction="up" distance={24} className="p-10 border border-white/10 bg-black/20 flex flex-col items-center text-center rounded-2xl">
                         <h4 className="font-bold text-white text-2xl mb-3">Prefer a direct line?</h4>
-                        <p className="text-sm text-white/60 mb-6 leading-relaxed max-w-md">Skip the form — reach out directly and we&apos;ll route you to the right conversation.</p>
+                        <p className="text-sm text-white/60 mb-6 leading-relaxed max-w-md">Skip the form and get in touch directly by phone or email.</p>
                         <a href={`tel:${getSetting('contact_phone', '+254 700 000 000').replace(/\s/g, '')}`} className="text-2xl font-bold text-primary hover:underline transition-all">
                             {getSetting('contact_phone', '+254 700 000 000')}
                         </a>

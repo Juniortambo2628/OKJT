@@ -27,17 +27,29 @@ const Chatbot = () => {
         } catch (e) { console.error("FAQ parse error", e) }
         return [
             {
-                keywords: ['web', 'development', 'app', 'nextjs', 'laravel'],
-                answer: 'We specialise in premium web engineering using Next.js, React, and Laravel to build high-performance applications.'
+                keywords: ['web', 'development', 'app', 'build', 'nextjs', 'laravel', 'react', 'platform'],
+                answer: 'OKJTechnologies designs and builds web applications end to end: customer-facing platforms, admin dashboards, online stores and the systems behind them, mostly with Laravel, Next.js and React.'
             },
             {
-                keywords: ['contact', 'reach', 'email', 'phone', 'office', 'talk'],
-                answer: 'You can reach us through our Contact page at /contact, or email us at hello@okjtech.co.ke.'
+                keywords: ['sector', 'industry', 'clients', 'worked', 'experience', 'portfolio', 'projects'],
+                answer: 'Past projects cover healthcare, legal services, construction, events, hospitality, e-commerce, automotive, education and nonprofits. The Projects page has a full write-up of each one.'
+            },
+            {
+                keywords: ['start', 'process', 'how', 'begin', 'brief', 'scope', 'approach'],
+                answer: 'A project starts with a short brief. The people the platform needs to serve are mapped first, then the work is scoped into clear stages with a proposal and timeline.'
+            },
+            {
+                keywords: ['contact', 'reach', 'email', 'phone', 'office', 'talk', 'call'],
+                answer: 'Use the Contact page at /contact, or email hello@okjtech.co.ke. Every brief receives a reply with next steps.'
             },
             {
                 keywords: ['service', 'offer', 'provide', 'do', 'help', 'what'],
-                answer: 'OKJTech provides three core services: Custom Web Development, UI/UX Design, and Digital Strategy.'
-            }
+                answer: 'Services cover web application engineering, e-commerce, admin dashboards and content management, interface design, and technical strategy. See the Services page for details.'
+            },
+            {
+                keywords: ['cost', 'price', 'budget', 'quote', 'how much'],
+                answer: 'Costs depend on scope. Share a brief on the Contact page to receive a tailored proposal.'
+            },
         ]
     }, [faqDataJson])
 
@@ -49,14 +61,15 @@ const Chatbot = () => {
             }
         } catch (e) { console.error("Quick replies parse error", e) }
         return [
-            'What services do you offer?',
-            'Tell me about Web Engineering',
-            'How can I contact you?',
+            'What does OKJTechnologies build?',
+            'Which sectors have you worked in?',
+            'How does a project start?',
+            'How can I get in touch?',
         ]
     }, [quickRepliesJson])
 
     const [messages, setMessages] = useState<Message[]>([
-        { id: 0, role: 'bot', text: 'Hello! I\'m the OKJTech assistant. How can I help you today?' }
+        { id: 0, role: 'bot', text: 'Hello! This is the OKJTech assistant. What would you like to know?' }
     ])
     const [input, setInput] = useState('')
     const [isTyping, setIsTyping] = useState(false)
@@ -88,7 +101,7 @@ const Chatbot = () => {
 
         return bestMatch.score > 0
             ? bestMatch.answer
-            : 'I appreciate your question! For specialised queries, I\'d recommend reaching out to our team directly through the Contact page or requesting a consultation. Our experts can provide detailed guidance tailored to your needs.'
+            : 'That question needs a detailed answer. Use the Contact page to share a brief or request a consultation, and a reply will follow.'
     }
 
     const handleSend = (text?: string) => {

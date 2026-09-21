@@ -28,12 +28,12 @@ export async function generateMetadata() {
     
     return {
       title: "OKJTech — Design-led Web Engineering",
-      description: "Design-centered, user-first web experiences that are fast, responsive, and built to drive results. Custom web apps, UI/UX design, and digital strategy from Nairobi, Kenya.",
+      description: "Web applications for health, legal, construction, events, commerce and nonprofit organisations, designed and built end to end in Nairobi, Kenya.",
       keywords: "web development, web design, OKJTech, Kenya, Nairobi, responsive design, UI/UX, frontend development, backend development, full stack developer, portfolio, Next.js, Laravel",
       authors: [{ name: "OKJTech" }],
       openGraph: {
         title: "OKJTech — Design-led Web Engineering",
-        description: "Design-centered, user-first web experiences that are fast, responsive, and built to drive results.",
+        description: "Web applications for health, legal, construction, events, commerce and nonprofit organisations, designed and built end to end.",
         siteName: "OKJTech",
         type: "website",
         url: "https://okjtech.co.ke",
@@ -41,7 +41,7 @@ export async function generateMetadata() {
       twitter: {
         card: "summary_large_image",
         title: "OKJTech — Design-led Web Engineering",
-        description: "Design-centered, user-first web experiences that are fast, responsive, and built to drive results.",
+        description: "Web applications for health, legal, construction, events, commerce and nonprofit organisations, designed and built end to end.",
       },
       icons: {
         icon: favicon || '/logos/OKJT-Logos/OKJTechLogo-Black_BG-favicon.png',
@@ -51,7 +51,7 @@ export async function generateMetadata() {
   } catch {
     return {
       title: "OKJTech — Design-led Web Engineering",
-      description: "Design-centered, user-first web experiences that are fast, responsive, and built to drive results.",
+      description: "Web applications for health, legal, construction, events, commerce and nonprofit organisations, designed and built end to end.",
       icons: {
         icon: '/logos/OKJT-Logos/OKJTechLogo-Black_BG-favicon.png',
         apple: '/logos/OKJT-Logos/OKJTechLogo-Black_BG-favicon.png',

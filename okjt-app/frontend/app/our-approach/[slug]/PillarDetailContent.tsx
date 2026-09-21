@@ -35,7 +35,7 @@ export default function PillarDetailContent({ slug }: { slug: string }) {
     return (
         <BaseLayout
             heroMedia={heroMedia}
-            tagline="OKJTech Innovation"
+            tagline="Approach"
             title={pillar.title}
             subtitle={pillar.overview || ''}
             breadcrumbs={[
@@ -70,7 +70,7 @@ export default function PillarDetailContent({ slug }: { slug: string }) {
 
                     <div className="space-y-16">
                         <div className="text-center max-w-3xl mx-auto space-y-4">
-                            <h2 className="text-4xl font-bold text-foreground tracking-tight">Technical Specifications & Services</h2>
+                            <h2 className="text-4xl font-bold text-foreground tracking-tight">Related services</h2>
                             <p className="text-muted-foreground text-lg">
                                 Detailed breakdown of the technologies and services involved in this innovation.
                             </p>
@@ -107,7 +107,7 @@ export default function PillarDetailContent({ slug }: { slug: string }) {
 
                         {(!pillar.services || pillar.services.length === 0) && (
                             <div className="text-center py-24 border-2 border-dashed border-border/50 rounded-xl bg-secondary/5">
-                                <p className="text-muted-foreground italic font-medium">Focused services for this pillar are currently being finalised.</p>
+                                <p className="text-muted-foreground italic font-medium">Related services for this principle will be listed here soon.</p>
                             </div>
                         )}
                     </div>

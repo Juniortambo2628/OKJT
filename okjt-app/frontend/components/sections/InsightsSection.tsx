@@ -18,7 +18,7 @@ const InsightsSection = () => {
     const [activeTab, setActiveTab] = useState('Featured')
     const bgMedia = getSetting('bg_home_insights')
     const sectionTagline = getSetting('insights_tagline') || 'Insights'
-    const sectionTitle = getSetting('insights_title') || 'Notes & articles'
+    const sectionTitle = getSetting('insights_title') || 'Notes from the work'
 
     if (isLoading) return <SectionSkeleton />
     if (isError || !insights || insights.length === 0) {
@@ -31,7 +31,7 @@ const InsightsSection = () => {
                 title={sectionTitle}
             >
                 <FadeIn className="w-full text-center bg-foreground/5 border border-foreground/10 rounded-[2rem] p-12" direction="up" distance={24} blur={false}>
-                    <p className="text-foreground/60">The latest research notes and advisory updates will appear here as they are published.</p>
+                    <p className="text-foreground/60">New articles will appear here as they are published.</p>
                 </FadeIn>
             </ParallaxSection>
         )

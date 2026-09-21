@@ -83,21 +83,21 @@ export default function ProjectFormFields({ form, setForm }: ProjectFormFieldsPr
             </div>
             
             <RichTextEditor 
-                label="The Problem"
+                label="Challenge (the opportunity the project responds to)"
                 value={form.problem || ''}
                 onChange={(val) => setForm({ ...form, problem: val })}
                 className="min-h-[120px]"
             />
 
             <RichTextEditor 
-                label="Methodology & Approach"
+                label="Solution (what was built)"
                 value={form.methodology || ''}
                 onChange={(val) => setForm({ ...form, methodology: val })}
                 className="min-h-[120px]"
             />
 
             <RichTextEditor 
-                label="Outcome & Results"
+                label="Ecosystem (who it serves and its intended impact, shown in the hero)"
                 value={form.outcome || ''}
                 onChange={(val) => setForm({ ...form, outcome: val })}
                 className="min-h-[120px]"

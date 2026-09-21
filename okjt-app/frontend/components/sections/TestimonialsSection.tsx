@@ -47,7 +47,7 @@ const TestimonialsSection = () => {
                         Client Testimonials
                     </span>
                     <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
-                        What our clients say
+                        In clients’ words
                     </h2>
                     <div className="w-20 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent mx-auto" />
                 </FadeIn>

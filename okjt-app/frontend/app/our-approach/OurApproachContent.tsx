@@ -157,9 +157,9 @@ export default function OurApproachContent() {
     return (
         <BaseLayout
             heroMedia={heroMedia}
-            tagline="Our Approach"
-            title="Engineering <br />Excellence."
-            subtitle="High-performance software and digital engineering with measurable outcomes."
+            tagline="Approach"
+            title="How the work <br />gets done."
+            subtitle="Six principles guide every project, from the first sketch to a platform that keeps growing."
             loading={mediaLoading}
             navSections={navSections}
         >

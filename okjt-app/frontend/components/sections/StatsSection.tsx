@@ -57,7 +57,7 @@ function StatsAccordion({ stats, tagline, title, bgMedia }: { stats: Stat[] | un
             id="stats"
             bgMedia={bgMedia ?? undefined}
             heightClass="min-h-[125vh]"
-            badgeText={tagline || 'KEY PERFORMANCE METRICS'}
+            badgeText={tagline || 'AT A GLANCE'}
             title={title}
             contentMaxWidth="max-w-[1400px]"
         >
@@ -99,7 +99,7 @@ function StatsAccordion({ stats, tagline, title, bgMedia }: { stats: Stat[] | un
                                     </div>
                                     <div className="w-10 h-[2px] bg-primary/50 mb-4" />
                                     <p className="text-foreground/70 text-sm md:text-base leading-relaxed max-w-md">
-                                        {stat.description || 'Delivering results through design-led engineering.'}
+                                        {stat.description || 'Design-led web engineering from Nairobi.'}
                                     </p>
                                 </div>
                             </div>

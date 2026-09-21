@@ -17,8 +17,8 @@ export default function InsightsContent() {
     const heroMedia = videoSrc ?? bgImage
     const { data: insights, isLoading } = useApi<Insight[]>('/insights')
 
-    const title = getSetting('insights_title', 'Insights & Research')
-    const subtitle = getSetting('insights_subtitle', 'Analysis, commentary, and research from our team on the trends shaping web development, design, and digital strategy.')
+    const title = getSetting('insights_title', 'Notes from the work')
+    const subtitle = getSetting('insights_subtitle', 'Practical lessons from real projects in health, law, construction, events and commerce, written for the people who commission and use digital platforms.')
 
     return (
         <BaseLayout
@@ -27,7 +27,7 @@ export default function InsightsContent() {
                 { id: 'insights-list', label: 'Articles' },
             ]}
             heroMedia={heroMedia}
-            tagline="Thought Leadership"
+            tagline="Insights"
             title={title}
             subtitle={subtitle}
             loading={settingsLoading || mediaLoading}
@@ -35,8 +35,8 @@ export default function InsightsContent() {
             <ParallaxSection
                 id="insights-list"
                 badgeText="Latest Articles"
-                title="Insights & Research"
-                subtitle="Analysis and commentary from our team on the trends shaping digital."
+                title="Notes from the work"
+                subtitle="Practical lessons from real projects."
                 cta={{ label: 'Subscribe', href: '/contact' }}
                 heightClass="min-h-[125vh]"
                 contentMaxWidth="max-w-[1400px]"

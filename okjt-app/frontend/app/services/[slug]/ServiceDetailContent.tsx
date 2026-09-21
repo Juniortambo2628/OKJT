@@ -15,11 +15,11 @@ import { SERVICE_DETAIL_NAV_SECTIONS, type NavSection } from '@/lib/nav-sections
 import { Service } from '@/types/api'
 
 const benefits = [
-    'Data-driven insights tailored to your market',
-    'Experienced advisory team with deep sector knowledge',
-    'Transparent methodology and clear deliverables',
-    'Proven track record of measurable outcomes',
-    'End-to-end support from analysis to execution',
+    'A stakeholder map before any work is scoped',
+    'Clear stages, deliverables and timelines',
+    'Design and engineering handled as one piece of work',
+    'Honest scope, with no inflated promises',
+    'Support from first idea through launch and beyond',
 ]
 
 export default function ServiceDetailContent({ slug }: { slug: string }) {
@@ -91,8 +91,8 @@ export default function ServiceDetailContent({ slug }: { slug: string }) {
                 id="service-benefits"
                 heightClass="min-h-[140vh]"
                 badgeText="WHY OKJTECH?"
-                title="Why Choose Our Expertise?"
-                subtitle="Our approach is built on rigour, transparency, and measurable impact."
+                title="What every engagement includes"
+                subtitle="The same working principles apply to every service."
                 contentMaxWidth="max-w-[1400px]"
             >
                 <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full" staggerDelay={0.08}>
@@ -150,10 +150,10 @@ export default function ServiceDetailContent({ slug }: { slug: string }) {
                     className="text-center"
                 >
                     <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                        Empower your next strategic move.
+                        Have a project in mind?
                     </h2>
                     <p className="text-white/70 max-w-xl mx-auto mb-12 text-lg font-light">
-                        Connect with our advisory team to discuss how we can support your objectives in {service.category}.
+                        Share a short brief to explore what {service.category} work could achieve for your organisation.
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-8">
                         <PrimaryButton

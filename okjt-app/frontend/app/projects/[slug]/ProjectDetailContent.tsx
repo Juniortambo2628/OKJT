@@ -41,7 +41,9 @@ export default function ProjectDetailContent({
             significantFigure={project?.significant_figure}
             significantFigureLabel={isClient ? 'Impact Result' : 'Key Impact'}
             category={project?.category}
-            categoryLabel={isClient ? 'Sector' : 'Ecosystem'}
+            categoryLabel="Sector"
+            ecosystemTitle="Ecosystem"
+            ecosystemHtml={project?.outcome || undefined}
 
             // Content
             description={project?.description}

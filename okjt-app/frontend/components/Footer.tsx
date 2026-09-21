@@ -70,7 +70,7 @@ const Footer = () => {
                             )}
                         </div>
                         <p className="text-muted-foreground text-sm leading-relaxed mb-6">
-                            {getSetting('company_tagline', 'Design-led web engineering — crafting fast, responsive, and visually stunning digital experiences that drive results for ambitious brands.')}
+                            {getSetting('company_tagline', 'Design-led web engineering from Nairobi. Web applications for health, legal, commerce, events and nonprofit organisations, designed and built end to end.')}
                         </p>
 
                         {subscribed ? (
