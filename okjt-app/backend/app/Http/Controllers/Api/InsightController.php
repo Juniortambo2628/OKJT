@@ -79,9 +79,4 @@ class InsightController extends Controller
 
         return parent::resolveRouteBinding($value, $field);
     }
-
-    public function show($slug)
-    {
-        return parent::show($slug);
-    }
 }

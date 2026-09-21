@@ -10,6 +10,18 @@ use Intervention\Image\ImageManager;
 
 class UploadController extends Controller
 {
+    public function preflight(Request $request)
+    {
+        $origin = $request->header('Origin', '*');
+
+        return response('', 204)
+            ->header('Access-Control-Allow-Origin', $origin)
+            ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+            ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
+            ->header('Access-Control-Allow-Credentials', 'true')
+            ->header('Access-Control-Max-Age', '86400');
+    }
+
     public function index(Request $request)
     {
         $directory = $request->get('directory', 'uploads');
@@ -28,17 +40,20 @@ class UploadController extends Controller
                 'mime' => $mime,
                 'size' => $size,
                 'size_formatted' => $this->formatBytes($size),
-                'type' => str_starts_with($mime, 'image/') ? 'image'
-                    : str_starts_with($mime, 'video/') ? 'video'
-                    : 'file',
+                'type' => (str_starts_with($mime, 'image/') ? 'image'
+                    : (str_starts_with($mime, 'video/') ? 'video'
+                    : 'file')),
                 'last_modified' => date('Y-m-d H:i:s', $lastModified),
             ];
         })->sortByDesc('last_modified')->values();
 
+        $origin = $request->header('Origin', '*');
+
         return response()->json($files)
-            ->header('Access-Control-Allow-Origin', $request->header('Origin', '*'))
-            ->header('Access-Control-Allow-Methods', 'GET, OPTIONS')
-            ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+            ->header('Access-Control-Allow-Origin', $origin)
+            ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+            ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
+            ->header('Access-Control-Allow-Credentials', 'true');
     }
 
     public function store(Request $request)
