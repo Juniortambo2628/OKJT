@@ -1,8 +1,10 @@
-# OKJTechnologies — Accurate Project Catalog (v2)
+# OKJTechnologies — Accurate Project Catalog (v3)
 
-**Prepared:** 2026‑09‑10
+**Prepared:** 2026‑09‑21
 **Author:** Kevin Tambo (Founder, OKJTechnologies)
 **Purpose:** Ground‑truth reference for CV, portfolio site (okjtech.co.ke) and portfolio PDF. Replaces the AI‑seeded content currently in production, which contained fabricated titles, statistics, testimonials and team members.
+
+> **v3 update (this revision):** All content from this document has been seeded into the database via `PortfolioContentSeeder`. The seeder is idempotent and can be re-run at any time. Every project now includes `focus_areas` (3 short bullets for the hero meta strip), `problem`/`methodology`/`outcome` fields, and accurate `technologies` arrays. Fabricated testimonials and team members have been removed. Stats are honest and defensible.
 
 > **v2 update (this revision) adds:** live URLs for every project in production; a full Lawyers Hub contribution section (daily bulletins, policy maps, ADPI trainings, ALTF 2022 & 2023 roles); the Afrilabs Ethiopia programme and how ecosystem mapping shapes the studio's strategy; a real "Insights" article shortlist; and a system‑structure gap analysis for the `new-changes` rebuild on GitHub.
 
@@ -458,3 +460,51 @@ Fields per project:
 1. **Live URLs marked `[please confirm]`** — please correct any wrong subdomains.
 2. **Missing URLs** — Wisdom Capital, Reytati Communications, OmniShop deployment (if hosted), gm‑project (and its public client name).
 3. **v2 rebuild direction** — do you want me to (a) add the small `AboutPage` + `Article` scaffolding to `new-changes` so we have somewhere to publish §6, §1 and the §9 articles, or (b) keep the current live schema and re‑seed there instead? I'd recommend (a) since `new-changes` looks like the intended direction — I can prep the migration + controller + a public list page in one commit.
+
+---
+
+## Appendix A — Seeder implementation (v3)
+
+### Files created
+
+| File | Purpose |
+|------|---------|
+| `database/migrations/2026_09_21_000001_ensure_portfolio_columns_exist.php` | Non-destructive guard — adds `bg_image` and `description` columns if missing |
+| `database/seeders/PortfolioContentSeeder.php` | Main seeder — replaces all content with verified data from this document |
+| `database/seeders/FocusAreasBackfillSeeder.php` | One-time backfill for `focus_areas` on existing projects |
+
+### How to run
+
+```bash
+# Run migrations first (adds focus_areas column if not present)
+php artisan migrate --force
+
+# Run the seeder (replaces all content)
+php artisan db:seed --class=PortfolioContentSeeder
+
+# Or run just the focus_areas backfill (if projects already exist)
+php artisan db:seed --class=FocusAreasBackfillSeeder
+```
+
+### Seeded data summary
+
+| Table | Count | Notes |
+|-------|-------|-------|
+| Projects | 27 | 6 Lawyers Hub era + 10 client + 11 flagship |
+| Services | 11 | Web Dev (5) + UI/UX (3) + Digital Strategy (3) |
+| Insights | 5 | Real articles from §9 of this document |
+| Clients | 16 | Real delivered clients only |
+| Stats | 4 | Honest, defensible numbers |
+| Values | 6 | Ecosystem mapping, honest scope, AI-accelerated, design+function, client partnership, continuous delivery |
+| Team | 1 | Kevin Tambo only (fabricated members removed) |
+| Pillars | 3 | Web engineering, Interface design, Ecosystem strategy |
+| Testimonials | 0 | Cleared (fabricated ones removed) |
+
+### Key framing rules enforced
+
+- Solo founder narrative ("I built...", never "we")
+- No fabricated stats, testimonials, or team members
+- Real project statuses (Live / In development / Delivered / Concept)
+- Real URLs and stacks from actual repos
+- All project descriptions in first person singular
+- `focus_areas` added to every project for hero meta strip rendering
