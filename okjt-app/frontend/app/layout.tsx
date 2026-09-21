@@ -3,6 +3,7 @@ import "./globals.css";
 import { AuthProvider } from "@/components/AuthProvider";
 import ClientLayout from "@/components/ClientLayout";
 import { Toaster } from "@/components/ui/toaster";
+import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
 
@@ -144,6 +145,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </PrelaunchWrapper>
           </AuthProvider>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
