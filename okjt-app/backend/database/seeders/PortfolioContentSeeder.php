@@ -18,7 +18,6 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 /**
  * PortfolioContentSeeder — Accurate, non-destructive reseed
@@ -71,14 +70,14 @@ class PortfolioContentSeeder extends Seeder
             // --- About page ---
             ['key' => 'about_title', 'value' => "Design-led web engineering,\nbuilt around ecosystems.", 'type' => 'textarea', 'group' => 'about'],
             ['key' => 'about_tagline', 'value' => 'How the work gets done', 'type' => 'text', 'group' => 'about'],
-            ['key' => 'about_story', 'value' => "OKJTechnologies is a Nairobi web-application practice. The work is full-stack and end to end — concept, interface, engineering, deployment and ongoing administration — mostly in Laravel, Next.js / React and the classic LAMP stack, with AI-accelerated tooling in the loop. Every build starts by mapping the ecosystem the software has to live in, so each stakeholder — client, end user, regulator, adjacent partner — has an aligned reason to participate. It is a one-person studio, run by Kevin Tambo.", 'type' => 'textarea', 'group' => 'about'],
+            ['key' => 'about_story', 'value' => 'OKJTechnologies is a Nairobi web-application practice. The work is full-stack and end to end — concept, interface, engineering, deployment and ongoing administration — mostly in Laravel, Next.js / React and the classic LAMP stack, with AI-accelerated tooling in the loop. Every build starts by mapping the ecosystem the software has to live in, so each stakeholder — client, end user, regulator, adjacent partner — has an aligned reason to participate. It is a one-person studio, run by Kevin Tambo.', 'type' => 'textarea', 'group' => 'about'],
             ['key' => 'about_mission_title', 'value' => 'Ecosystem mapping before a line of code.', 'type' => 'text', 'group' => 'about'],
             ['key' => 'about_mission_text1', 'value' => 'Every engagement is shaped by an ecosystem-mapping practice from the Afrilabs capacity-building programme <em>Leveraging Stakeholder Relationships through Ecosystem Mapping and Building</em> (Addis Ababa, Ethiopia). Before scoping, the map covers every stakeholder who could be affected by or beneficial to the proposition — the paying client, the end user, the regulator, adjacent service providers, upstream and downstream data holders, the wider community.', 'type' => 'textarea', 'group' => 'about'],
             ['key' => 'about_mission_text2', 'value' => 'The solution is then designed so each of those stakeholders has a clearly aligned way to benefit from it. That mapping is what turns a website into a working system inside its own context — and, combined with AI-accelerated development, is how a one-person studio ships the same class of application a small team would take on.', 'type' => 'textarea', 'group' => 'about'],
             ['key' => 'about_team_title', 'value' => 'One continuous thread, concept to production', 'type' => 'text', 'group' => 'about'],
             ['key' => 'about_team_subtitle', 'value' => 'Every project is designed, built, deployed and administered as one continuous piece of work — no hand-offs between teams, no context dropped between phases, one point of accountability. OKJTechnologies is deliberately a one-person studio.', 'type' => 'textarea', 'group' => 'about'],
             ['key' => 'about_credentials_title', 'value' => 'Credentials & Background', 'type' => 'text', 'group' => 'about'],
-            ['key' => 'about_credentials', 'value' => "B.Sc. Computer Science, Riara University (Second Class Honours, Upper Division). Afrilabs capacity-building certificate — Leveraging Stakeholder Relationships through Ecosystem Mapping and Building, Addis Ababa, Ethiopia. Software Developer — Justice Innovation at Lawyers Tech Hub (Feb 2023 – Dec 2024).", 'type' => 'textarea', 'group' => 'about'],
+            ['key' => 'about_credentials', 'value' => 'B.Sc. Computer Science, Riara University (Second Class Honours, Upper Division). Afrilabs capacity-building certificate — Leveraging Stakeholder Relationships through Ecosystem Mapping and Building, Addis Ababa, Ethiopia. Software Developer — Justice Innovation at Lawyers Tech Hub (Feb 2023 – Dec 2024).', 'type' => 'textarea', 'group' => 'about'],
             ['key' => 'about_sectors_title', 'value' => 'Sectors', 'type' => 'text', 'group' => 'about'],
             ['key' => 'about_sectors', 'value' => 'LegalTech · HealthTech · PropTech · FinTech · E-commerce · Events · NGO / Advocacy · Agritech · Automotive · EdTech · Marketplace', 'type' => 'text', 'group' => 'about'],
             ['key' => 'about_cta_title', 'value' => 'Have a system you want built end to end?', 'type' => 'text', 'group' => 'about'],
