@@ -6,9 +6,18 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { secret, paths, tags } = body
 
-    // Validate secret token if configured
-    if (process.env.NEXT_REVALIDATION_SECRET && secret !== process.env.NEXT_REVALIDATION_SECRET) {
-      return NextResponse.json({ message: 'Invalid secret' }, { status: 401 })
+    // Validate the request: either the secret must match, or the request must
+    // be same-origin (admin panel).  Same-origin requests carry no Origin header
+    // and the Host header matches the server.
+    const host = request.headers.get('host') ?? ''
+    const origin = request.headers.get('origin')
+    const hasValidSecret = process.env.NEXT_REVALIDATION_SECRET
+      ? secret === process.env.NEXT_REVALIDATION_SECRET
+      : true
+    const isSameOrigin = !origin || origin.includes(host)
+
+    if (!hasValidSecret && !isSameOrigin) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
     }
 
     if (paths && Array.isArray(paths)) {

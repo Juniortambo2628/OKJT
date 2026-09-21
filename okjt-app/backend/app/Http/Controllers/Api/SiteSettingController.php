@@ -5,12 +5,17 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SiteSettingResource;
 use App\Models\SiteSetting;
+use App\Services\RevalidationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
 
 class SiteSettingController extends Controller
 {
+    public function __construct(private RevalidationService $revalidation)
+    {
+    }
+
     private function clearCache()
     {
         Cache::forget('site_settings_grouped');
@@ -40,6 +45,7 @@ class SiteSettingController extends Controller
 
         $setting = SiteSetting::create($validated);
         $this->clearCache();
+        $this->revalidation->revalidateAll();
 
         return new SiteSettingResource($setting);
     }
@@ -57,6 +63,7 @@ class SiteSettingController extends Controller
 
         $siteSetting->update($validated);
         $this->clearCache();
+        $this->revalidation->revalidateAll();
 
         return new SiteSettingResource($siteSetting);
     }
@@ -65,6 +72,7 @@ class SiteSettingController extends Controller
     {
         $siteSetting->delete();
         $this->clearCache();
+        $this->revalidation->revalidateAll();
 
         return response()->json(null, 204);
     }
@@ -91,6 +99,7 @@ class SiteSettingController extends Controller
         }
 
         $this->clearCache();
+        $this->revalidation->revalidateAll();
 
         $settings = SiteSetting::all()->groupBy('group');
 
@@ -147,6 +156,7 @@ class SiteSettingController extends Controller
         );
 
         $this->clearCache();
+        $this->revalidation->revalidateAll();
 
         return new SiteSettingResource($setting);
     }
@@ -168,6 +178,7 @@ class SiteSettingController extends Controller
         );
 
         $this->clearCache();
+        $this->revalidation->revalidateAll();
 
         return new SiteSettingResource($setting);
     }
@@ -177,6 +188,7 @@ class SiteSettingController extends Controller
         $setting = SiteSetting::where('key', $key)->where('group', 'email')->firstOrFail();
         $setting->delete();
         $this->clearCache();
+        $this->revalidation->revalidateAll();
 
         return response()->json(null, 204);
     }
