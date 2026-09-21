@@ -14,7 +14,7 @@ return new class extends Migration
 
         if (Schema::hasTable('projects')) {
             Schema::table('projects', function (Blueprint $table) {
-                if (!Schema::hasColumn('projects', 'bg_image')) {
+                if (! Schema::hasColumn('projects', 'bg_image')) {
                     $table->string('bg_image')->nullable()->after('image');
                 }
             });
@@ -23,7 +23,7 @@ return new class extends Migration
         // Ensure stats.description exists
         if (Schema::hasTable('stats')) {
             Schema::table('stats', function (Blueprint $table) {
-                if (!Schema::hasColumn('stats', 'description')) {
+                if (! Schema::hasColumn('stats', 'description')) {
                     $table->text('description')->nullable()->after('value');
                 }
             });

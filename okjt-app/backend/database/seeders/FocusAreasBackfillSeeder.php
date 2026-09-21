@@ -43,6 +43,6 @@ class FocusAreasBackfillSeeder extends Seeder
             Project::where('slug', $slug)->update(['focus_areas' => $areas]);
         }
 
-        $this->command->info('Updated ' . count($projects) . ' projects with focus_areas.');
+        $this->command->info('Updated '.count($projects).' projects with focus_areas.');
     }
 }
