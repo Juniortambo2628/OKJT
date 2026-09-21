@@ -1,12 +1,27 @@
 "use client"
 
 import React, { useState, useEffect, useCallback } from 'react'
+import { useDropzone } from 'react-dropzone'
+import imageCompression from 'browser-image-compression'
+import { AxiosError, AxiosProgressEvent } from 'axios'
 import AdminLayout from '@/components/admin/AdminLayout'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Loader2, Search, Image as ImageIcon, Film, File, Download, Trash2, Grid3X3, List, Eye } from 'lucide-react'
+import { Loader2, Search, Image as ImageIcon, Film, File, Download, Trash2, Grid3X3, List, Eye, Upload, X } from 'lucide-react'
 import api from '@/lib/api'
 import { useToast } from '@/hooks/use-toast'
+
+interface UploadJob {
+    id: string
+    name: string
+    size: number
+    progress: number
+    status: 'pending' | 'uploading' | 'done' | 'error'
+    error?: string
+}
+
+const MAX_SIZE_MB = 20
+const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024
 
 interface MediaFile {
     path: string
@@ -26,6 +41,7 @@ export default function AdminGalleryPage() {
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
     const [previewFile, setPreviewFile] = useState<MediaFile | null>(null)
     const [deleting, setDeleting] = useState<string | null>(null)
+    const [uploads, setUploads] = useState<UploadJob[]>([])
     const { toast } = useToast()
 
     const fetchFiles = useCallback(async () => {
@@ -44,6 +60,103 @@ export default function AdminGalleryPage() {
         // eslint-disable-next-line react-hooks/set-state-in-effect -- data fetch on mount
         fetchFiles()
     }, [fetchFiles])
+
+    const uploadOne = useCallback(async (file: File, jobId: string): Promise<boolean> => {
+        const updateJob = (patch: Partial<UploadJob>) => {
+            setUploads((prev) => prev.map((j) => (j.id === jobId ? { ...j, ...patch } : j)))
+        }
+
+        try {
+            let fileToUpload: File = file
+            const isImage = file.type.startsWith('image/') && !file.type.includes('svg')
+
+            if (isImage) {
+                updateJob({ status: 'uploading', progress: 10 })
+                fileToUpload = await imageCompression(file, {
+                    maxSizeMB: MAX_SIZE_MB,
+                    maxWidthOrHeight: 1920,
+                    useWebWorker: true,
+                    fileType: file.type,
+                })
+                updateJob({ progress: 40 })
+            } else if (file.size > MAX_SIZE_BYTES) {
+                throw new Error(`File exceeds ${MAX_SIZE_MB} MB`)
+            }
+
+            if (fileToUpload.size > MAX_SIZE_BYTES) {
+                throw new Error(`File exceeds ${MAX_SIZE_MB} MB after compression`)
+            }
+
+            const formData = new FormData()
+            formData.append('file', fileToUpload, file.name)
+
+            await api.post('/upload', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+                onUploadProgress: (e: AxiosProgressEvent) => {
+                    const pct = Math.round((e.loaded * 50) / (e.total || 1)) + 50
+                    updateJob({ status: 'uploading', progress: pct })
+                },
+            })
+
+            updateJob({ status: 'done', progress: 100 })
+            return true
+        } catch (err: unknown) {
+            const apiError = err as AxiosError<{ message?: string }>
+            const message =
+                apiError.response?.data?.message ||
+                (err instanceof Error ? err.message : 'Upload failed')
+            updateJob({ status: 'error', error: message })
+            return false
+        }
+    }, [])
+
+    const onDrop = useCallback(async (accepted: File[]) => {
+        if (accepted.length === 0) return
+
+        const jobs: UploadJob[] = accepted.map((f) => ({
+            id: `${Date.now()}-${f.name}-${Math.random().toString(36).slice(2, 8)}`,
+            name: f.name,
+            size: f.size,
+            progress: 0,
+            status: 'pending',
+        }))
+
+        setUploads((prev) => [...prev, ...jobs])
+
+        const outcomes = await Promise.all(accepted.map((f, i) => uploadOne(f, jobs[i].id)))
+        const succeeded = outcomes.filter(Boolean).length
+        const failed = outcomes.length - succeeded
+
+        if (succeeded > 0) {
+            toast({
+                title: `Uploaded ${succeeded} file${succeeded === 1 ? '' : 's'}`,
+                description: failed > 0 ? `${failed} failed — see list.` : undefined,
+            })
+            fetchFiles()
+        } else if (failed > 0) {
+            toast({ variant: 'destructive', title: `${failed} upload${failed === 1 ? '' : 's'} failed` })
+        }
+
+        if (succeeded > 0 && failed === 0) {
+            setTimeout(() => {
+                setUploads((prev) => prev.filter((j) => !jobs.some((n) => n.id === j.id)))
+            }, 2000)
+        }
+    }, [uploadOne, toast, fetchFiles])
+
+    const { getRootProps, getInputProps, isDragActive, open: openFilePicker } = useDropzone({
+        onDrop,
+        noClick: true,
+        noKeyboard: true,
+        accept: {
+            'image/*': ['.jpg', '.jpeg', '.png', '.webp', '.svg', '.gif'],
+            'video/mp4': ['.mp4'],
+        },
+    })
+
+    const dismissJob = (id: string) => {
+        setUploads((prev) => prev.filter((j) => j.id !== id))
+    }
 
     const filteredFiles = files.filter((f) => {
         if (search && !f.filename.toLowerCase().includes(search.toLowerCase())) return false
@@ -95,6 +208,10 @@ export default function AdminGalleryPage() {
                         <p className="text-muted-foreground">Browse, preview, and download all uploaded digital assets.</p>
                     </div>
                     <div className="flex items-center gap-2">
+                        <Button onClick={openFilePicker} className="gap-2">
+                            <Upload className="h-4 w-4" />
+                            Upload
+                        </Button>
                         <Button
                             variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
                             size="icon"
@@ -111,6 +228,77 @@ export default function AdminGalleryPage() {
                         </Button>
                     </div>
                 </div>
+
+                <div
+                    {...getRootProps()}
+                    className={`border-2 border-dashed rounded-xl transition-colors ${
+                        isDragActive
+                            ? 'border-primary bg-primary/5'
+                            : 'border-border/50 bg-secondary/5'
+                    } px-6 py-8 text-center cursor-pointer`}
+                    onClick={openFilePicker}
+                >
+                    <input {...getInputProps()} />
+                    <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
+                    <p className="text-sm">
+                        <span className="font-semibold text-foreground">Click to upload</span>{' '}
+                        <span className="text-muted-foreground">or drag & drop images and videos here</span>
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                        JPG, PNG, WebP, SVG, GIF, MP4 — up to {MAX_SIZE_MB} MB each. Multiple files supported.
+                    </p>
+                </div>
+
+                {uploads.length > 0 && (
+                    <div className="space-y-2 border border-border rounded-xl p-3 bg-background">
+                        <div className="flex items-center justify-between mb-1">
+                            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                                Uploads ({uploads.length})
+                            </p>
+                            <button
+                                onClick={() => setUploads((prev) => prev.filter((j) => j.status === 'uploading' || j.status === 'pending'))}
+                                className="text-xs text-muted-foreground hover:text-foreground"
+                            >
+                                Clear finished
+                            </button>
+                        </div>
+                        {uploads.map((job) => (
+                            <div key={job.id} className="flex items-center gap-3 text-sm">
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-center justify-between gap-2 mb-1">
+                                        <p className="truncate text-xs font-medium">{job.name}</p>
+                                        <span className={`text-[10px] shrink-0 ${
+                                            job.status === 'error' ? 'text-destructive'
+                                                : job.status === 'done' ? 'text-emerald-600 dark:text-emerald-400'
+                                                : 'text-muted-foreground'
+                                        }`}>
+                                            {job.status === 'error' ? (job.error || 'Failed')
+                                                : job.status === 'done' ? 'Done'
+                                                : `${job.progress}%`}
+                                        </span>
+                                    </div>
+                                    <div className="h-1 bg-secondary rounded-full overflow-hidden">
+                                        <div
+                                            className={`h-full transition-all ${
+                                                job.status === 'error' ? 'bg-destructive'
+                                                    : job.status === 'done' ? 'bg-emerald-500'
+                                                    : 'bg-primary'
+                                            }`}
+                                            style={{ width: `${job.status === 'done' ? 100 : job.progress}%` }}
+                                        />
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => dismissJob(job.id)}
+                                    className="text-muted-foreground hover:text-foreground shrink-0"
+                                    aria-label="Dismiss"
+                                >
+                                    <X className="h-3.5 w-3.5" />
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
 
                 <div className="relative max-w-md">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
