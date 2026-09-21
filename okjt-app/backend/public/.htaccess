@@ -1,3 +1,12 @@
+<IfModule mod_headers.c>
+    <FilesMatch "\.(mp4|webm|ogv|mov|m4v|jpg|jpeg|png|gif|webp|avif|svg|ico|pdf|woff|woff2|ttf|eot)$">
+        Header set Access-Control-Allow-Origin "*"
+        Header set Access-Control-Allow-Methods "GET, HEAD, OPTIONS"
+        Header set Access-Control-Allow-Headers "Range, Accept, Origin, Content-Type"
+        Header set Access-Control-Expose-Headers "Content-Length, Content-Range, Accept-Ranges"
+    </FilesMatch>
+</IfModule>
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
