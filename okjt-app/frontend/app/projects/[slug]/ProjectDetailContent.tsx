@@ -47,10 +47,8 @@ export default function ProjectDetailContent({
             description={project?.description}
             challengeTitle="Challenge"
             challengeHtml={project?.problem}
-            approachTitle="Approach"
-            approachHtml={project?.methodology}
             impactTitle="Solution"
-            impactHtml={project?.outcome}
+            impactHtml={project?.methodology}
 
             // Sidebar
             sidebarStackTitle={isClient ? 'Architecture' : 'Integrated Stack'}

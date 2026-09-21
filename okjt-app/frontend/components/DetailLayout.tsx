@@ -84,8 +84,6 @@ interface DetailLayoutProps {
     description?: string
     challengeTitle: string
     challengeHtml?: string
-    approachTitle: string
-    approachHtml?: string
     impactTitle: string
     impactHtml?: string
     
@@ -102,7 +100,7 @@ interface DetailLayoutProps {
     
     // Sidebar Focus
     focusAreasTitle: string
-    focusAreas: string[]
+    focusAreas?: string[]
     
     // Testimonial
     testimonialQuote?: string
@@ -145,8 +143,6 @@ export default function DetailLayout({
     description,
     challengeTitle,
     challengeHtml,
-    _approachTitle,
-    _approachHtml,
     impactTitle,
     impactHtml,
     _sidebarStackTitle,
@@ -200,9 +196,13 @@ export default function DetailLayout({
                     </div>
                 )}
                 {category && (
-                    <div className="flex flex-col">
+                    <div className="flex flex-col gap-2">
                         <span className="text-[10px] text-white/50 uppercase tracking-widest mb-1">{categoryLabel}</span>
-                        <span className="text-white font-bold">{category}</span>
+                        <div className="flex flex-wrap gap-2">
+                            {category.split(',').map((cat, i) => (
+                                <span key={i} className="text-white font-bold text-sm">{cat.trim()}</span>
+                            ))}
+                        </div>
                     </div>
                 )}
                 {focusAreas && focusAreas.length > 0 && (
