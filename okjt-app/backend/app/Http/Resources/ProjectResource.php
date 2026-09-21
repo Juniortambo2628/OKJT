@@ -18,6 +18,7 @@ class ProjectResource extends JsonResource
             'tagline' => $this->tagline,
             'category' => $this->category,
             'technologies' => $this->technologies,
+            'focus_areas' => $this->focus_areas,
             'significant_figure' => $this->significant_figure,
             'description' => $this->description,
             'problem' => $this->problem,
