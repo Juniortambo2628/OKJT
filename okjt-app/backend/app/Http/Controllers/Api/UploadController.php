@@ -35,7 +35,10 @@ class UploadController extends Controller
             ];
         })->sortByDesc('last_modified')->values();
 
-        return response()->json($files);
+        return response()->json($files)
+            ->header('Access-Control-Allow-Origin', $request->header('Origin', '*'))
+            ->header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+            ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     }
 
     public function store(Request $request)

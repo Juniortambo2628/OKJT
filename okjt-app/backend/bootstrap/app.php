@@ -23,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->api(prepend: [
+            \Illuminate\Http\Middleware\HandleCors::class,
             AddCacheHeaders::class,
         ]);
     })
