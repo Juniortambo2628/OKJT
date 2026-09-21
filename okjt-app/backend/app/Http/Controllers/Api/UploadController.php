@@ -10,6 +10,34 @@ use Intervention\Image\ImageManager;
 
 class UploadController extends Controller
 {
+    public function index(Request $request)
+    {
+        $directory = $request->get('directory', 'uploads');
+        $allFiles = Storage::disk('public')->allFiles($directory);
+
+        $files = collect($allFiles)->map(function ($path) {
+            $url = url('/api/storage/'.ltrim($path, '/'));
+            $mime = Storage::disk('public')->mimeType($path);
+            $size = Storage::disk('public')->size($path);
+            $lastModified = Storage::disk('public')->lastModified($path);
+
+            return [
+                'path' => $path,
+                'url' => $url,
+                'filename' => basename($path),
+                'mime' => $mime,
+                'size' => $size,
+                'size_formatted' => $this->formatBytes($size),
+                'type' => str_starts_with($mime, 'image/') ? 'image'
+                    : str_starts_with($mime, 'video/') ? 'video'
+                    : 'file',
+                'last_modified' => date('Y-m-d H:i:s', $lastModified),
+            ];
+        })->sortByDesc('last_modified')->values();
+
+        return response()->json($files);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -81,5 +109,16 @@ class UploadController extends Controller
             ->header('Content-Type', $mime)
             ->header('Access-Control-Allow-Origin', '*')
             ->header('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    }
+
+    private function formatBytes(int $bytes, int $precision = 2): string
+    {
+        $units = ['B', 'KB', 'MB', 'GB'];
+        $bytes = max($bytes, 0);
+        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow = min($pow, count($units) - 1);
+        $bytes /= (1 << (10 * $pow));
+
+        return round($bytes, $precision).' '.$units[$pow];
     }
 }

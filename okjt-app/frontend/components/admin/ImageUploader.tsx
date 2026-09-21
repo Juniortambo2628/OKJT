@@ -4,8 +4,9 @@ import React, { useState, useCallback } from 'react'
 import { Accept, useDropzone } from 'react-dropzone'
 import imageCompression from 'browser-image-compression'
 import { AxiosError, AxiosProgressEvent } from 'axios'
-import { Upload, X, Loader2, Film, File } from 'lucide-react'
+import { Upload, X, Loader2, Film, File, Images } from 'lucide-react'
 import api from '@/lib/api'
+import MediaBrowser from './MediaBrowser'
 
 interface ImageUploaderProps {
     value?: string
@@ -26,6 +27,7 @@ const ImageUploader = ({ value, onChange, accept, maxSizeMB = 20, label = 'Uploa
     const [isUploading, setIsUploading] = useState(false)
     const [uploadProgress, setUploadProgress] = useState(0)
     const [error, setError] = useState<string | null>(null)
+    const [mediaBrowserOpen, setMediaBrowserOpen] = useState(false)
 
     const onDrop = useCallback(async (acceptedFiles: File[]) => {
         const file = acceptedFiles[0]
@@ -193,6 +195,22 @@ const ImageUploader = ({ value, onChange, accept, maxSizeMB = 20, label = 'Uploa
             </div>
 
             {error && <p className="text-xs text-destructive mt-1.5">{error}</p>}
+
+            <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); setMediaBrowserOpen(true) }}
+                className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors"
+            >
+                <Images className="h-3.5 w-3.5" />
+                Browse uploaded files
+            </button>
+
+            <MediaBrowser
+                open={mediaBrowserOpen}
+                onOpenChange={setMediaBrowserOpen}
+                onSelect={(url) => { setPreview(url); onChange(url) }}
+                accept={accept}
+            />
         </div>
     )
 }

@@ -115,6 +115,7 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::delete('/clients/{client}', [ClientController::class, 'destroy']);
 
     // File Upload
+    Route::get('/media', [UploadController::class, 'index']);
     Route::post('/upload', [UploadController::class, 'store']);
     Route::delete('/upload', [UploadController::class, 'destroy']);
 
