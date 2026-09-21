@@ -12,9 +12,7 @@ use Illuminate\Support\Facades\Cache;
 
 class SiteSettingController extends Controller
 {
-    public function __construct(private RevalidationService $revalidation)
-    {
-    }
+    public function __construct(private RevalidationService $revalidation) {}
 
     private function clearCache()
     {
