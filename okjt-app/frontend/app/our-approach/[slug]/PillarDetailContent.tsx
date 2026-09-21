@@ -50,11 +50,11 @@ export default function PillarDetailContent({ slug }: { slug: string }) {
 
                 <div className="max-w-[1200px] mx-auto px-6 relative z-10">
                     <Link 
-                        href="/projects" 
+                        href="/our-approach" 
                         className="inline-flex items-center gap-2 text-primary text-sm font-bold uppercase tracking-widest mb-12 hover:gap-3 transition-all"
                     >
                         <ArrowLeft className="h-4 w-4" />
-                        Back to Portfolio
+                        Back to Our Approach
                     </Link>
 
                     <div className="grid grid-cols-1 lg:grid-cols-1 gap-16 mb-32">

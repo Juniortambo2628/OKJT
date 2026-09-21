@@ -8,6 +8,8 @@ import { Pillar } from '@/types/api'
 import { usePageHeroMedia } from '@/hooks/use-page-hero-media'
 import { SkeletonBlock, SectionSkeleton } from '@/components/MediaSkeleton'
 import BaseLayout from '@/components/BaseLayout'
+import Link from 'next/link'
+import { ArrowRight } from 'lucide-react'
 
 const PillarSection = ({ pillar, index }: { pillar: Pillar, index: number }) => {
     const sectionRef = useRef(null)
@@ -32,6 +34,9 @@ const PillarSection = ({ pillar, index }: { pillar: Pillar, index: number }) => 
 
     const detailOpacity = useTransform(smoothProgress, [0.0, 0.04, 0.12, 0.86, 0.96, 1.0], [0, 0, 1, 1, 0, 0])
     const detailY = useTransform(smoothProgress, [0.0, 0.04, 0.12, 0.86, 0.96, 1.0], [32, 32, 0, 0, -48, -48])
+
+    const linkOpacity = useTransform(smoothProgress, [0.0, 0.06, 0.14, 0.84, 0.94, 1.0], [0, 0, 1, 1, 0, 0])
+    const linkY = useTransform(smoothProgress, [0.0, 0.06, 0.14, 0.84, 0.94, 1.0], [24, 24, 0, 0, -32, -32])
 
     const bgImage = pillar.image
     const isVideo = bgImage?.endsWith('.mp4') || bgImage?.endsWith('.webm')
@@ -106,6 +111,22 @@ const PillarSection = ({ pillar, index }: { pillar: Pillar, index: number }) => 
                                 dangerouslySetInnerHTML={{ __html: pillar.content }}
                             />
                         )}
+
+                        <motion.div
+                            style={{
+                                opacity: linkOpacity,
+                                y: linkY,
+                                willChange: 'transform, opacity'
+                            }}
+                        >
+                            <Link
+                                href={`/our-approach/${pillar.slug}`}
+                                className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 hover:border-primary/50 hover:bg-white/20 text-white px-6 py-3 rounded-full text-sm font-semibold uppercase tracking-widest transition-all group"
+                            >
+                                Learn More
+                                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                            </Link>
+                        </motion.div>
                     </div>
                 </motion.div>
             </div>

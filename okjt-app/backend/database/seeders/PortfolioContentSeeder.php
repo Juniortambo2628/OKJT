@@ -190,7 +190,7 @@ class PortfolioContentSeeder extends Seeder
     }
 
     // ------------------------------------------------------------------
-    // Pillars
+    // Pillars — 6 approach items from PillarSeeder
     // ------------------------------------------------------------------
 
     private function reseedPillars(): void
@@ -199,27 +199,51 @@ class PortfolioContentSeeder extends Seeder
 
         $pillars = [
             [
-                'title' => 'Web Application Engineering',
-                'slug' => 'web-application-engineering',
-                'overview' => 'Full-stack web applications built from the schema up — auth, admin, APIs, background jobs, deployment and ongoing cPanel/domain administration.',
-                'content' => '<p>Laravel and Next.js / React applications built from the schema up — auth, admin, APIs, background jobs, plus deployment and ongoing cPanel and domain administration. Every project covers the full lifecycle: concept, interface, engineering, deployment and ongoing operations.</p>',
-                'icon' => 'code',
+                'title' => 'Design',
+                'slug' => 'design',
+                'overview' => 'Design first. Function always.',
+                'content' => '<p>Simple, purposeful interfaces. Absolutely breathtaking interfaces. Unique and not bound by templates.</p>',
+                'icon' => 'Palette',
                 'is_active' => true,
             ],
             [
-                'title' => 'Interface & Experience Design',
-                'slug' => 'interface-experience-design',
-                'overview' => 'Design and implementation stay together — design system, motion, responsive layout and accessibility resolved as one piece of work.',
-                'content' => '<p>Design and implementation stay together — design system, motion, responsive layout and accessibility resolved as one piece of work, not thrown over a wall. From wireframes to production, the visual and functional design is integral to every build.</p>',
-                'icon' => 'palette',
+                'title' => 'Style',
+                'slug' => 'style',
+                'overview' => 'Smart, stylish, purposeful.',
+                'content' => '<p>Aesthetic clarity that supports goals. Every pixel has a purpose.</p>',
+                'icon' => 'Sparkles',
                 'is_active' => true,
             ],
             [
-                'title' => 'Ecosystem-Led Strategy',
-                'slug' => 'ecosystem-led-strategy',
-                'overview' => 'Every stakeholder the software touches is mapped before scoping, so each has an aligned reason to use it.',
-                'content' => '<p>Every stakeholder the software touches — client, user, regulator, partner, community — is mapped before scoping, so each has an aligned reason to use it. An approach from the Afrilabs programme in Addis Ababa. This is what turns a website into a working system inside its own context.</p>',
-                'icon' => 'map',
+                'title' => 'Human-centered UX',
+                'slug' => 'human-centered-ux',
+                'overview' => 'Interactive systems guided by empathy and behavior.',
+                'content' => '<p>User experience (UX) rooted in human behavior, ensuring digital products are intuitive and accessible.</p>',
+                'icon' => 'Users',
+                'is_active' => true,
+            ],
+            [
+                'title' => 'Speed',
+                'slug' => 'speed',
+                'overview' => 'Fast, responsive, accessible.',
+                'content' => '<p>Performance and accessibility first. Built for speed because time is weight.</p>',
+                'icon' => 'Zap',
+                'is_active' => true,
+            ],
+            [
+                'title' => 'Deploy',
+                'slug' => 'deploy',
+                'overview' => 'From idea to launch.',
+                'content' => '<p>From code to production with confidence. Streamlined workflows and reliable infrastructure.</p>',
+                'icon' => 'Rocket',
+                'is_active' => true,
+            ],
+            [
+                'title' => 'Scale',
+                'slug' => 'scale',
+                'overview' => 'Built to scale.',
+                'content' => '<p>Architecture designed for growth. Future-proof solutions that expand with your vision.</p>',
+                'icon' => 'TrendingUp',
                 'is_active' => true,
             ],
         ];
