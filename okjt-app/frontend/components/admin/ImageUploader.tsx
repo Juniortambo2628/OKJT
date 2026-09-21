@@ -7,6 +7,7 @@ import { AxiosError, AxiosProgressEvent } from 'axios'
 import { Upload, X, Loader2, Film, File, Images } from 'lucide-react'
 import api from '@/lib/api'
 import MediaBrowser from './MediaBrowser'
+import VideoThumbnail from './VideoThumbnail'
 
 interface ImageUploaderProps {
     value?: string
@@ -138,10 +139,10 @@ const ImageUploader = ({ value, onChange, accept, maxSizeMB = 20, label = 'Uploa
                 {preview || value ? (
                     <div className="relative group">
                         {isVideo ? (
-                            <div className="h-40 flex flex-col items-center justify-center bg-black/5">
-                                <Film className="h-10 w-10 text-muted-foreground" />
-                                <span className="mt-2 text-sm text-muted-foreground font-medium">Video File</span>
-                            </div>
+                            <VideoThumbnail
+                                src={preview || value || ''}
+                                className="w-full h-40 object-cover"
+                            />
                         ) : isFile ? (
                             <div className="h-40 flex flex-col items-center justify-center bg-black/5">
                                 <File className="h-10 w-10 text-muted-foreground" />

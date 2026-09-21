@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Loader2, Search, Image as ImageIcon, Film, File, Check, Grid3X3, List } from 'lucide-react'
 import api from '@/lib/api'
+import VideoThumbnail from './VideoThumbnail'
 
 interface MediaFile {
     path: string
@@ -147,10 +148,10 @@ export default function MediaBrowser({ open, onOpenChange, onSelect, accept }: M
                                             className="w-full h-full object-cover"
                                         />
                                     ) : file.type === 'video' ? (
-                                        <div className="w-full h-full bg-black/10 flex flex-col items-center justify-center gap-1">
-                                            <Film className="h-8 w-8 text-muted-foreground" />
-                                            <span className="text-[9px] text-muted-foreground uppercase tracking-wider">Video</span>
-                                        </div>
+                                        <VideoThumbnail
+                                            src={file.url}
+                                            className="w-full h-full object-cover"
+                                        />
                                     ) : (
                                         <div className="w-full h-full bg-black/10 flex flex-col items-center justify-center gap-1">
                                             <File className="h-8 w-8 text-muted-foreground" />
