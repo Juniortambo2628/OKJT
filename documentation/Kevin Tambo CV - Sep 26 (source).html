@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Kevin Tambo — CV</title>
+<style>
+  :root{
+    --ink:#12203a; --muted:#5b6577; --accent:#1f4e8c; --accent2:#2f7d9b;
+    --line:#dfe4ec; --sidebg:#f4f7fb;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{
+    font-family:"Liberation Sans","Helvetica Neue",Arial,sans-serif;
+    color:var(--ink); font-size:9.4pt; line-height:1.42;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  @page{ size:A4; margin:0; }
+
+  .page{ width:210mm; min-height:285mm; padding:9mm 12mm 8mm 12mm; margin:0 auto; background:#fff; position:relative; }
+  .page.two{ page-break-before:always; }
+
+  /* Header */
+  header{ display:flex; justify-content:space-between; align-items:flex-start;
+          border-bottom:2.5px solid var(--accent); padding-bottom:6px; margin-bottom:9px; }
+  .name{ font-size:27pt; font-weight:700; letter-spacing:.5px; line-height:1; }
+  .name span{ color:var(--accent); }
+  .role{ font-size:11.5pt; font-weight:600; color:var(--accent2); margin-top:5px; letter-spacing:.3px; }
+  .tags{ font-size:8.2pt; color:var(--muted); margin-top:5px; }
+  .contact{ text-align:right; font-size:8.3pt; color:var(--muted); line-height:1.7; min-width:52mm; }
+  .contact b{ color:var(--ink); font-weight:600; }
+
+  /* Layout */
+  .grid{ display:flex; gap:10mm; }
+  .main{ flex:1 1 63%; min-width:0; }
+  .side{ flex:0 0 33%; }
+
+  h2.sec{ font-size:10pt; font-weight:700; color:var(--accent); text-transform:uppercase;
+          letter-spacing:1.1px; margin:0 0 6px 0; padding-bottom:3px; border-bottom:1.4px solid var(--line); }
+  .block{ margin-bottom:9px; }
+
+  .summary{ font-size:9.3pt; line-height:1.46; color:#25324a; }
+
+  .job{ margin-bottom:8px; page-break-inside:avoid; }
+  .job .top{ display:flex; justify-content:space-between; align-items:baseline; }
+  .job .org{ font-size:10pt; font-weight:700; }
+  .job .when{ font-size:8pt; color:var(--muted); font-weight:600; white-space:nowrap; padding-left:8px; }
+  .job .title{ font-size:8.9pt; font-weight:600; color:var(--accent2); margin:1px 0 4px 0; }
+  ul{ list-style:none; }
+  ul li{ position:relative; padding-left:11px; margin-bottom:2px; font-size:8.9pt; line-height:1.38; color:#2a3550; }
+  ul li:before{ content:""; position:absolute; left:0; top:5.5px; width:3.5px; height:3.5px; background:var(--accent2); border-radius:50%; }
+  li b{ font-weight:600; color:var(--ink); }
+  .subrole{ font-size:8.1pt; font-weight:600; color:var(--muted); margin:5px 0 3px 0; font-style:italic; }
+
+  /* Sidebar */
+  .side .card{ background:var(--sidebg); border:1px solid var(--line); border-radius:6px; padding:9px 10px; margin-bottom:11px; }
+  .side h2.sec{ border-bottom-color:#d3ddec; }
+  .skillgroup{ margin-bottom:7px; }
+  .skillgroup .lbl{ font-size:8pt; font-weight:700; margin-bottom:3px; }
+  .chips{ display:flex; flex-wrap:wrap; gap:3px; }
+  .chip{ background:#fff; border:1px solid #d5dfec; color:#2c3b56; font-size:7.4pt; padding:1.5px 5px; border-radius:3px; }
+  .sectors{ font-size:8.3pt; color:#33415c; line-height:1.55; }
+  .edu{ margin-bottom:8px; }
+  .edu .d{ font-size:8.9pt; font-weight:700; }
+  .edu .s{ font-size:8.2pt; color:#33415c; }
+  .edu .y{ font-size:7.7pt; color:var(--muted); }
+  .cred{ font-size:8.2pt; color:#33415c; margin-bottom:5px; line-height:1.35; }
+  .cred b{ color:var(--ink); font-weight:600; }
+  .ref{ font-size:8.2pt; color:#33415c; margin-bottom:6px; line-height:1.35; }
+  .ref b{ color:var(--ink); font-weight:600; }
+
+  /* Page 2 : project grid */
+  .p2head{ display:flex; justify-content:space-between; align-items:baseline;
+           border-bottom:2.5px solid var(--accent); padding-bottom:6px; margin-bottom:12px; }
+  .p2head .t{ font-size:15pt; font-weight:700; }
+  .p2head .t span{ color:var(--accent); }
+  .p2head .s{ font-size:8.3pt; color:var(--muted); }
+
+  .pgrid{ display:grid; grid-template-columns:1fr 1fr; gap:8px 12px; }
+  .pcard{ border:1px solid var(--line); border-left:3px solid var(--accent2); border-radius:5px;
+          padding:8px 10px; page-break-inside:avoid; background:#fcfdfe; }
+  .pcard .h{ display:flex; justify-content:space-between; align-items:baseline; }
+  .pcard .n{ font-size:9.3pt; font-weight:700; }
+  .pcard .cat{ font-size:7.2pt; color:var(--accent); font-weight:600; text-transform:uppercase; letter-spacing:.4px; white-space:nowrap; padding-left:6px; }
+  .pcard .d{ font-size:8.3pt; color:#33415c; line-height:1.38; margin:3px 0 4px 0; }
+  .pcard .t{ font-size:7.5pt; color:var(--muted); }
+
+  .footcols{ display:flex; gap:10mm; margin-top:13px; }
+  .footcols > div{ flex:1; }
+</style>
+</head>
+<body>
+
+<!-- ==================== PAGE 1 ==================== -->
+<div class="page">
+  <header>
+    <div>
+      <div class="name">KEVIN <span>TAMBO</span></div>
+      <div class="role">Full-Stack Web Engineer &nbsp;·&nbsp; Founder, OKJTechnologies</div>
+      <div class="tags">Laravel &nbsp;•&nbsp; Next.js / React / TypeScript &nbsp;•&nbsp; Payments &amp; Real-Time Systems &nbsp;•&nbsp; UX &amp; Product Delivery</div>
+    </div>
+    <div class="contact">
+      <div><b>+254 705 883 227</b></div>
+      <div>juniortambo2628@gmail.com</div>
+      <div>Nairobi, Kenya</div>
+      <div>linkedin.com/in/tambokevin</div>
+      <div>github.com/juniortambo2628</div>
+      <div><b>okjtech.co.ke</b></div>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div class="main">
+      <div class="block">
+        <h2 class="sec">Professional Summary</h2>
+        <p class="summary">
+          Full-stack web engineer and founder of <b>OKJTechnologies</b>, a Nairobi studio that takes web
+          platforms from first idea to live, supported product — planning, design, engineering, launch and
+          support in one continuous build. Since 2021 I have shipped <b>20+ production platforms across
+          11 sectors</b> on a modern <b>Laravel + Next.js / React / TypeScript</b> stack, with integrated
+          payments (M-Pesa, Stripe, Paystack), real-time features, passkey authentication and full CI/CD. I
+          begin every project by mapping every stakeholder the platform will touch — a method from the AfriLabs
+          programme in Addis Ababa — so the system earns real use, not just a launch.
+        </p>
+      </div>
+
+      <div class="block">
+        <h2 class="sec">Work Experience</h2>
+
+        <div class="job">
+          <div class="top"><span class="org">OKJTechnologies</span><span class="when">Apr 2021 – Present · Nairobi</span></div>
+          <div class="title">Founder &amp; Principal Engineer</div>
+          <ul>
+            <li>Founded and run a full-stack web engineering studio; delivered <b>20+ production platforms end to end across 11 sectors</b>, owning planning, UX design, engineering, launch and ongoing administration.</li>
+            <li>Architected and shipped flagship products: <b>Tena</b> (hospitality guest-relationship platform), <b>Najenga</b> (construction collaboration with drawing annotation, budgets and OCR document search), <b>The Football Experience</b> (fan travel &amp; financing, with Terik Tours) and <b>Tibu</b> (hospital management toward cross-facility interoperability).</li>
+            <li>Engineered a modern <b>Laravel + Next.js / React / TypeScript</b> stack with integrated payments (M-Pesa Daraja, Stripe, Paystack), real-time notifications (Laravel Reverb / Pusher), passkey &amp; 2FA authentication, and role-based admin dashboards.</li>
+            <li>Built live operational systems including the <b>Nyalife Hospital Management System</b> (role-based clinical workflow, front desk to receipt), <b>Kuba Home Services</b> (marketplace across 13 categories, PWA + Android) and <b>HUCAA</b> (alumni platform with M-Pesa donations).</li>
+            <li>Held production quality with automated testing (<b>Pest, PHPUnit, Playwright, Vitest</b>) and <b>GitHub Actions CI/CD</b>; deploy and administer platforms across Vercel and cPanel.</li>
+          </ul>
+        </div>
+
+        <div class="job">
+          <div class="top"><span class="org">Lawyers Hub</span><span class="when">Sep 2022 – Dec 2024 · Nairobi</span></div>
+          <div class="title">Software Developer, Justice Innovation</div>
+          <ul>
+            <li>Built and maintained the <b>Lawyers Hub Digital Policy website</b> — Kenya's flagship LegalTech hub for AI-governance research, daily policy bulletins and interactive Africa digital-trade maps, with a CMS non-technical staff could publish to independently.</li>
+            <li>Engineered the <b>Africa Law Tech Festival platform</b> — online ticketing, live notifications and event mapping for the continent's largest LegalTech gathering.</li>
+            <li>Built the <b>Africa Digital Policy Institute</b> course platform (cross-continental capacity-building and participant tracking); contributed UI/UX for the <b>AI Policy Lab</b>, a virtual learning facility spanning Europe and Africa.</li>
+            <li>Delivered the <b>Digital Trade Hackathon</b> platform (ALTF 2023), which supported <b>11+ innovations</b> for the AfCFTA single digital market; contributed to a bilingual (EN/FR) database of African AI startups with the UN ECA.</li>
+          </ul>
+          <div class="subrole">Software Developer Trainee · Sep 2022 – Feb 2023</div>
+          <ul>
+            <li>Built and published the <b>Boda-Boda Law Project</b> report platform; co-ran field data collection (Kisumu, Namanga) and rider capacity-building on traffic regulations.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="side">
+      <div class="block">
+        <h2 class="sec">Technical Skills</h2>
+        <div class="card">
+          <div class="skillgroup"><div class="lbl">Backend</div><div class="chips">
+            <span class="chip">Laravel</span><span class="chip">PHP</span><span class="chip">REST APIs</span>
+            <span class="chip">MySQL</span><span class="chip">Sanctum / Fortify</span><span class="chip">Scout · Meilisearch</span></div></div>
+          <div class="skillgroup"><div class="lbl">Frontend</div><div class="chips">
+            <span class="chip">Next.js</span><span class="chip">React</span><span class="chip">TypeScript</span>
+            <span class="chip">Inertia.js</span><span class="chip">Tailwind CSS</span><span class="chip">Radix · shadcn/ui</span></div></div>
+          <div class="skillgroup"><div class="lbl">Real-Time &amp; Integrations</div><div class="chips">
+            <span class="chip">Reverb / Pusher</span><span class="chip">M-Pesa (Daraja)</span>
+            <span class="chip">Stripe</span><span class="chip">Paystack</span><span class="chip">WhatsApp / Telegram</span></div></div>
+          <div class="skillgroup"><div class="lbl">Auth &amp; Security</div><div class="chips">
+            <span class="chip">WebAuthn passkeys</span><span class="chip">2FA</span><span class="chip">OAuth (Socialite)</span><span class="chip">RBAC (Spatie)</span></div></div>
+          <div class="skillgroup"><div class="lbl">Quality &amp; DevOps</div><div class="chips">
+            <span class="chip">Pest · PHPUnit</span><span class="chip">Playwright</span><span class="chip">Vitest · Jest</span>
+            <span class="chip">GitHub Actions</span><span class="chip">Vercel · cPanel</span><span class="chip">PWA · Capacitor</span></div></div>
+          <div class="skillgroup" style="margin-bottom:0;"><div class="lbl">Design &amp; Product</div><div class="chips">
+            <span class="chip">UI/UX</span><span class="chip">Prototyping</span><span class="chip">Design systems</span>
+            <span class="chip">UX audits</span><span class="chip">Performance &amp; SEO</span></div></div>
+        </div>
+      </div>
+
+      <div class="block">
+        <h2 class="sec">Sector Experience</h2>
+        <div class="sectors">
+          LegalTech · HealthTech · PropTech · FinTech · E-commerce · Events · NGO / Social impact ·
+          Agritech · Automotive · EdTech · Marketplaces
+        </div>
+      </div>
+
+      <div class="block">
+        <h2 class="sec">Education</h2>
+        <div class="edu"><div class="d">Riara University</div><div class="s">B.Sc. Computer Science</div><div class="y">Second Class Honours, Upper Division</div></div>
+        <div class="edu"><div class="d">Makini High School</div><div class="s">KCSE — Grade A</div><div class="y">2011 – 2014</div></div>
+      </div>
+
+      <div class="block">
+        <h2 class="sec">Professional Development</h2>
+        <div class="cred"><b>AfriLabs</b> — Leveraging Stakeholder Relationships through Ecosystem Mapping &amp; Building (Addis Ababa)</div>
+        <div class="cred"><b>AI &amp; productivity tooling</b> — Claude, Cursor, Windsurf, Gemini, NotebookLM applied to design, analysis and accelerated delivery.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PAGE 2 ==================== -->
+<div class="page two">
+  <div class="p2head">
+    <div class="t">Selected <span>Projects</span></div>
+    <div class="s">A cross-section of 20+ platforms delivered across 11 sectors &nbsp;·&nbsp; okjtech.co.ke</div>
+  </div>
+
+  <div class="pgrid">
+    <div class="pcard"><div class="h"><span class="n">Tena</span><span class="cat">Hospitality</span></div>
+      <div class="d">Guest-relationship platform for African hospitality — direct, lasting host–guest relationships from short-stays to hotels, with subscription billing and SMS OTP.</div>
+      <div class="t">Laravel · React · TypeScript · Inertia · Cashier · M-Pesa · Pest</div></div>
+
+    <div class="pcard"><div class="h"><span class="n">Najenga</span><span class="cat">PropTech</span></div>
+      <div class="d">Construction collaboration workspace — drawings, budgets, timelines and conversations in one live view for engineers, architects, contractors and owners.</div>
+      <div class="t">Laravel · React · Meilisearch · Annotorious · Tesseract OCR · AG Grid</div></div>
+
+    <div class="pcard"><div class="h"><span class="n">The Football Experience</span><span class="cat">FinTech · Travel</span></div>
+      <div class="d">Plan, finance and share the journey to World Cup / AFCON / Euros — connecting fans with travel, finance and event partners. Built with Terik Tours.</div>
+      <div class="t">Laravel · React · Reverb · Paystack · WebAuthn · Playwright</div></div>
+
+    <div class="pcard"><div class="h"><span class="n">Kuba Home Services</span><span class="cat">Marketplace</span></div>
+      <div class="d">Marketplace connecting households and businesses with vetted professionals across 13 categories — booking, multi-provider payments and ratings. PWA + Android.</div>
+      <div class="t">Next.js · Laravel · Meilisearch · Stripe / Paystack / M-Pesa · Capacitor</div></div>
+
+    <div class="pcard"><div class="h"><span class="n">Nyalife Hospital Mgmt System</span><span class="cat">HealthTech</span></div>
+      <div class="d">Role-based workspaces for reception, nursing, labs, pharmacy and billing — the full patient journey from front desk to receipt. First live instance of Tibu.</div>
+      <div class="t">Laravel · React · Inertia · Reverb · Spatie Permission · FullCalendar</div></div>
+
+    <div class="pcard"><div class="h"><span class="n">Naoa</span><span class="cat">Events</span></div>
+      <div class="d">A digital home for the whole wedding — before, during and after the day — with multilingual guests, QR check-in and real-time updates.</div>
+      <div class="t">React · Laravel · Reverb · i18next · QR check-in · Spotify API</div></div>
+
+    <div class="pcard"><div class="h"><span class="n">GM Coaching</span><span class="cat">EdTech</span></div>
+      <div class="d">MBA admissions and consulting-interview coaching for African candidates — scheduling, payments and a client workspace.</div>
+      <div class="t">Next.js · Laravel · Stripe · Calendly · shadcn/ui · Reverb</div></div>
+
+    <div class="pcard"><div class="h"><span class="n">Dickson, Gitonga Advocates</span><span class="cat">LegalTech</span></div>
+      <div class="d">Law-firm website with secure client and staff portals — matter tracking, publications and consultations, backed by document parsing and citation tooling.</div>
+      <div class="t">PHP · MySQL · Symfony components · Doctrine · Eyecite · Tabulator</div></div>
+
+    <div class="pcard"><div class="h"><span class="n">Silversky Events</span><span class="cat">E-commerce</span></div>
+      <div class="d">Everything an event needs — catering, sanitation, AV, furniture and décor — ordered in one cart, with delivery coordination for organisers and drivers.</div>
+      <div class="t">Laravel · React · Inertia · Fortify · WebAuthn · Leaflet · DomPDF</div></div>
+
+    <div class="pcard"><div class="h"><span class="n">Global Harmony Initiative</span><span class="cat">NGO</span></div>
+      <div class="d">Nonprofit platform for causes, initiatives and impact stories — self-managed by a small team, with reporting, exports and passkey sign-in.</div>
+      <div class="t">Laravel · React · Inertia · WebAuthn · Chart.js · Sentry · GSAP</div></div>
+
+    <div class="pcard"><div class="h"><span class="n">South Ring Autos</span><span class="cat">Automotive</span></div>
+      <div class="d">Workshop management with online booking, live repair-progress tracking and loyalty rewards — building customer trust through visibility into every repair.</div>
+      <div class="t">Next.js · Laravel · Reverb · Socialite · Radix UI · GitHub Actions</div></div>
+
+    <div class="pcard"><div class="h"><span class="n">Culture Monitor</span><span class="cat">HR · Advisory</span></div>
+      <div class="d">Measures organisational culture through structured surveys and analytics — leaders define target culture, employees respond, advisers turn the gap into action.</div>
+      <div class="t">Next.js · Laravel · TypeScript · Reverb · Recharts · shadcn/ui</div></div>
+  </div>
+
+  <div class="footcols">
+    <div>
+      <h2 class="sec">References</h2>
+      <div class="ref"><b>Daniel Obam</b> — Special Advisor, Africa Policy &amp; Regulatory Affairs, Huawei</div>
+      <div class="ref"><b>Jorge Andrés Clarke De la Cerda</b> — Strategic Advisor, International Research Centre on AI (under the auspices of UNESCO)</div>
+    </div>
+    <div>
+      <h2 class="sec">Also Delivered</h2>
+      <div class="ref">TAMCON Consulting Engineers · Nissi Insights · The Good Kenyan Foundation · Wisdom Capital Agritech · Mizizi · Reytati Communications · OmniShop (Solar &amp; Storage Live 2026) · OKJTechnologies studio platform</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
