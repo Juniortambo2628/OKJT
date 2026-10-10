@@ -69,6 +69,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Public Frontend URL
+    |--------------------------------------------------------------------------
+    |
+    | The canonical origin of the Next.js site, used to build absolute links
+    | in outgoing emails (password resets, receipts, confirmations). FRONTEND_URL
+    | is also read by cors.php as a comma-separated allow-list, so only the
+    | first entry is used here.
+    |
+    */
+
+    'frontend_url' => rtrim(explode(',', env('FRONTEND_URL', 'http://localhost:3000'))[0], '/'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |
