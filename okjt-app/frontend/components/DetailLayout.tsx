@@ -120,10 +120,10 @@ interface DetailLayoutProps {
     relatedTitle: string
     relatedAllLabel: string
     relatedAllLink: string
-    relatedItems?: { id: number; image?: string; client_name?: string; tagline?: string; slug?: string }[]
+    relatedItems?: { id: number; title?: string; image?: string | null; client_name?: string | null; tagline?: string | null; slug?: string }[]
     relatedLinkPrefix: string
-    getRelatedImage?: (item: { id: number; image?: string }) => string
-    getRelatedTagline?: (item: { id: number; client_name?: string; tagline?: string }) => string
+    getRelatedImage?: (item: { id: number; image?: string | null }) => string | undefined
+    getRelatedTagline?: (item: { id: number; client_name?: string | null; tagline?: string | null }) => string | undefined
 }
 
 export default function DetailLayout({
@@ -151,9 +151,7 @@ export default function DetailLayout({
     challengeHtml,
     impactTitle,
     impactHtml,
-    _sidebarStackTitle,
     technologies,
-    _fallbackStackText = 'Proprietary Architecture',
     primaryActionUrl,
     primaryActionLabel,
     primaryActionIcon: PrimaryActionIcon = Globe,
@@ -433,14 +431,14 @@ export default function DetailLayout({
                             </Link>
                         </FadeIn>
                         <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-10" staggerDelay={0.1}>
-                            {relatedItems.map((item: { id: number; image?: string; client_name?: string; tagline?: string; slug?: string }) => {
-                                const imgSrc = getRelatedImage ? getRelatedImage(item) : item.image;
-                                const taglineText = getRelatedTagline ? getRelatedTagline(item) : (item.client_name || item.tagline);
+                            {relatedItems.map((item) => {
+                                const imgSrc = getRelatedImage ? getRelatedImage(item) : (item.image ?? undefined);
+                                const taglineText = getRelatedTagline ? getRelatedTagline(item) : (item.client_name || item.tagline || undefined);
                                 return (
                                     <StaggerItem key={item.id}>
                                         <Link href={`${relatedLinkPrefix}/${item.slug}`} className="group block relative aspect-[21/9] overflow-hidden border border-white/5 rounded-2xl bg-black/20">
                                         {imgSrc && (
-                                            <Image src={imgSrc} alt={item.title} fill className="object-cover opacity-60 group-hover:opacity-20 transition-all duration-700" />
+                                            <Image src={imgSrc} alt={item.title || ''} fill className="object-cover opacity-60 group-hover:opacity-20 transition-all duration-700" />
                                         )}
                                         <div className="absolute inset-0 p-8 flex flex-col justify-end bg-gradient-to-t from-black via-black/40 to-transparent">
                                             <span className="text-primary font-bold text-[9px] uppercase tracking-widest mb-2">{taglineText}</span>
