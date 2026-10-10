@@ -10,8 +10,12 @@ use Illuminate\Database\Seeder;
 
 class AnalyticsDataSeeder extends Seeder
 {
+    use RebuildsDemoContent;
+
     public function run(): void
     {
+        $this->guardAgainstProduction(self::class);
+
         // 1. Seed Consultation Requests
         ConsultationRequest::truncate();
         $requests = [

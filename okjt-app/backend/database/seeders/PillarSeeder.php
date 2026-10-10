@@ -8,8 +8,12 @@ use Illuminate\Support\Str;
 
 class PillarSeeder extends Seeder
 {
+    use RebuildsDemoContent;
+
     public function run(): void
     {
+        $this->guardAgainstProduction(self::class);
+
         $pillars = [
             [
                 'title' => 'Design',
