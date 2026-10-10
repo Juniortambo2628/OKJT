@@ -30,7 +30,7 @@ class RsvpController extends Controller
             'interest' => 'nullable|string|max:255',
             'consent' => 'boolean',
             'newsletter' => 'boolean',
-            'attendance' => 'nullable|string|max:255',
+            'attendance' => 'nullable|string|in:accepted,declined',
             'type' => 'nullable|string|in:rsvp,early_access',
         ];
     }
@@ -38,7 +38,15 @@ class RsvpController extends Controller
     protected function updateRules(Request $request, $record): array
     {
         return [
-            'attendance' => 'nullable|string|max:255',
+            'name' => 'nullable|string|max:255',
+            'email' => 'nullable|email|max:255|unique:rsvps,email,'.$record->id,
+            'company' => 'nullable|string|max:255',
+            'job_title' => 'nullable|string|max:255',
+            'sector' => 'nullable|string|max:255',
+            'interest' => 'nullable|string|max:255',
+            'consent' => 'boolean',
+            'newsletter' => 'boolean',
+            'attendance' => 'nullable|string|in:accepted,declined',
             'type' => 'nullable|string|in:rsvp,early_access',
         ];
     }
