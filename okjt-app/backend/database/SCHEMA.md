@@ -7,15 +7,25 @@ Generated after all migrations have been applied.
 migrations), cross-checked column by column against `information_schema`.
 
 **Storage engine:** no migration pins an engine, so every table inherits the
-server's `default_storage_engine`. The local WAMP instance runs MyISAM, which
-means the foreign keys declared below are downgraded by MySQL to plain `KEY`
-entries - see [Foreign Key Summary](#foreign-key-summary). Confirm the engine
-on production before relying on referential integrity or transactions.
+server's `default_storage_engine`.
+
+- **Production** (MySQL 8.0.36 on cPanel) defaults to **InnoDB**, confirmed via
+  `information_schema.ENGINES` where `InnoDB` reports `SUPPORT = DEFAULT`.
+  Foreign keys are enforced and the composite indexes below all exist.
+- **Local WAMP** (MySQL 8.4.7) defaults to **MyISAM**, which is atypical and
+  produces the deviations flagged in the two notes below. It is a local
+  configuration artefact, not a production condition.
+
+Check any environment with:
+
+```sql
+SELECT table_name, engine FROM information_schema.tables
+WHERE table_schema = DATABASE() ORDER BY engine, table_name;
+```
 
 **String width:** all string columns are `varchar(191)`, not `varchar(255)`.
 utf8mb4 stores 4 bytes per character and Laravel sizes indexed strings to
-191 so a unique index stays inside the 3072-byte InnoDB / 1000-byte MyISAM
-key limit.
+191 so a unique index stays inside the 3072-byte InnoDB key limit.
 
 ## Infrastructure Tables
 
@@ -366,11 +376,13 @@ in favour of a single nullable `url`.
 **Attendance values:** accepted, declined, null
 
 > `2026_06_25_100750` also requests `INDEX(type, attendance)` and
-> `INDEX(email, type)`. Neither exists. Each composite is two `varchar(191)`
-> utf8mb4 columns - 1528 bytes - which exceeds MyISAM's 1000-byte key limit,
-> so MySQL rejects them with `ERROR 1071` and the migration's bare
-> `catch (Exception $e) {}` swallows the failure. They will be created
-> automatically once the tables are InnoDB.
+> `INDEX(email, type)`. Under **MyISAM only** neither is created: each
+> composite is two `varchar(191)` utf8mb4 columns - 1528 bytes - which exceeds
+> MyISAM's 1000-byte key limit, so MySQL rejects them with `ERROR 1071` and
+> the bare `catch (Exception $e) {}` in that migration swallows the failure.
+> Production is InnoDB, where 1528 bytes is well inside the 3072-byte limit
+> and both indexes exist. Add them to the list above if this schema is ever
+> generated on a MyISAM server.
 
 ### `page_views`
 | Column | Type | Constraints |
@@ -390,20 +402,23 @@ in favour of a single nullable `url`.
 
 | Child Table | Column | Parent Table | On Delete | Enforced |
 |-------------|--------|-------------|-----------|----------|
-| sessions | user_id | users | (implicit) | no |
-| insights | user_id | users | CASCADE | no |
-| services | pillar_id | pillars | SET NULL | no |
+| sessions | user_id | users | (implicit) | yes |
+| insights | user_id | users | CASCADE | yes |
+| services | pillar_id | pillars | SET NULL | yes |
 
-**Enforced = no.** The keys above are declared in the migrations and MySQL
-creates an entry named `*_foreign` for each, but because the tables are MyISAM
-the constraint itself is discarded: `information_schema.referential_constraints`
-is empty and `SHOW CREATE TABLE` shows only a plain `KEY`. Deleting a parent
-row therefore does **not** cascade or null the children today.
+**Enforced = yes on production.** The three keys above are declared in
+`2026_06_25_100409_add_foreign_keys_to_core_tables`. On InnoDB they are real
+constraints, so deleting a parent row cascades or nulls its children as shown.
 
-Re-run `2026_06_25_100409_add_foreign_keys_to_core_tables` after converting the
-tables to InnoDB to make the constraints real. Laravel also declares soft-delete
-morph relations and other logical relationships that live in application code
-rather than the database.
+**On a MyISAM server they are not.** MyISAM has no foreign key support, so
+MySQL creates the matching `*_foreign` entries as plain `KEY`s and discards
+the constraint: `information_schema.referential_constraints` is empty,
+`SHOW CREATE TABLE` shows only `KEY`, and deleting a parent row leaves
+orphans behind. `2026_06_25_100409` attaches the real constraints if it is
+re-run after converting such tables to InnoDB.
+
+Laravel also declares soft-delete morph relations and other logical
+relationships that live in application code rather than in the database.
 
 ## Relationship Diagram
 
