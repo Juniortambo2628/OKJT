@@ -183,7 +183,7 @@ export interface Rsvp {
   consent: boolean;
   newsletter: boolean;
   type: 'rsvp' | 'early_access';
-  attendance: 'accept' | 'decline' | null;
+  attendance: 'accepted' | 'declined' | null;
   created_at: string;
   updated_at: string;
 }

@@ -325,7 +325,7 @@ Generated after all migrations have been applied.
 
 **Indexes:** UNIQUE(email), INDEX(type), INDEX(type, attendance), INDEX(email, type)
 **Type values:** early_access, rsvp
-**Attendance values:** accept, decline, null
+**Attendance values:** accepted, declined, null
 
 ### `page_views`
 | Column | Type | Constraints |
