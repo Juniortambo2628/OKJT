@@ -38,7 +38,7 @@ import { AdminThemeToggle } from './AdminThemeToggle'
 const AdminSidebar = () => {
     const pathname = usePathname()
     const { logout } = useAuth()
-    const { data: settingsByGroup } = useApi('/settings')
+    const { data: settingsByGroup } = useApi<Record<string, SiteSetting[]>>('/settings')
 
     // Helper to get setting value
     const getSetting = (key: string, defaultValue: string) => {

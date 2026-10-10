@@ -15,7 +15,7 @@ import { Project } from '@/types/api'
 import { Card } from '@/components/ui/card'
 
 const ProjectsPreview = () => {
-    const { data: projects, isLoading, isError } = useApi('/projects')
+    const { data: projects, isLoading, isError } = useApi<Project[]>('/projects')
     const [activeIndex, setActiveIndex] = useState(0)
 
     if (isLoading) return <SectionSkeleton />
