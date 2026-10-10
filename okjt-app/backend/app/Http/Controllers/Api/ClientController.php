@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ClientResource;
 use App\Traits\HandlesStandardCrud;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ClientController extends Controller
 {
@@ -18,6 +19,17 @@ class ClientController extends Controller
     protected $cacheKey = 'clients_all';
 
     protected $resourceClass = ClientResource::class;
+
+    protected function getCacheKey(): ?string
+    {
+        return request()->user('sanctum') ? 'clients_all_admin' : 'clients_all';
+    }
+
+    protected function clearCache(): void
+    {
+        Cache::forget('clients_all');
+        Cache::forget('clients_all_admin');
+    }
 
     protected function indexQuery($query)
     {
