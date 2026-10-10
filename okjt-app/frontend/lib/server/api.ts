@@ -28,40 +28,40 @@ export async function getSettings() {
 }
 
 export async function getServices() {
-  return fetchCollection<Service[]>('/services');
+  return fetchCollection<Service>('/services');
 }
 
 export async function getInsights() {
-  return fetchCollection<Insight[]>('/insights');
+  return fetchCollection<Insight>('/insights');
 }
 
 export async function getProjects(type?: string) {
   const query = type ? `?type=${type}` : '';
-  return fetchCollection<Project[]>(`/projects${query}`);
+  return fetchCollection<Project>(`/projects${query}`);
 }
 
 export async function getStats() {
-  return fetchCollection<Stat[]>('/stats');
+  return fetchCollection<Stat>('/stats');
 }
 
 export async function getPillars() {
-  return fetchCollection<Pillar[]>('/pillars');
+  return fetchCollection<Pillar>('/pillars');
 }
 
 export async function getTestimonials() {
-  return fetchCollection<Testimonial[]>('/testimonials');
+  return fetchCollection<Testimonial>('/testimonials');
 }
 
 export async function getClients() {
-  return fetchCollection<Client[]>('/clients');
+  return fetchCollection<Client>('/clients');
 }
 
 export async function getValues() {
-  return fetchCollection<Value[]>('/values');
+  return fetchCollection<Value>('/values');
 }
 
 export async function getTeamMembers() {
-  return fetchCollection<TeamMember[]>('/team-members');
+  return fetchCollection<TeamMember>('/team-members');
 }
 
 export async function getServiceBySlug(slug: string) {

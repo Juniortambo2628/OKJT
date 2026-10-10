@@ -172,6 +172,31 @@ export interface ApiResponse<T> {
   message?: string;
 }
 
+export interface AnalyticsSummaryPoint {
+  date: string;
+  views: number;
+}
+
+export interface AnalyticsTopPage {
+  path: string;
+  views: number;
+}
+
+export interface AnalyticsTopReferrer {
+  referrer: string;
+  count: number;
+}
+
+export interface AnalyticsSummary {
+  total_views: number;
+  today_views: number;
+  week_views: number;
+  unique_visitors: number;
+  views_over_time: AnalyticsSummaryPoint[];
+  top_pages: AnalyticsTopPage[];
+  top_referrers: AnalyticsTopReferrer[];
+}
+
 export interface Rsvp {
   id: number;
   name: string;
