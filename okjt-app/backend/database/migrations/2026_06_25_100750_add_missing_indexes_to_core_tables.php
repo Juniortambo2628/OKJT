@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -29,8 +30,15 @@ return new class extends Migration
                             Schema::table($table, function (Blueprint $table) use ($columns) {
                                 $table->index($columns);
                             });
-                        } catch (Exception $e) {
-                            // Skip indexes that exceed key length limits
+                        } catch (Throwable $e) {
+                            // Skip indexes that exceed key length limits, but
+                            // never fail silently: a swallowed error here is
+                            // how the rsvps indexes went missing unnoticed.
+                            Log::warning('Skipping index '.$indexName.' on '.$table.': '.$e->getMessage(), [
+                                'table' => $table,
+                                'columns' => $columns,
+                                'index' => $indexName,
+                            ]);
                         }
                     }
                 }
