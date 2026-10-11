@@ -1,0 +1,116 @@
+# Reusable: deploy a Laravel app (Blade, or Laravel + Vite/React/Inertia) to
+# the Hestia VPS with release folders + atomic switch. See deploy-kit/README.md.
+#
+#   jobs:
+#     deploy:
+#       uses: Juniortambo2628/OKJT/.github/workflows/deploy-laravel.yml@main
+#       with: { domain: example.okjtech.co.ke, app_name: example }
+#       secrets:
+#         VPS_HOST: ${{ secrets.VPS_HOST }}  … ENV_FILE: ${{ secrets.PROD_ENV }}
+name: deploy-laravel
+
+on:
+  workflow_call:
+    inputs:
+      domain:        { type: string, required: true }
+      app_name:      { type: string, required: true, description: "folder under private/ and PM2 name prefix" }
+      app_dir:       { type: string, default: "." }
+      ref:           { type: string, default: "", description: "commit to deploy (default: the triggering one)" }
+      php_version:   { type: string, default: "8.3" }
+      node_version:  { type: string, default: "24" }
+      build_assets:  { type: boolean, default: true, description: "npm ci + npm run build (Vite)" }
+      npm_flags:     { type: string, default: "" }
+      queue:         { type: boolean, default: true }
+      scheduler:     { type: boolean, default: true }
+      seed:          { type: boolean, default: false }
+      post_migrate:  { type: string, default: "", description: "extra shell run in the release after migrate (non-fatal)" }
+      health_path:   { type: string, default: "/" }
+      kit_repo:      { type: string, default: "Juniortambo2628/OKJT" }
+      kit_ref:       { type: string, default: "main" }
+    secrets:
+      VPS_HOST: { required: true }
+      VPS_PORT: { required: false }
+      VPS_USER: { required: true }
+      VPS_SSH_KEY: { required: true }
+      VPS_KNOWN_HOSTS: { required: true }
+      ENV_FILE: { required: false, description: "full production .env; written to shared/.env when set" }
+      KIT_TOKEN: { required: false, description: "only if kit_repo is private and not this repo" }
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    concurrency: { group: "deploy-${{ inputs.domain }}", cancel-in-progress: false }
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: "${{ inputs.ref || github.sha }}", path: app }
+      - uses: actions/checkout@v4
+        with: { repository: "${{ inputs.kit_repo }}", ref: "${{ inputs.kit_ref }}", path: kit, token: "${{ secrets.KIT_TOKEN || github.token }}", sparse-checkout: deploy-kit }
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ inputs.php_version }}
+          extensions: mbstring, bcmath, pdo_mysql, curl, zip, gd, intl, fileinfo, dom, exif, iconv
+          coverage: none
+      - name: Composer install (production)
+        working-directory: app/${{ inputs.app_dir }}
+        run: composer install --no-dev --optimize-autoloader --prefer-dist --no-interaction --no-progress
+
+      - uses: actions/setup-node@v4
+        if: inputs.build_assets
+        with: { node-version: "${{ inputs.node_version }}" }
+      - name: Build frontend assets
+        if: inputs.build_assets
+        working-directory: app/${{ inputs.app_dir }}
+        run: |
+          npm ci ${{ inputs.npm_flags }}
+          npm run build
+          test -f public/build/manifest.json
+
+      - uses: ./kit/deploy-kit/actions/ssh
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          port: ${{ secrets.VPS_PORT }}
+          user: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          known_hosts: ${{ secrets.VPS_KNOWN_HOSTS }}
+
+      - name: Upload release
+        run: |
+          SHA="$(git -C app rev-parse HEAD)"
+          echo "RELEASE=$(date -u +%Y%m%d%H%M%S)-${SHA::7}" >> "$GITHUB_ENV"
+          APP_ROOT="$(ssh vps 'echo $HOME')/web/${{ inputs.domain }}/private/${{ inputs.app_name }}"
+          echo "APP_ROOT=$APP_ROOT" >> "$GITHUB_ENV"
+          source "$GITHUB_ENV"
+          ssh vps "mkdir -p '$APP_ROOT/releases/$RELEASE' '$APP_ROOT/shared'"
+          LINK=""; ssh vps "test -d '$APP_ROOT/current/'" && LINK="--link-dest=$APP_ROOT/current/"
+          rsync -az --delete $LINK \
+            --exclude='/.git' --exclude='/.github' --exclude='/node_modules' --exclude='/tests' \
+            --exclude='/storage' --exclude='/.env' --exclude='/.env.*' --exclude='/public/storage' \
+            --exclude='/public/hot' --exclude='/database/*.sqlite' \
+            --exclude='/bootstrap/cache/config.php' --exclude='/bootstrap/cache/routes-*.php' --exclude='/bootstrap/cache/events.php' \
+            app/${{ inputs.app_dir }}/ "vps:$APP_ROOT/releases/$RELEASE/"
+          rsync -az kit/deploy-kit/scripts/ "vps:$APP_ROOT/releases/$RELEASE/.deploy-kit/"
+
+      - name: Write .env from secret (if set)
+        env: { ENV_FILE: "${{ secrets.ENV_FILE }}" }
+        run: |
+          [ -z "$ENV_FILE" ] && { echo "ENV_FILE not set — keeping the server's .env"; exit 0; }
+          printf '%s\n' "$ENV_FILE" | ssh vps "umask 077 && cat > '$APP_ROOT/shared/.env.new' && mv -f '$APP_ROOT/shared/.env.new' '$APP_ROOT/shared/.env'"
+
+      - name: Activate release
+        run: >-
+          ssh vps "APP_ROOT='$APP_ROOT' RELEASE='$RELEASE' APP_NAME='${{ inputs.app_name }}'
+          QUEUE='${{ inputs.queue && 1 || 0 }}' SCHEDULER='${{ inputs.scheduler && 1 || 0 }}' SEED='${{ inputs.seed && 1 || 0 }}'
+          POST_MIGRATE='${{ inputs.post_migrate }}'
+          bash '$APP_ROOT/releases/$RELEASE/.deploy-kit/laravel-activate.sh'"
+
+      - name: Verify
+        run: >-
+          ssh vps "APP_ROOT='$APP_ROOT' DOMAIN='${{ inputs.domain }}' APP_NAME='${{ inputs.app_name }}'
+          QUEUE='${{ inputs.queue && 1 || 0 }}' SCHEDULER='${{ inputs.scheduler && 1 || 0 }}' HEALTH_PATH='${{ inputs.health_path }}'
+          bash '$APP_ROOT/current/.deploy-kit/laravel-verify.sh'"
+
+      - name: Remove a release that never went live
+        if: failure() && env.RELEASE != ''
+        run: ssh vps "cd '$APP_ROOT' && [ \"\$(readlink -f current 2>/dev/null)\" != \"$APP_ROOT/releases/$RELEASE\" ] && rm -rf 'releases/$RELEASE' || true"
