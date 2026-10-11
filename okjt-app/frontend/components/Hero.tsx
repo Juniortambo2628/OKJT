@@ -11,6 +11,7 @@ import { getMediaUrl } from '@/lib/utils'
 import { DEFAULT_HERO_VIDEO } from '@/lib/config'
 import { SkeletonBlock, SkeletonText } from './MediaSkeleton'
 import { cn } from '@/lib/utils'
+import { Client } from '@/types/api'
 
 interface HeroCta {
     label: string
@@ -96,7 +97,7 @@ const HeroBreadcrumbs = ({ items }: { items: BreadcrumbItem[] }) => {
 // Trust bar shown on the landing page
 // ------------------------------------------------------------------
 
-const TrustBar = ({ clients }: { clients?: unknown[] }) => {
+const TrustBar = ({ clients }: { clients?: Client[] }) => {
     const activeClients = clients && Array.isArray(clients) ? clients.slice(0, 6) : []
     if (activeClients.length === 0) return null
 
@@ -109,7 +110,7 @@ const TrustBar = ({ clients }: { clients?: unknown[] }) => {
                 Trusted by visionary brands
             </p>
             <div className="flex flex-wrap items-center gap-8">
-                {activeClients.map((client: { id?: number; name: string; logo?: string }, index) => (
+                {activeClients.map((client, index) => (
                     <motion.div
                         key={client.id || index}
                         initial={{ opacity: 0, y: 10 }}
@@ -295,7 +296,7 @@ const Hero = ({
     loading: loadingProp
 }: HeroProps) => {
     const { getSetting, isLoading: settingsLoading } = useSettings()
-    const { data: clients } = useApi('/clients')
+    const { data: clients } = useApi<Client[]>('/clients')
     const prefersReducedMotion = useReducedMotion()
 
     const isLoading = loadingProp ?? settingsLoading

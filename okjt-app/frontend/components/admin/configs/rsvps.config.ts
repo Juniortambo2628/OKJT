@@ -45,8 +45,8 @@ export const rsvpsConfig: AdminResourceConfig<Rsvp> = {
     ]},
     { key: 'attendance', label: 'Attendance', type: 'select', options: [
       { label: 'No Response', value: '' },
-      { label: 'Accept', value: 'accept' },
-      { label: 'Decline', value: 'decline' },
+      { label: 'Accepted', value: 'accepted' },
+      { label: 'Declined', value: 'declined' },
     ]},
     { key: 'consent', label: 'Consent', type: 'switch' },
     { key: 'newsletter', label: 'Newsletter', type: 'switch' },

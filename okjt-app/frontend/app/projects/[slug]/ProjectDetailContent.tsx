@@ -38,26 +38,26 @@ export default function ProjectDetailContent({
             slug={slug}
 
             // Metrics
-            significantFigure={project?.significant_figure}
+            significantFigure={project?.significant_figure ?? undefined}
             significantFigureLabel={isClient ? 'Impact Result' : 'Key Impact'}
-            category={project?.category}
+            category={project?.category ?? undefined}
             categoryLabel="Sector"
             ecosystemTitle="Ecosystem"
             ecosystemHtml={project?.outcome || undefined}
 
             // Content
-            description={project?.description}
+            description={project?.description ?? undefined}
             challengeTitle="Challenge"
-            challengeHtml={project?.problem}
+            challengeHtml={project?.problem ?? undefined}
             impactTitle="Solution"
-            impactHtml={project?.methodology}
+            impactHtml={project?.methodology ?? undefined}
 
             // Sidebar
             sidebarStackTitle={isClient ? 'Architecture' : 'Integrated Stack'}
-            technologies={project?.technologies}
+            technologies={project?.technologies ?? undefined}
             fallbackStackText={isClient ? 'Proprietary Architecture' : 'Proprietary IP'}
 
-            primaryActionUrl={project?.url}
+            primaryActionUrl={project?.url ?? undefined}
             primaryActionLabel="Visit"
             primaryActionIcon={isClient ? undefined : Rocket}
             secondaryActionLabel="Get in Touch"
@@ -69,14 +69,14 @@ export default function ProjectDetailContent({
             }
 
             // Testimonial
-            testimonialQuote={project?.testimonial_quote}
+            testimonialQuote={project?.testimonial_quote ?? undefined}
             testimonialAuthor={project?.testimonial_author || (isClient ? 'Client Representative' : 'Product Lead')}
             testimonialLabel={isClient ? 'Verified Client Impact' : 'Innovation Highlight'}
 
             // Gallery
             galleryTitle={isClient ? 'Project Gallery' : 'Interface Showcase'}
             galleryTagline={isClient ? 'Visual Showcase' : 'Design System View'}
-            gallery={project?.gallery}
+            gallery={project?.gallery ?? undefined}
 
             // Related
             relatedTitle={isClient ? 'Explore Related Projects' : 'Other Flagship Engineering'}
@@ -84,8 +84,8 @@ export default function ProjectDetailContent({
             relatedAllLink="/projects"
             relatedItems={relatedProjects}
             relatedLinkPrefix="/projects"
-            getRelatedImage={(item) => getMediaUrl(item.image)}
-            getRelatedTagline={(item) => item.tagline}
+            getRelatedImage={(item) => item.image ? getMediaUrl(item.image) : undefined}
+            getRelatedTagline={(item) => item.tagline ?? undefined}
         />
     )
 }

@@ -8,6 +8,7 @@ use App\Traits\HandlesStandardCrud;
 use App\Traits\HasUniqueSlug;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class InsightController extends Controller
 {
@@ -19,9 +20,26 @@ class InsightController extends Controller
 
     protected $resourceClass = InsightResource::class;
 
+    protected $routeBindingField = 'slug';
+
+    protected function getCacheKey(): ?string
+    {
+        return request()->user('sanctum') ? 'all_insights_admin' : 'published_insights';
+    }
+
+    protected function clearCache(): void
+    {
+        Cache::forget('published_insights');
+        Cache::forget('all_insights_admin');
+    }
+
     protected function indexQuery(Builder $query): Builder
     {
-        return $query->where('is_published', true)->orderBy('published_at', 'desc');
+        if (! request()->user('sanctum')) {
+            $query->where('is_published', true);
+        }
+
+        return $query->orderBy('published_at', 'desc');
     }
 
     protected function storeRules(Request $request): array
@@ -71,12 +89,5 @@ class InsightController extends Controller
         }
 
         return $validated;
-    }
-
-    protected function resolveRouteBinding($value, $field = null)
-    {
-        $field = $field ?? 'slug';
-
-        return parent::resolveRouteBinding($value, $field);
     }
 }

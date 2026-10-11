@@ -9,9 +9,22 @@ class DatabaseSeeder extends Seeder
 {
     /**
      * Seed the application's database.
+     *
+     * Every seeder below truncates or force-deletes real tables, so this
+     * pipeline is scoped to the local environment. On staging/production run an
+     * explicit seeder instead, e.g. `php artisan db:seed --class=UserSeeder`.
      */
     public function run(): void
     {
+        if (! app()->environment('local')) {
+            $this->command?->warn(
+                'DatabaseSeeder is local-only: its seeders truncate content and analytics tables. '.
+                'Run an explicit --class= seeder instead.'
+            );
+
+            return;
+        }
+
         Schema::disableForeignKeyConstraints();
 
         $this->call([

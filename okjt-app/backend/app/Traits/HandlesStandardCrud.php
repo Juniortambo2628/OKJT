@@ -46,16 +46,6 @@ trait HandlesStandardCrud
         }
     }
 
-    protected function resolveRouteBinding($value, $field = null)
-    {
-        $model = $this->getModelClass();
-        $relations = property_exists($this, 'withRelations') ? $this->withRelations : [];
-
-        $field = $field ?? 'id';
-
-        return $model::with($relations)->where($field, $value)->firstOrFail();
-    }
-
     protected function buildIndexQuery(): Builder
     {
         $model = $this->getModelClass();

@@ -7,7 +7,7 @@ import FadeIn from '@/components/animations/FadeIn'
 import { Client } from '@/types/api'
 
 const ClientsSection = () => {
-    const { data: clients, isLoading, isError } = useApi('/clients')
+    const { data: clients, isLoading, isError } = useApi<Client[]>('/clients')
 
     if (isLoading || isError || !clients || clients.length === 0) return null
 

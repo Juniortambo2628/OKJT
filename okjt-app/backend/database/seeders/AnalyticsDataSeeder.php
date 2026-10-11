@@ -10,8 +10,12 @@ use Illuminate\Database\Seeder;
 
 class AnalyticsDataSeeder extends Seeder
 {
+    use RebuildsDemoContent;
+
     public function run(): void
     {
+        $this->guardAgainstProduction(self::class);
+
         // 1. Seed Consultation Requests
         ConsultationRequest::truncate();
         $requests = [
@@ -59,7 +63,7 @@ class AnalyticsDataSeeder extends Seeder
                 'interest' => 'Custom Web Apps',
                 'consent' => true,
                 'newsletter' => true,
-                'attendance' => 'virtual',
+                'attendance' => null,
                 'type' => 'early_access',
                 'created_at' => now()->subDays(2),
             ],
@@ -72,7 +76,7 @@ class AnalyticsDataSeeder extends Seeder
                 'interest' => 'UI/UX Audits',
                 'consent' => true,
                 'newsletter' => false,
-                'attendance' => 'in_person',
+                'attendance' => 'accepted',
                 'type' => 'rsvp',
                 'created_at' => now()->subDays(4),
             ],

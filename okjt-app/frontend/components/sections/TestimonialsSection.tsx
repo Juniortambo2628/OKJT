@@ -5,9 +5,10 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useApi } from '@/hooks/use-api'
 import { Star, ChevronLeft, ChevronRight, Quote } from 'lucide-react'
 import FadeIn from '@/components/animations/FadeIn'
+import { Testimonial } from '@/types/api'
 
 const TestimonialsSection = () => {
-    const { data: testimonials, isLoading, isError } = useApi('/testimonials')
+    const { data: testimonials, isLoading, isError } = useApi<Testimonial[]>('/testimonials')
     const [current, setCurrent] = useState(0)
     const [autoplay, setAutoplay] = useState(true)
 
@@ -103,7 +104,7 @@ const TestimonialsSection = () => {
 
                         {/* Dots */}
                         <div className="flex items-center gap-2">
-                            {items.map((_, i: number) => (
+                            {items.map((_, i) => (
                                 <button
                                     key={i}
                                     onClick={() => setCurrent(i)}

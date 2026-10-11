@@ -35,6 +35,11 @@ class ConsultationRequestController extends Controller
     protected function updateRules(Request $request, $record): array
     {
         return [
+            'first_name' => 'nullable|string|max:255',
+            'last_name' => 'nullable|string|max:255',
+            'email' => 'nullable|email|max:255',
+            'subject' => 'nullable|string|max:255',
+            'message' => 'nullable|string',
             'status' => 'required|string|in:pending,contacted,resolved,archived',
         ];
     }

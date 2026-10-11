@@ -42,13 +42,10 @@ return new class extends Migration
             }
         }
 
-        if (Schema::hasTable('projects')) {
-            if (! Schema::hasIndex('projects', 'order')) {
-                Schema::table('projects', function (Blueprint $table) {
-                    $table->index('order');
-                });
-            }
-        }
+        // NOTE: a `projects.order` block previously lived here. `projects` is not
+        // created until 2026_06_24_203255, so this migration could never have
+        // created that index — the create migration owns it. Removed so that
+        // down() can no longer drop an index it did not create.
 
         if (Schema::hasTable('consultation_requests')) {
             if (! Schema::hasIndex('consultation_requests', 'status')) {
@@ -57,40 +54,37 @@ return new class extends Migration
                 });
             }
         }
+
+        // NOTE: the `projects.order` block that used to live here was removed.
+        // `projects` is not created until 2026_06_24_203255, so this migration
+        // could never have created that index; it is owned by the create
+        // migration instead. See down() below.
     }
 
     public function down(): void
     {
-        if (Schema::hasTable('page_views')) {
-            Schema::table('page_views', function (Blueprint $table) {
-                $table->dropIndex(['created_at']);
-                $table->dropIndex(['path']);
-                $table->dropIndex(['ip']);
-            });
-        }
+        // Every drop is guarded by hasIndex() so that rollback stays idempotent:
+        // page_views.ip is also created by 2026_06_25_100750, and several of
+        // these indexes may have been created by the table-create migrations.
+        $indexes = [
+            'page_views' => [['created_at'], ['path'], ['ip']],
+            'insights' => [['is_published', 'published_at']],
+            'services' => [['is_active']],
+            'consultation_requests' => [['status']],
+        ];
 
-        if (Schema::hasTable('insights')) {
-            Schema::table('insights', function (Blueprint $table) {
-                $table->dropIndex(['is_published', 'published_at']);
-            });
-        }
+        foreach ($indexes as $tableName => $indexColumns) {
+            if (! Schema::hasTable($tableName)) {
+                continue;
+            }
 
-        if (Schema::hasTable('services')) {
-            Schema::table('services', function (Blueprint $table) {
-                $table->dropIndex(['is_active']);
-            });
-        }
-
-        if (Schema::hasTable('projects')) {
-            Schema::table('projects', function (Blueprint $table) {
-                $table->dropIndex(['order']);
-            });
-        }
-
-        if (Schema::hasTable('consultation_requests')) {
-            Schema::table('consultation_requests', function (Blueprint $table) {
-                $table->dropIndex(['status']);
-            });
+            foreach ($indexColumns as $columns) {
+                if (Schema::hasIndex($tableName, $columns)) {
+                    Schema::table($tableName, function (Blueprint $table) use ($columns) {
+                        $table->dropIndex($columns);
+                    });
+                }
+            }
         }
     }
 };

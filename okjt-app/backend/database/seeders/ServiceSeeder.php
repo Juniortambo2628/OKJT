@@ -7,11 +7,15 @@ use Illuminate\Database\Seeder;
 
 class ServiceSeeder extends Seeder
 {
+    use RebuildsDemoContent;
+
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
+        $this->guardAgainstProduction(self::class);
+
         $services = [
             // === WEB DEVELOPMENT ===
             [

@@ -48,8 +48,8 @@ function MobileGroup({ label, isOpen, onToggle, children }: {
 const Navbar = () => {
     const { theme } = useTheme()
     const { branding, getSetting } = useSettings()
-    const { data: services } = useApi('/services')
-    const { data: projects } = useApi('/projects')
+    const { data: services } = useApi<Service[]>('/services')
+    const { data: projects } = useApi<Project[]>('/projects')
     const [isScrolled, setIsScrolled] = useState(false)
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [activeMegaMenu, setActiveMegaMenu] = useState<'services' | 'work' | null>(null)

@@ -7,6 +7,7 @@ use App\Http\Resources\TestimonialResource;
 use App\Traits\HandlesStandardCrud;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class TestimonialController extends Controller
 {
@@ -16,13 +17,26 @@ class TestimonialController extends Controller
 
     protected $orderByDirection = 'asc';
 
-    protected $cacheKey = 'all_testimonials';
-
     protected $resourceClass = TestimonialResource::class;
+
+    protected function getCacheKey(): ?string
+    {
+        return request()->user('sanctum') ? 'all_testimonials_admin' : 'all_testimonials';
+    }
+
+    protected function clearCache(): void
+    {
+        Cache::forget('all_testimonials');
+        Cache::forget('all_testimonials_admin');
+    }
 
     protected function indexQuery(Builder $query): Builder
     {
-        return $query->where('is_featured', true)->orderBy('order');
+        if (! request()->user('sanctum')) {
+            $query->where('is_featured', true);
+        }
+
+        return $query->orderBy('order');
     }
 
     protected function storeRules(Request $request): array

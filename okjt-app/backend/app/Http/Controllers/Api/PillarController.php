@@ -18,6 +18,8 @@ class PillarController extends Controller
 
     protected $resourceClass = PillarResource::class;
 
+    protected $routeBindingField = 'slug';
+
     protected function getCacheKey(): ?string
     {
         return request()->user('sanctum') ? 'all_pillars_admin' : 'all_pillars';
@@ -76,12 +78,5 @@ class PillarController extends Controller
         }
 
         return $validated;
-    }
-
-    protected function resolveRouteBinding($value, $field = null)
-    {
-        $field = $field ?? 'slug';
-
-        return parent::resolveRouteBinding($value, $field);
     }
 }

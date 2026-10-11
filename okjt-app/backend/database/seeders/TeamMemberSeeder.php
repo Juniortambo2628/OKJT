@@ -7,8 +7,12 @@ use Illuminate\Database\Seeder;
 
 class TeamMemberSeeder extends Seeder
 {
+    use RebuildsDemoContent;
+
     public function run(): void
     {
+        $this->guardAgainstProduction(self::class);
+
         $members = [
             [
                 'name' => 'Kevin Tambo',
