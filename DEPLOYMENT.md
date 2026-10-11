@@ -15,6 +15,9 @@ does, rollback, and how other projects reuse it.
 
 ## Secrets (Settings → Secrets → Actions)
 
+The five `VPS_*` secrets are shared with every project: set them with
+`deploy-kit/local/set-vps-secrets.ps1 -Repos Juniortambo2628/OKJT`.
+
 | Secret | Value |
 |---|---|
 | `VPS_HOST` / `VPS_PORT` / `VPS_USER` | `102.212.246.224` / `22` / `dev` |

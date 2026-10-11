@@ -63,9 +63,15 @@ The deploy key's public half is in `/home/dev/.ssh/authorized_keys`.
    bash new-site.sh laravel api.example.com example-api
    bash new-site.sh next    example.com     example-web 3101   # unique port per Next app
    ```
-3. **GitHub secrets** on the project repo: `VPS_HOST`, `VPS_PORT`, `VPS_USER`,
-   `VPS_SSH_KEY`, `VPS_KNOWN_HOSTS` (same values everywhere), plus one env
-   secret per app (`PROD_ENV`, or `BACKEND_ENV` / `FRONTEND_ENV`).
+3. **GitHub secrets** on the project repo. The five shared ones (`VPS_HOST`,
+   `VPS_PORT`, `VPS_USER`, `VPS_SSH_KEY`, `VPS_KNOWN_HOSTS`) come from one set
+   of local files via `deploy-kit/local/set-vps-secrets.ps1` (personal
+   accounts have no account-wide secrets, so it copies them per repo):
+   ```powershell
+   .\set-vps-secrets.ps1 -Repos Juniortambo2628/NewApp
+   ```
+   Then add the app's own env secret (`PROD_ENV`, or `BACKEND_ENV` /
+   `FRONTEND_ENV`) in the repo's settings.
 4. **Workflow** in the project:
    ```yaml
    jobs:
