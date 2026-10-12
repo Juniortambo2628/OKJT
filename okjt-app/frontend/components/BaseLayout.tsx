@@ -4,7 +4,6 @@ import React from 'react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import Hero from '@/components/Hero'
-import ParallaxNav from '@/components/ParallaxNav'
 import SectionBottomBar from '@/components/SectionBottomBar'
 import { cn } from '@/lib/utils'
 
@@ -79,10 +78,7 @@ export default function BaseLayout({
             </div>
 
             {navSections && navSections.length > 1 && (
-                <>
-                    <ParallaxNav sections={navSections} />
-                    <SectionBottomBar sections={navSections} />
-                </>
+                <SectionBottomBar sections={navSections} />
             )}
 
             {bottomBar}

@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { ArrowRight, Linkedin, Twitter, Github, Facebook } from 'lucide-react'
 import { useApi } from '@/hooks/use-api'
 import { useSettings } from '@/hooks/use-settings'
+import { Service } from '@/types/api'
 import { useMounted } from '@/hooks/use-mounted'
 import { useTheme } from 'next-themes'
 
@@ -16,7 +17,7 @@ const Footer = () => {
     const [subscribed, setSubscribed] = React.useState(false)
     const [subscribing, setSubscribing] = React.useState(false)
     const { branding, contact, getSetting, socials: socialLinks } = useSettings()
-    const { data: services } = useApi('/services')
+    const { data: services } = useApi<Service[]>('/services')
 
     const logoWhiteBg = branding.logo_light
     const logoBlackBg = branding.logo_dark
@@ -29,7 +30,7 @@ const Footer = () => {
     const dynamicServiceLinks = React.useMemo(() => {
         if (!services) return []
         // Just take the first 6 active services
-        return services.slice(0, 6).map((s: { title: string; slug: string }) => ({
+        return services.slice(0, 6).map((s) => ({
             name: s.title,
             href: `/services/${s.slug}`
         }))

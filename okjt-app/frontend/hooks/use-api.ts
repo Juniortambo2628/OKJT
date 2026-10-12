@@ -11,13 +11,16 @@ interface UseApiOptions<T> {
   fallbackData?: T
 }
 
-export function useApi<T = unknown>(url: string | null, options: UseApiOptions<T> = {}) {
+// NOTE: `options` must stay optional with no default value. A default of `{}`
+// gives TypeScript an inference site for T, which collapses every untyped call
+// site down to `useApi<{}>` instead of the declared `unknown` default.
+export function useApi<T = unknown>(url: string | null, options?: UseApiOptions<T>) {
   const { data, error, isLoading, mutate } = useSWR<T>(url, fetcher, {
     revalidateOnFocus: false,
     shouldRetryOnError: false,
     dedupingInterval: 2000,
     keepPreviousData: true,
-    fallbackData: options.fallbackData,
+    fallbackData: options?.fallbackData,
   })
 
   return {

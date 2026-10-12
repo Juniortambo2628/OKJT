@@ -9,8 +9,12 @@ use Illuminate\Support\Str;
 
 class InsightSeeder extends Seeder
 {
+    use RebuildsDemoContent;
+
     public function run(): void
     {
+        $this->guardAgainstProduction(self::class);
+
         $admin = User::where('email', 'admin@okjtech.com')->first();
         $adminId = $admin ? $admin->id : 1;
 

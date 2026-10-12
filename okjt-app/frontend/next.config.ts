@@ -9,11 +9,7 @@ const nextConfig: NextConfig = {
   ...(process.env.VERCEL
     ? {}
     : { output: "standalone" as const, outputFileTracingRoot: path.join(__dirname) }),
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   images: {
-    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',

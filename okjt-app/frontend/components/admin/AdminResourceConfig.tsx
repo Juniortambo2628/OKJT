@@ -69,7 +69,7 @@ export function renderFieldsFromConfig(
               <Input
                 className={ADMIN_INPUT_CLASSES}
                 placeholder={field.placeholder}
-                value={value || ''}
+                value={(value as string) || ''}
                 onChange={(e) => handleChange(e.target.value)}
               />
             )
@@ -81,7 +81,7 @@ export function renderFieldsFromConfig(
                 type="number"
                 className={ADMIN_INPUT_CLASSES}
                 placeholder={field.placeholder}
-                value={value ?? 0}
+                value={(value as number) ?? 0}
                 onChange={(e) => handleChange(parseInt(e.target.value) || 0)}
               />
             )
@@ -93,7 +93,7 @@ export function renderFieldsFromConfig(
                 className={ADMIN_INPUT_CLASSES}
                 placeholder={field.placeholder}
                 rows={field.minRows || 4}
-                value={value || ''}
+                value={(value as string) || ''}
                 onChange={(e) => handleChange(e.target.value)}
               />
             )
@@ -102,7 +102,7 @@ export function renderFieldsFromConfig(
           case 'rich-text':
             input = (
               <RichTextEditor
-                value={value || ''}
+                value={(value as string) || ''}
                 onChange={handleChange}
               />
             )
@@ -112,7 +112,7 @@ export function renderFieldsFromConfig(
             input = (
               <select
                 className={ADMIN_INPUT_CLASSES}
-                value={value || ''}
+                value={(value as string) || ''}
                 onChange={(e) => handleChange(e.target.value)}
               >
                 {field.options?.map((opt) => (
@@ -147,7 +147,7 @@ export function renderFieldsFromConfig(
           case 'image':
             input = (
               <ImageUploader
-                value={value || ''}
+                value={(value as string) || ''}
                 onChange={handleChange}
                 accept={field.imageAccept}
                 maxSizeMB={field.imageMaxSizeMB}
@@ -158,7 +158,7 @@ export function renderFieldsFromConfig(
           case 'icon-picker':
             input = (
               <IconPicker
-                selectedIcon={value || ''}
+                selectedIcon={(value as string) || ''}
                 onSelect={handleChange}
                 icons={iconMap}
               />

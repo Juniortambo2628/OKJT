@@ -7,8 +7,12 @@ use Illuminate\Database\Seeder;
 
 class StatSeeder extends Seeder
 {
+    use RebuildsDemoContent;
+
     public function run(): void
     {
+        $this->guardAgainstProduction(self::class);
+
         $stats = [
             [
                 'label' => 'Successful Launches',

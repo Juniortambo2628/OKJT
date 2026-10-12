@@ -7,8 +7,12 @@ use Illuminate\Database\Seeder;
 
 class ValueSeeder extends Seeder
 {
+    use RebuildsDemoContent;
+
     public function run(): void
     {
+        $this->guardAgainstProduction(self::class);
+
         $values = [
             [
                 'icon' => 'Palette',

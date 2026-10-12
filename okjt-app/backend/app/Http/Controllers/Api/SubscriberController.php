@@ -27,6 +27,16 @@ class SubscriberController extends Controller
         ];
     }
 
+    protected function updateRules(Request $request, $record): array
+    {
+        return [
+            'email' => 'required|email|max:255|unique:subscribers,email,'.$record->id,
+            'name' => 'nullable|string|max:255',
+            'source' => 'nullable|string|max:100',
+            'is_active' => 'boolean',
+        ];
+    }
+
     /**
      * Public unsubscribe endpoint.
      * Deactivates the subscriber by email address.

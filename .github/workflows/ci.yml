@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  BACKEND_DIR: okjt-app/backend
+  FRONTEND_DIR: okjt-app/frontend
+
+jobs:
+  backend:
+    name: Backend (Pint + tests)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: bcmath, ctype, curl, fileinfo, intl, json, mbstring, openssl, pdo_mysql, tokenizer, xml, zip
+          tools: composer:v2
+          coverage: none
+
+      - name: Install backend dependencies
+        working-directory: ${{ env.BACKEND_DIR }}
+        run: composer install --prefer-dist --optimize-autoloader --no-interaction
+
+      - name: Check code style (Pint)
+        working-directory: ${{ env.BACKEND_DIR }}
+        run: ./vendor/bin/pint --test
+
+      - name: Copy .env
+        working-directory: ${{ env.BACKEND_DIR }}
+        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+      - name: Generate key
+        working-directory: ${{ env.BACKEND_DIR }}
+        run: php artisan key:generate
+
+      - name: Create test database
+        working-directory: ${{ env.BACKEND_DIR }}
+        run: |
+          mkdir -p database
+          touch database/database.sqlite
+
+      - name: Run backend tests
+        working-directory: ${{ env.BACKEND_DIR }}
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+        run: php artisan test
+
+  frontend:
+    name: Frontend (lint + build)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: ${{ env.FRONTEND_DIR }}/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: ${{ env.FRONTEND_DIR }}
+        run: npm ci
+
+      - name: Lint frontend
+        working-directory: ${{ env.FRONTEND_DIR }}
+        run: npm run lint
+
+      - name: Build frontend
+        working-directory: ${{ env.FRONTEND_DIR }}
+        run: npm run build

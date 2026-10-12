@@ -20,8 +20,8 @@ const typeColors: Record<string, string> = {
 }
 
 const attendanceColors: Record<string, string> = {
-    accept: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
-    decline: 'bg-destructive/10 text-destructive border-destructive/20',
+    accepted: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
+    declined: 'bg-destructive/10 text-destructive border-destructive/20',
 }
 
 export default function AdminRsvpsPage() {
@@ -68,7 +68,7 @@ export default function AdminRsvpsPage() {
                                 </Badge>
                                 {item.type === 'rsvp' && item.attendance && (
                                     <Badge variant="outline" className={cn("text-[10px] px-1.5 h-4", attendanceColors[item.attendance])}>
-                                        {item.attendance === 'accept' ? 'Accepted' : 'Declined'}
+                                        {item.attendance === 'accepted' ? 'Accepted' : 'Declined'}
                                     </Badge>
                                 )}
                             </div>
@@ -127,7 +127,7 @@ export default function AdminRsvpsPage() {
                                 <Mail size={12} /> {item.email}
                             </a>
                         </td>
-                        <td className="p-4 text-muted-foreground text-sm">{item.company || '—'}</td>
+                        <td className="p-4 text-muted-foreground text-sm">{item.company || 'â€”'}</td>
                         <td className="p-4">
                             <Badge variant="outline" className={cn("text-[10px] px-1.5 h-4", typeColors[item.type])}>
                                 {item.type === 'rsvp' ? 'Dinner' : 'Early Access'}
@@ -136,10 +136,10 @@ export default function AdminRsvpsPage() {
                         <td className="p-4">
                             {item.attendance ? (
                                 <Badge variant="outline" className={cn("text-[10px] px-1.5 h-4", attendanceColors[item.attendance])}>
-                                    {item.attendance === 'accept' ? 'Accepted' : 'Declined'}
+                                    {item.attendance === 'accepted' ? 'Accepted' : 'Declined'}
                                 </Badge>
                             ) : (
-                                <span className="text-xs text-muted-foreground">—</span>
+                                <span className="text-xs text-muted-foreground">â€”</span>
                             )}
                         </td>
                         <td className="p-4 text-right text-muted-foreground whitespace-nowrap text-xs">
@@ -218,8 +218,8 @@ export default function AdminRsvpsPage() {
                             onChange={(e) => setForm({ ...form, attendance: e.target.value === '' ? null : e.target.value as Rsvp['attendance'] } as Partial<Rsvp>)}
                         >
                             <option value="">Not set</option>
-                            <option value="accept">Accept</option>
-                            <option value="decline">Decline</option>
+                            <option value="accepted">Accepted</option>
+                            <option value="declined">Declined</option>
                         </select>
                     </div>
                     <div className="flex items-center justify-between">
