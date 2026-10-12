@@ -146,8 +146,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </PrelaunchWrapper>
           </AuthProvider>
         </ThemeProvider>
-        <Analytics />
-        <SpeedInsights />
+        {/* Vercel-only: their /_vercel/* scripts 404 when self-hosted on the VPS. */}
+        {process.env.VERCEL && (
+          <>
+            <Analytics />
+            <SpeedInsights />
+          </>
+        )}
       </body>
     </html>
   );
