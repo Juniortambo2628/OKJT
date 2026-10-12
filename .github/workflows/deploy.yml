@@ -7,8 +7,9 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: deploy-production
-  cancel-in-progress: true
+  group: ci-${{ github.ref }}
+  # Never cancel mid-deploy: a migration could be left half-run.
+  cancel-in-progress: false
 
 permissions:
   contents: write
@@ -108,104 +109,37 @@ jobs:
           DB_DATABASE: database/database.sqlite
         run: php artisan test
 
-  deploy-backend:
+  # Both deploys use the shared deploy-kit in this repo (deploy-kit/README.md).
+  deploy-api:
     needs: test-backend
-    runs-on: ubuntu-latest
-    env:
-      REMOTE_USER: zhpebukm
-      REMOTE_HOST: 51.89.113.223
-      REMOTE_PORT: 1624
-      BACKEND_TARGET: /home/zhpebukm/okj-core
-      PUBLIC_TARGET: /home/zhpebukm/public_html/api
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    uses: ./.github/workflows/deploy-laravel.yml
+    with:
+      domain: api.okjtech.co.ke
+      app_name: okjt-api
+      app_dir: okjt-app/backend
+      php_version: "8.3"
+      build_assets: false   # API only; no views use @vite
+      health_path: /up
+    secrets:
+      VPS_HOST: ${{ secrets.VPS_HOST }}
+      VPS_PORT: ${{ secrets.VPS_PORT }}
+      VPS_USER: ${{ secrets.VPS_USER }}
+      VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+      VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+      ENV_FILE: ${{ secrets.BACKEND_ENV }}
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          extensions: bcmath, ctype, curl, fileinfo, intl, json, mbstring, openssl, pdo_mysql, tokenizer, xml, zip
-          tools: composer:v2
-          coverage: none
-
-      - name: Write backend .env
-        working-directory: ${{ env.BACKEND_DIR }}
-        run: |
-          echo "${{ secrets.BACKEND_ENV }}" > .env
-          if ! grep -qE '^APP_KEY=base64:' .env; then
-            php artisan key:generate --force
-          fi
-
-      - name: Install backend dependencies
-        working-directory: ${{ env.BACKEND_DIR }}
-        run: composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction
-
-      - name: Setup SSH agent
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-          log-public-key: false
-
-      - name: Add server to known hosts
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -p ${{ secrets.SSH_PORT || env.REMOTE_PORT }} -H ${{ secrets.SSH_HOST || env.REMOTE_HOST }} >> ~/.ssh/known_hosts
-
-      - name: Package backend for deployment
-        run: |
-          tar czf backend.tar.gz \
-            --exclude='.git' \
-            --exclude='.github' \
-            --exclude='.env' \
-            --exclude='node_modules' \
-            --exclude='./storage/logs' \
-            --exclude='./storage/framework/cache' \
-            --exclude='./storage/framework/sessions' \
-            --exclude='./storage/framework/views' \
-            --exclude='tests' \
-            --exclude='phpunit.xml' \
-            -C ${{ env.BACKEND_DIR }} .
-
-      - name: Deploy backend files
-        run: |
-          scp -P ${{ secrets.SSH_PORT || env.REMOTE_PORT }} backend.tar.gz ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }}:/home/zhpebukm/backend.tar.gz
-          ssh -p ${{ secrets.SSH_PORT || env.REMOTE_PORT }} ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }} "set -e; cd /home/zhpebukm && rm -rf backend_new backend_old && mkdir -p backend_new && tar xzf backend.tar.gz -C backend_new && if [ -d ${{ env.BACKEND_TARGET }}/storage ]; then mkdir -p backend_new/storage && cp -a ${{ env.BACKEND_TARGET }}/storage/. backend_new/storage/; fi && cp ${{ env.BACKEND_TARGET }}/.env backend_new/ 2>/dev/null || true && if [ -d ${{ env.BACKEND_TARGET }} ]; then mv ${{ env.BACKEND_TARGET }} backend_old; fi && mv backend_new ${{ env.BACKEND_TARGET }} && rm -rf backend_old backend.tar.gz"
-
-      - name: Deploy backend .env
-        run: |
-          scp -P ${{ secrets.SSH_PORT || env.REMOTE_PORT }} \
-            ${{ env.BACKEND_DIR }}/.env \
-            ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }}:${{ env.BACKEND_TARGET }}/.env
-
-      - name: Deploy public API entry point
-        run: |
-          tar czf public.tar.gz -C ${{ env.BACKEND_DIR }}/public .
-          scp -P ${{ secrets.SSH_PORT || env.REMOTE_PORT }} public.tar.gz ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }}:/home/zhpebukm/public.tar.gz
-          ssh -p ${{ secrets.SSH_PORT || env.REMOTE_PORT }} ${{ secrets.SSH_USER || env.REMOTE_USER }}@${{ secrets.SSH_HOST || env.REMOTE_HOST }} "set -e; rm -rf ${{ env.PUBLIC_TARGET }} && mkdir -p ${{ env.PUBLIC_TARGET }} && tar xzf /home/zhpebukm/public.tar.gz -C ${{ env.PUBLIC_TARGET }} && rm -rf ${{ env.PUBLIC_TARGET }}/storage ${{ env.PUBLIC_TARGET }}/api && ln -sfn ${{ env.BACKEND_TARGET }}/storage/app/public ${{ env.PUBLIC_TARGET }}/storage && mkdir -p ${{ env.PUBLIC_TARGET }}/api && ln -sfn ${{ env.BACKEND_TARGET }}/storage/app/public ${{ env.PUBLIC_TARGET }}/api/storage && rm /home/zhpebukm/public.tar.gz"
-
-      - name: Activate backend
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST || env.REMOTE_HOST }}
-          username: ${{ secrets.SSH_USER || env.REMOTE_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT || env.REMOTE_PORT }}
-          script_stop: true
-          script: |
-            cd ${{ env.BACKEND_TARGET }}
-            mkdir -p bootstrap/cache storage/framework/cache storage/framework/sessions storage/framework/views storage/logs storage/app/public
-            if command -v composer &> /dev/null; then composer install --no-dev --optimize-autoloader --no-interaction; fi
-            find vendor -type d -exec chmod 755 {} +
-            find vendor -type f -exec chmod 644 {} +
-            chmod -R 775 storage bootstrap/cache
-            chmod 600 .env
-            php artisan config:clear
-            php artisan route:clear
-            php artisan view:clear
-            php artisan event:clear
-            php artisan migrate --force
-            php artisan config:cache
-            php artisan route:cache
-            php artisan view:cache
-            ls -la ${{ env.PUBLIC_TARGET }}/index.php
+  deploy-web:
+    needs: [lint-and-fix, deploy-api]
+    uses: ./.github/workflows/deploy-next.yml
+    with:
+      domain: okjtech.co.ke
+      app_name: okjt-web
+      app_dir: okjt-app/frontend
+      port: 3100
+    secrets:
+      VPS_HOST: ${{ secrets.VPS_HOST }}
+      VPS_PORT: ${{ secrets.VPS_PORT }}
+      VPS_USER: ${{ secrets.VPS_USER }}
+      VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+      VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+      ENV_FILE: ${{ secrets.FRONTEND_ENV }}
