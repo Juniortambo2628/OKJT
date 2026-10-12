@@ -10,7 +10,9 @@
                  VPS_PORT=22
                  VPS_USER=dev
     deploy_key   the private deploy key (same as VPS_SSH_KEY)
-    known_hosts  output of:  ssh-keyscan -p 22 102.212.246.224
+    known_hosts  the server's host keys. Windows' ssh-keyscan is too old for
+                 this server, so ask the server itself:
+                 ssh -i <deploy_key> dev@102.212.246.224 "ssh-keyscan -p 22 102.212.246.224 2>/dev/null" | Set-Content known_hosts
 
   Usage:
     .\set-vps-secrets.ps1 -Repos Juniortambo2628/TFE, Juniortambo2628/OKJT
@@ -28,7 +30,7 @@ foreach ($f in 'vps.env', 'deploy_key', 'known_hosts') {
 if (-not (Get-Command gh -ErrorAction SilentlyContinue)) { throw "GitHub CLI not found: winget install GitHub.cli ; gh auth login" }
 
 foreach ($repo in $Repos) {
-  Write-Host "→ $repo" -ForegroundColor Cyan
+  Write-Host "-> $repo" -ForegroundColor Cyan
   gh secret set -f (Join-Path $Dir 'vps.env') -R $repo
   Get-Content -Raw (Join-Path $Dir 'deploy_key')  | gh secret set VPS_SSH_KEY     -R $repo
   Get-Content -Raw (Join-Path $Dir 'known_hosts') | gh secret set VPS_KNOWN_HOSTS -R $repo
