@@ -9,6 +9,7 @@ verified. Rollback = repoint a symlink.
 |---|---|---|
 | Laravel (Blade) | `deploy-laravel.yml` with `build_assets: false` | PHP-FPM (Hestia pool) |
 | Laravel + Vite / React / Inertia | `deploy-laravel.yml` (default `build_assets: true`) | PHP-FPM |
+| Laravel API + separate Vite/React app on one domain | `deploy-laravel.yml` with `spa_dir: frontend` (see below) | PHP-FPM |
 | Laravel API + Next.js | `deploy-laravel.yml` for the API **and** `deploy-next.yml` for the web app | PHP-FPM + Node under PM2 |
 | Next.js alone | `deploy-next.yml` | Node under PM2 |
 
@@ -103,8 +104,27 @@ Ports in use: `okjt-web` 3100.
 
 `deploy-laravel.yml`: `domain`, `app_name` (required); `app_dir` (`.`),
 `php_version` (8.3), `node_version` (24), `build_assets` (true), `npm_flags`,
-`queue` (true), `scheduler` (true), `seed` (false), `post_migrate`,
-`health_path` (`/`), `kit_ref` (main).
+`spa_dir`, `spa_out` (`dist`), `queue` (true), `scheduler` (true), `seed`
+(false), `post_migrate`, `health_path` (`/`), `kit_ref` (main). Optional
+secret `SPA_ENV` = the SPA's build-time env (`VITE_*`).
+
+### A separate SPA on the same domain (`spa_dir`)
+
+For a repo with the Laravel API in one folder and a Vite/React app in another
+(e.g. `app_dir: backend`, `spa_dir: frontend`): the runner builds the SPA
+(`npm ci && npm run build`, with `SPA_ENV` written to `.env.production`) and
+copies its output (`spa_out`, default `dist`) into the Laravel app's
+`public/` before upload — never over `index.php` or `.htaccess`. Static files
+(`/index.html`, `/assets/…`) are then served by nginx, and everything else
+goes to Laravel. The Laravel app must answer the SPA's client-side routes
+with `public/index.html`, e.g. a last route in `routes/web.php`:
+
+```php
+Route::get('/{any?}', fn () => response()->file(public_path('index.html')))
+    ->where('any', '^(?!api|up|storage).*$');
+```
+
+Set `build_assets: false` unless the Laravel app also has its own Vite build.
 
 `deploy-next.yml`: `domain`, `app_name`, `port` (required); `app_dir`,
 `node_version`, `npm_flags`, `kit_ref`.
