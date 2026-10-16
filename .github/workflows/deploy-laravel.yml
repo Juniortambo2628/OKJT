@@ -20,6 +20,8 @@ on:
       node_version:  { type: string, default: "24" }
       build_assets:  { type: boolean, default: true, description: "npm ci + npm run build (Vite)" }
       npm_flags:     { type: string, default: "" }
+      spa_dir:       { type: string, default: "", description: "a separate frontend app (e.g. frontend): built and served from the Laravel app's public/" }
+      spa_out:       { type: string, default: "dist", description: "spa_dir's build output folder" }
       queue:         { type: boolean, default: true }
       scheduler:     { type: boolean, default: true }
       seed:          { type: boolean, default: false }
@@ -34,6 +36,7 @@ on:
       VPS_SSH_KEY: { required: true }
       VPS_KNOWN_HOSTS: { required: true }
       ENV_FILE: { required: false, description: "full production .env; written to shared/.env when set" }
+      SPA_ENV: { required: false, description: "spa_dir's build-time env (e.g. VITE_* values); written to its .env.production" }
       KIT_TOKEN: { required: false, description: "only if kit_repo is private and not this repo" }
 
 jobs:
@@ -57,7 +60,7 @@ jobs:
         run: composer install --no-dev --optimize-autoloader --prefer-dist --no-interaction --no-progress
 
       - uses: actions/setup-node@v4
-        if: inputs.build_assets
+        if: inputs.build_assets || inputs.spa_dir != ''
         with: { node-version: "${{ inputs.node_version }}" }
       - name: Build frontend assets
         if: inputs.build_assets
@@ -66,6 +69,24 @@ jobs:
           npm ci ${{ inputs.npm_flags }}
           npm run build
           test -f public/build/manifest.json
+
+      # A separate SPA (e.g. React + Vite in frontend/) served by the same
+      # domain: its build is copied into the Laravel app's public/, so
+      # index.html and its assets are plain files and /api stays Laravel.
+      # The app itself answers its client-side routes with public/index.html.
+      - name: Build separate frontend (spa_dir)
+        if: inputs.spa_dir != ''
+        working-directory: app/${{ inputs.spa_dir }}
+        env: { SPA_ENV: "${{ secrets.SPA_ENV }}" }
+        run: |
+          [ -n "$SPA_ENV" ] && printf '%s\n' "$SPA_ENV" > .env.production
+          npm ci ${{ inputs.npm_flags }}
+          npm run build
+          test -f '${{ inputs.spa_out }}/index.html'
+          PUBLIC="$GITHUB_WORKSPACE/app/${{ inputs.app_dir }}/public"
+          [ -f "$PUBLIC/index.php" ] || { echo "No Laravel public/index.php under app_dir"; exit 1; }
+          # never overwrite Laravel's own front controller or .htaccess
+          rsync -a --exclude='/index.php' --exclude='/.htaccess' '${{ inputs.spa_out }}/' "$PUBLIC/"
 
       - uses: ./kit/deploy-kit/actions/ssh
         with:
