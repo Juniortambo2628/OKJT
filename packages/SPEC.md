@@ -292,7 +292,7 @@ One token per shade, at the value written today, so nothing Naoa shows changes.
 | `paper-warm` | `#FAF7F2` | 0 + 13 |
 | `positive` | `#7C8B6A` | 11 + 0 |
 | `positive-dark` | `#56634A` | 7 + 0 |
-| `base-50` … `base-900` | Tailwind `stone` | 0 + 1,097 |
+| `tone-50` … `tone-950` | Tailwind `stone` | 0 + 1,097 |
 
 Shadows written as `rgba(43,34,28,a)` are `ink` at that strength (20 uses), and
 `rgba(166,123,91,a)` is `accent` (7); both are rewritten from their token.
@@ -310,7 +310,7 @@ Fonts: `display` (Manrope, public pages) and `sans` (Lato, everywhere).
   colours in `index.css`. They belong to the guest site; the public pages
   override them with `!` (24 places), which the kit's pages will not need.
 
-### Decision needed
+### Decision (answered 2026-10-29: merge them, see "Decided")
 
 Fold the six near-identical tints, and the rare shades, into the nearest token?
 The difference is too small to see, but it is not zero, so screenshots of the
@@ -327,7 +327,7 @@ change.
 The checklist is a snapshot of Naoa at `38027b8`, read 2026-10-29; where it
 and the code disagree, the code wins and the checklist is worked out again.
 
-- [ ] **1.1 The comparison tool**: `packages/ui/tools/style-snapshot.mjs`, a
+- [x] **1.1 The comparison tool**: `packages/ui/tools/style-snapshot.mjs`, a
       Playwright script that opens each route given to it, at desktop width
       (1280) and phone width (390), with the API answered from fixtures, and
       writes every visible element's computed `color`, `background-color`,
@@ -335,53 +335,56 @@ and the code disagree, the code wins and the checklist is worked out again.
       `stroke` and `font-family` to JSON, plus a full-page screenshot. A second
       command compares two snapshots and lists every element that differs. It
       lives in the kit because Najenga's migration (Phase 6) needs the same proof.
-- [ ] **1.2 Calibrate the comparison.** On a scratch copy of Naoa outside the
+- [x] **1.2 Calibrate the comparison.** On a scratch copy of Naoa outside the
       checkout, someone other than the person checking changes one class to a
       neighbouring shade (`text-[#4A3F35]` → `text-[#4A3F36]` in one marketing
       component) and one `stone-200` to `stone-300` on one dashboard page.
       The checker is told only that something differs. Passed when both are
       reported with their route and element. If either is missed, stop: the
       check is blind to it.
-- [ ] **1.3 `packages/` workspace and `@okjt/ui`**: npm workspaces under
+- [x] **1.3 `packages/` workspace and `@okjt/ui`**: npm workspaces under
       `packages/`; `defineConfig()`; a theme compiler that turns `theme` into a
       Tailwind 4 `@theme` block (`--color-*`, `--font-*`, `--shadow-*`) written
       to a CSS file the app imports; the token names in the table above as the
       kit's names; unit tests; `packages-ci.yml` (lint, test, build on pull
       requests) and `packages-release.yml` (publish on `v*` tags with
       `NPM_TOKEN`).
-- [ ] **1.4 Naoa takes `@okjt/ui`**: `frontend/okjt.config.js` with the
+- [x] **1.4 Naoa takes `@okjt/ui`**: `frontend/okjt.config.js` with the
       values in the table above; the generated theme imported in `index.css`
       straight after `tailwindcss`, the guest site's `@theme` block left as it
       is. Installed from the local checkout until the first release.
       Checklist: no class name changes yet; snapshot of every route identical
       to the baseline taken before this task.
-- [ ] **1.5 Shared pieces first**: `components/marketing/ui.jsx` (button
+- [x] **1.5 Shared pieces first**: `components/marketing/ui.jsx` (button
       variants, `Eyebrow`, `Badge`, `SectionHeading`), `components/Button.jsx`,
       and the dashboard pieces the pages wrap themselves in (`AdminShell`,
       `Sidebar`, `Header`, `AdminPageHero`, `AdminSummaryCards`, `StatCard`,
       `AdminCard`, `AdminFloatingToolbar`, `AdminSidePanel`, `AdminModal`,
       `ConfirmHost`). Checklist below.
-- [ ] **1.6 Public pages**: the rest of `components/marketing/` and
+- [x] **1.6 Public pages**: the rest of `components/marketing/` and
       `pages/platform/` (35 files in all, with 1.5's). Checked on `/`,
       `/features`, `/for-couples`, `/for-planners`, `/traditions`, one
       `/traditions/:slug`, one `/plan/:tradition`, `/sign-up`, `/sign-in`,
       `/terms`, `/privacy`, `/community-guidelines`, `/weddings`,
       `/new-wedding`, `/billing`, `/team`, `/console`. Checklist below.
-- [ ] **1.7 Dashboard**: the rest of `components/admin/` and `pages/admin/`
+- [x] **1.7 Dashboard**: the rest of `components/admin/` and `pages/admin/`
       (71 files in all, with 1.5's). Checked on every page in
       `frontend/tests/visual/helpers/admin-pages.js`, plus the sign-in page and
       the invitation designer. Checklist below.
-- [ ] **1.8 Fold near-identical tints and rare shades into tokens**:
-      `parked — waiting on the decision above` (28 files).
-- [ ] **1.9 Close Phase 1**: Naoa's PR merges after `@okjt/ui` 0.1.0 is on npm
-      (needs the npm organisation and `NPM_TOKEN`, under "What only you can do").
+- [x] **1.8 Fold near-identical tints and rare shades into tokens**: released by
+      the decision below. 102 uses in 39 files; the shades that are a different
+      colour, not a variant of a token, kept as written (see "Phase 1: result").
+- [ ] **1.9 Close Phase 1**: Naoa's PR reviewed and merged; this PR merged and
+      `@okjt/ui` 0.1.0 published. Naoa does not need the package to build:
+      it commits the generated `src/okjt-theme.css`. Once 0.1.0 is on npm, Naoa
+      adds it as a dev dependency and runs `okjt-theme --check` in CI.
 
 **Checklist carried by 1.5, 1.6 and 1.7** (1.4 carries its own line above):
 
 - [ ] each hand-written colour in the token table becomes its token at the same
       value (`text-[#A67B5B]` → `text-accent`), opacity kept
       (`bg-[#2B221C]/5` → `bg-ink/5`): one token per shade, as the table says
-- [ ] dashboard `stone-N` becomes `base-N`, same step: 1,097 uses, 71 files
+- [ ] dashboard `stone-N` becomes `tone-N`, same step: 1,097 uses, 71 files
 - [ ] `rgba(43,34,28,a)` in shadows written from `ink`, `rgba(166,123,91,a)`
       from `accent`, same strength
 - [ ] a colour a shared piece sets is changed in the shared piece once (1.5),
@@ -394,6 +397,45 @@ and the code disagree, the code wins and the checklist is worked out again.
 - [ ] proof: 1.1's comparison over the task's routes, both widths, reports no
       element that differs from the baseline taken before Phase 1, and Naoa's
       Vitest suite passes
+
+### Phase 1: result
+
+* **Token names**: as in the table, except the grey ramp is `tone`, not
+  `base`: `text-base` is already Tailwind's font size.
+* **Proof**: 41 routes (public pages, sign-in, Console, dashboard, two guest
+  pages) at 1280 and 390 px, 13,661 elements each width. Two baseline runs
+  with no change: identical. Calibration: a one-unit change to one text colour
+  on the home page and a one-step grey change in the dashboard header were
+  both reported (the header on all 21 dashboard pages). After 1.4–1.7:
+  identical. After 1.8: every difference is one of the planned folds.
+* **Found while switching**:
+  * Naoa darkens `stone-400`/`stone-500` inside the dashboard (`.admin-theme`,
+    for contrast on white). The comparison caught it: `tone` had Tailwind's
+    lighter values. The dashboard now darkens `tone-400`/`500` too (and keeps
+    `stone-400`/`500` for wedding-only components that still use stone). This
+    belongs to `@okjt/dashboard` (Phase 3).
+  * The guest site's global `p`, `h1`–`h3` and `body` colours in `index.css`
+    are unlayered, so they beat any colour class on those elements, on every
+    page: `text-stone-400` on a dashboard paragraph renders `#6B5D52`. The
+    public pages work around it with `!`. The kit's pages must not inherit
+    them: in Phase 2 they move under the guest site's own wrapper. That changes
+    what some paragraphs show (to the colour their class names), so it gets its
+    own comparison and review.
+  * Colours set in JavaScript (charts, the invitation designer, budget
+    categories: about 150 strings) are not classes and were not switched. Most
+    are wedding-only; the kit's charts take theirs from the tokens when they
+    are extracted (Phase 3).
+  * Two of Naoa's dashboard screenshot tests (the sign-in page) already failed
+    before this work: their baselines are out of date. Left for Naoa to refresh.
+* **Kept as written** (a different colour, not a variant of a token): the
+  sign-in panel's orange gradient and focus ring, the wedding-site colour dots
+  on the public pages, Billing's error red, one sidebar badge, the WhatsApp
+  preview bubble. 19 uses.
+
+### Decided
+
+- "go ahead, merge them" (2026-10-29): fold the near-identical and rare shades
+  into their nearest token. Released 1.8.
 
 ## Publishing
 
@@ -416,9 +458,9 @@ major version, and comes with an entry in `packages/UPGRADING.md`.
 3. When `laravel-kit` exists (Phase 4): create the empty repository
    `Juniortambo2628/okjt-laravel-kit` and submit it on packagist.org.
 
-Until step 2 is done, Naoa can use the packages from a local checkout while
-they are being built, but its CI and deploys can't install them, so no Naoa
-PR that depends on the kit merges before the first release.
+Until step 2 is done, nothing can be published. Phase 1 doesn't wait on it
+(Naoa commits the generated theme file); Phase 2 does, because Naoa will then
+import the kit's components.
 
 ## Decisions after review
 

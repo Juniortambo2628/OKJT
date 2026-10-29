@@ -1,0 +1,8 @@
+{
+  "name": "okjt-packages",
+  "private": true,
+  "workspaces": ["ui"],
+  "scripts": {
+    "test": "npm test --workspaces --if-present"
+  }
+}

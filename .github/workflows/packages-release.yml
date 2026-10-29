@@ -1,0 +1,44 @@
+name: Packages release
+
+# Push a tag such as v0.2.0 to publish every package in packages/ whose
+# version is not on npm yet. Needs the NPM_TOKEN secret (an npm automation
+# token with publish rights to the @okjt organisation).
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+  id-token: write # npm provenance
+
+jobs:
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+
+      - run: npm ci
+      - run: npm test
+
+      - name: Publish new versions
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          for dir in $(node -p "require('./package.json').workspaces.join(' ')"); do
+            name=$(node -p "require('./$dir/package.json').name")
+            version=$(node -p "require('./$dir/package.json').version")
+            if npm view "$name@$version" version >/dev/null 2>&1; then
+              echo "$name@$version is already published"
+            else
+              npm publish --workspace "$dir" --provenance --access public
+            fi
+          done

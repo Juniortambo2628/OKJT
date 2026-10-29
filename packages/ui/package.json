@@ -1,0 +1,19 @@
+{
+  "name": "@okjt/ui",
+  "version": "0.1.0",
+  "description": "Theme tokens and shared building blocks for OKJTech sites and dashboards",
+  "type": "module",
+  "license": "MIT",
+  "repository": { "type": "git", "url": "git+https://github.com/Juniortambo2628/OKJT.git", "directory": "packages/ui" },
+  "exports": {
+    ".": "./src/index.js",
+    "./tools/style-snapshot": "./tools/style-snapshot.mjs"
+  },
+  "bin": { "okjt-theme": "./bin/okjt-theme.mjs" },
+  "files": ["src", "bin", "tools", "README.md"],
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "publishConfig": { "access": "public" }
+}
