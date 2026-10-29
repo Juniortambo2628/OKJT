@@ -66,8 +66,8 @@ import { AdminPageLayout, AdminPageHero, AdminSummaryCards, AdminListPanel, useA
 
 export default function Expenses() {
   const { data: expenses = [] } = useQuery({ queryKey: ['expenses'], queryFn: api.expenses });
-  const { query } = useSearch();
-  const shown = useFilteredItems(expenses, query);
+  const { searchQuery } = useSearch();
+  const shown = useFilteredItems(expenses, searchQuery);
   const remove = useAdminAction((id) => api.deleteExpense(id), {
     confirm: 'Delete this expense?', success: 'Expense deleted', invalidate: [['expenses']],
   });
