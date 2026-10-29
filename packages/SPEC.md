@@ -4,8 +4,8 @@ The public pages and the dashboard that Naoa and Najenga share, as packages a
 new OKJTech project installs and configures, instead of copying files from
 one repository to the next.
 
-Status: **draft for review**. Nothing here is built yet; the open questions
-at the end need answers before Phase 1.
+Status: **approved** (2026-10-29). The questions are answered; see "Decisions
+after review" at the end.
 
 ## Decisions taken
 
@@ -154,9 +154,9 @@ without touching the checks.
 |---|---|
 | global `admin` | `is_superadmin = true` |
 | global `client` | an ordinary user; owner of the projects whose `client_id` is theirs (already true in `project_user` since 2026-10-27) |
-| global `manager` | **open question 1** |
+| global `manager` | account staff, with owner access to the projects they manage |
 | project `owner` / `editor` / `viewer` | the same |
-| project `manager` | **open question 2** |
+| project `manager` | owner (co-owner) |
 | `users.role` column | dropped once nothing reads it, in a later, separately reviewed migration |
 
 ## Inventory: what goes into the kit
@@ -234,7 +234,7 @@ Playwright screenshot tests (53) and its Vitest and PHPUnit suites check.
 | Phase | Work | Done when |
 |---|---|---|
 | 0 | This spec | You approve it and answer the open questions |
-| 1 | `packages/` workspace, CI and publishing. `@okjt/ui` with theme tokens: Naoa's colours and fonts move from `index.css` into a config that writes the CSS variables. Naoa installs it. | Naoa's screenshots unchanged |
+| 1 | `packages/` workspace, CI and publishing. `@okjt/ui` with theme tokens, and Naoa's public pages and dashboard switched from hard-coded colours to those tokens (see "Phase 1: what the code showed"). | Every element's computed colours and fonts identical before and after |
 | 2 | `@okjt/site`; Naoa's public pages built from it | Naoa's screenshots unchanged |
 | 3 | `@okjt/dashboard`; Naoa's dashboard built from it | Naoa's screenshots and tests unchanged |
 | 4 | `okjt/laravel-kit`; Naoa's backend uses it | Naoa's PHPUnit suite passes unchanged |
@@ -249,22 +249,183 @@ Phase 6 is the largest single piece: Najenga has 30 controllers and 13 page
 groups on Inertia, plus Tailwind 3 → 4 and React 18 → 19. Moving one page at
 a time keeps Najenga deployable throughout.
 
+## Phase 1: what the code showed
+
+Read 2026-10-29, Naoa at `38027b8`.
+
+**The theme in `index.css` is the guest wedding site's, not Naoa's.** Its
+`@theme` block (blush, rose, warm brown; Great Vibes, Cormorant, Lato) is used
+only by the guest site (85 uses, 10 files). Naoa's public pages and dashboard,
+the two parts the kit takes, use no theme entry at all (0 uses in
+`components/marketing`, `pages/platform`, `components/admin`, `pages/admin`).
+They write colours by hand:
+
+| Area | Files | Hand-written hex | Tailwind palette |
+|---|---|---|---|
+| Public pages | 35 | 745 uses, 35 shades | `white` 235; status red/green/amber 34 |
+| Dashboard | 71 | 528 uses, 35 shades | `stone` 1,097 (steps 50–900); status red/green/amber 191 |
+
+So Phase 1 introduces the tokens and switches about 2,400 class names in about
+105 files to them. The switch is mechanical, one exact class name at a time,
+and checked by comparing every element's computed colours before and after.
+
+### Tokens, with Naoa's values
+
+One token per shade, at the value written today, so nothing Naoa shows changes.
+
+| Token | Naoa value | Uses (public + dashboard) |
+|---|---|---|
+| `ink` | `#2B221C` | 161 + 7 |
+| `ink-deep` | `#1F1813` | 14 + 0 |
+| `body` | `#4A3F35` | 91 + 42 |
+| `soft` | `#6B5D52` | 58 + 6 |
+| `muted` | `#8B7B6B` | 83 + 14 |
+| `faint` | `#A68B76` | 12 + 4 |
+| `accent` | `#A67B5B` | 62 + 376 |
+| `accent-strong` | `#A06A47` | 24 + 5 |
+| `accent-dark` | `#8B5E3C` | 0 + 15 |
+| `accent-soft` | `#C8A68E` | 30 + 2 |
+| `line` | `#E8DDD3` | 62 + 2 |
+| `line-strong` | `#D9CBBE` | 15 + 0 |
+| `tint` | `#F3EDE7` | 26 + 1 |
+| `paper` | `#FBF8F5` | 14 + 2 |
+| `paper-warm` | `#FAF7F2` | 0 + 13 |
+| `positive` | `#7C8B6A` | 11 + 0 |
+| `positive-dark` | `#56634A` | 7 + 0 |
+| `base-50` … `base-900` | Tailwind `stone` | 0 + 1,097 |
+
+Shadows written as `rgba(43,34,28,a)` are `ink` at that strength (20 uses), and
+`rgba(166,123,91,a)` is `accent` (7); both are rewritten from their token.
+Fonts: `display` (Manrope, public pages) and `sans` (Lato, everywhere).
+
+### Left as they are in Phase 1
+
+* Status colours (Tailwind red, green and amber): they mean a state, not the brand.
+* Six near-identical pale tints (`#F0E8E0` 12, `#EFE6DD` 12, `#EFE7E0` 10,
+  `#F7F2ED` 9, `#F4EFEA` 7, `#FBF3EC` 4), and 23 shades used three times or
+  fewer: hand-written until the decision below.
+* Text sizes `text-[9px]`/`[10px]`/`[11px]` (185 uses) and letter-spacing
+  literals: type, not colour.
+* The guest site's `@theme` block and the global `body`, `h1`–`h3` and `p`
+  colours in `index.css`. They belong to the guest site; the public pages
+  override them with `!` (24 places), which the kit's pages will not need.
+
+### Decision needed
+
+Fold the six near-identical tints, and the rare shades, into the nearest token?
+The difference is too small to see, but it is not zero, so screenshots of the
+pages concerned (28 files) change and get new baselines in the same PR. A new
+project then sets about 17 colours instead of about 40.
+
+### Phase 1 tasks
+
+Status: unticked is to do, ticked is done; a parked task says why. Each task
+carries the checklist it is checked against, because a task may be handed to
+someone who has only that task. The check is never run by whoever made the
+change.
+
+The checklist is a snapshot of Naoa at `38027b8`, read 2026-10-29; where it
+and the code disagree, the code wins and the checklist is worked out again.
+
+- [ ] **1.1 The comparison tool**: `packages/ui/tools/style-snapshot.mjs`, a
+      Playwright script that opens each route given to it, at desktop width
+      (1280) and phone width (390), with the API answered from fixtures, and
+      writes every visible element's computed `color`, `background-color`,
+      `background-image`, border colours, `box-shadow`, `outline-color`, `fill`,
+      `stroke` and `font-family` to JSON, plus a full-page screenshot. A second
+      command compares two snapshots and lists every element that differs. It
+      lives in the kit because Najenga's migration (Phase 6) needs the same proof.
+- [ ] **1.2 Calibrate the comparison.** On a scratch copy of Naoa outside the
+      checkout, someone other than the person checking changes one class to a
+      neighbouring shade (`text-[#4A3F35]` → `text-[#4A3F36]` in one marketing
+      component) and one `stone-200` to `stone-300` on one dashboard page.
+      The checker is told only that something differs. Passed when both are
+      reported with their route and element. If either is missed, stop: the
+      check is blind to it.
+- [ ] **1.3 `packages/` workspace and `@okjt/ui`**: npm workspaces under
+      `packages/`; `defineConfig()`; a theme compiler that turns `theme` into a
+      Tailwind 4 `@theme` block (`--color-*`, `--font-*`, `--shadow-*`) written
+      to a CSS file the app imports; the token names in the table above as the
+      kit's names; unit tests; `packages-ci.yml` (lint, test, build on pull
+      requests) and `packages-release.yml` (publish on `v*` tags with
+      `NPM_TOKEN`).
+- [ ] **1.4 Naoa takes `@okjt/ui`**: `frontend/okjt.config.js` with the
+      values in the table above; the generated theme imported in `index.css`
+      straight after `tailwindcss`, the guest site's `@theme` block left as it
+      is. Installed from the local checkout until the first release.
+      Checklist: no class name changes yet; snapshot of every route identical
+      to the baseline taken before this task.
+- [ ] **1.5 Shared pieces first**: `components/marketing/ui.jsx` (button
+      variants, `Eyebrow`, `Badge`, `SectionHeading`), `components/Button.jsx`,
+      and the dashboard pieces the pages wrap themselves in (`AdminShell`,
+      `Sidebar`, `Header`, `AdminPageHero`, `AdminSummaryCards`, `StatCard`,
+      `AdminCard`, `AdminFloatingToolbar`, `AdminSidePanel`, `AdminModal`,
+      `ConfirmHost`). Checklist below.
+- [ ] **1.6 Public pages**: the rest of `components/marketing/` and
+      `pages/platform/` (35 files in all, with 1.5's). Checked on `/`,
+      `/features`, `/for-couples`, `/for-planners`, `/traditions`, one
+      `/traditions/:slug`, one `/plan/:tradition`, `/sign-up`, `/sign-in`,
+      `/terms`, `/privacy`, `/community-guidelines`, `/weddings`,
+      `/new-wedding`, `/billing`, `/team`, `/console`. Checklist below.
+- [ ] **1.7 Dashboard**: the rest of `components/admin/` and `pages/admin/`
+      (71 files in all, with 1.5's). Checked on every page in
+      `frontend/tests/visual/helpers/admin-pages.js`, plus the sign-in page and
+      the invitation designer. Checklist below.
+- [ ] **1.8 Fold near-identical tints and rare shades into tokens**:
+      `parked — waiting on the decision above` (28 files).
+- [ ] **1.9 Close Phase 1**: Naoa's PR merges after `@okjt/ui` 0.1.0 is on npm
+      (needs the npm organisation and `NPM_TOKEN`, under "What only you can do").
+
+**Checklist carried by 1.5, 1.6 and 1.7** (1.4 carries its own line above):
+
+- [ ] each hand-written colour in the token table becomes its token at the same
+      value (`text-[#A67B5B]` → `text-accent`), opacity kept
+      (`bg-[#2B221C]/5` → `bg-ink/5`): one token per shade, as the table says
+- [ ] dashboard `stone-N` becomes `base-N`, same step: 1,097 uses, 71 files
+- [ ] `rgba(43,34,28,a)` in shadows written from `ink`, `rgba(166,123,91,a)`
+      from `accent`, same strength
+- [ ] a colour a shared piece sets is changed in the shared piece once (1.5),
+      never repeated in the pages that use it
+- [ ] left as written: status red, green and amber; the six near-identical tints
+      and the 23 rare shades (until 1.8); `text-[9px]`/`[10px]`/`[11px]` and
+      letter spacing; the `!` overrides of the guest site's global colours
+- [ ] the guest site (`components/` outside `admin/` and `marketing/`,
+      `pages/` outside `admin/` and `platform/`, 44 files) is not touched
+- [ ] proof: 1.1's comparison over the task's routes, both widths, reports no
+      element that differs from the baseline taken before Phase 1, and Naoa's
+      Vitest suite passes
+
 ## Publishing
 
-| Package | How projects install it | Why |
+All packages are public.
+
+| Package | Where | How it gets there |
 |---|---|---|
-| `@okjt/*` (npm) | GitHub Packages npm registry, scope `@okjt`; one read token per project in `.npmrc` and as a CI secret | Private, versioned, works with `npm ci` |
-| `okjt/laravel-kit` (Composer) | A GitHub Action splits `packages/laravel-kit` into a read-only repo, `Juniortambo2628/okjt-laravel-kit`, tagged per release; projects add it as a `vcs` repository | Composer needs `composer.json` at a repository's root |
+| `@okjt/*` (npm) | npmjs.com, organisation `okjt` | `packages-release.yml`: a `v*` tag publishes every package whose version changed, with the `NPM_TOKEN` secret |
+| `okjt/laravel-kit` (Composer) | Packagist | A GitHub Action splits `packages/laravel-kit` into `Juniortambo2628/okjt-laravel-kit` (Composer needs `composer.json` at a repository's root) and tags it; Packagist picks the tag up |
 
-Versions follow semver. A change that would make a project edit its config
-is a major version, and comes with an entry in `packages/UPGRADING.md`.
+Versions follow semver. A change that makes a project edit its config is a
+major version, and comes with an entry in `packages/UPGRADING.md`.
 
-## Open questions
+### What only you can do (once)
 
-| # | Question | Recommendation |
+1. Create the npm organisation **okjt** (npmjs.com → Add Organization, free
+   for public packages). The name was unclaimed on 2026-10-29.
+2. Create an npm **automation** token with publish rights to `@okjt`, and add it
+   to this repository as the Actions secret `NPM_TOKEN`.
+3. When `laravel-kit` exists (Phase 4): create the empty repository
+   `Juniortambo2628/okjt-laravel-kit` and submit it on packagist.org.
+
+Until step 2 is done, Naoa can use the packages from a local checkout while
+they are being built, but its CI and deploys can't install them, so no Naoa
+PR that depends on the kit merges before the first release.
+
+## Decisions after review
+
+| # | Question | Decision |
 |---|---|---|
-| 1 | Najenga's global **manager** ("can manage projects, expenses, documents, and team members"; assigned to projects through `projects.manager_id`) | They work across many projects for one business, as Naoa's planners' staff do: make them account **staff** (`full` preset), with owner access to the projects they manage. If there is only ever one such business (Najenga's own team), the `standard` preset with them as owners of those projects is simpler. |
-| 2 | Najenga's project **manager** role (edits everything, manages members) | Naoa has no such role. Make them **owners**: Naoa allows several owners per wedding and stops the last one being removed. Keep deleting a project to the owner whose `client_id` it is. |
-| 3 | Can the npm packages be public? | Public on npmjs.com would remove the token setup in every project; the kit holds no secrets. Private (above) if you'd rather keep the code to yourself. |
-| 4 | `okjt-app` (this repo's own site, Next.js) | Out of scope: it stays as it is. It could move to the kit later as one more project. |
-| 5 | The package scope and names (`@okjt/ui`, `create-okjt-app`) | As written, unless you prefer `@okjtech`. |
+| 1 | Najenga's global **manager** | Account **staff** (`full` preset), with owner access to the projects they manage (`projects.manager_id`) |
+| 2 | Najenga's project **manager** role | Becomes **owner** (co-owner). Deleting a project stays with the owner whose `client_id` it is. |
+| 3 | Public or private | **Public**: npmjs.com and Packagist |
+| 4 | Names | Scope **`@okjt`**: `@okjt/ui`, `@okjt/site`, `@okjt/dashboard`, `create-okjt-app`; Composer `okjt/laravel-kit` |
+| — | `okjt-app` (Next.js) | Out of scope for now |
