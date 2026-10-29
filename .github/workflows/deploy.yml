@@ -4,6 +4,13 @@ on:
   push:
     branches:
       - main
+    # The shared kit (packages/) has its own CI and release workflows and
+    # isn't part of the site: a push that only changes it doesn't redeploy.
+    # A push that also changes anything else still deploys as before.
+    paths-ignore:
+      - 'packages/**'
+      - '.github/workflows/packages-ci.yml'
+      - '.github/workflows/packages-release.yml'
   workflow_dispatch:
 
 concurrency:
