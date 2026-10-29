@@ -428,14 +428,117 @@ and the code disagree, the code wins and the checklist is worked out again.
   * Two of Naoa's dashboard screenshot tests (the sign-in page) already failed
     before this work: their baselines are out of date. Left for Naoa to refresh.
 * **Kept as written** (a different colour, not a variant of a token): the
-  sign-in panel's orange gradient and focus ring, the wedding-site colour dots
-  on the public pages, Billing's error red, one sidebar badge, the WhatsApp
+  sign-in panel's orange gradient and focus ring, the browser-window dots in the
+  product screenshots' frames, Billing's error red, one sidebar badge, the WhatsApp
   preview bubble. 19 uses.
 
 ### Decided
 
 - "go ahead, merge them" (2026-10-29): fold the near-identical and rare shades
   into their nearest token. Released 1.8.
+
+## Phase 2: `@okjt/site`
+
+Read 2026-10-29, Naoa at `218950a` (Phase 1 applied).
+
+### What the code showed
+
+The public pages already keep most of their words and pictures in config
+(`config/marketing.js`, `config/journeys.js`, `config/legal.js`). The building
+blocks reach into Naoa in eight places, and each becomes a setting a project
+passes to `<SiteProvider site={…}>`:
+
+| Building block reaches for | Becomes `site.…` |
+|---|---|
+| `useAuth()` (signed in?) in the nav and footer | `useAccount()`: `{ signedIn }`, plus the account links and their labels |
+| `MARKETING_NAV`, the traditions mega menu | `nav` items; an item may carry its own `mega` menu (desktop and phone components) |
+| `FOOTER_COLUMNS`, `PROMISES`, the closing call to action, the "naoa." watermark, `LEGAL` | `footer` |
+| `/brand/naoa-logo-*.png`, "Naoa home" | `brand` |
+| `useSitePhotos()`, `photoUrl()`, `PHOTOS` (the Console's picture choices) | `usePhotos()`: `{ url(key, width), alt(key) }`, and `usePlaces()` |
+| `MEDIA` (product screens and clips) | `media` |
+| `Seo`'s page titles, private paths, the traditions lookup | `seo` |
+| Billing API and plan copy in `Pricing` | stays in Naoa; the kit's `PricingSection` takes the plans as props |
+
+`site` is a JavaScript module of the app (`src/site.config.jsx`), not part of
+`okjt.config.js`: it holds components and hooks, and `okjt.config.js` must
+stay readable by the `okjt-theme` command in Node.
+
+**Moves to the kit**: `ui.jsx` (Container, Logo, PillLink, Eyebrow, Chip,
+SectionHeading), `MarketingLayout` (as `SiteLayout`), `MarketingNav`,
+`MarketingFooter`, `Seo`, `Photo`, `PhotoHero` and `HeroOrnament`, `ImageCard`,
+`MediaFrame` and `MediaFill`, `FeatureExplorer`, `ShowcaseCarousel`,
+`SectionNav` and `useScrollSpy`, `FaqSection`, `RollingWord` and `useRolling`,
+the presentational half of `Pricing`, `LegalPage`, and the pieces Features and
+the journeys are made of (`FeatureGroup`, `JourneyGlance`, `JourneyChapter`).
+
+**Stays in Naoa** (it imports the kit's pieces): the pages themselves (each is
+a short composition of sections), `TraditionFinder`, `TraditionsMenu`,
+`PlanDemo`, `EssentialElements`, `CommunityNotes`, `SuggestedCommunities`,
+`GuestPreview`, `ModuleSwitcher` (it previews a wedding website),
+`PhraseCaption` (it names Kenyan languages), `LegalNote`, `UnconfirmedBadge`,
+and `usePlans`/`costAnswer`.
+
+Full page templates built from config wait for Phase 5: the installer writes
+a new project's pages from these sections, which is where a template earns its
+keep.
+
+### Changed from the plan
+
+* **The guest site's global `p`/`h1`–`h3`/`body` colours stay for now.** Kit
+  components keep their `!` overrides, which hold whatever global CSS the
+  host app has. Scoping those globals to the guest site changes what dashboard
+  paragraphs show (they would take the colour their class names ask for, which
+  they never have). That is a visible change, so it becomes its own step with
+  its own before/after review, not part of a move that must change nothing.
+* **Naoa can't install `@okjt/site` until it is on npm.** The Naoa change is
+  built and proven against the packed package, and its CI can't pass until
+  `@okjt/site` 0.1.0 is published (npm organisation and `NPM_TOKEN`).
+
+### Phase 2 tasks
+
+Checked like Phase 1: the style comparison over the same 41 routes at 1280 and
+390 px, against the state before the task, by the tool, not by whoever moved
+the code. A move changes nothing on screen, so the expected result is no
+differences.
+
+**Checklist carried by every task below** (snapshot of Naoa at `218950a`,
+2026-10-29; the code wins where they disagree):
+
+- [ ] markup and class names move unchanged: same elements, same order, same
+      classes (the comparison keys elements by their DOM path, so a wrapper
+      added or lost shows up)
+- [ ] every Naoa word, link, logo, photo and screen reaches the kit through
+      `site`, never written into kit code
+- [ ] photos through `site.usePhotos()`/`site.usePlaces()`, screens through
+      `site.media`, signed-in state through `site.useAccount()`
+- [ ] the `!` overrides on headings stay (host apps may style `h1`–`h3`)
+- [ ] Tailwind sees the kit's classes (`@source` on the package's `dist/`)
+- [ ] Naoa's wedding-only sections import the kit's pieces; none is copied
+- [ ] Naoa's Vitest suite, lint and build pass; comparison: no differences
+
+- [x] **2.1 `packages/site`**: the components above, compiled to `dist/` with
+      esbuild (JSX → JS, one file per module, no bundling), peer dependencies
+      `react`, `react-router-dom`, `framer-motion`, `lucide-react`;
+      `SiteProvider`/`useSite`; README with the `site` settings.
+- [x] **2.2 Naoa's `site.config.jsx`** and `<SiteProvider>` at the app's root.
+- [x] **2.3 Naoa's public pages and wedding-only sections import the kit**;
+      the moved files are deleted; tests updated to the new imports.
+- [ ] **2.4 Close Phase 2**: publish `@okjt/site` 0.1.0, then Naoa's
+      `package.json`/lockfile name the published version.
+
+
+### Phase 2: result
+
+* `@okjt/site` 0.1.0: 21 modules, compiled with esbuild; tests check the
+  build and that no project's words are in the kit.
+* Naoa: 16 files moved out, `site.config.jsx` added, 25 files import the kit,
+  8 test files render through `SiteProvider` with Naoa's own settings.
+  Vitest 260/260, lint and build pass.
+* Comparison against Phase 1's result, 41 routes at 1280 and 390 px: no
+  differences. Page titles and meta tags (title, description, robots,
+  canonical, Open Graph, Twitter) on 14 routes, including a community page
+  and an unknown one: identical.
+* Waiting on: `@okjt/site` on npm (2.4).
 
 ## Publishing
 

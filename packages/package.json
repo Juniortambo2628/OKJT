@@ -1,8 +1,15 @@
 {
   "name": "okjt-packages",
   "private": true,
-  "workspaces": ["ui"],
+  "workspaces": [
+    "ui",
+    "site"
+  ],
   "scripts": {
-    "test": "npm test --workspaces --if-present"
+    "test": "npm test --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0"
   }
 }

@@ -1,0 +1,23 @@
+{
+  "name": "@okjt/site",
+  "version": "0.1.0",
+  "description": "Public pages for OKJTech projects: layout, navigation, footer, hero, feature, pricing, FAQ and legal sections",
+  "type": "module",
+  "license": "MIT",
+  "repository": { "type": "git", "url": "git+https://github.com/Juniortambo2628/OKJT.git", "directory": "packages/site" },
+  "exports": { ".": "./dist/index.js" },
+  "files": ["dist", "README.md"],
+  "sideEffects": false,
+  "scripts": {
+    "build": "node build.mjs",
+    "prepack": "node build.mjs",
+    "test": "node build.mjs && node --test test/*.test.mjs"
+  },
+  "peerDependencies": {
+    "framer-motion": ">=11",
+    "lucide-react": ">=0.400.0",
+    "react": ">=18",
+    "react-router-dom": ">=6.4"
+  },
+  "publishConfig": { "access": "public" }
+}
