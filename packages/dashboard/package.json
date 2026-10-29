@@ -1,7 +1,7 @@
 {
   "name": "@okjt/dashboard",
   "version": "0.1.0",
-  "description": "Dashboard pages for OKJTech projects: page layout, hero, summary cards, floating toolbar with search and filters, side panel, lists, bulk actions, and one way to save",
+  "description": "Dashboard pages for OKJTech projects: page layout, hero, summary cards, floating toolbar with search and filters, side panel, lists, bulk actions, one way to save, and working together: presence, version history, sharing",
   "type": "module",
   "license": "MIT",
   "repository": {
@@ -27,6 +27,7 @@
   },
   "peerDependencies": {
     "@tanstack/react-query": ">=5",
+    "date-fns": ">=3",
     "framer-motion": ">=11",
     "lucide-react": ">=0.400.0",
     "react": ">=18",

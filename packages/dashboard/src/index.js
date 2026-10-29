@@ -29,3 +29,12 @@ export { default as useCrudHandlers } from './useCrudHandlers.js';
 export { default as useUnsavedChangesGuard, useUnsavedChanges } from './useUnsavedChangesGuard.js';
 export { default as useFilteredItems } from './useFilteredItems.js';
 export { default as useSavedViews } from './useSavedViews.js';
+
+// Working together (with okjt/laravel-kit's collaboration API)
+export { useModules, moduleForPathIn, initials, collaboratorColor } from './modules.js';
+export { CollaborationProvider, useCollaboration, HEARTBEAT_MS } from './CollaborationContext.js';
+export { default as CollaboratorAvatars, CollaboratorAvatar } from './CollaboratorAvatars.js';
+export { default as ActivityPanel } from './ActivityPanel.js';
+export { default as useActivityPanel } from './useActivityPanel.js';
+export { default as VersionHistoryDrawer } from './VersionHistoryDrawer.js';
+export { default as ShareModal } from './ShareModal.js';

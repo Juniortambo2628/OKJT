@@ -33,6 +33,7 @@ class CollaborationTest extends TestCase
                 $router->middleware(EnforceRole::class.':owner')->group(function () use ($router) {
                     $router->post('/collaborators/invite', [Collab::class, 'invite']);
                     $router->patch('/collaborators/{user}/role', [Collab::class, 'updateRole']);
+                    $router->delete('/collaborators/{user}', [Collab::class, 'remove']);
                 });
             });
         });
@@ -117,5 +118,19 @@ class CollaborationTest extends TestCase
         $this->actingAs($owner)->patchJson("/api/collaborators/{$editor->id}/role", ['role' => 'owner'], $this->headers)
             ->assertOk()->assertJson(['message' => 'Ed is now an owner']);
         $this->actingAs($owner)->patchJson('/api/collaborators/999/role', ['role' => 'viewer'], $this->headers)->assertNotFound();
+    }
+
+    public function test_owners_remove_people_but_never_the_last_owner(): void
+    {
+        $project = Project::create(['slug' => 'p']);
+        $owner = $this->person('own@example.com', $project, 'owner');
+        $editor = $this->person('ed@example.com', $project, 'editor');
+
+        $this->actingAs($owner)->deleteJson("/api/collaborators/{$owner->id}", [], $this->headers)
+            ->assertStatus(422)->assertJson(['message' => 'At least one owner must remain']);
+        $this->actingAs($owner)->deleteJson("/api/collaborators/{$editor->id}", [], $this->headers)
+            ->assertOk()->assertJson(['message' => 'Ed no longer has access']);
+        $this->assertFalse($editor->fresh()->isMemberOf($project));
+        $this->assertNotNull(User::find($editor->id));
     }
 }

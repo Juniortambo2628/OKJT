@@ -28,6 +28,7 @@ use Okjt\Kit\Workspace\CurrentWorkspace;
  *   GET   /collaborators                                          any member
  *   POST  /collaborators/invite           { name, email, role?, message? }   owners
  *   PATCH /collaborators/{user}/role      { role }                owners
+ *   DELETE /collaborators/{user}                                  owners
  *   POST  /collaborators/accept           { email, token, password, password_confirmation }   no workspace, no sign-in
  *
  * Projects extend this controller to send their own invitation email
@@ -167,6 +168,28 @@ class CollaborationController extends Controller
         $person->setRoleIn($workspace, $validated['role']);
 
         return $this->successResponse(['id' => $person->id, 'role' => $person->role], "{$person->name} is now a{$this->article($person->role)} {$person->role}");
+    }
+
+    /** Owners take someone out of this workspace (never the last owner); their sign-in stays. */
+    public function remove(Request $request, mixed $user): JsonResponse
+    {
+        $workspace = CurrentWorkspace::get();
+        $person = $user instanceof Model ? $user : config('okjt.user_model')::find($user);
+
+        if (! $person || ! $person->isMemberOf($workspace)) {
+            return $this->notFoundResponse('Collaborator not found');
+        }
+
+        if ($person->isOwner() && $this->ownerCount() <= 1) {
+            return $this->errorResponse('At least one owner must remain', 422);
+        }
+
+        DB::table(config('okjt.workspace.members_table'))
+            ->where(CurrentWorkspace::column(), $workspace->getKey())
+            ->where('user_id', $person->getKey())
+            ->delete();
+
+        return $this->successResponse(['id' => $person->id], "{$person->name} no longer has access");
     }
 
     public function accept(Request $request): JsonResponse
