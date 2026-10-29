@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { compileTheme, defineConfig, COLOR_TOKENS, RAMPS } from '../src/index.js';
+import { compileTheme, defineConfig, COLOR_TOKENS } from '../src/theme.js';
+import { RAMPS } from '../src/ramps.js';
 
 const colors = Object.fromEntries(Object.keys(COLOR_TOKENS).map((name, i) => [name, `#00000${i % 10}`]));
 

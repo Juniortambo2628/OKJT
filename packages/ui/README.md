@@ -1,6 +1,6 @@
 # @okjt/ui
 
-Theme tokens for OKJTech sites and dashboards. A project sets its colours and
+Theme tokens and shared building blocks for OKJTech sites and dashboards. A project sets its colours and
 fonts once, in `okjt.config.js`; the kit's pages and components use them by
 name (`text-ink`, `bg-accent`, `border-tone-200`, `font-display`).
 
@@ -72,3 +72,20 @@ await writeFile(`${dir}/${name}.json`, JSON.stringify(await captureStyles(page))
 ```bash
 node node_modules/@okjt/ui/tools/style-snapshot.mjs compare before/ after/
 ```
+
+## Building blocks (React)
+
+| Export | What it is |
+|---|---|
+| `Button`, `buttonClass` | The one button: `primary`, `secondary`, `danger`; `edit` or `action` hide it for viewers |
+| `Modal`, `Overlay`, `PortalWhen` | Dialogs and the layer under them |
+| `SegmentedControl` | A row of options, one chosen |
+| `ContextMenu`, `useDismiss` | A right-click or "more" menu; close on outside click or Escape |
+| `Skeleton`, `CardSkeleton`, `TimelineSkeleton`, `MessageSkeleton`, `Loader`, `Spinner` | Loading states |
+| `confirmAction`, `promptAction`, `notifySuccess`, `notifyError`, `notifyUndo`, `ConfirmHost` | Styled confirm and prompt dialogs (mount `ConfirmHost` once) and toasts |
+| `PermissionsProvider`, `usePermissions`, `useVisibleActions` | What the signed-in person may do: `{ role, isOwner, canEdit }`; everything allowed outside a provider |
+
+Peer dependencies for these (not for the theme command): `react`,
+`react-dom`, `framer-motion`, `lucide-react`, `react-hot-toast`. Add
+`@source "../node_modules/@okjt/ui/dist";` after the theme import so Tailwind
+sees their classes.

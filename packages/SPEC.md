@@ -236,8 +236,8 @@ Playwright screenshot tests (53) and its Vitest and PHPUnit suites check.
 | 0 | This spec | You approve it and answer the open questions |
 | 1 | `packages/` workspace, CI and publishing. `@okjt/ui` with theme tokens, and Naoa's public pages and dashboard switched from hard-coded colours to those tokens (see "Phase 1: what the code showed"). | Every element's computed colours and fonts identical before and after |
 | 2 | `@okjt/site`; Naoa's public pages built from it | Naoa's screenshots unchanged |
-| 3 | `@okjt/dashboard`; Naoa's dashboard built from it | Naoa's screenshots and tests unchanged |
-| 4 | `okjt/laravel-kit`; Naoa's backend uses it | Naoa's PHPUnit suite passes unchanged |
+| 3 | `@okjt/dashboard`, the UI layer (the connected layer moves with Phase 4); Naoa's dashboard pages built from it | Comparison: no differences; tests pass |
+| 4 | `okjt/laravel-kit` and the dashboard's connected layer (shell, header, sidebar, presence, history, sharing, sign-in, Console); Naoa uses both | Naoa's PHPUnit and Vitest suites pass; comparison: no differences |
 | 5 | `create-okjt-app`: asks for name, colours, modules and role preset; writes both configs; adds the deploy-kit workflow | A new test site deployed to the VPS in under 30 minutes |
 | 6 | Najenga on the kit. **(a)** Roles restructured like Naoa's. **(b)** A React app at `frontend/` on `@okjt/site` and `@okjt/dashboard`; the controllers return JSON through `laravel-kit`. Pages move one at a time: the new app serves the pages already moved while Inertia keeps the rest, until none remain. **(c)** Remove Inertia, `Components/Landing/` and the pieces the kit replaces. | Najenga's tests pass and its pages match today's screenshots, with the differences you agreed listed in the PR |
 
@@ -539,6 +539,91 @@ differences.
   canonical, Open Graph, Twitter) on 14 routes, including a community page
   and an unknown one: identical.
 * Waiting on: `@okjt/site` on npm (2.4).
+
+## Phase 3: `@okjt/dashboard`
+
+Read 2026-10-29, Naoa at `56c2196` (Phases 1 and 2 applied).
+
+### What the code showed
+
+Naoa's dashboard pieces fall into two layers:
+
+| Layer | Pieces | Reaches into Naoa for |
+|---|---|---|
+| **UI** | primitives (Button, Modal, Overlay, SegmentedControl, Skeleton, Loader, Spinner, ContextMenu), confirm dialogs and toasts, page layout, hero, summary cards, floating toolbar with search and filters, side panel, list panel, pagination, bulk actions, cards, inputs, toggles, empty and error states, unsaved-changes guard, tutorial, `useAdminAction` | the person's permissions (`useRole`), the panel a page without one gets (the activity panel), what to refresh after a save (presence), the breadcrumb's home, the tutorial's steps |
+| **Connected** | shell, header, sidebar, account menu, presence and "what changed", activity panel, version history, sharing and invites, sign-in pages, Console, team, workspace picker | Naoa's API (`services/api`), `AuthContext`, `CollaborationContext` |
+
+The connected layer is the client half of what `okjt/laravel-kit` (Phase 4)
+serves. Extracting it before that API exists would mean designing its calls
+twice, so **it moves in Phase 4, together with the server side**. Phase 3
+takes the UI layer, which is what every page is built from.
+
+The UI layer has almost nothing Naoa-specific in it: the breadcrumb's home
+(`/admin/dashboard`), the tutorial's steps, and `bulkActionPresets`, which
+nothing uses (it stays behind).
+
+### Where things go
+
+* `@okjt/ui` (now also React, peer dependencies optional for the theme
+  command): `Button` and `buttonStyles`, `Overlay`, `Modal`, `SegmentedControl`,
+  `Skeleton`, `Loader`, `Spinner`, `ContextMenu`, `useDismiss`, the feedback
+  helpers (`confirmAction`, `promptAction`, `notifySuccess`, `notifyError`,
+  `notifyUndo`) and `ConfirmHost`, and **`PermissionsProvider`/`usePermissions`**:
+  `{ role, isOwner, canEdit }`, everything allowed outside a provider (Naoa's
+  `useRole` behaves the same way today).
+* `@okjt/dashboard`: **`DashboardProvider`** with `home` (the breadcrumb's
+  first crumb), `useDefaultPanel()` and `useAfterChange()`; the page layout,
+  hero and chrome context, summary cards and `StatCard`, the floating toolbar,
+  search and filters, side panel, list panel, pagination, bulk actions,
+  `AdminCard`, `AdminInput`, `AdminModal`, `EditableFieldset`, `DeleteButton`,
+  `ToggleButton`, `EmptyState`, `QueryError`, `UnsavedChangesStatus`,
+  `AdminTutorial` (steps as a prop), `useAdminAction`, `useCrudHandlers`,
+  `useUnsavedChangesGuard`, `useFilteredItems`, `useSavedViews`.
+* Names stay as they are in Naoa (`AdminPageLayout`, `AdminPageHero`…), so
+  the 71 dashboard files change only their imports.
+* Their tests move with them and run in the kit (Vitest, jsdom).
+
+### Phase 3 tasks
+
+Checked like Phases 1 and 2: the comparison over the same 41 routes at both
+widths, against the state before, by the tool. Expected: no differences.
+
+**Checklist carried by every task below** (snapshot of Naoa at `56c2196`,
+2026-10-29; the code wins where they disagree):
+
+- [ ] markup and class names move unchanged (the comparison keys elements by
+      DOM path)
+- [ ] a component that hid or disabled controls for viewers still does, through
+      `usePermissions()`, fed by Naoa's own `useRole`
+- [ ] pages without a panel still get Naoa's activity panel, through
+      `useDefaultPanel`; a save still refreshes presence, through `useAfterChange`
+- [ ] the moved tests pass in the kit; Naoa's remaining tests pass
+- [ ] Naoa's lint and build pass; comparison: no differences
+
+- [x] **3.1 `@okjt/ui` primitives and permissions**, with their tests.
+- [x] **3.2 `packages/dashboard`**, with its tests and README.
+- [x] **3.3 Naoa**: `PermissionsProvider` and `DashboardProvider` at the app's
+      root, the 71 files import the kit, the moved files deleted.
+- [ ] **3.4 Close Phase 3**: both packages published, Naoa's lockfile updated.
+
+### Phase 3: result
+
+* `@okjt/ui` 0.1.0 gains 12 React modules and permissions; `@okjt/dashboard`
+  0.1.0: 30 modules and `DashboardProvider`.
+* 79 tests moved from Naoa with their components and pass in the kit, plus
+  3 new ones for `DashboardProvider` (82 component tests, plus the theme and
+  build tests). Naoa: 58 files moved out, 102 import the kit; its remaining
+  181 tests, lint and build pass.
+* Comparison against Phase 2's result, 41 routes at 1280 and 390 px: no
+  differences. The confirm dialog's module is bundled once and shared by
+  Naoa's code and the kit's (a duplicate would leave confirms unanswered).
+* `useAdminAction` still invalidates the `['revisions']` query after a save:
+  that is version history, which arrives with Phase 4; harmless where a
+  project has none.
+* The packages workspace installs with `legacy-peer-deps` (`packages/.npmrc`):
+  npm 10 crashes resolving the kit's peers against the workspace's own copies.
+  Projects installing the packages are unaffected.
+* Waiting on: publishing (3.4).
 
 ## Publishing
 

@@ -1,19 +1,64 @@
 {
   "name": "@okjt/ui",
   "version": "0.1.0",
-  "description": "Theme tokens and shared building blocks for OKJTech sites and dashboards",
+  "description": "Theme tokens and shared building blocks (buttons, dialogs, menus, feedback, permissions) for OKJTech sites and dashboards",
   "type": "module",
   "license": "MIT",
-  "repository": { "type": "git", "url": "git+https://github.com/Juniortambo2628/OKJT.git", "directory": "packages/ui" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Juniortambo2628/OKJT.git",
+    "directory": "packages/ui"
+  },
   "exports": {
-    ".": "./src/index.js",
+    ".": "./dist/index.js",
+    "./theme": "./src/theme.js",
     "./tools/style-snapshot": "./tools/style-snapshot.mjs"
   },
-  "bin": { "okjt-theme": "./bin/okjt-theme.mjs" },
-  "files": ["src", "bin", "tools", "README.md"],
-  "engines": { "node": ">=20" },
-  "scripts": {
-    "test": "node --test test/*.test.js"
+  "bin": {
+    "okjt-theme": "./bin/okjt-theme.mjs"
   },
-  "publishConfig": { "access": "public" }
+  "files": [
+    "src/theme.js",
+    "src/ramps.js",
+    "dist",
+    "bin",
+    "tools",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "prepack": "node build.mjs",
+    "test": "node build.mjs && node --test test/*.test.js && vitest run"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "peerDependencies": {
+    "framer-motion": ">=11",
+    "lucide-react": ">=0.400.0",
+    "react": ">=18",
+    "react-dom": ">=18",
+    "react-hot-toast": ">=2"
+  },
+  "peerDependenciesMeta": {
+    "framer-motion": {
+      "optional": true
+    },
+    "lucide-react": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    },
+    "react-hot-toast": {
+      "optional": true
+    }
+  }
 }
