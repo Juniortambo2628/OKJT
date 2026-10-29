@@ -15,7 +15,7 @@
     "./tools/style-snapshot": "./tools/style-snapshot.mjs"
   },
   "bin": {
-    "okjt-theme": "./bin/okjt-theme.mjs"
+    "okjt-theme": "bin/okjt-theme.mjs"
   },
   "files": [
     "src/theme.js",
