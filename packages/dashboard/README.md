@@ -106,6 +106,26 @@ export default function Expenses() {
 | `SearchProvider`/`useSearch`, `AdminChromeProvider`/`useAdminChrome`, `AdminHeaderStatus` | The shared search box and the header's slots |
 | `DashboardProvider`, `useDashboard` | The settings above |
 
-Still in the projects for now, moving with the server kit: the shell (header,
-sidebar, account menu), who's online and what changed, version history,
-sharing and invites, sign-in pages.
+## Working together
+
+With `okjt/laravel-kit`'s collaboration routes on the server, add to the
+dashboard settings:
+
+```js
+const dashboard = {
+  // …
+  api,                                   // axios-like, sends the workspace header, resolves to the body
+  modules: [{ key: 'expenses', path: '/dashboard/expenses', label: 'Expenses' }],
+  roles: [{ value: 'owner', label: 'Owner', description: '…' }, /* editor, viewer */],
+  anonymousName: 'Someone',              // changes nobody signed in made
+  useDefaultPanel: useActivityPanel,      // who's here and what changed, on pages without a panel
+  useAfterChange: () => useCollaboration().refresh,
+};
+```
+
+and wrap the dashboard in `<CollaborationProvider>` (inside the router). Then
+`ShareModal`, `VersionHistoryDrawer`, `ActivityPanel` and
+`CollaboratorAvatars` work as in Naoa.
+
+Still in the projects for now, moving next: the shell (header, sidebar,
+account menu), then sign-in pages and the Console.

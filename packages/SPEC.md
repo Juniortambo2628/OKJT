@@ -643,7 +643,7 @@ Phase 4 is three steps, each proven by Naoa's own test suites:
 | Step | Takes | Status |
 |---|---|---|
 | **4a** | Server core: workspace scoping (`CurrentWorkspace`, `BelongsToWorkspace`, `ResolveWorkspace`), roles (`EnforceRole`, `EnsureSuperadmin`, `HasWorkspaceRoles`), version history (`Revision`, `RecordsRevisions`, `RevisionController`), `ApiResponse`, publishable migrations | done |
-| **4b** | Collaboration, both halves: presence and "what changed" (heartbeat, module visits), collaborators and invitations (invite, accept, change role), and the dashboard's connected layer: `CollaborationContext`, avatars, activity panel, version-history drawer, share dialog, then the shell (header, sidebar, account menu) | next |
+| **4b** | Collaboration, both halves: presence and "what changed" (heartbeat, module visits), collaborators and invitations (invite, accept, change role, remove), and the dashboard's connected layer: `CollaborationProvider`, avatars, activity panel, version-history drawer, share dialog. Then the shell (header, sidebar, account menu) | collaboration done; shell next |
 | **4c** | Accounts and sign-in: sign-in and sign-up, Google, passkeys, two-step verification, email verification, teams/accounts, Console, backups, notifications; billing as an optional module | after 4b |
 
 ### Phase 4a: result
@@ -662,6 +662,22 @@ Phase 4 is three steps, each proven by Naoa's own test suites:
   first release.
 * Composer reports 72 security advisories in 20 of Naoa's existing
   dependencies (not the kit's): worth a separate `composer audit` pass.
+
+### Phase 4b: result so far
+
+* Server: `CollaborationController` in the kit, with the parts that are
+  Naoa's (plan limit, invitation email, links, sign-in answer) as methods
+  Naoa overrides; `DELETE /collaborators/{user}` added for projects without
+  their own way to remove access. Kit: 16 tests. Naoa: 367 backend tests
+  pass unchanged.
+* Client: presence, avatars, activity panel, version history and sharing in
+  `@okjt/dashboard`, talking to the kit's endpoints through the project's
+  API client. Kit: 66 dashboard tests. Naoa: 181 tests, lint and build pass;
+  comparison over 41 routes at both widths: no differences.
+* The comparison flagged the home page once: its hero photo was caught
+  mid cross-fade on a slow run (two pictures for a moment). A rerun matched.
+  Untouched by this step; noted because a slow machine can do it again.
+* Next in 4b: the shell (header, sidebar, account menu, `AdminShell`).
 
 ## Publishing
 
