@@ -28,3 +28,21 @@ jobs:
 
       - run: npm ci
       - run: npm test
+
+  laravel-kit:
+    name: laravel-kit (PHPUnit)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/laravel-kit
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, pdo_sqlite, sqlite3
+          coverage: none
+
+      - run: composer install --prefer-dist --no-interaction --no-progress
+      - run: vendor/bin/phpunit

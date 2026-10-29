@@ -1,18 +1,28 @@
 name: Packages release
 
-# Push a tag such as v0.2.0 to publish every package in packages/ whose
-# version is not on npm yet. Needs the NPM_TOKEN secret (an npm automation
-# token with publish rights to the @okjt organisation).
+# Push a tag such as v0.1.0 (on a commit that has the packages) to:
+#   1. publish every npm package in packages/ whose version is not on npm yet;
+#   2. copy packages/laravel-kit to its own repository and tag it there, which
+#      is where Composer installs okjt/laravel-kit from.
+#
+# npm: the first release of each package needs the NPM_TOKEN secret (a
+# granular token that can publish to the okjt organisation). Once each
+# package exists, set this workflow as its Trusted Publisher on npmjs.com and
+# remove the secret: npm then needs no token at all.
+#
+# Composer: needs the empty repository Juniortambo2628/okjt-laravel-kit and the
+# SPLIT_TOKEN secret (a fine-grained GitHub token with Contents: read and
+# write on that repository only).
 on:
   push:
     tags: ['v*']
 
 permissions:
   contents: read
-  id-token: write # npm provenance
+  id-token: write # npm trusted publishing and provenance
 
 jobs:
-  publish:
+  npm:
     name: Publish to npm
     runs-on: ubuntu-latest
     defaults:
@@ -21,9 +31,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Node 24 ships npm 11, which trusted publishing needs (11.5.1 or later).
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
 
       - run: npm ci
@@ -42,3 +53,23 @@ jobs:
               npm publish --workspace "$dir" --provenance --access public
             fi
           done
+
+  composer:
+    name: Release okjt/laravel-kit
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Copy packages/laravel-kit to its own repository, and tag it
+        env:
+          SPLIT_TOKEN: ${{ secrets.SPLIT_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          git subtree split --prefix packages/laravel-kit -b laravel-kit-split
+          remote="https://x-access-token:${SPLIT_TOKEN}@github.com/Juniortambo2628/okjt-laravel-kit.git"
+          git push "$remote" laravel-kit-split:main --force
+          git push "$remote" "laravel-kit-split:refs/tags/${TAG}"

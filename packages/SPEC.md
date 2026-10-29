@@ -625,6 +625,44 @@ widths, against the state before, by the tool. Expected: no differences.
   Projects installing the packages are unaffected.
 * Waiting on: publishing (3.4).
 
+## Phase 4: `okjt/laravel-kit` and the connected dashboard
+
+Read 2026-10-29, Naoa at `0eabc02`.
+
+### What the code showed
+
+The server side is wedding-shaped all the way down: a `wedding_id` column on
+28 models (`BelongsToWedding`), `CurrentWedding` used in 46 files, the
+`X-Wedding` header, `wedding_user` for roles, open routes and viewer writes
+hard-coded in the middleware, and messages that name the wedding. All of it
+becomes settings (`config/okjt.php`); Naoa's classes stay as thin subclasses
+and traits under their old names, so none of those 46 files change.
+
+Phase 4 is three steps, each proven by Naoa's own test suites:
+
+| Step | Takes | Status |
+|---|---|---|
+| **4a** | Server core: workspace scoping (`CurrentWorkspace`, `BelongsToWorkspace`, `ResolveWorkspace`), roles (`EnforceRole`, `EnsureSuperadmin`, `HasWorkspaceRoles`), version history (`Revision`, `RecordsRevisions`, `RevisionController`), `ApiResponse`, publishable migrations | done |
+| **4b** | Collaboration, both halves: presence and "what changed" (heartbeat, module visits), collaborators and invitations (invite, accept, change role), and the dashboard's connected layer: `CollaborationContext`, avatars, activity panel, version-history drawer, share dialog, then the shell (header, sidebar, account menu) | next |
+| **4c** | Accounts and sign-in: sign-in and sign-up, Google, passkeys, two-step verification, email verification, teams/accounts, Console, backups, notifications; billing as an optional module | after 4b |
+
+### Phase 4a: result
+
+* `okjt/laravel-kit` 0.1.0: 13 classes, config, two publishable migrations,
+  11 tests (49 assertions) on Orchestra Testbench: scoping, open routes,
+  unpublished and inactive workspaces, roles and viewer writes, superadmins,
+  per-workspace roles, recording, merging, restoring, another workspace's
+  history not found, nothing recorded during migrations.
+* Naoa: 12 files become wrappers or lose code to the kit, `config/okjt.php`
+  added with every name, route list and message as it was. All 367 backend
+  tests (1,586 assertions) pass unchanged, as before the change; Pint passes.
+* Composer installs the kit from its mirror,
+  `Juniortambo2628/okjt-laravel-kit`, which `packages-release.yml` fills on
+  every `v*` tag (`git subtree split`). Naoa's lockfile is updated after the
+  first release.
+* Composer reports 72 security advisories in 20 of Naoa's existing
+  dependencies (not the kit's): worth a separate `composer audit` pass.
+
 ## Publishing
 
 All packages are public.
@@ -639,16 +677,36 @@ major version, and comes with an entry in `packages/UPGRADING.md`.
 
 ### What only you can do (once)
 
-1. Create the npm organisation **okjt** (npmjs.com → Add Organization, free
-   for public packages). The name was unclaimed on 2026-10-29.
-2. Create an npm **automation** token with publish rights to `@okjt`, and add it
-   to this repository as the Actions secret `NPM_TOKEN`.
-3. When `laravel-kit` exists (Phase 4): create the empty repository
-   `Juniortambo2628/okjt-laravel-kit` and submit it on packagist.org.
+**npm** (the three JavaScript packages):
 
-Until step 2 is done, nothing can be published. Phase 1 doesn't wait on it
-(Naoa commits the generated theme file); Phase 2 does, because Naoa will then
-import the kit's components.
+1. On npmjs.com: profile picture → **Add Organization** → name **okjt** →
+   **Unlimited public packages** (free) → Create.
+2. Profile picture → **Access Tokens** → **Generate New Token** → granular
+   token: packages and scopes **Read and write**, organisation **okjt**,
+   the shortest expiry that covers the first release (write tokens last at
+   most 90 days).
+3. In this repository: Settings → Secrets and variables → Actions → **New
+   repository secret** `NPM_TOKEN`, the token as its value.
+4. After the first release: on each package's page on npmjs.com, Settings →
+   **Trusted Publisher** → GitHub Actions → `Juniortambo2628` / `OKJT` /
+   `packages-release.yml`. Set it up shortly before the next release: a
+   trusted publisher that hasn't published within 2 days expires. Then delete
+   `NPM_TOKEN` and the token.
+
+**Composer** (the PHP package):
+
+5. Create an empty public repository **Juniortambo2628/okjt-laravel-kit** (no
+   README, no licence: the release fills it).
+6. Create a fine-grained GitHub token with access to that repository only,
+   permission **Contents: Read and write**, and add it here as the secret
+   `SPLIT_TOKEN`.
+7. Optional: submit the repository on packagist.org, so projects need no
+   `repositories` entry.
+
+**Release**: merge the kit into `main`, then push a tag:
+`git tag v0.1.0 && git push origin v0.1.0`. After it succeeds, update
+Naoa's lockfiles (`npm install` in `frontend/`, `composer update
+okjt/laravel-kit` in `backend/`).
 
 ## Decisions after review
 
