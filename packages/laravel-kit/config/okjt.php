@@ -74,6 +74,21 @@ return [
     ],
 
     /*
+     * Working together (CollaborationController): presence counts for
+     * online_seconds after a heartbeat; invitation links last invite_days;
+     * badge_modules are the dashboard modules (revision modules) that show a
+     * "new changes" badge, tracked per person in visits_table.
+     */
+    'collaboration' => [
+        'online_seconds' => 60,
+        'invite_days' => 7,
+        'default_role' => 'editor',
+        'badge_modules' => [],
+        'visits_table' => 'module_visits',
+        'token_name' => 'dashboard',
+    ],
+
+    /*
      * Version history (RecordsRevisions): rapid edits by one person to one
      * record merge into one version; versions older than keep_days are pruned
      * by model:prune.

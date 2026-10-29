@@ -36,6 +36,7 @@ abstract class TestCase extends Orchestra
             $table->string('email')->unique();
             $table->string('password')->default('');
             $table->string('role')->nullable();
+            $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
@@ -52,6 +53,11 @@ abstract class TestCase extends Orchestra
             $table->string('title');
             $table->text('body')->nullable();
             $table->timestamps();
+        });
+        Schema::create('password_reset_tokens', function (Blueprint $table) {
+            $table->string('email')->primary();
+            $table->string('token');
+            $table->timestamp('created_at')->nullable();
         });
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
     }
