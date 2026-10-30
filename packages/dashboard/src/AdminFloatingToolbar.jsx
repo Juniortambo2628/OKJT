@@ -82,7 +82,7 @@ export default function AdminFloatingToolbar({
             className="admin-floating-toolbar flex flex-wrap items-center justify-center gap-1 sm:gap-2 p-1.5 sm:p-2 rounded-2xl border border-white/40 shadow-2xl backdrop-blur-md"
             style={{
               background: 'rgba(255, 249, 245, 0.92)',
-              boxShadow: '0 12px 40px rgba(74, 63, 53, 0.18)',
+              boxShadow: '0 12px 40px color-mix(in srgb, var(--color-body) 18%, transparent)',
             }}
           >
             {searchProps && <AdminToolbarSearch {...searchProps} />}

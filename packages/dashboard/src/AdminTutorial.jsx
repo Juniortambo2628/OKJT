@@ -17,12 +17,14 @@ export default function AdminTutorial({ steps, onComplete, isRestarted = false }
   }, [currentStep, isVisible, coords]);
 
   useEffect(() => {
+    // No tour configured: nothing to show.
+    if (!steps?.length) return undefined;
     const isCompleted = localStorage.getItem('admin-tutorial-complete');
     if (!isCompleted || isRestarted) {
       const timer = setTimeout(() => setIsVisible(true), 1000);
       return () => clearTimeout(timer);
     }
-  }, [isRestarted]);
+  }, [isRestarted, steps?.length]);
 
   useEffect(() => {
     if (isVisible) {
@@ -142,7 +144,7 @@ export default function AdminTutorial({ steps, onComplete, isRestarted = false }
     return { style: { top, left, width: boxW }, placement };
   };
 
-  if (!isVisible) return null;
+  if (!isVisible || !steps?.length) return null;
 
   const step = steps[currentStep];
 

@@ -46,7 +46,7 @@ export default function AdminSummaryCards({ cards = [], columns = 4 }) {
             className={`px-3.5 py-3 rounded-2xl bg-white flex items-center gap-3 text-left min-w-0 transition-shadow ${
               stat.onClick ? 'cursor-pointer hover:ring-2 hover:ring-accent/20' : ''
             } ${stat.active ? 'ring-2 ring-accent/50' : ''}`}
-            style={{ boxShadow: '0 4px 20px rgba(166, 123, 91, 0.08)' }}
+            style={{ boxShadow: '0 4px 20px color-mix(in srgb, var(--color-accent) 8%, transparent)' }}
           >
             <div
               className={`w-9 h-9 rounded-xl items-center justify-center shrink-0 ${iconVisibility}`}

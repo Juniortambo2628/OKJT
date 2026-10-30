@@ -4,6 +4,11 @@ import { AlertCircle, ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 /**
+ * Three colours of the sign-in fields can be set in the app's CSS, and
+ * otherwise follow the theme: --okjt-auth-glow (where the button's gradient
+ * ends; accent-soft), --okjt-auth-focus (a focused field's border and ring;
+ * accent) and --okjt-auth-placeholder (faint).
+ *
  * The sign-in pages' frame: a light card with the form, and on desktop a
  * panel beside it (`aside`, e.g. a showcase of the app). Phones get the form
  * alone, full width. `brand` is the logo linking home; `backLabel` the
@@ -46,7 +51,7 @@ export default function AuthLayout({ title, subtitle, children, footer, brand, b
   );
 }
 
-const fieldClass = 'w-full h-12 px-5 rounded-full bg-white border border-line text-sm text-ink placeholder:text-[#B8A898] shadow-[0_1px_2px_color-mix(in_srgb,var(--color-body)_4%,transparent)] outline-none transition focus:border-[#C49274] focus:ring-4 focus:ring-[#C49274]/15 read-only:bg-tint read-only:text-muted';
+const fieldClass = 'w-full h-12 px-5 rounded-full bg-white border border-line text-sm text-ink placeholder:text-[var(--okjt-auth-placeholder,var(--color-faint))] shadow-[0_1px_2px_color-mix(in_srgb,var(--color-body)_4%,transparent)] outline-none transition focus:border-[var(--okjt-auth-focus,var(--color-accent))] focus:ring-4 focus:ring-[var(--okjt-auth-focus,var(--color-accent))]/15 read-only:bg-tint read-only:text-muted';
 
 /** A labelled pill input; `type="password"` gets a show/hide toggle. */
 export function AuthField({ id, label, type = 'text', error, className = '', inputClassName = '', ...props }) {
@@ -86,7 +91,7 @@ export function AuthSubmit({ loading, children, ...props }) {
     <button
       type="submit"
       disabled={loading}
-      className="w-full h-12 rounded-full text-sm font-semibold text-white bg-gradient-to-r from-accent-dark via-accent-strong to-[#D08A5E] shadow-[0_10px_24px_-10px_color-mix(in_srgb,var(--color-accent-strong)_80%,transparent)] transition hover:brightness-105 active:brightness-95 disabled:opacity-70 flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#C49274]/30"
+      className="w-full h-12 rounded-full text-sm font-semibold text-white bg-gradient-to-r from-accent-dark via-accent-strong to-[var(--okjt-auth-glow,var(--color-accent-soft))] shadow-[0_10px_24px_-10px_color-mix(in_srgb,var(--color-accent-strong)_80%,transparent)] transition hover:brightness-105 active:brightness-95 disabled:opacity-70 flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--okjt-auth-focus,var(--color-accent))]/30"
       {...props}
     >
       {loading && <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />}

@@ -57,7 +57,7 @@ export default function AdminPageHero({ title, description, breadcrumb, icon }) 
       className="flex items-center gap-2 min-w-0"
     >
       {icon && (
-        <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'rgba(166, 123, 91, 0.1)' }}>
+        <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'color-mix(in srgb, var(--color-accent) 10%, transparent)' }}>
           {icon}
         </div>
       )}
@@ -116,7 +116,7 @@ export default function AdminPageHero({ title, description, breadcrumb, icon }) 
           {icon && (
             <div
               className="w-10 h-10 rounded-xl flex items-center justify-center"
-              style={{ background: 'rgba(166, 123, 91, 0.1)' }}
+              style={{ background: 'color-mix(in srgb, var(--color-accent) 10%, transparent)' }}
             >
               {icon}
             </div>
@@ -124,12 +124,12 @@ export default function AdminPageHero({ title, description, breadcrumb, icon }) 
           <div>
             <h1
               className="text-2xl md:text-3xl font-semibold"
-              style={{ color: '#4A3F35' }}
+              style={{ color: 'var(--color-body)' }}
             >
               {title}
             </h1>
             {description && (
-              <p className="text-sm mt-0.5" style={{ color: '#8B7B6B' }}>
+              <p className="text-sm mt-0.5" style={{ color: 'var(--color-muted)' }}>
                 {description}
               </p>
             )}

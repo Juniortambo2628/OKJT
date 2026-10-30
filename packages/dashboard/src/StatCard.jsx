@@ -7,7 +7,7 @@ export default function StatCard({ icon, label, value, color }) {
             className="p-6 rounded-2xl transition-all hover:scale-[1.02]"
             style={{ 
               background: 'white',
-              boxShadow: '0 4px 20px rgba(166, 123, 91, 0.08)',
+              boxShadow: '0 4px 20px color-mix(in srgb, var(--color-accent) 8%, transparent)',
             }}
         >
             <div className="flex items-center justify-between mb-4">

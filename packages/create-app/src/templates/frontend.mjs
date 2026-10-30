@@ -423,8 +423,17 @@ export const ROLES = ${JSON.stringify(p.roles, null, 2).replace(/"(\w+)":/g, '$1
 
 export const roleLabel = (role) => ROLES.find((r) => r.value === role)?.label || role;
 
+/** The guided tour on a first visit (\`target\` is an element's id). Edit or extend it. */
+export const TUTORIAL_STEPS = [
+  { title: 'Welcome', content: 'A quick look around: it takes a minute.', target: 'header', position: 'bottom' },
+  { title: 'Overview', content: 'Where you start: the numbers that matter, at a glance.', target: 'sidebar-overview', position: 'right' },
+  { title: 'Notes', content: 'Write things down together. Every change is kept, and any version can be restored.', target: 'sidebar-notes', position: 'right' },
+  { title: 'You', content: 'Your role, your other ${w.plural}, and signing out.', target: 'header-account', position: 'bottom' },
+];
+
 export const dashboard = {
   home: { label: 'Overview', path: '/dashboard' },
+  tutorialSteps: TUTORIAL_STEPS,
   useDefaultPanel: useActivityPanel,
   useAfterChange: () => useCollaboration().refresh,
   api,
@@ -673,7 +682,8 @@ export default function Workspaces() {
   const create = useMutation({
     mutationFn: () => api.post('/${w.path}', { name }).then((res) => res.data),
     onSuccess: (created) => {
-      queryClient.invalidateQueries({ queryKey: ['workspaces'] });
+      // In the list before the dashboard looks for it there.
+      queryClient.setQueryData(['workspaces'], (list = []) => [...list, created]);
       open(created.slug);
     },
     onError: (err) => setError(err.response?.data?.message || 'Something went wrong. Try again.'),

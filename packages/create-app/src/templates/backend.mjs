@@ -15,12 +15,14 @@ export function backendFiles(p) {
     'app/Models/User.php': userModel(p),
     [`app/Models/${p.workspace.Model}.php`]: workspaceModel(p),
     'app/Models/Note.php': noteModel(),
+    'app/Notifications/VerifyEmailAddress.php': verifyEmailNotification(),
     'app/Http/Controllers/Api/AuthController.php': authController(p),
     [`app/Http/Controllers/Api/${p.workspace.Model}Controller.php`]: workspaceController(p),
     'app/Http/Controllers/Api/NoteController.php': noteController(),
     'database/migrations/2026_01_01_100000_add_okjt_columns_to_users.php': usersMigration(),
     [`database/migrations/2026_01_01_100001_create_${p.workspace.table}_table.php`]: workspaceMigration(p),
     'database/migrations/2026_01_01_100002_create_notes_table.php': notesMigration(p),
+    'database/migrations/2026_01_01_100003_create_notifications_table.php': notificationsMigration(p),
     'database/seeders/DatabaseSeeder.php': seeder(p),
     'tests/Feature/StarterTest.php': starterTest(p),
   };
@@ -293,6 +295,7 @@ function userModel(p) {
     '',
     'namespace App\\Models;',
     '',
+    'use App\\Notifications\\VerifyEmailAddress;',
     'use Illuminate\\Contracts\\Auth\\MustVerifyEmail;',
     'use Illuminate\\Database\\Eloquent\\Factories\\HasFactory;',
     'use Illuminate\\Foundation\\Auth\\User as Authenticatable;',
@@ -326,6 +329,12 @@ function userModel(p) {
     "            'last_active_at' => 'datetime',",
     "            'invite_accepted_at' => 'datetime',",
     '        ];',
+    '    }',
+    '',
+    '    /** The verification email links to the app\'s /verify-email page. */',
+    '    public function sendEmailVerificationNotification(): void',
+    '    {',
+    '        $this->notify(new VerifyEmailAddress);',
     '    }',
     '}',
     '',
@@ -766,6 +775,63 @@ function starterTest(p) {
     "        $this->actingAs($stranger, 'sanctum')->getJson('/api/notes', $headers)->assertForbidden();",
     '    }',
     '}',
+    '',
+  );
+}
+
+function verifyEmailNotification() {
+  return `<?php
+
+namespace App\\Notifications;
+
+use Illuminate\\Auth\\Notifications\\VerifyEmail;
+
+/**
+ * The verification email. Its link opens the app's /verify-email page, which
+ * sends the id and hash to POST /api/email/verify (the kit's
+ * EmailVerificationController), and signs the person in.
+ */
+class VerifyEmailAddress extends VerifyEmail
+{
+    protected function verificationUrl($notifiable): string
+    {
+        $app = rtrim(config('app.frontend_url') ?: config('app.url'), '/');
+
+        return $app.'/verify-email/'.$notifiable->getKey().'/'.sha1($notifiable->getEmailForVerification());
+    }
+}
+`;
+}
+
+function notificationsMigration(p) {
+  return lines(
+    '<?php',
+    '',
+    'use Illuminate\\Database\\Migrations\\Migration;',
+    'use Illuminate\\Database\\Schema\\Blueprint;',
+    'use Illuminate\\Support\\Facades\\Schema;',
+    '',
+    `/** The dashboard's bell: Laravel's notifications, each in one ${p.workspace.label} (the kit's Notification model). */`,
+    'return new class extends Migration',
+    '{',
+    '    public function up(): void',
+    '    {',
+    "        Schema::create('notifications', function (Blueprint $table) {",
+    "            $table->uuid('id')->primary();",
+    `            $table->unsignedBigInteger(${q(p.workspace.foreignKey)})->nullable()->index();`,
+    "            $table->string('type');",
+    "            $table->morphs('notifiable');",
+    "            $table->text('data');",
+    "            $table->timestamp('read_at')->nullable();",
+    '            $table->timestamps();',
+    '        });',
+    '    }',
+    '',
+    '    public function down(): void',
+    '    {',
+    "        Schema::dropIfExists('notifications');",
+    '    }',
+    '};',
     '',
   );
 }

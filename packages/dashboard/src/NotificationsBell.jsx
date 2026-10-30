@@ -102,7 +102,7 @@ export default function NotificationsBell() {
         <Bell className="w-5 h-5 text-soft" />
         <span 
           className="absolute top-1 right-1 w-2 h-2 rounded-full"
-          style={{ background: '#A67B5B', display: unreadCount > 0 ? 'block' : 'none' }}
+          style={{ background: 'var(--color-accent)', display: unreadCount > 0 ? 'block' : 'none' }}
         />
       </button>
 
