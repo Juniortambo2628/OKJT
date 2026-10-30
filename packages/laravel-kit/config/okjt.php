@@ -95,6 +95,9 @@ return [
         'view_only' => 'You have view-only access.',
         'superadmin_only' => 'Only administrators can do this.',
         'team_owners_only' => 'Only an account’s owners manage its team.',
+        'no_account' => 'You don’t own an account.',
+        'plan_limit' => 'Your plan includes up to :max :limit. Upgrade to add more.',
+        'trial_limit' => 'The trial includes up to :max :limit. Contact us for full access.',
         'confirm_address' => 'Type the :workspace’s web address exactly to confirm.',
         'sign_in_expired' => 'That sign-in link expired — try again.',
         'account_not_found' => 'Account not found.',
@@ -134,6 +137,50 @@ return [
 
     'notifications' => [
         'model' => Okjt\Kit\Notifications\Notification::class,
+    ],
+
+    /*
+     * Billing, optional (Plans, Limits, BillingService, BillingController):
+     * plans per account, limits checked before adding what a plan counts,
+     * and payments through Paystack. While billing is off every account is
+     * on the trial (trial_limits) and nothing can be bought; the console can
+     * give a plan by hand. Accounts need `plan` and `plan_expires_at`
+     * (the billing migration). A project keeping these settings in its own
+     * config file names it in settings_from / paystack_from.
+     */
+    'billing' => [
+        'settings_from' => null,
+        'paystack_from' => null,
+        'enabled' => (bool) env('BILLING_ENABLED', false),
+        'currency' => env('BILLING_CURRENCY', 'KES'),
+        // The plan every account is on until it pays (and returns to when a paid plan runs out).
+        'default_plan' => 'free',
+        // What every account may do while billing is off (null or missing = unlimited).
+        'trial_limits' => ['workspaces' => 3, 'collaborators' => 2],
+        /*
+         * Prices in the currency's main unit (null = not for sale). period:
+         * 'one-off' or a number of months. for: the account types that may
+         * buy it (empty = any). Limits: workspaces per account, the rest
+         * per workspace; null = unlimited.
+         */
+        'plans' => [
+            'free' => ['name' => 'Free', 'for' => [], 'price' => null, 'period' => null, 'limits' => ['workspaces' => 1, 'collaborators' => 2]],
+        ],
+        // How limits are named in messages.
+        'limit_names' => ['workspaces' => 'workspaces', 'collaborators' => 'collaborators'],
+        'channels' => ['card', 'mobile_money'],
+        'reference_prefix' => 'pay_',
+        'return_path' => '/billing',
+        // A Mailable taking the payment, sent once it succeeds; null = none.
+        'receipt_mail' => null,
+        'payment_model' => Okjt\Kit\Billing\Payment::class,
+        // Limits, or a subclass counting the project's own limits.
+        'limits' => Okjt\Kit\Billing\Limits::class,
+        'paystack' => [
+            'secret_key' => env('PAYSTACK_SECRET_KEY'),
+            'public_key' => env('PAYSTACK_PUBLIC_KEY'),
+            'base_url' => env('PAYSTACK_BASE_URL', 'https://api.paystack.co'),
+        ],
     ],
 
     /*

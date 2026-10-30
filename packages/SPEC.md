@@ -728,8 +728,17 @@ Phase 4 is three steps, each proven by Naoa's own test suites:
 * Naoa's branch now uses kit code newer than v0.1.0 (teams), so the kit
   needs its next release (0.2.0, and Naoa's constraint `^0.2`) before
   that branch is merged.
-* Next in 4c: billing as an optional module; then the sign-in pages and
-  the account menu.
+* Billing, optional: `Plans` (a plan per account; the trial while billing
+  is off; paid plans that run out fall back to the default), `Limits`
+  (checked before adding what a plan counts; projects extend it for their
+  own limits), `PlanLimitReached` (a 422 the app can turn into an upgrade
+  offer), Paystack checkout, verifying and its signed webhook
+  (`BillingService`, `PaystackService`, `BillingController`), the
+  `Payment` model and a migration. A project can keep its plans in its own
+  config file (`settings_from`). Naoa's plans stay in `config/naoa.php`;
+  its limits add weddings and guests, and its billing page shows them.
+  Kit: 51 tests, 287 assertions. Naoa: 367 backend tests pass.
+* Next in 4c: the sign-in pages and the account menu.
 
 ## Publishing
 

@@ -10,4 +10,6 @@ class Account extends Model
     use HasTeam;
 
     protected $guarded = [];
+
+    protected $casts = ['plan_expires_at' => 'datetime'];
 }

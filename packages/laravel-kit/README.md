@@ -82,6 +82,7 @@ Route::middleware(['auth:sanctum', EnsureSuperadmin::class])->prefix('console')-
 | `BackupService`, `BackupController`, `backups:create`, `backups:verify` | Whole-database backups as JSON in a zip (any driver, no database tools needed); restore after a safety backup; verify by restoring into a throwaway database; off-site copies to a disk or by email; `snapshot()` before risky bulk changes. Settings in `okjt.backups`; extend the service for upload folders or a step after restoring. Needs `ext-zip`. |
 | `ConsoleController`, `AuditLog` | The platform console for its staff: every workspace (details and counts, never content), status changes with a reason, deleting after typing the address, and the audit log of all of it. Projects add their own pages beside these. |
 | `HasTeam`, `HasAccounts`, `TeamController` | Accounts that own workspaces. Staff work on all of an account's workspaces (new ones too) or chosen ones, with one role; owners invite them, change their access and take them off the team. Settings in `okjt.accounts`. |
+| `Plans`, `Limits`, `PlanLimitReached`, `BillingService`, `PaystackService`, `BillingController`, `Payment` | Optional billing: a plan per account with limits (a trial while billing is off), checks before adding what a plan counts, and payments through Paystack (checkout, verify, signed webhook), each switching a plan on exactly once. Settings in `okjt.billing`. |
 | `ApiResponse` | The `{ success, message, data }` envelope the dashboard kit reads. |
 
 When a user is deleted, set their `revisions.user_id` to null and delete
