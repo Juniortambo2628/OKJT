@@ -13,9 +13,18 @@ name: Packages release
 # Composer: needs the empty repository Juniortambo2628/okjt-laravel-kit and the
 # SPLIT_TOKEN secret (a fine-grained GitHub token with Contents: read and
 # write on that repository only).
+#
+# To release the Composer package again for an existing tag (say the copy
+# failed), run this workflow from the Actions tab with that tag: npm skips
+# versions it already has.
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to release, e.g. v0.1.0'
+        required: true
 
 permissions:
   contents: read
@@ -62,13 +71,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.tag || github.ref }}
           fetch-depth: 0
+          # Otherwise git keeps sending this run's own token, which may not
+          # write to another repository, instead of SPLIT_TOKEN.
+          persist-credentials: false
 
       - name: Copy packages/laravel-kit to its own repository, and tag it
         env:
           SPLIT_TOKEN: ${{ secrets.SPLIT_TOKEN }}
-          TAG: ${{ github.ref_name }}
+          TAG: ${{ inputs.tag || github.ref_name }}
         run: |
+          if [ -z "$SPLIT_TOKEN" ]; then echo "::error::The SPLIT_TOKEN secret is not set"; exit 1; fi
           git subtree split --prefix packages/laravel-kit -b laravel-kit-split
           remote="https://x-access-token:${SPLIT_TOKEN}@github.com/Juniortambo2628/okjt-laravel-kit.git"
           git push "$remote" laravel-kit-split:main --force
