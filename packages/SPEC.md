@@ -750,8 +750,12 @@ Phase 4 is three steps, each proven by Naoa's own test suites:
   two-step code field now gets focus when that step appears, as its
   `autoFocus` always meant (Naoa's version reused the email field's
   element, so it never did).
-* Phase 4c is done. Naoa's branch needs the next release (`@okjt/dashboard`
-  and `okjt/laravel-kit` 0.2.0) before it is merged.
+* Phase 4c is done, and released as **v0.2.0** (`@okjt/dashboard` 0.2.0,
+  `okjt/laravel-kit` v0.2.0); Naoa's lockfiles use them.
+* npm releases are now staged: the workflow stages each new version through
+  trusted publishing, and a maintainer approves it with two-factor on
+  npmjs.com (Staged Packages). The trusted publisher on each package
+  allows `npm stage publish` only.
 
 ## Publishing
 
