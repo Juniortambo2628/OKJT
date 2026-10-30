@@ -12,11 +12,7 @@ php artisan vendor:publish --tag=okjt-migrations   # new projects: revisions + m
 ```
 
 The package is published from the OKJT monorepo to
-`Juniortambo2628/okjt-laravel-kit`; until it is on Packagist, add the mirror:
-
-```json
-"repositories": { "okjt-laravel-kit": { "type": "vcs", "url": "https://github.com/Juniortambo2628/okjt-laravel-kit" } }
-```
+`Juniortambo2628/okjt-laravel-kit`, and installed from Packagist.
 
 ## Set it up
 

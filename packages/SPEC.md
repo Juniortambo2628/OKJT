@@ -724,8 +724,8 @@ Phase 4 is three steps, each proven by Naoa's own test suites:
 
 All packages are public. **Released: v0.1.0** (30 October 2026):
 `@okjt/ui`, `@okjt/site` and `@okjt/dashboard` 0.1.0 on npm, and
-`okjt/laravel-kit` v0.1.0 in `Juniortambo2628/okjt-laravel-kit`. Naoa's
-lockfiles use them. To retry the Composer copy for an existing tag, run
+`okjt/laravel-kit` v0.1.0 in `Juniortambo2628/okjt-laravel-kit`, listed on
+Packagist (auto-updated from new tags). Naoa's lockfiles use them. To retry the Composer copy for an existing tag, run
 **Packages release** by hand from the Actions tab with that tag.
 
 | Package | Where | How it gets there |
