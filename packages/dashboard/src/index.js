@@ -38,3 +38,8 @@ export { default as ActivityPanel } from './ActivityPanel.js';
 export { default as useActivityPanel } from './useActivityPanel.js';
 export { default as VersionHistoryDrawer } from './VersionHistoryDrawer.js';
 export { default as ShareModal } from './ShareModal.js';
+
+// The shell
+export { default as DashboardShell } from './DashboardShell.js';
+export { default as DashboardSidebar } from './DashboardSidebar.js';
+export { default as DashboardHeader } from './DashboardHeader.js';

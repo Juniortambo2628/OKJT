@@ -19,6 +19,23 @@ const DEFAULTS = {
   roleLabel: (role) => DEFAULT_ROLES.find((r) => r.value === role)?.label || role,
   anonymousName: 'Someone',
   removeCollaborator: null,
+  tutorialSteps: [],
+};
+
+/** The shell's defaults: drawn from the theme, nothing project-specific. */
+const DEFAULT_SHELL = {
+  logo: { src: '', alt: '', to: '/' },
+  nav: [],
+  quickLinks: [],
+  background: 'linear-gradient(180deg, var(--color-paper) 0%, var(--color-tint) 100%)',
+  sidebarBackground: 'linear-gradient(180deg, var(--color-body) 0%, var(--color-ink) 100%)',
+  sidebarScrollbar: 'var(--color-soft) var(--color-body)',
+  headerBackground: 'color-mix(in srgb, var(--color-paper) 95%, transparent)',
+  headerBorder: '1px solid color-mix(in srgb, var(--color-accent) 10%, transparent)',
+  badgeClass: 'bg-accent-soft text-body',
+  Banner: null,
+  Notifications: null,
+  AccountMenu: null,
 };
 
 /**
@@ -40,6 +57,18 @@ const DEFAULTS = {
  *   anonymousName     who made a change nobody signed in made ("Someone")
  *   removeCollaborator(person)  takes someone's access away; defaults to
  *                     DELETE /collaborators/{id}
+ *
+ * For the shell (DashboardShell):
+ *
+ *   shell.logo        { src, alt, to } at the top of the sidebar
+ *   shell.nav         sidebar groups: [{ title?, items: [{ path, icon, label, id }] }]
+ *   shell.quickLinks  header shortcuts: [{ path, icon, label, id }]
+ *   shell.Banner, shell.Notifications, shell.AccountMenu   the project's own
+ *                     components for the strip under the header, the bell,
+ *                     and the account menu (it gets `compactLinks`)
+ *   shell.background, sidebarBackground, sidebarScrollbar, headerBackground,
+ *   headerBorder, badgeClass   CSS for the frame (theme-based by default)
+ *   tutorialSteps     the guided tour (see AdminTutorial)
  */
 export function DashboardProvider({ dashboard, children }) {
   return <DashboardContext.Provider value={dashboard}>{children}</DashboardContext.Provider>;
@@ -47,5 +76,6 @@ export function DashboardProvider({ dashboard, children }) {
 
 /** The dashboard settings, with the defaults filled in. */
 export function useDashboard() {
-  return { ...DEFAULTS, ...useContext(DashboardContext) };
+  const settings = useContext(DashboardContext);
+  return { ...DEFAULTS, ...settings, shell: { ...DEFAULT_SHELL, ...settings?.shell, logo: { ...DEFAULT_SHELL.logo, ...settings?.shell?.logo } } };
 }
