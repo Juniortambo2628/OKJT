@@ -1,0 +1,29 @@
+{
+  "name": "create-okjt-app",
+  "version": "0.1.0",
+  "description": "Start an OKJTech project: a Laravel API on okjt/laravel-kit and a React app on @okjt/site and @okjt/dashboard, with your name, colours, roles and features, ready to deploy",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Juniortambo2628/OKJT.git",
+    "directory": "packages/create-app"
+  },
+  "bin": {
+    "create-okjt-app": "bin/create-okjt-app.mjs"
+  },
+  "files": [
+    "bin",
+    "src",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test test/"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
