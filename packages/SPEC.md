@@ -714,11 +714,22 @@ Phase 4 is three steps, each proven by Naoa's own test suites:
   subject type is the record's class name. Naoa's Console extends it and
   keeps accounts, plans and payments; its audit log is a subclass. Kit: 38
   tests, 214 assertions. Naoa: 367 backend tests pass.
-* Next in 4c: teams and accounts. They need an accounts layer in the kit
-  (a business that owns many workspaces, with staff on all or some of
-  them), which Najenga needs too (its global manager becomes account
-  staff). Then billing as an optional module; the sign-in pages and the
-  account menu after that.
+* Teams and accounts: `HasTeam` (the account model: members, staff,
+  workspaces, `shareWithTeam`), `HasAccounts` (the user model), and
+  `TeamController` (invite staff onto all of an account's workspaces or
+  chosen ones with one role, change their access, take them off the team),
+  with a migration for new projects. Field names come from
+  `okjt.accounts.fields`, so Naoa's API keeps `all_weddings`,
+  `wedding_role` and `wedding_ids`. Naoa's team is a subclass: planner
+  accounts only, its plan's collaborator limit, its invitation email.
+  Najenga's global manager becomes account staff on all workspaces as
+  owner (the `full` preset). Kit: 45 tests, 251 assertions. Naoa: 367
+  backend tests pass.
+* Naoa's branch now uses kit code newer than v0.1.0 (teams), so the kit
+  needs its next release (0.2.0, and Naoa's constraint `^0.2`) before
+  that branch is merged.
+* Next in 4c: billing as an optional module; then the sign-in pages and
+  the account menu.
 
 ## Publishing
 

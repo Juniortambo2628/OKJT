@@ -57,6 +57,29 @@ return [
     ],
 
     /*
+     * Accounts and teams (HasTeam, HasAccounts, TeamController): an account
+     * (a business, a family) owns workspaces. Its people are owners or staff;
+     * staff work on all its workspaces (new ones too) or on chosen ones, with
+     * one role across them. `fields` names those settings, both as columns
+     * of the members table and in the team API.
+     */
+    'accounts' => [
+        'model' => 'App\\Models\\Account',
+        'members_table' => 'account_user',
+        'foreign_key' => 'account_id',
+        'owner_role' => 'owner',
+        'staff_role' => 'staff',
+        // The roles staff can be given in the workspaces.
+        'staff_workspace_roles' => ['editor', 'viewer', 'owner'],
+        'fields' => [
+            'all' => 'all_workspaces',
+            'role' => 'workspace_role',
+            'ids' => 'workspace_ids',
+            'list' => 'workspaces',
+        ],
+    ],
+
+    /*
      * What people are told when they are turned away. ":workspace" is the
      * workspace's name for people ("project").
      */
@@ -71,6 +94,7 @@ return [
         'owners_only' => 'Only owners can do this.',
         'view_only' => 'You have view-only access.',
         'superadmin_only' => 'Only administrators can do this.',
+        'team_owners_only' => 'Only an account’s owners manage its team.',
         'confirm_address' => 'Type the :workspace’s web address exactly to confirm.',
         'sign_in_expired' => 'That sign-in link expired — try again.',
         'account_not_found' => 'Account not found.',

@@ -5,6 +5,7 @@ namespace Okjt\Kit\Tests;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Okjt\Kit\KitServiceProvider;
+use Okjt\Kit\Tests\Fixtures\Account;
 use Okjt\Kit\Tests\Fixtures\Project;
 use Okjt\Kit\Tests\Fixtures\User;
 use Okjt\Kit\Workspace\CurrentWorkspace;
@@ -22,6 +23,7 @@ abstract class TestCase extends Orchestra
         $app['config']->set('database.default', 'testing');
         $app['config']->set('okjt.user_model', User::class);
         $app['config']->set('okjt.workspace.model', Project::class);
+        $app['config']->set('okjt.accounts.model', Account::class);
         // Tests sign in with actingAs() on the default guard; apps use Sanctum.
         $app['config']->set('auth.guards.sanctum', ['driver' => 'session', 'provider' => 'users']);
         $app['config']->set('auth.defaults.guard', 'sanctum');
@@ -45,6 +47,7 @@ abstract class TestCase extends Orchestra
         });
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('account_id')->nullable();
             $table->string('name')->nullable();
             $table->string('slug')->unique();
             $table->string('status')->default('active');

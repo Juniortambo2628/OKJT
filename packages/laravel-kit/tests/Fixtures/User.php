@@ -6,11 +6,12 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Okjt\Kit\Accounts\HasAccounts;
 use Okjt\Kit\Workspace\HasWorkspaceRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasApiTokens, HasWorkspaceRoles, Notifiable;
+    use HasAccounts, HasApiTokens, HasWorkspaceRoles, Notifiable;
 
     protected $guarded = [];
 
