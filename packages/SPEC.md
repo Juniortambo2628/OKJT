@@ -755,7 +755,9 @@ Phase 4 is three steps, each proven by Naoa's own test suites:
 
 ## Publishing
 
-All packages are public. **Released: v0.1.0** (30 October 2026):
+All packages are public. Since v0.1.0 npm publishing uses Trusted
+Publishing and `NPM_TOKEN` is gone. A brand-new package's first version is
+published by hand, then its publisher set. **Released: v0.1.0** (30 October 2026):
 `@okjt/ui`, `@okjt/site` and `@okjt/dashboard` 0.1.0 on npm, and
 `okjt/laravel-kit` v0.1.0 in `Juniortambo2628/okjt-laravel-kit`, listed on
 Packagist (auto-updated from new tags). Naoa's lockfiles use them. To retry the Composer copy for an existing tag, run
@@ -763,7 +765,7 @@ Packagist (auto-updated from new tags). Naoa's lockfiles use them. To retry the 
 
 | Package | Where | How it gets there |
 |---|---|---|
-| `@okjt/*` (npm) | npmjs.com, organisation `okjt` | `packages-release.yml`: a `v*` tag publishes every package whose version changed, with the `NPM_TOKEN` secret |
+| `@okjt/*` (npm) | npmjs.com, organisation `okjt` | `packages-release.yml`: a `v*` tag publishes every package whose version changed, through Trusted Publishing (no token) |
 | `okjt/laravel-kit` (Composer) | Packagist | A GitHub Action splits `packages/laravel-kit` into `Juniortambo2628/okjt-laravel-kit` (Composer needs `composer.json` at a repository's root) and tags it; Packagist picks the tag up |
 
 Versions follow semver. A change that makes a project edit its config is a

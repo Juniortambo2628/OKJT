@@ -5,10 +5,10 @@ name: Packages release
 #   2. copy packages/laravel-kit to its own repository and tag it there, which
 #      is where Composer installs okjt/laravel-kit from.
 #
-# npm: the first release of each package needs the NPM_TOKEN secret (a
-# granular token that can publish to the okjt organisation). Once each
-# package exists, set this workflow as its Trusted Publisher on npmjs.com and
-# remove the secret: npm then needs no token at all.
+# npm: trusted publishing. Each package names this workflow as its Trusted
+# Publisher on npmjs.com, so no token is needed. A brand-new package can't
+# have a trusted publisher until it exists: publish its first version by hand
+# (npm publish --access public, with two-factor), then set the publisher.
 #
 # Composer: needs the empty repository Juniortambo2628/okjt-laravel-kit and the
 # SPLIT_TOKEN secret (a fine-grained GitHub token with Contents: read and
@@ -46,12 +46,15 @@ jobs:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
 
+      # Trusted publishing needs npm 11.5.1 or later, whichever Node 24 this is.
+      - run: npm install -g npm@^11.5.1
+
       - run: npm ci
       - run: npm test
 
+      # Trusted publishing: npm signs in through this workflow's identity
+      # (the publisher set on each package at npmjs.com), with no token.
       - name: Publish new versions
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           for dir in $(node -p "require('./package.json').workspaces.join(' ')"); do
             name=$(node -p "require('./$dir/package.json').name")
