@@ -83,6 +83,7 @@ Route::middleware(['auth:sanctum', EnsureSuperadmin::class])->prefix('console')-
 | `SocialAuthController` | Google sign-in (`laravel/socialite`): the app gets a one-time code, never a token, in its URL. A first sign-in creates a verified owner and calls `joined()`. |
 | `PasskeyController` | Passkeys (`laravel/passkeys`) on bearer tokens; routes go in `routes/web.php`, since the challenges ride the session. |
 | `NotificationController`, `NotifiesWorkspace` | A workspace's notifications for its people: list, mark read; `notifyAdmin()` to send one. |
+| `BackupService`, `BackupController`, `backups:create`, `backups:verify` | Whole-database backups as JSON in a zip (any driver, no database tools needed); restore after a safety backup; verify by restoring into a throwaway database; off-site copies to a disk or by email; `snapshot()` before risky bulk changes. Settings in `okjt.backups`; extend the service for upload folders or a step after restoring. Needs `ext-zip`. |
 | `ApiResponse` | The `{ success, message, data }` envelope the dashboard kit reads. |
 
 When a user is deleted, set their `revisions.user_id` to null and delete

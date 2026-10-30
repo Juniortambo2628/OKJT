@@ -112,6 +112,31 @@ return [
     ],
 
     /*
+     * Backups (BackupService, BackupController, backups:create and
+     * backups:verify), kept in storage/app/backups. auto switches the safety
+     * copies taken before risky bulk changes (snapshot()). Scheduled backups
+     * can be copied off-site (backups:create --offsite) to a filesystem disk
+     * and/or by email (mail is the Mailable sent). A project extending
+     * BackupService names its class in service.
+     */
+    'backups' => [
+        'service' => Okjt\Kit\Backups\BackupService::class,
+        'auto' => env('AUTO_BACKUPS', true),
+        'mail' => Okjt\Kit\Backups\BackupCreated::class,
+        'offsite' => [
+            'disk' => env('BACKUP_OFFSITE_DISK') ?: null,
+            'path' => env('BACKUP_OFFSITE_PATH', 'backups'),
+            'email' => env('BACKUP_OFFSITE_EMAIL') ?: null,
+            'email_max_mb' => (float) env('BACKUP_OFFSITE_EMAIL_MAX_MB', 15),
+        ],
+        // Runtime state rather than anyone's data.
+        'skipped_tables' => [
+            'migrations', 'personal_access_tokens', 'sessions', 'cache', 'cache_locks',
+            'jobs', 'job_batches', 'failed_jobs', 'password_reset_tokens',
+        ],
+    ],
+
+    /*
      * Version history (RecordsRevisions): rapid edits by one person to one
      * record merge into one version; versions older than keep_days are pruned
      * by model:prune.

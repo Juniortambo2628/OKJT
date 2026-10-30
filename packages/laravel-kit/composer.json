@@ -20,7 +20,8 @@
     },
     "suggest": {
         "laravel/socialite": "Signing in with Google (SocialAuthController)",
-        "laravel/passkeys": "Passkeys (PasskeyController)"
+        "laravel/passkeys": "Passkeys (PasskeyController)",
+        "ext-zip": "Backups (BackupService)"
     },
     "autoload": {
         "psr-4": { "Okjt\\Kit\\": "src/" }

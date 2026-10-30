@@ -701,9 +701,16 @@ Phase 4 is three steps, each proven by Naoa's own test suites:
   client (`loginWithPasskey`, `registerPasskey`, `passkeysSupported`) in
   `@okjt/dashboard`. Kit: 77 dashboard tests. Naoa: 181 tests, lint and
   build pass; comparison over 41 routes at both widths: no differences.
-* Next in 4c: teams and accounts, the Console (with its audit log),
-  backups, then billing as an optional module; the sign-in pages and the
-  account menu after that.
+* Backups: `BackupService` (every table to JSON in a zip, so it works on
+  shared hosting without database tools; restore after a safety backup;
+  verify into a throwaway database; off-site copies to a disk or by email),
+  `BackupController`, and the `backups:create` / `backups:verify` commands.
+  Naoa's `BackupService` is a subclass with its upload folders, its
+  off-site settings and the step that brings old backups up to today's
+  guest lists. Kit: 34 tests, 185 assertions. Naoa: 367 backend tests pass.
+* Next in 4c: teams and accounts, the Console (with its audit log), then
+  billing as an optional module; the sign-in pages and the account menu
+  after that.
 
 ## Publishing
 
