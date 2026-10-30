@@ -738,7 +738,20 @@ Phase 4 is three steps, each proven by Naoa's own test suites:
   config file (`settings_from`). Naoa's plans stay in `config/naoa.php`;
   its limits add weddings and guests, and its billing page shows them.
   Kit: 51 tests, 287 assertions. Naoa: 367 backend tests pass.
-* Next in 4c: the sign-in pages and the account menu.
+* The sign-in pages and the account menu: `AuthLayout` and its fields,
+  `SignInPage`, `GoogleCallbackPage`, `VerifyEmailPage`,
+  `AcceptInvitePage` and `AccountMenu` in `@okjt/dashboard`. Naoa's pages
+  are wrappers: its logo and showcase, where to go after signing in, the
+  "no access" page, and its menu entries (weddings, team, billing,
+  console). Kit: 87 dashboard tests. Naoa: 181 tests, lint and build pass.
+  The comparison now also covers the invitation page, the Google return,
+  email verification, the sign-in steps (two-step code, verify email, an
+  error) and the open account menu: no differences, except one fix. The
+  two-step code field now gets focus when that step appears, as its
+  `autoFocus` always meant (Naoa's version reused the email field's
+  element, so it never did).
+* Phase 4c is done. Naoa's branch needs the next release (`@okjt/dashboard`
+  and `okjt/laravel-kit` 0.2.0) before it is merged.
 
 ## Publishing
 

@@ -135,11 +135,16 @@ and wrap the dashboard in `<CollaborationProvider>` (inside the router). Then
 | `GoogleButton` | Sends the browser to the kit's Google route |
 | `loginWithPasskey`, `registerPasskey`, `passkeysSupported` | Passkeys against the kit's `PasskeyController`; `{ base }` if the routes aren't under `/api` |
 | `NotificationsBell` | The header's notifications |
+| `AuthLayout`, `AuthField`, `AuthSubmit`, `AuthError` | The sign-in pages' frame (`brand`, `backLabel`, and a desktop panel `aside`) and its fields |
+| `SignInPage` | Email and password, a passkey, `google`; then verifying the email or a two-step code. `onSignedIn(result)` decides where to go (return a message to show instead) |
+| `GoogleCallbackPage`, `VerifyEmailPage`, `AcceptInvitePage` | Where Google sign-in, the verification email and invitation links land |
+| `AccountMenu` | The header's avatar menu: who you are, the project's own entries (`extra`), account pages (`links`), log out |
+
+Each page takes `layout`: the project's own `AuthLayout` with its logo and panel.
+`SignInPage` needs `react-hook-form`.
 
 ## The shell
 
 `DashboardShell` (with `DashboardSidebar` and `DashboardHeader`) is the frame
 around every page, set up through `shell` in the dashboard settings.
 
-Still in the projects for now, moving next: the Console, teams, backups,
-then the sign-in pages and the account menu.

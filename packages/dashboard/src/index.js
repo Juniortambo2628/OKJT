@@ -49,3 +49,11 @@ export { AuthProvider, useAuth, default as AuthContext } from './AuthContext.js'
 export { default as GoogleButton } from './GoogleButton.js';
 export { default as NotificationsBell } from './NotificationsBell.js';
 export { loginWithPasskey, registerPasskey, passkeysSupported } from './passkeys.js';
+
+// Sign-in pages and the account menu
+export { default as AuthLayout, AuthField, AuthSubmit, AuthError } from './AuthLayout.js';
+export { default as SignInPage } from './SignInPage.js';
+export { default as GoogleCallbackPage } from './GoogleCallbackPage.js';
+export { default as VerifyEmailPage } from './VerifyEmailPage.js';
+export { default as AcceptInvitePage } from './AcceptInvitePage.js';
+export { default as AccountMenu } from './AccountMenu.js';

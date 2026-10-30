@@ -174,6 +174,12 @@ export function AuthProvider({ api, extend, children }) {
     setIsAuthenticated(true);
   };
 
+  /** Sign in with a server answer ({ token, user, …extra }); returns { success, …extra } like login(). */
+  const signedIn = ({ token, user: authUser, ...extra }) => {
+    loginWithToken(token, authUser, extra);
+    return { success: true, ...extra };
+  };
+
   const logout = async () => {
     try {
       await api.post('/logout');
@@ -199,6 +205,7 @@ export function AuthProvider({ api, extend, children }) {
     register,
     verify2fa,
     loginWithToken,
+    signedIn,
     loginWithGoogle,
     resendVerification,
     verifyEmail,
