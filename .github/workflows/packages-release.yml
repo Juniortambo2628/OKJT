@@ -5,10 +5,13 @@ name: Packages release
 #   2. copy packages/laravel-kit to its own repository and tag it there, which
 #      is where Composer installs okjt/laravel-kit from.
 #
-# npm: trusted publishing. Each package names this workflow as its Trusted
-# Publisher on npmjs.com, so no token is needed. A brand-new package can't
-# have a trusted publisher until it exists: publish its first version by hand
-# (npm publish --access public, with two-factor), then set the publisher.
+# npm: trusted publishing with staged releases. Each package names this
+# workflow as its Trusted Publisher on npmjs.com (permission: npm stage
+# publish), so no token is needed. The workflow stages each new version; a
+# maintainer approves it on npmjs.com (Staged Packages, with two-factor) to
+# publish it. A version already staged but not approved can't be staged
+# again: approve or reject it first. A brand-new package can't have a trusted
+# publisher until it exists: publish its first version by hand, then set it.
 #
 # Composer: needs the empty repository Juniortambo2628/okjt-laravel-kit and the
 # SPLIT_TOKEN secret (a fine-grained GitHub token with Contents: read and
@@ -55,8 +58,10 @@ jobs:
       - run: npm test
 
       # Trusted publishing: npm signs in through this workflow's identity
-      # (the publisher set on each package at npmjs.com), with no token.
-      - name: Publish new versions
+      # (the publisher set on each package at npmjs.com), with no token, and
+      # stages the new version. A maintainer then approves it with two-factor
+      # on npmjs.com (Staged Packages), which publishes it.
+      - name: Stage new versions
         run: |
           for dir in $(node -p "require('./package.json').workspaces.join(' ')"); do
             name=$(node -p "require('./$dir/package.json').name")
@@ -64,8 +69,10 @@ jobs:
             if npm view "$name@$version" version >/dev/null 2>&1; then
               echo "$name@$version is already published"
             else
+              # npm stage doesn't understand workspaces, so it runs in the package's folder.
               # --loglevel verbose: npm's trusted-publishing (oidc) lines say why a sign-in failed.
-              npm publish --workspace "$dir" --provenance --access public --loglevel verbose
+              (cd "$dir" && npm stage publish --provenance --access public --loglevel verbose)
+              echo "::notice::$name@$version is staged: approve it on npmjs.com (Staged Packages) to publish it."
             fi
           done
 
