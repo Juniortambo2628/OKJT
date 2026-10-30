@@ -43,3 +43,8 @@ export { default as ShareModal } from './ShareModal.js';
 export { default as DashboardShell } from './DashboardShell.js';
 export { default as DashboardSidebar } from './DashboardSidebar.js';
 export { default as DashboardHeader } from './DashboardHeader.js';
+
+// Signing in
+export { AuthProvider, useAuth, default as AuthContext } from './AuthContext.js';
+export { default as GoogleButton } from './GoogleButton.js';
+export { default as NotificationsBell } from './NotificationsBell.js';
