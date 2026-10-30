@@ -1,5 +1,22 @@
 # Upgrading
 
+## 0.2.0 → 0.2.1
+
+`@okjt/dashboard` 0.2.1. The page title, its icon box, summary-card and
+toolbar shadows and the bell's dot follow the theme (they had Naoa's colours
+written in; the values are the same for Naoa). The sign-in fields' three
+copper tones follow the theme too, unless the app sets them in its CSS:
+
+```css
+:root {
+  --okjt-auth-glow: #D08A5E;        /* where the sign-in button's gradient ends */
+  --okjt-auth-focus: #C49274;       /* a focused field's border and ring */
+  --okjt-auth-placeholder: #B8A898; /* placeholders */
+}
+```
+
+`AdminTutorial` with no steps no longer breaks the page.
+
 ## 0.1 → 0.2
 
 `@okjt/dashboard` 0.2.0 and `okjt/laravel-kit` v0.2.0. Nothing is removed or

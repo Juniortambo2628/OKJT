@@ -757,6 +757,52 @@ Phase 4 is three steps, each proven by Naoa's own test suites:
   npmjs.com (Staged Packages). The trusted publisher on each package
   allows `npm stage publish` only.
 
+## Phase 5: `create-okjt-app`
+
+`npm create okjt-app@latest <folder>` asks for a name, domain, one line about
+the product, a brand colour and a text colour, what people work on together
+("project"), the role preset and the features; or takes them as flags.
+
+* **The app** (`frontend/`): React 19, Vite, Tailwind 4 on `@okjt/site` and
+  `@okjt/dashboard`. The 17 theme colours are mixed from the two chosen; a
+  home page, sign-in and sign-up, the emailed-link pages, the list of
+  workspaces, and the dashboard with an overview, a starter Notes module (to
+  copy), sharing, presence, version history, the bell, the account menu and
+  a tour.
+* **The API** (`backend/`): `laravel/laravel` 12 with `okjt/laravel-kit` and
+  the chosen features' packages. `config/okjt.php` merges the project's
+  settings over the kit's file, so later kit versions bring their new keys
+  without the project copying them. Models, routes, migrations (users'
+  extra columns, the workspace table, notes, notifications), the
+  verification email, a seeded first user, and tests of the whole flow.
+* **Deploying:** `.github/workflows/deploy.yml` tests both, then deploys
+  through deploy-kit (`app_dir: backend`, `spa_dir: frontend`); the README
+  lists the one-time steps.
+
+### Phase 5: result
+
+* The installer's own tests: 8. A full install with the `full` preset and
+  every feature: Laravel, the kit and the feature packages installed,
+  migrations and seed ran, the generated tests passed (5), the app built.
+  Run as deployed (the built app in Laravel's `public/`) and walked through
+  in a browser: sign in as the seeded admin, create a project, the tour,
+  add and edit a note (two versions in its history), the account menu, the
+  home page on a phone; no errors.
+* The run found five problems, all fixed: Laravel's verification email
+  pointed at a route the API doesn't have (the template sends the app's
+  link, as Naoa does); no notifications table (the template adds one); a
+  new project's dashboard didn't find it yet (it's added to the list
+  first); the tour broke a dashboard without steps (fixed in
+  `@okjt/dashboard` 0.2.1, and the template has a tour); and Naoa's colours
+  showed through the kit (theme tokens in 0.2.1; Naoa sets its copper in
+  CSS, style comparison: no differences).
+* **Done when** "a new test site is deployed to the VPS in under 30
+  minutes": the deploy needs the VPS and GitHub secrets, so it is yours to
+  run; the README of every generated project lists the steps.
+* Follow-ups for the kit: ship the notifications migration and the
+  verification email (each generated project carries a copy now), and the
+  dashboard's base CSS (`fit:` and the `.admin-theme` styles).
+
 ## Publishing
 
 All packages are public. Since v0.1.0 npm publishing uses Trusted

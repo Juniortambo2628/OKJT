@@ -4,7 +4,8 @@
   "workspaces": [
     "ui",
     "site",
-    "dashboard"
+    "dashboard",
+    "create-app"
   ],
   "scripts": {
     "test": "npm test --workspaces --if-present",
