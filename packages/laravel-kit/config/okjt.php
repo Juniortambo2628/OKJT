@@ -71,6 +71,8 @@ return [
         'owners_only' => 'Only owners can do this.',
         'view_only' => 'You have view-only access.',
         'superadmin_only' => 'Only administrators can do this.',
+        'sign_in_expired' => 'That sign-in link expired — try again.',
+        'account_not_found' => 'Account not found.',
     ],
 
     /*
@@ -90,11 +92,19 @@ return [
 
     /*
      * Signing in (AuthController, EmailVerificationController): the name of
-     * the Sanctum tokens issued, and what a new sign-up is told.
+     * the Sanctum tokens issued, and what a new sign-up is told. Signing in
+     * with Google (SocialAuthController) sends the browser back to
+     * {app.frontend_url}{social.return_path} with a code that lasts
+     * social.code_minutes; new_user_name is for accounts without a name.
      */
     'auth' => [
         'token_name' => 'dashboard',
         'welcome' => 'Welcome — check your inbox to verify your email.',
+        'new_user_name' => 'New user',
+        'social' => [
+            'return_path' => '/auth/google',
+            'code_minutes' => 5,
+        ],
     ],
 
     'notifications' => [

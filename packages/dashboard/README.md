@@ -127,5 +127,19 @@ and wrap the dashboard in `<CollaborationProvider>` (inside the router). Then
 `ShareModal`, `VersionHistoryDrawer`, `ActivityPanel` and
 `CollaboratorAvatars` work as in Naoa.
 
-Still in the projects for now, moving next: the shell (header, sidebar,
-account menu), then sign-in pages and the Console.
+## Signing in
+
+| Export | What it is |
+|---|---|
+| `AuthProvider`, `useAuth` | Who is signed in: `api`, plus `extend` for what the project adds |
+| `GoogleButton` | Sends the browser to the kit's Google route |
+| `loginWithPasskey`, `registerPasskey`, `passkeysSupported` | Passkeys against the kit's `PasskeyController`; `{ base }` if the routes aren't under `/api` |
+| `NotificationsBell` | The header's notifications |
+
+## The shell
+
+`DashboardShell` (with `DashboardSidebar` and `DashboardHeader`) is the frame
+around every page, set up through `shell` in the dashboard settings.
+
+Still in the projects for now, moving next: the Console, teams, backups,
+then the sign-in pages and the account menu.

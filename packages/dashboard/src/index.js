@@ -48,3 +48,4 @@ export { default as DashboardHeader } from './DashboardHeader.js';
 export { AuthProvider, useAuth, default as AuthContext } from './AuthContext.js';
 export { default as GoogleButton } from './GoogleButton.js';
 export { default as NotificationsBell } from './NotificationsBell.js';
+export { loginWithPasskey, registerPasskey, passkeysSupported } from './passkeys.js';

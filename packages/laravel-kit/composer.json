@@ -15,7 +15,12 @@
         "orchestra/testbench": "^10.0",
         "phpunit/phpunit": "^11.5",
         "laravel/sanctum": "^4.0",
-        "bacon/bacon-qr-code": "^3.0"
+        "bacon/bacon-qr-code": "^3.0",
+        "laravel/socialite": "^5.0"
+    },
+    "suggest": {
+        "laravel/socialite": "Signing in with Google (SocialAuthController)",
+        "laravel/passkeys": "Passkeys (PasskeyController)"
     },
     "autoload": {
         "psr-4": { "Okjt\\Kit\\": "src/" }

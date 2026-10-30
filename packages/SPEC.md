@@ -677,7 +677,33 @@ Phase 4 is three steps, each proven by Naoa's own test suites:
 * The comparison flagged the home page once: its hero photo was caught
   mid cross-fade on a slow run (two pictures for a moment). A rerun matched.
   Untouched by this step; noted because a slow machine can do it again.
-* Next in 4b: the shell (header, sidebar, account menu, `AdminShell`).
+* The shell followed: `DashboardShell`, `DashboardSidebar` and
+  `DashboardHeader` in `@okjt/dashboard`, set up through the `shell` part of
+  the dashboard settings (logo, navigation, quick links, backgrounds, the
+  banner, notifications and account menu slots). Naoa's `dashboard.config.js`
+  holds its exact colours and navigation; the account menu stays in Naoa
+  for now. Comparison: no differences.
+
+### Phase 4c: result so far
+
+* Server, in the kit, each with the parts that are the project's as methods
+  it overrides: `AuthController` (sign in, two-step code, sign up, sign out,
+  who you are), `TwoFactorController`, `EmailVerificationController`,
+  `NotificationController` and the `NotifiesWorkspace` trait,
+  `SocialAuthController` (Google, needs `laravel/socialite`; a first sign-in
+  calls `joined()` so the project can create an account) and
+  `PasskeyController` (needs `laravel/passkeys`). What every way of signing
+  in hands back is one method, `signedIn()` (`SignsPeopleIn`); Naoa adds its
+  weddings once, in a trait its controllers share. Kit: 27 tests, 157
+  assertions. Naoa: 367 backend tests pass unchanged.
+* Client: sign-in state (`AuthProvider`/`useAuth`, with `extend` for what a
+  project adds), the notifications bell, the Google button and the passkey
+  client (`loginWithPasskey`, `registerPasskey`, `passkeysSupported`) in
+  `@okjt/dashboard`. Kit: 77 dashboard tests. Naoa: 181 tests, lint and
+  build pass; comparison over 41 routes at both widths: no differences.
+* Next in 4c: teams and accounts, the Console (with its audit log),
+  backups, then billing as an optional module; the sign-in pages and the
+  account menu after that.
 
 ## Publishing
 

@@ -79,6 +79,10 @@ Route::middleware(['auth:sanctum', EnsureSuperadmin::class])->prefix('console')-
 | `EnsureSuperadmin` | `users.is_superadmin` only: platform tools such as a console or backups. |
 | `HasWorkspaceRoles` | A person's role per workspace from the members table, cached per request. |
 | `RecordsRevisions`, `Revision`, `RevisionController` | Every create/update/delete/restore recorded with before/after; one person's edits to one record within 10 minutes merge; versions kept 180 days (`model:prune`); restore one version or everything saved together. Paused while migrations run. |
+| `AuthController`, `TwoFactorController`, `EmailVerificationController` | Sign in with a password (then a code, if two-step verification is on), sign up, sign out, who you are; turning two-step verification on and off; verifying an email address. What signing in hands back is `signedIn()` (`SignsPeopleIn`), one method a project overrides once. |
+| `SocialAuthController` | Google sign-in (`laravel/socialite`): the app gets a one-time code, never a token, in its URL. A first sign-in creates a verified owner and calls `joined()`. |
+| `PasskeyController` | Passkeys (`laravel/passkeys`) on bearer tokens; routes go in `routes/web.php`, since the challenges ride the session. |
+| `NotificationController`, `NotifiesWorkspace` | A workspace's notifications for its people: list, mark read; `notifyAdmin()` to send one. |
 | `ApiResponse` | The `{ success, message, data }` envelope the dashboard kit reads. |
 
 When a user is deleted, set their `revisions.user_id` to null and delete
