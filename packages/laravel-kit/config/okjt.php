@@ -89,6 +89,19 @@ return [
     ],
 
     /*
+     * Signing in (AuthController, EmailVerificationController): the name of
+     * the Sanctum tokens issued, and what a new sign-up is told.
+     */
+    'auth' => [
+        'token_name' => 'dashboard',
+        'welcome' => 'Welcome — check your inbox to verify your email.',
+    ],
+
+    'notifications' => [
+        'model' => Okjt\Kit\Notifications\Notification::class,
+    ],
+
+    /*
      * Version history (RecordsRevisions): rapid edits by one person to one
      * record merge into one version; versions older than keep_days are pruned
      * by model:prune.
