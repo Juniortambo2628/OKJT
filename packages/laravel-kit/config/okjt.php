@@ -71,6 +71,7 @@ return [
         'owners_only' => 'Only owners can do this.',
         'view_only' => 'You have view-only access.',
         'superadmin_only' => 'Only administrators can do this.',
+        'confirm_address' => 'Type the :workspace’s web address exactly to confirm.',
         'sign_in_expired' => 'That sign-in link expired — try again.',
         'account_not_found' => 'Account not found.',
     ],
@@ -109,6 +110,16 @@ return [
 
     'notifications' => [
         'model' => Okjt\Kit\Notifications\Notification::class,
+    ],
+
+    /*
+     * The console (ConsoleController), for platform staff: the statuses a
+     * workspace can be given, and the model of the audit log of what staff
+     * did there (Okjt\Kit\Console\AuditLog or a subclass).
+     */
+    'console' => [
+        'statuses' => ['active', 'suspended', 'archived'],
+        'audit_model' => Okjt\Kit\Console\AuditLog::class,
     ],
 
     /*

@@ -84,6 +84,7 @@ Route::middleware(['auth:sanctum', EnsureSuperadmin::class])->prefix('console')-
 | `PasskeyController` | Passkeys (`laravel/passkeys`) on bearer tokens; routes go in `routes/web.php`, since the challenges ride the session. |
 | `NotificationController`, `NotifiesWorkspace` | A workspace's notifications for its people: list, mark read; `notifyAdmin()` to send one. |
 | `BackupService`, `BackupController`, `backups:create`, `backups:verify` | Whole-database backups as JSON in a zip (any driver, no database tools needed); restore after a safety backup; verify by restoring into a throwaway database; off-site copies to a disk or by email; `snapshot()` before risky bulk changes. Settings in `okjt.backups`; extend the service for upload folders or a step after restoring. Needs `ext-zip`. |
+| `ConsoleController`, `AuditLog` | The platform console for its staff: every workspace (details and counts, never content), status changes with a reason, deleting after typing the address, and the audit log of all of it. Projects add their own pages beside these. |
 | `ApiResponse` | The `{ success, message, data }` envelope the dashboard kit reads. |
 
 When a user is deleted, set their `revisions.user_id` to null and delete

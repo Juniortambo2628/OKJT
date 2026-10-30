@@ -45,6 +45,7 @@ abstract class TestCase extends Orchestra
         });
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
+            $table->string('name')->nullable();
             $table->string('slug')->unique();
             $table->string('status')->default('active');
             $table->boolean('published')->default(true);

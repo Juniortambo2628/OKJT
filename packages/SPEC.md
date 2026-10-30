@@ -708,9 +708,17 @@ Phase 4 is three steps, each proven by Naoa's own test suites:
   Naoa's `BackupService` is a subclass with its upload folders, its
   off-site settings and the step that brings old backups up to today's
   guest lists. Kit: 34 tests, 185 assertions. Naoa: 367 backend tests pass.
-* Next in 4c: teams and accounts, the Console (with its audit log), then
-  billing as an optional module; the sign-in pages and the account menu
-  after that.
+* The Console: `ConsoleController` (every workspace, found by name or
+  address; suspend, reactivate or archive with a reason; delete for good
+  after typing its address; the audit log) and the `AuditLog` model, whose
+  subject type is the record's class name. Naoa's Console extends it and
+  keeps accounts, plans and payments; its audit log is a subclass. Kit: 38
+  tests, 214 assertions. Naoa: 367 backend tests pass.
+* Next in 4c: teams and accounts. They need an accounts layer in the kit
+  (a business that owns many workspaces, with staff on all or some of
+  them), which Najenga needs too (its global manager becomes account
+  staff). Then billing as an optional module; the sign-in pages and the
+  account menu after that.
 
 ## Publishing
 
