@@ -7,13 +7,15 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Okjt\Kit\Auth\SignsPeopleIn;
+use Okjt\Kit\Auth\VerificationLink;
 use Okjt\Kit\Support\ApiResponse;
 
 /**
- * Proving an email address. The emailed link lands on the app, which posts
- * the id and hash from the URL here; the hash of the address is the proof.
+ * Proving an email address. The emailed link (VerifyEmail, VerificationLink)
+ * lands on the app, which posts its parts here; the signature, made with the
+ * app key, is the proof, and the link expires.
  *
- *   POST /email/verify   { id, hash }   → signs them in
+ *   POST /email/verify   { id, hash, expires, signature }   → signs them in
  *   POST /email/resend   { email }      (or signed in)
  */
 class EmailVerificationController extends Controller
@@ -25,10 +27,16 @@ class EmailVerificationController extends Controller
         $validated = $request->validate([
             'id' => 'required|integer',
             'hash' => 'required|string',
+            'expires' => 'nullable|integer',
+            'signature' => 'nullable|string',
         ]);
 
         $user = config('okjt.user_model')::find($validated['id']);
-        if (! $user || sha1($user->getEmailForVerification()) !== $validated['hash']) {
+        $problem = $user ? VerificationLink::problem($user, $validated['hash'], $validated['expires'] ?? null, $validated['signature'] ?? null) : 'invalid';
+        if ($problem === 'expired') {
+            return response()->json(['success' => false, 'message' => 'This verification link has expired — sign in and we\'ll send a new one.', 'reason' => 'expired'], 403);
+        }
+        if ($problem) {
             return $this->errorResponse('This verification link is invalid.', 403);
         }
 

@@ -1,5 +1,31 @@
 # Upgrading
 
+## 0.2.1 → 0.2.2
+
+`okjt/laravel-kit` v0.2.2, `@okjt/dashboard` 0.2.2, `create-okjt-app` 0.1.1.
+
+**Email verification links are signed.** The link used to prove an address
+with the hash of the address alone, which anyone who knew a user's id and
+email could compute. It now also carries an expiry and a signature made with
+the app key (`Okjt\Kit\Auth\VerificationLink`), and
+`EmailVerificationController` refuses a link without a valid one (403; an
+expired link answers `reason: expired`). Links last
+`okjt.auth.verify_minutes` (a day).
+
+* Send the kit's email from the user model (or extend it):
+  ```php
+  public function sendEmailVerificationNotification(): void
+  {
+      $this->notify(new \Okjt\Kit\Auth\VerifyEmail);
+  }
+  ```
+* `@okjt/dashboard`'s `VerifyEmailPage` sends the new parts; update both
+  packages together.
+* Links emailed before the upgrade stop working: the person signs in and asks
+  for a new one.
+* Tests that posted `{ id, hash: sha1(email) }` need a real link's parts
+  (`VerificationLink::for($user)`).
+
 ## 0.2.0 → 0.2.1
 
 `@okjt/dashboard` 0.2.1. The page title, its icon box, summary-card and

@@ -113,7 +113,8 @@ class BillingTest extends TestCase
 
         $this->account->refresh();
         $this->assertSame('pro', $this->account->plan);
-        $this->assertTrue($this->account->plan_expires_at->between(now()->addMonth()->subMinute(), now()->addMonth()->addMinute()));
+        // A month on, without overflowing (31 October → 30 November, not 1 December).
+        $this->assertTrue($this->account->plan_expires_at->between(now()->addMonthNoOverflow()->subMinute(), now()->addMonthNoOverflow()->addMinute()));
         $this->getJson('/api/billing')->assertOk()
             ->assertJsonPath('data.plan.id', 'pro')
             ->assertJsonPath('data.receipts.0.amount', 1500)

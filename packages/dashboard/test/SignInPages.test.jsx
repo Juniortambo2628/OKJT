@@ -2,7 +2,8 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Settings } from 'lucide-react'
-import { AuthProvider, SignInPage, GoogleCallbackPage, AcceptInvitePage, AccountMenu, AuthLayout } from '../dist/index.js'
+import { Routes, Route } from 'react-router-dom'
+import { AuthProvider, SignInPage, GoogleCallbackPage, AcceptInvitePage, AccountMenu, AuthLayout, VerifyEmailPage } from '../dist/index.js'
 
 const renderWith = (api, ui, path = '/') => render(
   <QueryClientProvider client={new QueryClient()}>
@@ -109,6 +110,24 @@ describe('AcceptInvitePage', () => {
   it('says when the link is incomplete', () => {
     renderWith({ get: vi.fn(), post: vi.fn() }, <AcceptInvitePage accept={vi.fn()} />, '/accept-invite')
     expect(screen.getByRole('alert')).toHaveTextContent('This invitation link is incomplete.')
+  })
+})
+
+describe('VerifyEmailPage', () => {
+  it('sends the emailed link\'s id, hash, expiry and signature, and signs the person in', async () => {
+    const api = { get: vi.fn(), post: vi.fn(async () => ({ data: { token: 'T', user: { id: 4 }, email_verified: true } })) }
+    renderWith(api, <Routes><Route path="/verify-email/:id/:hash" element={<VerifyEmailPage />} /></Routes>, '/verify-email/4/abc123?expires=1793519285&signature=f00d')
+
+    expect(await screen.findByText('Email verified')).toBeInTheDocument()
+    expect(api.post).toHaveBeenCalledWith('/email/verify', { id: '4', hash: 'abc123', expires: '1793519285', signature: 'f00d' })
+    expect(localStorage.getItem('auth_token')).toBe('T')
+  })
+
+  it('shows the server\'s refusal', async () => {
+    const api = { get: vi.fn(), post: vi.fn(async () => { throw Object.assign(new Error('no'), { response: { data: { message: 'This verification link has expired — sign in and we\'ll send a new one.', reason: 'expired' } } }) }) }
+    renderWith(api, <Routes><Route path="/verify-email/:id/:hash" element={<VerifyEmailPage />} /></Routes>, '/verify-email/4/abc123?expires=1&signature=f00d')
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('has expired')
   })
 })
 

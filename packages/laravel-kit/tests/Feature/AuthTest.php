@@ -5,6 +5,8 @@ namespace Okjt\Kit\Tests\Feature;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Notification as Notifications;
+use Okjt\Kit\Auth\VerificationLink;
+use Okjt\Kit\Auth\VerifyEmail as KitVerifyEmail;
 use Okjt\Kit\Http\Controllers\AuthController;
 use Okjt\Kit\Http\Controllers\EmailVerificationController;
 use Okjt\Kit\Http\Controllers\NotificationController;
@@ -128,17 +130,66 @@ class AuthTest extends TestCase
         Notifications::assertSentTo($user, VerifyEmail::class);
     }
 
+    /** The link's parts, as the app's /verify-email page posts them. */
+    private function linkParts(User $user): array
+    {
+        $url = VerificationLink::for($user);
+        preg_match('#/verify-email/(\d+)/([0-9a-f]+)\?(.*)$#', $url, $m);
+        parse_str($m[3], $query);
+
+        return ['id' => (int) $m[1], 'hash' => $m[2]] + $query;
+    }
+
     public function test_the_emailed_link_verifies_and_signs_in(): void
     {
         $user = $this->person('dee@example.com');
-        $this->postJson('/api/email/verify', ['id' => $user->id, 'hash' => 'nope'])->assertForbidden();
-        $this->postJson('/api/email/verify', ['id' => $user->id, 'hash' => sha1('dee@example.com')])
+        $parts = $this->linkParts($user);
+        $this->assertStringStartsWith(rtrim(config('app.frontend_url'), '/').'/verify-email/'.$user->id.'/'.sha1('dee@example.com').'?expires=', VerificationLink::for($user));
+
+        $this->postJson('/api/email/verify', $parts)
             ->assertOk()->assertJson(['message' => 'Email verified — welcome!', 'data' => ['email_verified' => true]])
             ->assertJsonStructure(['data' => ['token', 'user']]);
-        $this->postJson('/api/email/verify', ['id' => $user->id, 'hash' => sha1('dee@example.com')])->assertJson(['message' => 'Email already verified.', 'data' => ['token' => null]]);
+        $this->postJson('/api/email/verify', $parts)->assertJson(['message' => 'Email already verified.', 'data' => ['token' => null]]);
 
         $this->postJson('/api/email/resend', ['email' => 'nobody@example.com'])->assertOk()
             ->assertJson(['message' => 'If that address needs verifying, a new email is on its way.']);
+    }
+
+    public function test_a_link_without_the_servers_signature_is_refused(): void
+    {
+        $user = $this->person('eve@example.com');
+        $parts = $this->linkParts($user);
+
+        // The old proof alone: anyone who knows the id and address could make it.
+        $this->postJson('/api/email/verify', ['id' => $user->id, 'hash' => sha1('eve@example.com')])
+            ->assertForbidden()->assertJson(['message' => 'This verification link is invalid.']);
+        $this->postJson('/api/email/verify', ['signature' => str_repeat('0', 64)] + $parts)->assertForbidden();
+        // Moving the expiry, or the link to someone else, breaks the signature.
+        $this->postJson('/api/email/verify', ['expires' => $parts['expires'] + 3600] + $parts)->assertForbidden();
+        $other = $this->person('fay@example.com');
+        $this->postJson('/api/email/verify', ['id' => $other->id] + $parts)->assertForbidden();
+        $this->postJson('/api/email/verify', ['id' => 999] + $parts)->assertForbidden();
+
+        $this->assertNull($user->fresh()->email_verified_at);
+        $this->assertNull($other->fresh()->email_verified_at);
+    }
+
+    public function test_an_expired_link_says_so(): void
+    {
+        $user = $this->person('gus@example.com');
+        $parts = $this->linkParts($user);
+
+        $this->travel(25)->hours();
+        $this->postJson('/api/email/verify', $parts)->assertForbidden()->assertJson(['reason' => 'expired']);
+        $this->assertNull($user->fresh()->email_verified_at);
+    }
+
+    public function test_the_kits_verification_email_carries_the_signed_link(): void
+    {
+        $user = $this->person('hal@example.com');
+        $mail = (new KitVerifyEmail)->toMail($user);
+
+        $this->assertMatchesRegularExpression('#/verify-email/'.$user->id.'/[0-9a-f]{40}\?expires=\d+&signature=[0-9a-f]{64}$#', $mail->actionUrl);
     }
 
     public function test_signing_out_ends_the_token_and_presence(): void

@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAuth } from './AuthContext.js';
 import AuthLayout, { AuthError } from './AuthLayout.js';
 
 /**
- * Where the emailed verification link lands (/verify-email/:id/:hash): sends
- * its parts to the API, which signs the person straight in, then goes to `next`.
+ * Where the emailed verification link lands (/verify-email/:id/:hash
+ * ?expires=&signature=): sends its parts to the API, which signs the person straight in, then goes to `next`.
  */
 export default function VerifyEmailPage({ layout: Layout = AuthLayout, next = '/', signInPath = '/sign-in' }) {
   const { id, hash } = useParams();
+  const [params] = useSearchParams();
+  const expires = params.get('expires');
+  const signature = params.get('signature');
   const navigate = useNavigate();
   const { verifyEmail } = useAuth();
   const [error, setError] = useState(null);
@@ -17,7 +20,7 @@ export default function VerifyEmailPage({ layout: Layout = AuthLayout, next = '/
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const result = await verifyEmail({ id, hash });
+      const result = await verifyEmail({ id, hash, expires, signature });
       if (cancelled) return;
       if (result.success) {
         setDone(true);
@@ -29,7 +32,7 @@ export default function VerifyEmailPage({ layout: Layout = AuthLayout, next = '/
     })();
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, hash]);
+  }, [id, hash, expires, signature]);
 
   return (
     <Layout

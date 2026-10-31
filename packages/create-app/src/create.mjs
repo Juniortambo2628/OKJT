@@ -94,7 +94,7 @@ export async function createProject(p, { dir, install = true, checks = true, git
   log('\nThe API: Laravel 12 with the OKJT kit');
   run('composer', ['create-project', 'laravel/laravel:^12.0', 'backend', '--no-interaction', '--prefer-dist', '--quiet'], dir, log);
   run('php', ['artisan', 'install:api', '--without-migration-prompt', '--no-interaction'], backend, log);
-  const packages = ['okjt/laravel-kit:^0.2', 'bacon/bacon-qr-code:^3.0'];
+  const packages = ['okjt/laravel-kit:^0.2.2', 'bacon/bacon-qr-code:^3.0'];
   if (p.features.google) packages.push('laravel/socialite:^5.0');
   if (p.features.passkeys) packages.push('laravel/passkeys:^0.2');
   run('composer', ['require', ...packages, '--no-interaction', '--quiet'], backend, log);

@@ -15,7 +15,6 @@ export function backendFiles(p) {
     'app/Models/User.php': userModel(p),
     [`app/Models/${p.workspace.Model}.php`]: workspaceModel(p),
     'app/Models/Note.php': noteModel(),
-    'app/Notifications/VerifyEmailAddress.php': verifyEmailNotification(),
     'app/Http/Controllers/Api/AuthController.php': authController(p),
     [`app/Http/Controllers/Api/${p.workspace.Model}Controller.php`]: workspaceController(p),
     'app/Http/Controllers/Api/NoteController.php': noteController(),
@@ -296,7 +295,6 @@ function userModel(p) {
     '',
     'namespace App\\Models;',
     '',
-    'use App\\Notifications\\VerifyEmailAddress;',
     'use Illuminate\\Contracts\\Auth\\MustVerifyEmail;',
     'use Illuminate\\Database\\Eloquent\\Factories\\HasFactory;',
     'use Illuminate\\Foundation\\Auth\\User as Authenticatable;',
@@ -305,6 +303,7 @@ function userModel(p) {
     passkeys && 'use Laravel\\Passkeys\\PasskeyAuthenticatable;',
     'use Laravel\\Sanctum\\HasApiTokens;',
     p.accounts && 'use Okjt\\Kit\\Accounts\\HasAccounts;',
+    'use Okjt\\Kit\\Auth\\VerifyEmail;',
     'use Okjt\\Kit\\Workspace\\HasWorkspaceRoles;',
     '',
     '/**',
@@ -332,10 +331,10 @@ function userModel(p) {
     '        ];',
     '    }',
     '',
-    '    /** The verification email links to the app\'s /verify-email page. */',
+    '    /** The kit\'s verification email: a signed link to the app\'s /verify-email page. */',
     '    public function sendEmailVerificationNotification(): void',
     '    {',
-    '        $this->notify(new VerifyEmailAddress);',
+    '        $this->notify(new VerifyEmail);',
     '    }',
     '}',
     '',
@@ -778,30 +777,6 @@ function starterTest(p) {
     '}',
     '',
   );
-}
-
-function verifyEmailNotification() {
-  return `<?php
-
-namespace App\\Notifications;
-
-use Illuminate\\Auth\\Notifications\\VerifyEmail;
-
-/**
- * The verification email. Its link opens the app's /verify-email page, which
- * sends the id and hash to POST /api/email/verify (the kit's
- * EmailVerificationController), and signs the person in.
- */
-class VerifyEmailAddress extends VerifyEmail
-{
-    protected function verificationUrl($notifiable): string
-    {
-        $app = rtrim(config('app.frontend_url') ?: config('app.url'), '/');
-
-        return $app.'/verify-email/'.$notifiable->getKey().'/'.sha1($notifiable->getEmailForVerification());
-    }
-}
-`;
 }
 
 function notificationsMigration(p) {

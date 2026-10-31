@@ -130,9 +130,10 @@ export function AuthProvider({ api, extend, children }) {
   };
 
   /** Finish email verification from the link the SPA was sent to. */
-  const verifyEmail = async ({ id, hash }) => {
+  /** The emailed link's parts: { id, hash, expires, signature }. */
+  const verifyEmail = async ({ id, hash, expires, signature }) => {
     try {
-      const response = await api.post('/email/verify', { id, hash });
+      const response = await api.post('/email/verify', { id, hash, expires, signature });
       const { token, user, message: _message, email_verified: _verified, ...extra } = response.data;
       if (token) {
         localStorage.setItem('auth_token', token);
