@@ -797,8 +797,14 @@ the product, a brand colour and a text colour, what people work on together
   showed through the kit (theme tokens in 0.2.1; Naoa sets its copper in
   CSS, style comparison: no differences).
 * **Done when** "a new test site is deployed to the VPS in under 30
-  minutes": the deploy needs the VPS and GitHub secrets, so it is yours to
-  run; the README of every generated project lists the steps.
+  minutes": done 2026-10-31. \`test-site.okjtech.co.ke\`, made with
+  \`npm create okjt-app@latest\`, deployed by its workflow through deploy-kit,
+  signed in over HTTPS, a note created. The first run took longer than 30
+  minutes for four reasons, each fixed: deploy-kit's shell scripts checked
+  out with Windows line endings (OKJT now keeps \`.sh\` in LF); the database
+  names need Hestia's \`dev_\` prefix (the generated README says so, with a
+  login check); the seeder read \`.env\` after \`config:cache\` (0.1.1 reads
+  \`config/admin.php\`); and arrow keys typed into terminal prompts.
 * Follow-ups for the kit: ship the notifications migration and the
   verification email (each generated project carries a copy now), and the
   dashboard's base CSS (`fit:` and the `.admin-theme` styles).

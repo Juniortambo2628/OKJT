@@ -61,15 +61,23 @@ Pushing to \`main\` runs the tests, then deploys to the VPS through
 [deploy-kit](https://github.com/Juniortambo2628/OKJT/tree/main/deploy-kit).
 Once:
 
-1. **Hestia:** add the domain \`${p.domain}\` and a MySQL database.
-2. **On the server, as root:** \`bash new-site.sh laravel ${p.domain} ${p.slug}\`
+1. **Hestia:** add the domain \`${p.domain}\` (no \`www.\` alias unless its DNS exists) and a MySQL
+   database. Hestia prefixes both the database and its user with the account name
+   (\`dev_…\`): use the full names from its DB list.
+2. **On the server, as root** (copy the script from an OKJT checkout; from Windows, strip
+   carriage returns first: \`sed -i 's/\\r$//' new-site.sh\`):
+   \`bash new-site.sh laravel ${p.domain} ${p.slug}\`
 3. **GitHub secrets** on this repository:
    * \`VPS_HOST\`, \`VPS_PORT\`, \`VPS_USER\`, \`VPS_SSH_KEY\`, \`VPS_KNOWN_HOSTS\`: \`deploy-kit/local/set-vps-secrets.ps1 -Repos <owner>/${p.slug}\`
    * \`KIT_TOKEN\`: a fine-grained token with read access to the OKJT repository's contents
    * \`PROD_ENV\`: the server's \`.env\` (start from \`backend/.env.example\`; \`APP_KEY\` from \`php artisan key:generate --show\`; the database; \`APP_URL=https://${p.domain}\`; \`OKJT_ADMIN_*\`)
-4. **DNS and HTTPS:** point the A record at the VPS, then Hestia SSL with Let's Encrypt.
-5. Push to \`main\`. After the first deploy, create the first user on the server:
+   Check a database login before the first deploy:
+   \`ssh -t dev@<server> "mysql -u dev_… -p dev_… -e 'SELECT 1'"\`
+4. **DNS:** point the A record at the VPS.
+5. Push to \`main\`. After the first deploy, create the first user on the server, as \`dev\`:
    \`php artisan db:seed --force\` (in \`~/web/${p.domain}/private/${p.slug}/current\`).
+6. **HTTPS**, once the site answers on \`http://\`: Hestia › the domain › SSL with Let's
+   Encrypt and the HTTPS redirect.
 `;
 }
 
