@@ -1,6 +1,6 @@
 {
   "name": "create-okjt-app",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Start an OKJTech project: a Laravel API on okjt/laravel-kit and a React app on @okjt/site and @okjt/dashboard, with your name, colours, roles and features, ready to deploy",
   "type": "module",
   "license": "MIT",

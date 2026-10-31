@@ -24,6 +24,7 @@ export function backendFiles(p) {
     'database/migrations/2026_01_01_100002_create_notes_table.php': notesMigration(p),
     'database/migrations/2026_01_01_100003_create_notifications_table.php': notificationsMigration(p),
     'database/seeders/DatabaseSeeder.php': seeder(p),
+    'config/admin.php': adminConfig(p),
     'tests/Feature/StarterTest.php': starterTest(p),
   };
   if (p.accounts) files['app/Models/Account.php'] = accountModel(p);
@@ -677,14 +678,14 @@ function seeder(p) {
     '',
     '/**',
     ` * The first person who can sign in: ${p.platform ? 'a superadmin' : 'an admin'}, verified, from`,
-    ' * OKJT_ADMIN_EMAIL / OKJT_ADMIN_PASSWORD in .env. Run once: php artisan db:seed',
+    ' * OKJT_ADMIN_EMAIL / OKJT_ADMIN_PASSWORD in .env (config/admin.php). Run once: php artisan db:seed',
     ' */',
     'class DatabaseSeeder extends Seeder',
     '{',
     '    public function run(): void',
     '    {',
-    "        $email = env('OKJT_ADMIN_EMAIL');",
-    "        $password = env('OKJT_ADMIN_PASSWORD');",
+    "        $email = config('admin.email');",
+    "        $password = config('admin.password');",
     '        if (! $email || ! $password) {',
     "            $this->command?->warn('Set OKJT_ADMIN_EMAIL and OKJT_ADMIN_PASSWORD in .env to create the first user.');",
     '',
@@ -693,7 +694,7 @@ function seeder(p) {
     '',
     '        $user = User::firstOrNew([\'email\' => $email]);',
     "        $user->forceFill([",
-    `            'name' => env('OKJT_ADMIN_NAME', ${q(`${p.name} admin`)}),`,
+    "            'name' => config('admin.name'),",
     "            'password' => $password,",
     "            'role' => config('okjt.roles.owner'),",
     "            'email_verified_at' => now(),",
@@ -832,6 +833,21 @@ function notificationsMigration(p) {
     "        Schema::dropIfExists('notifications');",
     '    }',
     '};',
+    '',
+  );
+}
+
+/** The first user, for the seeder. Read through config, so seeding works after config:cache (as on a deployed server). */
+function adminConfig(p) {
+  return lines(
+    '<?php',
+    '',
+    '// The first person who can sign in (database/seeders/DatabaseSeeder.php), from .env.',
+    'return [',
+    `    'name' => env('OKJT_ADMIN_NAME', ${q(`${p.name} admin`)}),`,
+    "    'email' => env('OKJT_ADMIN_EMAIL'),",
+    "    'password' => env('OKJT_ADMIN_PASSWORD'),",
+    '];',
     '',
   );
 }

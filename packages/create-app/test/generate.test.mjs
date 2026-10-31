@@ -79,6 +79,13 @@ test('generated PHP keeps its blank lines and has balanced braces', () => {
   }
 });
 
+test('the seeder reads the first user through config, so it works after config:cache', () => {
+  const files = backendFiles(project());
+  assert.match(files['config/admin.php'], /'email' => env\('OKJT_ADMIN_EMAIL'\)/);
+  assert.match(files['database/seeders/DatabaseSeeder.php'], /config\('admin\.email'\)/);
+  assert.ok(!files['database/seeders/DatabaseSeeder.php'].includes("env('"));
+});
+
 test('the workflow deploys the API with the app built into it', () => {
   const flow = rootFiles(project({ domain: 'bloom.okjtech.co.ke' }))['.github/workflows/deploy.yml'];
   assert.match(flow, /uses: Juniortambo2628\/OKJT\/\.github\/workflows\/deploy-laravel\.yml@main/);
