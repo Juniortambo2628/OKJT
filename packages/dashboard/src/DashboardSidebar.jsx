@@ -40,7 +40,7 @@ export default function DashboardSidebar({ isOpen, onClose, collapsed = false })
 
       {/* Sidebar */}
       <motion.aside
-        className={`admin-sidebar fixed left-0 top-0 h-full z-50 lg:translate-x-0 ${
+        className={`admin-sidebar fixed left-0 top-0 h-full z-50 lg:translate-x-0 ${shell.sidebarClass} ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         } transition-transform lg:transition-none`}
         style={{
@@ -50,7 +50,7 @@ export default function DashboardSidebar({ isOpen, onClose, collapsed = false })
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="p-4 flex items-center justify-center relative">
+          <div className={`${rail ? 'p-2 py-4' : shell.logoBoxClass} flex items-center justify-center relative`}>
             <Link to={shell.logo.to} className="flex items-center justify-center">
               <img
                 src={shell.logo.src}
@@ -68,7 +68,7 @@ export default function DashboardSidebar({ isOpen, onClose, collapsed = false })
           </div>
 
           {/* Navigation */}
-          <nav aria-label="Main" className="flex-1 py-2 px-3 overflow-y-auto" style={{ scrollbarWidth: 'thin', scrollbarColor: shell.sidebarScrollbar }}>
+          <nav aria-label="Main" className={`flex-1 ${shell.navClass} overflow-y-auto`} style={{ scrollbarWidth: 'thin', scrollbarColor: shell.sidebarScrollbar }}>
             {shell.nav.map((section, sectionIndex) => (
               <div key={section.title || sectionIndex} className={sectionIndex > 0 ? 'mt-4' : ''}>
                 {section.title && !rail && <p className={shell.navTitleClass}>{section.title}</p>}
@@ -103,7 +103,7 @@ export default function DashboardSidebar({ isOpen, onClose, collapsed = false })
                           ) : (
                             <item.icon className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
                           )}
-                          {!rail && <span className="font-medium truncate">{item.label}</span>}
+                          {!rail && <span className={shell.navLabelClass}>{item.label}</span>}
                           {!rail && (here.length > 0 || newCount > 0) && (
                             <span className="ml-auto flex items-center gap-1.5 shrink-0" aria-hidden="true">
                               <CollaboratorAvatars people={here} size="xs" max={2} />

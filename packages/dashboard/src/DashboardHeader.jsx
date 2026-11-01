@@ -24,22 +24,22 @@ export default function DashboardHeader({ onMenuClick, onRestartTutorial, titleS
   return (
     <header 
       id="header"
-      className="sticky top-0 z-30 h-16 px-3 sm:px-6 flex items-center justify-between gap-3"
+      className={`sticky top-0 z-30 h-16 ${shell.headerClass} flex items-center justify-between gap-3`}
       style={{ 
         background: shell.headerBackground,
         backdropFilter: 'blur(10px)',
         borderBottom: shell.headerBorder,
       }}
     >
-      <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
+      <div className={`flex items-center ${shell.headerStartClass}`}>
         <button
           onClick={onMenuClick}
           aria-label={hasNews ? 'Open sidebar menu (new changes)' : 'Open sidebar menu'}
           aria-expanded={shell.collapsible ? menuExpanded : undefined}
-          className={`${shell.collapsible ? '' : 'lg:hidden '}relative p-2 rounded-lg hover:bg-contrast/5 shrink-0`}
+          className={`${shell.collapsible ? '' : 'lg:hidden '}relative p-2 rounded-lg shrink-0 ${shell.menuButtonClass}`}
         >
-          <Menu className="w-6 h-6 text-body" />
-          {hasNews && <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-accent ring-2 ring-paper" aria-hidden="true" />}
+          {shell.MenuIcon ? <shell.MenuIcon /> : <Menu className="w-6 h-6 text-body" />}
+          {hasNews && <span className={`absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-accent ring-2 ring-paper ${shell.collapsible ? 'lg:hidden' : ''}`} aria-hidden="true" />}
         </button>
         {/* Compact page title, filled by AdminPageHero once it scrolls away */}
         <div ref={titleSlotRef} className={`min-w-0 ${shell.HeaderStart ? 'empty:hidden' : 'flex-1'}`} />
@@ -60,7 +60,7 @@ export default function DashboardHeader({ onMenuClick, onRestartTutorial, titleS
         )}
       </div>
 
-      <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+      <div className={`flex items-center ${shell.headerEndClass}`}>
         {!canEdit && (
           <span className="px-2.5 py-1 rounded-full bg-tone-100 border border-tone-200 text-xs font-medium text-tone-600 whitespace-nowrap"
             title="You can look around, but changes won't be saved. Ask an owner for edit access.">
@@ -94,15 +94,18 @@ export default function DashboardHeader({ onMenuClick, onRestartTutorial, titleS
 
         {shell.Search && <shell.Search />}
 
-        {/* Who's online (click for the share panel) */}
-        {presence.length > 0 && (
-          <button type="button" onClick={() => setShareOpen(true)} className="hidden md:flex p-1 rounded-full hover:bg-contrast/5"
-            aria-label={`${presence.length} collaborator${presence.length === 1 ? '' : 's'} online`}>
-            <CollaboratorAvatars people={presence} max={3} />
-          </button>
-        )}
-
-        {shell.headerActions.map((action) => {
+        {shell.headerActions.map((action, i) => {
+          if (typeof action === 'function' || typeof action === 'object') {
+            const Action = action;
+            return <Action key={`own-${i}`} />;
+          }
+          if (action === 'online') return presence.length > 0 && (
+            // Who's online (click for the share panel)
+            <button key="online" type="button" onClick={() => setShareOpen(true)} className="hidden md:flex p-1 rounded-full hover:bg-contrast/5"
+              aria-label={`${presence.length} collaborator${presence.length === 1 ? '' : 's'} online`}>
+              <CollaboratorAvatars people={presence} max={3} />
+            </button>
+          );
           if (action === 'share') return (
             <button
               key="share"

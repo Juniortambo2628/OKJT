@@ -5,11 +5,11 @@ import { Button } from '../dist/index.js'
 import { buttonClass, BUTTON_VARIANTS } from '../dist/index.js'
 
 describe('Button', () => {
-  it('defaults to the white bordered primary style and type="button"', () => {
+  it('defaults to the surface-coloured bordered primary style and type="button"', () => {
     render(<Button>Refresh</Button>)
     const btn = screen.getByRole('button', { name: 'Refresh' })
     expect(btn).toHaveAttribute('type', 'button')
-    expect(btn.className).toContain('bg-white/80')
+    expect(btn.className).toContain('bg-surface/80')
   })
 
   it('uses the filled brown style for secondary', () => {

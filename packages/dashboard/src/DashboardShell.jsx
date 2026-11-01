@@ -136,7 +136,7 @@ export default function DashboardShell({ children }) {
             steps={tutorialSteps}
           />
          
-          <main className="p-4 sm:p-6">
+          <main id="main-content" tabIndex={-1} className={shell.mainClass}>
             <PageContent pathname={location.pathname}>{children}</PageContent>
           </main>
         </div>

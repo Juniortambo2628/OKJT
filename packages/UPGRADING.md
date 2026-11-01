@@ -1,5 +1,36 @@
 # Upgrading
 
+## Dashboard 0.2.2 → 0.3.0 (with @okjt/ui 0.1 → 0.2)
+
+Nothing changes on screen unless you ask for it. Naoa's dashboard was compared
+element by element (21 pages and the share and history panels): no
+differences.
+
+1. `npm i @okjt/dashboard@^0.3.0 @okjt/ui@^0.2.0`
+2. **Regenerate the theme** (`npx okjt-theme`, or `npm run theme`): the kit's
+   components now use two new colours, `surface` and `contrast`, and the theme
+   file must define them. Skipping this leaves cards and menus transparent.
+   Apps made by create-okjt-app do it before every `dev` and `build`.
+
+New, all optional:
+
+- **Colours** `surface` (cards, panels, menus, dialogs; default white) and
+  `contrast` (what hovers shade toward; default black).
+- **`theme.dashboard`**: the colours again, for the dashboard only — e.g. a
+  dark dashboard beside light public pages. Any token may be left out;
+  `colorScheme: 'dark'` makes native controls (date pickers, scrollbars) dark.
+- **Shell options** (`shell` in DashboardProvider): `sidebarWidth`,
+  `collapsible` (a rail of icons on wide screens, remembered) with
+  `railWidth`; `headerActions` (`'online'`, `'share'`, `'history'`, `'tour'`
+  or your own components, in order); `HeaderStart` and `Search` slots;
+  your own `HistoryDrawer` and `ShareModal`; `MenuIcon`; and classes for every
+  part of the frame (`sidebarClass`, `logoBoxClass`, `navClass`,
+  `navItemClass`, `navActiveClass`, `navIdleClass`, `navLabelClass`,
+  `navTitleClass`, `headerClass`, `headerStartClass`, `headerEndClass`,
+  `menuButtonClass`, `headerButtonClass`, `mainClass`). See
+  DashboardProvider.jsx.
+- `<main>` has `id="main-content"`, for a skip link.
+
 ## 0.2.1 → 0.2.2
 
 `okjt/laravel-kit` v0.2.2, `@okjt/dashboard` 0.2.2, `create-okjt-app` 0.1.1.

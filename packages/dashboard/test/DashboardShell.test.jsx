@@ -72,7 +72,7 @@ describe('DashboardShell', () => {
     renderShell('/app/expenses', {
       HeaderStart: () => <button type="button">All projects</button>,
       Search: () => <input aria-label="Search everything" />,
-      headerActions: ['history', 'share'],
+      headerActions: ['history', 'share', () => <button type="button">Our button</button>],
       HistoryDrawer,
       ShareModal,
     })
@@ -83,6 +83,7 @@ describe('DashboardShell', () => {
     const [first, second] = header.getAllByRole('button', { name: /Version history|Share dashboard/ })
     expect(first).toHaveAccessibleName('Version history')
     expect(second).toHaveAccessibleName('Share dashboard')
+    expect(header.getByRole('button', { name: 'Our button' })).toBeInTheDocument()
 
     fireEvent.click(first)
     expect(screen.getByText('Our history')).toBeInTheDocument()

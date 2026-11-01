@@ -40,14 +40,24 @@ const DEFAULT_SHELL = {
   sidebarWidth: 280,
   collapsible: false,
   railWidth: 80,
+  sidebarClass: '',
+  logoBoxClass: 'p-4',
   logoClass: 'h-10 w-auto',
   railLogoClass: 'h-9 w-12 object-contain',
   navTitleClass: 'px-3 mb-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white/50',
   navItemClass: 'px-3 py-2 rounded-lg',
   navActiveClass: 'text-accent-dark bg-white shadow-sm',
   navIdleClass: 'text-white/75 hover:text-accent-dark hover:bg-white',
+  navLabelClass: 'font-medium truncate',
+  navClass: 'py-2 px-3',
+  headerClass: 'px-3 sm:px-6',
+  headerStartClass: 'gap-2 sm:gap-4 min-w-0 flex-1',
+  headerEndClass: 'gap-1 sm:gap-2 shrink-0',
+  menuButtonClass: 'hover:bg-contrast/5',
+  MenuIcon: null,
+  mainClass: 'p-4 sm:p-6',
   headerButtonClass: 'text-soft hover:bg-accent/10 hover:text-accent',
-  headerActions: ['share', 'history', 'tour'],
+  headerActions: ['online', 'share', 'history', 'tour'],
   HeaderStart: null,
   Search: null,
   HistoryDrawer: null,
@@ -87,11 +97,16 @@ const DEFAULT_SHELL = {
  *   shell.sidebarWidth  the sidebar's width in px (280)
  *   shell.collapsible   on wide screens the menu button folds the sidebar to a
  *                     rail of icons (shell.railWidth px, 80); remembered
- *   shell.logoClass, railLogoClass, navTitleClass, navItemClass, navActiveClass,
- *   navIdleClass, headerButtonClass   classes for the logo, the sidebar's
- *                     group titles and pages, and the header's buttons
- *   shell.headerActions  the header's own buttons, in order: 'share',
- *                     'history', 'tour' (leave one out to hide it)
+ *   shell.sidebarClass, logoBoxClass, logoClass, railLogoClass, navTitleClass,
+ *   navClass, navItemClass, navActiveClass, navIdleClass, navLabelClass,
+ *   headerClass, headerStartClass, headerEndClass,
+ *   menuButtonClass, headerButtonClass, mainClass   classes for the sidebar,
+ *                     its logo, group titles and pages, the header and its
+ *                     buttons, and the content area
+ *   shell.MenuIcon    the menu button's icon
+ *   shell.headerActions  the header's buttons, in order: 'online' (who's
+ *                     online), 'share', 'history', 'tour', or the project's
+ *                     own components (leave one out to hide it)
  *   shell.HeaderStart  the project's own pieces after the page title (e.g. a
  *                     workspace switcher)
  *   shell.Search      the project's search, before who's online
