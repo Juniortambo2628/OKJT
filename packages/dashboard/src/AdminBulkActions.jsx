@@ -89,7 +89,7 @@ export default function AdminBulkActions({ selectedCount = 0, onClearSelection, 
                   initial={{ opacity: 0, y: 8, scale: 0.96 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                  className="absolute right-0 bottom-full mb-2 min-w-[10rem] bg-white rounded-xl shadow-xl border border-tone-100 py-2 overflow-hidden z-20"
+                  className="absolute right-0 bottom-full mb-2 min-w-[10rem] bg-surface rounded-xl shadow-xl border border-tone-100 py-2 overflow-hidden z-20"
                 >
                   {overflowActions.map((action) => {
                     const Icon = action.icon;
@@ -115,7 +115,7 @@ export default function AdminBulkActions({ selectedCount = 0, onClearSelection, 
 
         <button aria-label="Clear selection"
           onClick={onClearSelection}
-          className="p-2 rounded-lg text-tone-400 hover:text-tone-600 hover:bg-white transition-colors"
+          className="p-2 rounded-lg text-tone-400 hover:text-tone-600 hover:bg-surface transition-colors"
           title="Clear selection"
         >
           <X className="w-4 h-4" />

@@ -83,7 +83,7 @@ export default function AdminToolbarFilters({ filters }) {
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all border ${
               activeCount > 0
                 ? 'bg-accent/10 text-accent-dark border-accent/30'
-                : 'bg-white/80 text-body hover:bg-white border-tone-200/60'
+                : 'bg-surface/80 text-body hover:bg-surface border-tone-200/60'
             }`}
             title="Filter & sort"
           >
@@ -105,7 +105,7 @@ export default function AdminToolbarFilters({ filters }) {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 8, scale: 0.97 }}
                 transition={{ duration: 0.15 }}
-                className="absolute bottom-full left-0 mb-3 w-[min(20rem,calc(100vw-2rem))] max-h-[60vh] overflow-y-auto bg-white rounded-2xl shadow-2xl border border-tone-100 p-4 space-y-4 text-left"
+                className="absolute bottom-full left-0 mb-3 w-[min(20rem,calc(100vw-2rem))] max-h-[60vh] overflow-y-auto bg-surface rounded-2xl shadow-2xl border border-tone-100 p-4 space-y-4 text-left"
               >
                 {groups.map((group) => (
                   <div key={group.id}>

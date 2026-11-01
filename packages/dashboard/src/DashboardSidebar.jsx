@@ -10,15 +10,18 @@ import { useModules } from './modules.js';
  * The dashboard's sidebar: the logo, then the pages in groups
  * (DashboardProvider `shell.nav`: [{ title?, items: [{ path, icon, label, id }] }]).
  * Each page shows who else is on it and how many changes others made since
- * you last opened it. Below lg it slides in over the page.
+ * you last opened it. Below lg it slides in over the page. With
+ * `shell.collapsible`, `collapsed` folds it to a rail of icons on wide screens.
  */
-export default function DashboardSidebar({ isOpen, onClose }) {
+export default function DashboardSidebar({ isOpen, onClose, collapsed = false }) {
   const location = useLocation();
   const { home, shell } = useDashboard();
   const { moduleForPath } = useModules();
   // "New" badges: changes by others since you last opened a module; avatars:
   // who else is on that page right now.
   const { badges, presence } = useCollaboration();
+  // The rail only applies on wide screens: the phone menu always shows labels.
+  const rail = collapsed && !isOpen;
 
   return (
     <>
@@ -40,8 +43,8 @@ export default function DashboardSidebar({ isOpen, onClose }) {
         className={`admin-sidebar fixed left-0 top-0 h-full z-50 lg:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         } transition-transform lg:transition-none`}
-        style={{ 
-          width: 280,
+        style={{
+          width: rail ? shell.railWidth : shell.sidebarWidth,
           background: shell.sidebarBackground,
         }}
       >
@@ -49,10 +52,10 @@ export default function DashboardSidebar({ isOpen, onClose }) {
           {/* Logo */}
           <div className="p-4 flex items-center justify-center relative">
             <Link to={shell.logo.to} className="flex items-center justify-center">
-              <img 
+              <img
                 src={shell.logo.src}
                 alt={shell.logo.alt}
-                className="h-10 w-auto"
+                className={rail ? shell.railLogoClass : shell.logoClass}
               />
             </Link>
             <button
@@ -68,10 +71,9 @@ export default function DashboardSidebar({ isOpen, onClose }) {
           <nav aria-label="Main" className="flex-1 py-2 px-3 overflow-y-auto" style={{ scrollbarWidth: 'thin', scrollbarColor: shell.sidebarScrollbar }}>
             {shell.nav.map((section, sectionIndex) => (
               <div key={section.title || sectionIndex} className={sectionIndex > 0 ? 'mt-4' : ''}>
-                {section.title && (
-                  <p className="px-3 mb-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white/50">{section.title}</p>
-                )}
-                <ul className="space-y-0.5">
+                {section.title && !rail && <p className={shell.navTitleClass}>{section.title}</p>}
+                {section.title && rail && <div aria-hidden="true" className="mx-3 mb-2 h-px bg-white/10" />}
+                <ul className="space-y-0.5" aria-label={section.title || undefined}>
                   {section.items.map((item) => {
                     const isActive = location.pathname === item.path ||
                       (item.path !== home.path && location.pathname.startsWith(item.path));
@@ -87,16 +89,22 @@ export default function DashboardSidebar({ isOpen, onClose }) {
                           to={item.path}
                           onClick={() => onClose()}
                           aria-current={isActive ? 'page' : undefined}
-                          aria-label={label !== item.label ? label : undefined}
-                          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all text-sm focus-visible:outline-2 focus-visible:outline-white ${
-                            isActive
-                              ? 'text-accent-dark bg-white shadow-sm'
-                              : 'text-white/75 hover:text-accent-dark hover:bg-white'
+                          aria-label={rail || label !== item.label ? label : undefined}
+                          title={rail ? item.label : undefined}
+                          className={`flex items-center ${rail ? 'justify-center' : 'gap-3'} ${shell.navItemClass} transition-all text-sm focus-visible:outline-2 focus-visible:outline-white ${
+                            isActive ? shell.navActiveClass : shell.navIdleClass
                           }`}
                         >
-                          <item.icon className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
-                          <span className="font-medium truncate">{item.label}</span>
-                          {(here.length > 0 || newCount > 0) && (
+                          {rail ? (
+                            <span className="relative flex flex-shrink-0">
+                              <item.icon className="w-4 h-4" aria-hidden="true" />
+                              {newCount > 0 && <span aria-hidden="true" className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-accent" />}
+                            </span>
+                          ) : (
+                            <item.icon className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
+                          )}
+                          {!rail && <span className="font-medium truncate">{item.label}</span>}
+                          {!rail && (here.length > 0 || newCount > 0) && (
                             <span className="ml-auto flex items-center gap-1.5 shrink-0" aria-hidden="true">
                               <CollaboratorAvatars people={here} size="xs" max={2} />
                               {newCount > 0 && (
@@ -106,7 +114,7 @@ export default function DashboardSidebar({ isOpen, onClose }) {
                               )}
                             </span>
                           )}
-                          {isActive && (
+                          {isActive && !rail && (
                             <motion.div
                               layoutId="sidebar-indicator"
                               className={`${here.length ? '' : 'ml-auto'} w-1.5 h-1.5 rounded-full flex-shrink-0`}

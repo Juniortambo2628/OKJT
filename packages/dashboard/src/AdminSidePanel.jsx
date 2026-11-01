@@ -170,12 +170,12 @@ function ItemRow({ item, active, leading, selecting, checked, onClick }) {
       >
         {selecting && (
           <span className={`mt-0.5 w-4 h-4 rounded border flex items-center justify-center shrink-0 ${
-            checked ? 'bg-accent border-accent text-white' : 'border-tone-300 bg-white'}`} aria-hidden="true">
+            checked ? 'bg-accent border-accent text-white' : 'border-tone-300 bg-surface'}`} aria-hidden="true">
             {checked && <Check className="w-3 h-3" strokeWidth={3} />}
           </span>
         )}
         {Icon && (
-          <span className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${active ? 'bg-white shadow-sm' : 'bg-tone-50'}`}>
+          <span className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${active ? 'bg-surface shadow-sm' : 'bg-tone-50'}`}>
             <Icon className={`w-4 h-4 ${active ? 'text-accent' : 'text-tone-500'}`} aria-hidden="true" />
           </span>
         )}
@@ -247,7 +247,7 @@ function DraggableRow({ entry, onDrop, onMove, renderRow }) {
   );
   return (
     <Reorder.Item value={entry.item.id} dragListener={false} dragControls={controls} onDragEnd={onDrop}
-      className="relative bg-white rounded-xl" whileDrag={{ scale: 1.02, boxShadow: '0 8px 24px rgba(0,0,0,0.08)', zIndex: 1 }}>
+      className="relative bg-surface rounded-xl" whileDrag={{ scale: 1.02, boxShadow: '0 8px 24px rgba(0,0,0,0.08)', zIndex: 1 }}>
       {renderRow(entry, handle)}
     </Reorder.Item>
   );
@@ -308,7 +308,7 @@ function BulkBar({ selection, actions }) {
         <button type="button" onClick={selection.toggleAll} className="text-accent-dark hover:underline">
           {selected.length === selectable.length && selectable.length > 0 ? 'Select none' : 'Select all'}
         </button>
-        <button type="button" onClick={selection.stop} className="ml-auto px-2 py-1 rounded-lg font-medium text-tone-600 hover:bg-white">Done</button>
+        <button type="button" onClick={selection.stop} className="ml-auto px-2 py-1 rounded-lg font-medium text-tone-600 hover:bg-surface">Done</button>
       </div>
       <div className="flex flex-wrap gap-2">
         {actions.map((entry) => (
@@ -353,7 +353,7 @@ function SidePanelRail({ panel, onExpand }) {
     <aside
       aria-label={panel.title}
       data-side-panel="collapsed"
-      className="hidden lg:flex flex-col items-center gap-1.5 w-12 shrink-0 py-2 lg:sticky lg:top-20 self-start lg:max-h-[calc(100dvh-6.5rem)] overflow-y-auto scrollbar-hide bg-white rounded-2xl shadow-sm border border-tone-100"
+      className="hidden lg:flex flex-col items-center gap-1.5 w-12 shrink-0 py-2 lg:sticky lg:top-20 self-start lg:max-h-[calc(100dvh-6.5rem)] overflow-y-auto scrollbar-hide bg-surface rounded-2xl shadow-sm border border-tone-100"
     >
       <button type="button" onClick={onExpand} aria-label={`Show ${panel.title}`} title={`Show ${panel.title}`}
         className="p-2 rounded-lg text-tone-500 hover:bg-tone-100 hover:text-accent">
@@ -394,7 +394,7 @@ export function SidePanelAside({ panel }) {
     <aside
       aria-label={panel.title}
       data-side-panel
-      className="hidden lg:flex flex-col w-80 xl:w-[22rem] shrink-0 lg:sticky lg:top-20 lg:max-h-[calc(100dvh-6.5rem)] fit:max-h-full self-start fit:self-stretch bg-white rounded-2xl shadow-sm border border-tone-100 overflow-hidden"
+      className="hidden lg:flex flex-col w-80 xl:w-[22rem] shrink-0 lg:sticky lg:top-20 lg:max-h-[calc(100dvh-6.5rem)] fit:max-h-full self-start fit:self-stretch bg-surface rounded-2xl shadow-sm border border-tone-100 overflow-hidden"
     >
       {/* Pinned: title (and a compact tab grid, which is a toolbar, not a list) */}
       <div className="shrink-0 p-4 pb-3 space-y-3 border-b border-tone-100">
@@ -481,7 +481,7 @@ function BottomSheet({ panel, manage, onClose }) {
         dragConstraints={{ top: 0, bottom: 0 }}
         dragElastic={{ top: 0, bottom: 0.6 }}
         onDragEnd={(_, info) => { if (info.offset.y > 90 || info.velocity.y > 500) onClose(); }}
-        className="w-full max-h-[78dvh] bg-white rounded-t-3xl shadow-2xl flex flex-col pb-[env(safe-area-inset-bottom)]"
+        className="w-full max-h-[78dvh] bg-surface rounded-t-3xl shadow-2xl flex flex-col pb-[env(safe-area-inset-bottom)]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="shrink-0 pt-2 pb-3 px-4 space-y-3 border-b border-tone-100 cursor-grab active:cursor-grabbing touch-none"

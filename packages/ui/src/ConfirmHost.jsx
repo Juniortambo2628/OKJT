@@ -44,7 +44,7 @@ export default function ConfirmHost() {
             initial={{ opacity: 0, scale: 0.96, y: 8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96 }}
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6"
+            className="bg-surface rounded-2xl shadow-2xl w-full max-w-md p-6"
           >
             <div className="flex gap-4">
               <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${danger ? 'bg-red-50 text-red-600' : 'bg-accent/10 text-accent'}`}>

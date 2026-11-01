@@ -36,7 +36,7 @@ export default function AccountMenu({ compactLinks = [], links = [], roleText, e
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label={`Account menu for ${user?.name || fallbackName.toLowerCase()}`}
-        className="flex items-center gap-2 p-1 pr-2 rounded-full hover:bg-black/5 transition-colors"
+        className="flex items-center gap-2 p-1 pr-2 rounded-full hover:bg-contrast/5 transition-colors"
       >
         <span className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium bg-accent">
           {initial}
@@ -53,7 +53,7 @@ export default function AccountMenu({ compactLinks = [], links = [], roleText, e
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.97 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl shadow-xl border border-tone-100 py-2 z-50"
+            className="absolute right-0 top-full mt-2 w-64 bg-surface rounded-2xl shadow-xl border border-tone-100 py-2 z-50"
           >
             <div className="px-4 py-2 border-b border-tone-100 mb-1">
               <p className="text-sm font-semibold text-tone-800 truncate">{user?.name || fallbackName}</p>

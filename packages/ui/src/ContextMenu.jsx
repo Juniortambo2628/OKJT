@@ -57,7 +57,7 @@ function MenuList({ items, x, y, anchorWidth = 0, onClose, autoFocus = true, onR
         role="menu"
         onKeyDown={onKeyDown}
         onContextMenu={(e) => e.preventDefault()}
-        className="fixed z-[200] min-w-[13rem] max-w-[18rem] max-h-[80vh] overflow-y-auto bg-white rounded-xl shadow-2xl border border-tone-100 py-1.5 text-sm"
+        className="fixed z-[200] min-w-[13rem] max-w-[18rem] max-h-[80vh] overflow-y-auto bg-surface rounded-xl shadow-2xl border border-tone-100 py-1.5 text-sm"
         style={{ left: pos.left, top: pos.top }}
       >
         {items.map((item, index) => {

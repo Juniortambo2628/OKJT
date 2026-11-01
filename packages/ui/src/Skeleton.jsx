@@ -44,7 +44,7 @@ export const Skeleton = ({
 };
 
 export const CardSkeleton = () => (
-  <div className="p-4 bg-white/50 rounded-2xl border border-tone-100 space-y-3">
+  <div className="p-4 bg-surface/50 rounded-2xl border border-tone-100 space-y-3">
     <Skeleton variant="image" height="150px" />
     <Skeleton variant="text" width="60%" />
     <Skeleton variant="text" width="40%" />
@@ -54,7 +54,7 @@ export const CardSkeleton = () => (
 export const TimelineSkeleton = () => (
   <div className="flex gap-6 mb-8">
     <Skeleton variant="circle" width="64px" height="64px" className="shrink-0" />
-    <div className="flex-1 space-y-3 p-6 bg-white/50 rounded-2xl border border-tone-100">
+    <div className="flex-1 space-y-3 p-6 bg-surface/50 rounded-2xl border border-tone-100">
       <Skeleton variant="text" width="30%" />
       <Skeleton variant="text" width="70%" height="24px" />
       <Skeleton variant="text" width="90%" />
@@ -65,7 +65,7 @@ export const TimelineSkeleton = () => (
 export const MessageSkeleton = () => (
   <div className="flex gap-4 mb-6">
     <Skeleton variant="circle" width="56px" height="56px" className="shrink-0" />
-    <div className="flex-1 space-y-2 p-5 bg-white/50 rounded-2xl rounded-tl-none border border-tone-100">
+    <div className="flex-1 space-y-2 p-5 bg-surface/50 rounded-2xl rounded-tl-none border border-tone-100">
         <Skeleton variant="text" width="40%" />
         <Skeleton variant="text" width="90%" height="60px" />
     </div>

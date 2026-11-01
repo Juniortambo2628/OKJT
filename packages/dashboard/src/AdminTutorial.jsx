@@ -170,7 +170,7 @@ export default function AdminTutorial({ steps, onComplete, isRestarted = false }
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         style={boxStyle}
-        className="absolute w-[calc(100%-48px)] max-w-sm max-h-[calc(100vh-32px)] flex flex-col bg-white rounded-3xl shadow-2xl overflow-hidden pointer-events-auto border-2 border-accent/30"
+        className="absolute w-[calc(100%-48px)] max-w-sm max-h-[calc(100vh-32px)] flex flex-col bg-surface rounded-3xl shadow-2xl overflow-hidden pointer-events-auto border-2 border-accent/30"
       >
         <div className="h-1.5 w-full bg-tone-100">
           <motion.div 
@@ -223,7 +223,7 @@ export default function AdminTutorial({ steps, onComplete, isRestarted = false }
           </AnimatePresence>
         </div>
 
-        <div className="flex items-center justify-between px-6 py-4 border-t border-tone-100 bg-white rounded-b-3xl">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-tone-100 bg-surface rounded-b-3xl">
             <div className="flex gap-1.5">
               <Button
                 size="icon"

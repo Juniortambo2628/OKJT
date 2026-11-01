@@ -38,3 +38,22 @@ test('a missing, unknown or misspelt token fails the build, naming it', () => {
   assert.throws(() => compileTheme({ theme: { colors, fonts: { serif: 'x' } } }), /unknown serif/);
   assert.throws(() => defineConfig({}), /theme.colors is required/);
 });
+
+test('surface and contrast default to white and black, and can be set', () => {
+  const css = compileTheme({ theme: { colors } });
+  assert.match(css, /--color-surface: #ffffff;/);
+  assert.match(css, /--color-contrast: #000000;/);
+  assert.match(compileTheme({ theme: { colors: { ...colors, surface: '#fafafa' } } }), /--color-surface: #fafafa;/);
+});
+
+test('theme.dashboard overrides colours on the dashboard only', () => {
+  const css = compileTheme({ theme: { colors, dashboard: { colorScheme: 'dark', colors: { paper: '#0b0c0d', surface: '#141517', contrast: '#ffffff', tone: 'zinc' } } } });
+  const [base, dashboard] = css.split(':root.admin-theme {');
+  assert.match(base, /--color-paper: #000003;/);
+  assert.match(dashboard, /--color-paper: #0b0c0d;/);
+  assert.match(dashboard, /--color-surface: #141517;/);
+  assert.match(dashboard, /--color-tone-500: /);
+  assert.match(dashboard, /color-scheme: dark;/);
+  assert.doesNotMatch(dashboard, /--color-ink:/, 'tokens it leaves out stay as they are');
+  assert.throws(() => defineConfig({ theme: { colors, dashboard: { colors: { brand: '#000' } } } }), /theme.dashboard.colors has unknown brand/);
+});

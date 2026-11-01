@@ -97,7 +97,7 @@ export default function NotificationsBell() {
         aria-label={unreadCount > 0 ? `Notifications, ${unreadCount} unread` : 'Notifications'}
         aria-haspopup="true"
         aria-expanded={showNotifications}
-        className="relative p-2 rounded-xl hover:bg-black/5"
+        className="relative p-2 rounded-xl hover:bg-contrast/5"
       >
         <Bell className="w-5 h-5 text-soft" />
         <span 
@@ -112,7 +112,7 @@ export default function NotificationsBell() {
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            className="absolute top-full right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-tone-100 py-2 z-50 overflow-hidden"
+            className="absolute top-full right-0 mt-2 w-80 bg-surface rounded-2xl shadow-xl border border-tone-100 py-2 z-50 overflow-hidden"
           >
              <div className="px-4 py-2 border-b border-tone-50 flex justify-between items-center">
                 <span className="text-tone-800 font-medium">Notifications</span>

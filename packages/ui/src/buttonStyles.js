@@ -13,9 +13,9 @@ export const BUTTON_BASE =
   '[&_svg]:w-4 [&_svg]:h-4 [&_svg]:shrink-0';
 
 export const BUTTON_VARIANTS = {
-  primary: 'bg-white/80 text-body hover:bg-white border border-tone-200/60',
+  primary: 'bg-surface/80 text-body hover:bg-surface border border-tone-200/60',
   secondary: 'bg-accent text-white hover:bg-accent-dark shadow-md border border-transparent',
-  danger: 'bg-white/80 text-red-600 hover:bg-red-50 border border-tone-200/60',
+  danger: 'bg-surface/80 text-red-600 hover:bg-red-50 border border-tone-200/60',
 };
 
 export const BUTTON_SIZES = {

@@ -12,7 +12,7 @@ import { useModules } from './modules.js';
 
 const EMPTY_FORM = { name: '', email: '', message: '', role: 'editor' };
 
-const selectClass = 'px-2 py-1.5 rounded-lg border border-tone-200 bg-white text-xs text-tone-700 focus:outline-none focus:ring-2 focus:ring-accent/20';
+const selectClass = 'px-2 py-1.5 rounded-lg border border-tone-200 bg-surface text-xs text-tone-700 focus:outline-none focus:ring-2 focus:ring-accent/20';
 
 function CopyField({ value, label }) {
   const [copied, setCopied] = useState(false);

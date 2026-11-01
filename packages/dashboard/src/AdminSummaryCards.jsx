@@ -43,7 +43,7 @@ export default function AdminSummaryCards({ cards = [], columns = 4 }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05, duration: 0.2 }}
             aria-pressed={stat.onClick ? !!stat.active : undefined}
-            className={`px-3.5 py-3 rounded-2xl bg-white flex items-center gap-3 text-left min-w-0 transition-shadow ${
+            className={`px-3.5 py-3 rounded-2xl bg-surface flex items-center gap-3 text-left min-w-0 transition-shadow ${
               stat.onClick ? 'cursor-pointer hover:ring-2 hover:ring-accent/20' : ''
             } ${stat.active ? 'ring-2 ring-accent/50' : ''}`}
             style={{ boxShadow: '0 4px 20px color-mix(in srgb, var(--color-accent) 8%, transparent)' }}

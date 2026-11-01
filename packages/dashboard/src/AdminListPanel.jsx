@@ -20,7 +20,7 @@ export default function AdminListPanel({
   className = '',
   bodyClassName = '',
 }) {
-  const chrome = plain ? '' : 'bg-white rounded-2xl shadow-sm border border-tone-100 overflow-hidden';
+  const chrome = plain ? '' : 'bg-surface rounded-2xl shadow-sm border border-tone-100 overflow-hidden';
   return (
     <div className={`flex flex-col fit:flex-1 fit:min-h-0 ${chrome} ${className}`}>
       {header && <div className="shrink-0">{header}</div>}

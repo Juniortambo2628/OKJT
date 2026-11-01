@@ -126,7 +126,7 @@ export default function VersionHistoryDrawer({ module, onClose, onRestored }) {
         exit={{ x: '100%' }}
         transition={{ type: 'spring', damping: 32, stiffness: 300 }}
         onClick={(e) => e.stopPropagation()}
-        className="h-full w-full max-w-md bg-white shadow-2xl flex flex-col"
+        className="h-full w-full max-w-md bg-surface shadow-2xl flex flex-col"
       >
         <div className="shrink-0 px-4 py-3 border-b border-tone-100 space-y-3">
           <div className="flex items-center gap-2">
@@ -170,7 +170,7 @@ export default function VersionHistoryDrawer({ module, onClose, onRestored }) {
                 lastDay = day;
                 return (
                   <li key={revision.id}>
-                    {header && <h3 className="sticky top-0 z-10 bg-white/95 backdrop-blur pt-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-tone-500">{header}</h3>}
+                    {header && <h3 className="sticky top-0 z-10 bg-surface/95 backdrop-blur pt-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-tone-500">{header}</h3>}
                     <ul className="divide-y divide-tone-100">
                       <Entry
                         revision={revision}

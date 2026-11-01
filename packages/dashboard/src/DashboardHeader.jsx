@@ -13,7 +13,7 @@ import { useDashboard } from './DashboardProvider.js';
  * project's notifications and account menu (`shell.Notifications`,
  * `shell.AccountMenu`).
  */
-export default function DashboardHeader({ onMenuClick, onRestartTutorial, titleSlotRef, statusSlotRef }) {
+export default function DashboardHeader({ onMenuClick, onRestartTutorial, titleSlotRef, statusSlotRef, menuExpanded }) {
   const { pathname } = useLocation();
   const { presence, othersHere, openHistory, setShareOpen, badges } = useCollaboration();
   const hasNews = Object.values(badges).some(Boolean);
@@ -35,13 +35,15 @@ export default function DashboardHeader({ onMenuClick, onRestartTutorial, titleS
         <button
           onClick={onMenuClick}
           aria-label={hasNews ? 'Open sidebar menu (new changes)' : 'Open sidebar menu'}
-          className="lg:hidden relative p-2 rounded-lg hover:bg-black/5 shrink-0"
+          aria-expanded={shell.collapsible ? menuExpanded : undefined}
+          className={`${shell.collapsible ? '' : 'lg:hidden '}relative p-2 rounded-lg hover:bg-contrast/5 shrink-0`}
         >
           <Menu className="w-6 h-6 text-body" />
           {hasNews && <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-accent ring-2 ring-paper" aria-hidden="true" />}
         </button>
         {/* Compact page title, filled by AdminPageHero once it scrolls away */}
-        <div ref={titleSlotRef} className="min-w-0 flex-1" />
+        <div ref={titleSlotRef} className={`min-w-0 ${shell.HeaderStart ? 'empty:hidden' : 'flex-1'}`} />
+        {shell.HeaderStart && <shell.HeaderStart />}
         {/* Someone else is on this page: say so, to avoid overwriting each other */}
         {othersHere.length > 0 && (
           <button
@@ -90,45 +92,57 @@ export default function DashboardHeader({ onMenuClick, onRestartTutorial, titleS
           })}
         </nav>
 
+        {shell.Search && <shell.Search />}
+
         {/* Who's online (click for the share panel) */}
         {presence.length > 0 && (
-          <button type="button" onClick={() => setShareOpen(true)} className="hidden md:flex p-1 rounded-full hover:bg-black/5"
+          <button type="button" onClick={() => setShareOpen(true)} className="hidden md:flex p-1 rounded-full hover:bg-contrast/5"
             aria-label={`${presence.length} collaborator${presence.length === 1 ? '' : 's'} online`}>
             <CollaboratorAvatars people={presence} max={3} />
           </button>
         )}
 
-        <button
-          id="header-share"
-          type="button"
-          onClick={() => setShareOpen(true)}
-          aria-label="Share dashboard"
-          title="Share — invite collaborators"
-          className="flex items-center gap-2 p-2 xl:px-3 rounded-xl text-sm font-medium text-soft hover:bg-accent/10 hover:text-accent transition-colors"
-        >
-          <Share2 className="w-5 h-5" />
-          <span className="hidden xl:inline">Share</span>
-        </button>
-
-        <button
-          id="header-history"
-          type="button"
-          onClick={openHistory}
-          aria-label="Version history"
-          title="Version history"
-          className="p-2 rounded-xl text-soft hover:bg-accent/10 hover:text-accent transition-colors"
-        >
-          <History className="w-5 h-5" />
-        </button>
-
-        <button aria-label="Restart Dashboard Tour"
-          id="header-restart"
-          onClick={onRestartTutorial}
-          className="hidden sm:block p-2 rounded-xl text-muted hover:bg-black/5 transition-colors"
-          title="Restart Dashboard Tour"
-        >
-          <Info className="w-5 h-5" />
-        </button>
+        {shell.headerActions.map((action) => {
+          if (action === 'share') return (
+            <button
+              key="share"
+              id="header-share"
+              type="button"
+              onClick={() => setShareOpen(true)}
+              aria-label="Share dashboard"
+              title="Share — invite collaborators"
+              className={`flex items-center gap-2 p-2 xl:px-3 rounded-xl text-sm font-medium transition-colors ${shell.headerButtonClass}`}
+            >
+              <Share2 className="w-5 h-5" />
+              <span className="hidden xl:inline">Share</span>
+            </button>
+          );
+          if (action === 'history') return (
+            <button
+              key="history"
+              id="header-history"
+              type="button"
+              onClick={openHistory}
+              aria-label="Version history"
+              title="Version history"
+              className={`p-2 rounded-xl transition-colors ${shell.headerButtonClass}`}
+            >
+              <History className="w-5 h-5" />
+            </button>
+          );
+          if (action === 'tour') return (
+            <button aria-label="Restart Dashboard Tour"
+              key="tour"
+              id="header-restart"
+              onClick={onRestartTutorial}
+              className="hidden sm:block p-2 rounded-xl text-muted hover:bg-contrast/5 transition-colors"
+              title="Restart Dashboard Tour"
+            >
+              <Info className="w-5 h-5" />
+            </button>
+          );
+          return null;
+        })}
 
         {shell.Notifications && <shell.Notifications />}
 

@@ -14,7 +14,7 @@ export default function AdminModal({ isOpen, onClose, title, children, size = 'm
 
   return (
     <Overlay onClose={onClose} closeOnBackdrop={false}>
-      <div className={`bg-white rounded-2xl w-full ${sizeClasses[size]} p-6 shadow-xl animate-in zoom-in duration-200`}>
+      <div className={`bg-surface rounded-2xl w-full ${sizeClasses[size]} p-6 shadow-xl animate-in zoom-in duration-200`}>
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-medium text-body">{title}</h2>
           <button onClick={onClose} aria-label="Close dialog" className="p-1 hover:bg-tone-100 rounded-lg transition-colors">

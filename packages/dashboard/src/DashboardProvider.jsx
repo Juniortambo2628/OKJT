@@ -36,6 +36,22 @@ const DEFAULT_SHELL = {
   Banner: null,
   Notifications: null,
   AccountMenu: null,
+  // The frame's shape and look (defaults: Naoa's).
+  sidebarWidth: 280,
+  collapsible: false,
+  railWidth: 80,
+  logoClass: 'h-10 w-auto',
+  railLogoClass: 'h-9 w-12 object-contain',
+  navTitleClass: 'px-3 mb-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white/50',
+  navItemClass: 'px-3 py-2 rounded-lg',
+  navActiveClass: 'text-accent-dark bg-white shadow-sm',
+  navIdleClass: 'text-white/75 hover:text-accent-dark hover:bg-white',
+  headerButtonClass: 'text-soft hover:bg-accent/10 hover:text-accent',
+  headerActions: ['share', 'history', 'tour'],
+  HeaderStart: null,
+  Search: null,
+  HistoryDrawer: null,
+  ShareModal: null,
 };
 
 /**
@@ -68,6 +84,20 @@ const DEFAULT_SHELL = {
  *                     and the account menu (it gets `compactLinks`)
  *   shell.background, sidebarBackground, sidebarScrollbar, headerBackground,
  *   headerBorder, badgeClass   CSS for the frame (theme-based by default)
+ *   shell.sidebarWidth  the sidebar's width in px (280)
+ *   shell.collapsible   on wide screens the menu button folds the sidebar to a
+ *                     rail of icons (shell.railWidth px, 80); remembered
+ *   shell.logoClass, railLogoClass, navTitleClass, navItemClass, navActiveClass,
+ *   navIdleClass, headerButtonClass   classes for the logo, the sidebar's
+ *                     group titles and pages, and the header's buttons
+ *   shell.headerActions  the header's own buttons, in order: 'share',
+ *                     'history', 'tour' (leave one out to hide it)
+ *   shell.HeaderStart  the project's own pieces after the page title (e.g. a
+ *                     workspace switcher)
+ *   shell.Search      the project's search, before who's online
+ *   shell.HistoryDrawer, shell.ShareModal   the project's own version history
+ *                     and share panels ({ open, onClose }) in place of the
+ *                     kit's (which need okjt/laravel-kit's API)
  *   tutorialSteps     the guided tour (see AdminTutorial)
  */
 export function DashboardProvider({ dashboard, children }) {

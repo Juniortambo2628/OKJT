@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Wallet, PieChart } from 'lucide-react'
@@ -14,11 +14,11 @@ const shell = {
   AccountMenu: ({ compactLinks }) => <div>Account ({compactLinks.length} links)</div>,
 }
 
-function renderShell(path = '/app/expenses') {
+function renderShell(path = '/app/expenses', extra = {}) {
   return render(
     <MemoryRouter initialEntries={[path]}>
       <QueryClientProvider client={new QueryClient()}>
-        <DashboardProvider dashboard={{ api, modules: [{ key: 'expenses', path: '/app/expenses', label: 'Expenses' }], home: { label: 'Home', path: '/app' }, shell }}>
+        <DashboardProvider dashboard={{ api, modules: [{ key: 'expenses', path: '/app/expenses', label: 'Expenses' }], home: { label: 'Home', path: '/app' }, shell: { ...shell, ...extra } }}>
           <DashboardShell><p>Page body</p></DashboardShell>
         </DashboardProvider>
       </QueryClientProvider>
@@ -45,5 +45,48 @@ describe('DashboardShell', () => {
       wrapper: ({ children }) => <QueryClientProvider client={new QueryClient()}><DashboardProvider dashboard={{ api }}>{children}</DashboardProvider></QueryClientProvider>,
     })
     expect(screen.getByText('Bare')).toBeInTheDocument()
+  })
+
+  it('folds to a rail of icons on wide screens when collapsible, and remembers it', () => {
+    window.matchMedia = vi.fn(() => ({ matches: true, addEventListener() {}, removeEventListener() {} }))
+    localStorage.removeItem('okjt.sidebar.collapsed')
+    const { unmount } = renderShell('/app/expenses', { collapsible: true, sidebarWidth: 256 })
+    expect(document.documentElement.style.getPropertyValue('--okjt-sidebar-w')).toBe('256px')
+    expect(screen.getByText('Money')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /Open sidebar menu/ }))
+    expect(screen.queryByText('Money')).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Expenses/ })).toHaveAttribute('title', 'Expenses')
+    expect(document.documentElement.style.getPropertyValue('--okjt-sidebar-w')).toBe('80px')
+    expect(localStorage.getItem('okjt.sidebar.collapsed')).toBe('1')
+    unmount()
+
+    renderShell('/app/expenses', { collapsible: true })
+    expect(screen.queryByText('Money')).not.toBeInTheDocument()
+    delete window.matchMedia
+  })
+
+  it("takes the project's header pieces and its own history and share panels", () => {
+    const HistoryDrawer = ({ open }) => (open ? <div>Our history</div> : null)
+    const ShareModal = ({ open }) => (open ? <div>Our sharing</div> : null)
+    renderShell('/app/expenses', {
+      HeaderStart: () => <button type="button">All projects</button>,
+      Search: () => <input aria-label="Search everything" />,
+      headerActions: ['history', 'share'],
+      HistoryDrawer,
+      ShareModal,
+    })
+    const header = within(document.getElementById('header'))
+    expect(header.getByRole('button', { name: 'All projects' })).toBeInTheDocument()
+    expect(header.getByRole('textbox', { name: 'Search everything' })).toBeInTheDocument()
+    expect(header.queryByRole('button', { name: 'Restart Dashboard Tour' })).not.toBeInTheDocument()
+    const [first, second] = header.getAllByRole('button', { name: /Version history|Share dashboard/ })
+    expect(first).toHaveAccessibleName('Version history')
+    expect(second).toHaveAccessibleName('Share dashboard')
+
+    fireEvent.click(first)
+    expect(screen.getByText('Our history')).toBeInTheDocument()
+    fireEvent.click(second)
+    expect(screen.getByText('Our sharing')).toBeInTheDocument()
   })
 })

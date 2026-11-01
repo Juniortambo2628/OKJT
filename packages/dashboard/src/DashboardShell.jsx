@@ -21,17 +21,29 @@ function ResetSearchOnNavigate({ pathname }) {
 }
 
 // Share and Version history are opened from the header, rendered once here.
+// A project may bring its own (shell.ShareModal, shell.HistoryDrawer).
 function CollaborationPanels() {
+  const { shell } = useDashboard();
   const { shareOpen, setShareOpen, historyOpen, closeHistory, module, notifyDataRestored } = useCollaboration();
   return (
     <>
-      <ShareModal isOpen={shareOpen} onClose={() => setShareOpen(false)} />
-      <AnimatePresence>
-        {historyOpen && <VersionHistoryDrawer module={module} onClose={closeHistory} onRestored={notifyDataRestored} />}
-      </AnimatePresence>
+      {shell.ShareModal
+        ? <shell.ShareModal open={shareOpen} onClose={() => setShareOpen(false)} />
+        : <ShareModal isOpen={shareOpen} onClose={() => setShareOpen(false)} />}
+      {shell.HistoryDrawer
+        ? <shell.HistoryDrawer open={historyOpen} onClose={closeHistory} module={module} onRestored={notifyDataRestored} />
+        : (
+          <AnimatePresence>
+            {historyOpen && <VersionHistoryDrawer module={module} onClose={closeHistory} onRestored={notifyDataRestored} />}
+          </AnimatePresence>
+        )}
     </>
   );
 }
+
+const COLLAPSED_KEY = 'okjt.sidebar.collapsed';
+const readCollapsed = () => { try { return localStorage.getItem(COLLAPSED_KEY) === '1'; } catch { return false; } };
+const isWide = () => typeof window !== 'undefined' && window.matchMedia?.('(min-width: 1024px)').matches;
 
 // Remounts the page after a version is restored, so pages that keep their
 // own copy of the data (not just React Query) reload it too.
@@ -63,6 +75,16 @@ function PageContent({ pathname, children }) {
 export default function DashboardShell({ children }) {
   const { shell, tutorialSteps } = useDashboard();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  // shell.collapsible: the rail of icons on wide screens, remembered.
+  const [collapsed, setCollapsed] = useState(() => shell.collapsible && readCollapsed());
+  const onMenuClick = () => {
+    if (!shell.collapsible || !isWide()) return setSidebarOpen(true);
+    setCollapsed((was) => {
+      try { localStorage.setItem(COLLAPSED_KEY, was ? '0' : '1'); } catch { /* not remembered */ }
+      return !was;
+    });
+  };
+  const sidebarWidth = collapsed ? shell.railWidth : shell.sidebarWidth;
   const [restartTutorial, setRestartTutorial] = useState(false);
   const location = useLocation();
   // Header slots pages portal into (compact title, status) — see AdminChromeContext.
@@ -76,6 +98,12 @@ export default function DashboardShell({ children }) {
     return () => document.documentElement.classList.remove('admin-theme');
   }, []);
 
+  // The sidebar's width, for the page and for fixed pieces portalled outside it.
+  useEffect(() => {
+    document.documentElement.style.setProperty('--okjt-sidebar-w', `${sidebarWidth}px`);
+    return () => document.documentElement.style.removeProperty('--okjt-sidebar-w');
+  }, [sidebarWidth]);
+
   return (
     <MotionConfig reducedMotion="user">
     <SearchProvider>
@@ -86,11 +114,12 @@ export default function DashboardShell({ children }) {
         className="min-h-screen"
         style={{ background: shell.background }}
       >
-        <DashboardSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        
-        <div className="lg:ml-[280px]">
-          <DashboardHeader 
-            onMenuClick={() => setSidebarOpen(true)} 
+        <DashboardSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} collapsed={collapsed} />
+
+        <div className="lg:ml-[var(--okjt-sidebar-w,280px)]">
+          <DashboardHeader
+            onMenuClick={onMenuClick}
+            menuExpanded={!collapsed}
             onRestartTutorial={() => setRestartTutorial(prev => !prev)}
             titleSlotRef={setTitleSlot}
             statusSlotRef={setStatusSlot}

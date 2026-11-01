@@ -74,7 +74,7 @@ export default function AdminFloatingToolbar({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 20, scale: 0.96 }}
           transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-          className={`fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] sm:bottom-6 left-1/2 lg:left-[calc(50%+140px)] -translate-x-1/2 ${z} w-max max-w-[calc(100vw-1rem)] sm:max-w-[calc(100vw-1.5rem)] lg:max-w-[calc(100vw-280px-1.5rem)] ${wrapperClassName}`}
+          className={`fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] sm:bottom-6 left-1/2 lg:left-[calc(50%+var(--okjt-sidebar-w,280px)/2)] -translate-x-1/2 ${z} w-max max-w-[calc(100vw-1rem)] sm:max-w-[calc(100vw-1.5rem)] lg:max-w-[calc(100vw-var(--okjt-sidebar-w,280px)-1.5rem)] ${wrapperClassName}`}
         >
           <div
             // Phones: tighter spacing and smaller buttons (see .admin-floating-toolbar
@@ -133,7 +133,7 @@ export default function AdminFloatingToolbar({
                       initial={{ opacity: 0, y: 8, scale: 0.96 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                      className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 min-w-[10rem] bg-white rounded-xl shadow-xl border border-tone-100 py-2 overflow-hidden"
+                      className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 min-w-[10rem] bg-surface rounded-xl shadow-xl border border-tone-100 py-2 overflow-hidden"
                     >
                       {overflowActions.map((action) => {
                         const Icon = action.icon;
@@ -163,7 +163,7 @@ export default function AdminFloatingToolbar({
             {/* Visibility toggler */}
             <button aria-label="Hide toolbar"
               onClick={() => setVisible(false)}
-              className="p-2 rounded-xl text-tone-400 hover:text-tone-600 hover:bg-white/60 transition-colors"
+              className="p-2 rounded-xl text-tone-400 hover:text-tone-600 hover:bg-surface/60 transition-colors"
               title="Hide toolbar"
             >
               <ChevronDown className="w-4 h-4" />
@@ -179,7 +179,7 @@ export default function AdminFloatingToolbar({
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setVisible(true)}
-          className={`fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] sm:bottom-6 left-1/2 lg:left-[calc(50%+140px)] -translate-x-1/2 ${z} p-2.5 rounded-full bg-white/90 border border-tone-200 shadow-lg text-accent hover:bg-white transition-colors ${wrapperClassName}`}
+          className={`fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] sm:bottom-6 left-1/2 lg:left-[calc(50%+var(--okjt-sidebar-w,280px)/2)] -translate-x-1/2 ${z} p-2.5 rounded-full bg-surface/90 border border-tone-200 shadow-lg text-accent hover:bg-surface transition-colors ${wrapperClassName}`}
           title={narrowed ? 'Show toolbar (search or filters active)' : 'Show toolbar'}
         >
           <ChevronUp className="w-5 h-5" />

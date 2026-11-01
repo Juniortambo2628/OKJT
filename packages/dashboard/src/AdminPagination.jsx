@@ -43,7 +43,7 @@ export default function AdminPagination({
   const to = Math.min(currentPage * pageSize, totalItems);
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 bg-white px-4 py-2.5">
+    <div className="flex flex-wrap items-center justify-between gap-3 bg-surface px-4 py-2.5">
       <div className="flex items-center gap-3 text-sm text-tone-600">
         <span>
           <span className="font-medium">{from}</span>–<span className="font-medium">{to}</span> of{' '}
