@@ -1,5 +1,9 @@
 name: Packages release
 
+# To release: bump the package versions, set packages/VERSION, push to main.
+# To retry after a failure (say a missing trusted publisher): Re-run failed
+# jobs in the Actions tab, or push any change to this file.
+#
 # A release happens when packages/VERSION names a version that has no
 # release yet and that commit reaches main: this workflow creates the tag
 # v<VERSION> and its GitHub release, then does the two steps below. (Pushing
