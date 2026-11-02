@@ -5,8 +5,10 @@
 Upgrade both together: the server's two-step sign-in changed.
 
 1. `npm i @okjt/dashboard@^0.4.0 @okjt/ui@^0.2.1` and `composer require okjt/laravel-kit:^0.4.0`
-2. `php artisan migrate`: the kit's `login_codes` table (skipped where the
-   app already has one).
+2. Only if you'll use sign-in with an emailed code: the `login_codes`
+   table. `php artisan vendor:publish --tag=okjt-migrations`, then
+   `php artisan migrate` (the table is skipped where the app already has
+   one). From 0.2.x, also regenerate the theme (see 0.3.0 below).
 3. **Breaking: two-step sign-in needs the challenge.** `/login` (and an
    emailed code, a passkey, Google, an email link) now answers a two-step
    person with `{ requires_2fa, email, challenge }`; `/verify-2fa` takes
