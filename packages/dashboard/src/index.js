@@ -9,6 +9,7 @@ export { default as StatCard } from './StatCard.js';
 export { default as AdminFloatingToolbar } from './AdminFloatingToolbar.js';
 export { default as AdminToolbarSearch } from './AdminToolbarSearch.js';
 export { default as AdminToolbarFilters, countActiveFilters } from './AdminToolbarFilters.js';
+export { countActiveFilterLists } from './BoldToolbar.js';
 export { SidePanelNav, SidePanelAside, SidePanelMobileBar } from './AdminSidePanel.js';
 export { default as AdminListPanel } from './AdminListPanel.js';
 export { default as AdminPagination, pageWindow } from './AdminPagination.js';

@@ -6,6 +6,8 @@ import AdminToolbarSearch from './AdminToolbarSearch.js';
 import AdminToolbarFilters, { countActiveFilters } from './AdminToolbarFilters.js';
 import { useSearch } from './SearchContext.js';
 import { Button, useVisibleActions } from '@okjt/ui';
+import BoldToolbar from './BoldToolbar.js';
+import { useComponentDefaults } from './DashboardProvider.js';
 
 /**
  * AdminFloatingToolbar — the shared, fixed bottom-center toolbar that every
@@ -32,8 +34,18 @@ import { Button, useVisibleActions } from '@okjt/ui';
  * @param {object} filters - filter/sort/view config, see AdminToolbarFilters.
  * @param {string} z - z-index utility class for the fixed wrapper (default z-50).
  * @param {string} wrapperClassName - extra classes for the fixed wrapper.
+ *
+ * variant="bold" (or componentDefaults.FloatingToolbar): one glass bar for
+ * dark dashboards, which also takes a view switch, a selection with its
+ * actions, filters as simple lists with saved views, and link actions —
+ * see BoldToolbar.jsx.
  */
-export default function AdminFloatingToolbar({
+export default function AdminFloatingToolbar(ownProps) {
+  const { variant = 'plain', ...props } = useComponentDefaults('FloatingToolbar', ownProps);
+  return variant === 'bold' ? <BoldToolbar {...props} /> : <PlainToolbar {...props} />;
+}
+
+function PlainToolbar({
   actions = [],
   children = null,
   search = null,
