@@ -20,6 +20,8 @@ const DEFAULTS = {
   anonymousName: 'Someone',
   removeCollaborator: null,
   tutorialSteps: [],
+  iconFor: () => null,
+  componentDefaults: {},
 };
 
 /** The shell's defaults: drawn from the theme, nothing project-specific. */
@@ -114,9 +116,22 @@ const DEFAULT_SHELL = {
  *                     and share panels ({ open, onClose }) in place of the
  *                     kit's (which need okjt/laravel-kit's API)
  *   tutorialSteps     the guided tour (see AdminTutorial)
+ *   iconFor(name)     a project's icons by name: components that take an
+ *                     `icon` accept a component or a name, resolved here
+ *                     (e.g. Font Awesome class names)
+ *   componentDefaults the project's default props per component, e.g.
+ *                     { EmptyState: { variant: 'card' } }; a page's own
+ *                     props win
  */
 export function DashboardProvider({ dashboard, children }) {
   return <DashboardContext.Provider value={dashboard}>{children}</DashboardContext.Provider>;
+}
+
+/** A component's props with the project's defaults (componentDefaults) under them. */
+export function useComponentDefaults(name, props) {
+  const { componentDefaults } = useDashboard();
+  const defaults = componentDefaults?.[name];
+  return defaults ? { ...defaults, ...props } : props;
 }
 
 /** The dashboard settings, with the defaults filled in. */

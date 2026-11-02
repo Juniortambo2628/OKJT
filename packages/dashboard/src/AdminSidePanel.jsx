@@ -1,3 +1,5 @@
+import { useDashboard, useComponentDefaults } from './DashboardProvider.js';
+import DashboardIcon, { toIcon } from './DashboardIcon.js';
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, Reorder, motion, useDragControls } from 'framer-motion';
 import { Check, CheckSquare, ChevronUp, GripVertical, ListChecks, PanelRightClose, PanelRightOpen, X } from 'lucide-react';
@@ -51,7 +53,18 @@ import { Button, Overlay, buttonClass, usePermissions, useVisibleActions } from 
  *     full list in the bottom sheet, where items can be dragged and selected.
  */
 
+/**
+ * The panel's look: 'plain' (the default) or 'bold' (glass card, centred
+ * rows, the count beside the label, tinted chips: for dark dashboards).
+ * Set per project: componentDefaults: { SidePanel: { variant: 'bold' } }.
+ */
+const useLook = () => useComponentDefaults('SidePanel', {}).variant || 'plain';
+
+/** A named icon the project may draw itself (iconFor), else the kit's. */
+const Named = ({ name, fallback: Fallback, className }) => <DashboardIcon icon={name} fallback={Fallback} className={className} />;
+
 function Badge({ item }) {
+  if (useLook() === 'bold') return <BoldBadge item={item} />;
   if (item.badge > 0) {
     return (
       <span className="ml-auto shrink-0 min-w-[1.25rem] h-5 px-1.5 rounded-full bg-accent/15 text-accent-dark text-[11px] font-semibold flex items-center justify-center">
@@ -68,8 +81,23 @@ function Badge({ item }) {
   return null;
 }
 
+function BoldBadge({ item }) {
+  if (item.badge > 0) {
+    return (
+      <span className="ml-auto flex h-5 min-w-[1.25rem] shrink-0 items-center justify-center rounded-full bg-accent/15 px-1.5 text-[11px] font-semibold text-accent-dark">
+        {item.badge > 99 ? '99+' : item.badge}
+      </span>
+    );
+  }
+  if (item.dot) return <span className="ml-auto h-2 w-2 shrink-0 rounded-full bg-amber-400" aria-label="Unsaved changes" />;
+  if (item.count != null) return <span className="ml-auto shrink-0 text-xs tabular-nums text-tone-400">{item.count}</span>;
+  return null;
+}
+
 /** The section switcher. */
 export function SidePanelNav({ panel, onPicked, selection, manage = {} }) {
+  const { iconFor } = useDashboard();
+  const look = useLook();
   const { items = [], activeId, onChange, navVariant = 'list' } = panel;
   if (!items.length) return null;
 
@@ -82,7 +110,7 @@ export function SidePanelNav({ panel, onPicked, selection, manage = {} }) {
     return (
       <div className={`grid gap-1 ${items.length <= 5 ? 'grid-cols-5' : 'grid-cols-4'}`} role="tablist" aria-label={panel.title}>
         {items.map((item) => {
-          const Icon = item.icon;
+          const Icon = toIcon(item.icon, iconFor);
           const active = item.id === activeId;
           return (
             <button
@@ -119,7 +147,7 @@ export function SidePanelNav({ panel, onPicked, selection, manage = {} }) {
   const row = ({ item, groupStart }, leading) => (
     <>
       {groupStart && (
-        <p className={`px-2 pb-1 text-[10px] font-bold uppercase tracking-[0.16em] text-tone-400 ${groupStart === 'later' ? 'pt-3' : ''}`}>{item.group}</p>
+        <p className={`${look === 'bold' ? 'px-2.5 pb-1 text-xs font-semibold capitalize text-tone-400' : 'px-2 pb-1 text-[10px] font-bold uppercase tracking-[0.16em] text-tone-400'} ${groupStart === 'later' ? 'pt-3' : ''}`}>{item.group}</p>
       )}
       <ItemRow
         item={item}
@@ -151,7 +179,32 @@ export function SidePanelNav({ panel, onPicked, selection, manage = {} }) {
 
 /** One row of the list switcher (or a checkbox row in select mode). */
 function ItemRow({ item, active, leading, selecting, checked, onClick }) {
-  const Icon = item.icon;
+  const { iconFor } = useDashboard();
+  const look = useLook();
+  const Icon = toIcon(item.icon, iconFor);
+  if (look === 'bold' && !selecting && !leading) {
+    return (
+      <button
+        type="button"
+        aria-current={active ? 'true' : undefined}
+        onClick={onClick}
+        className={`flex w-full items-center gap-3 rounded-xl border px-2 py-2 text-left text-sm transition ${
+          active ? 'border-accent-strong/20 bg-accent/10 text-ink' : 'border-transparent text-contrast/70 hover:bg-contrast/5 hover:text-ink'
+        }`}
+      >
+        {Icon && (
+          <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${active ? 'bg-contrast/10' : 'bg-tone-50'}`}>
+            <Icon className={`text-xs ${active ? 'text-accent-dark' : 'text-contrast/45'}`} aria-hidden="true" />
+          </span>
+        )}
+        <span className="min-w-0 flex-1">
+          <span className={`block truncate font-medium ${item.muted && !active ? 'text-tone-400' : ''}`}>{item.label}</span>
+          {item.description && <span className="block truncate text-xs text-tone-400">{item.description}</span>}
+        </span>
+        <Badge item={item} />
+      </button>
+    );
+  }
   return (
     <div className="flex items-center gap-1">
       {leading}
@@ -323,13 +376,15 @@ function BulkBar({ selection, actions }) {
 }
 
 function PanelHeader({ panel, children }) {
-  const Icon = panel.icon;
+  const { iconFor } = useDashboard();
+  const Icon = toIcon(panel.icon, iconFor);
+  const bold = useLook() === 'bold';
   return (
     <div className="flex items-start gap-2.5">
-      {Icon && <Icon className="w-5 h-5 text-accent mt-0.5 shrink-0" aria-hidden="true" />}
+      {Icon && <Icon className={bold ? 'mt-1 shrink-0 text-accent-dark' : 'w-5 h-5 text-accent mt-0.5 shrink-0'} aria-hidden="true" />}
       <div className="min-w-0 flex-1">
-        <h2 className="text-base font-medium text-tone-800 leading-tight">{panel.title}</h2>
-        {panel.subtitle && <p className="text-xs text-tone-500 mt-0.5">{panel.subtitle}</p>}
+        <h2 className={bold ? 'text-base font-semibold leading-tight text-ink' : 'text-base font-medium text-tone-800 leading-tight'}>{panel.title}</h2>
+        {panel.subtitle && <p className={bold ? 'mt-0.5 text-xs text-tone-500' : 'text-xs text-tone-500 mt-0.5'}>{panel.subtitle}</p>}
       </div>
       {children}
     </div>
@@ -348,27 +403,33 @@ function readCollapsed(panel) {
 
 /** Desktop, collapsed: a slim rail with the switcher's icons. */
 function SidePanelRail({ panel, onExpand }) {
-  const Icon = panel.icon;
+  const { iconFor } = useDashboard();
+  const Icon = toIcon(panel.icon, iconFor);
+  const bold = useLook() === 'bold';
   return (
     <aside
       aria-label={panel.title}
       data-side-panel="collapsed"
-      className="hidden lg:flex flex-col items-center gap-1.5 w-12 shrink-0 py-2 lg:sticky lg:top-20 self-start lg:max-h-[calc(100dvh-6.5rem)] overflow-y-auto scrollbar-hide bg-surface rounded-2xl shadow-sm border border-tone-100"
+      className={bold
+        ? 'hidden lg:flex w-12 shrink-0 flex-col items-center gap-1.5 self-start overflow-y-auto rounded-2xl border border-tone-100 bg-surface py-2 lg:sticky lg:top-20 lg:max-h-[calc(100dvh-6.5rem)]'
+        : 'hidden lg:flex flex-col items-center gap-1.5 w-12 shrink-0 py-2 lg:sticky lg:top-20 self-start lg:max-h-[calc(100dvh-6.5rem)] overflow-y-auto scrollbar-hide bg-surface rounded-2xl shadow-sm border border-tone-100'}
     >
       <button type="button" onClick={onExpand} aria-label={`Show ${panel.title}`} title={`Show ${panel.title}`}
-        className="p-2 rounded-lg text-tone-500 hover:bg-tone-100 hover:text-accent">
-        <PanelRightOpen className="w-4 h-4" />
+        className={bold ? 'rounded-lg p-2 text-tone-500 hover:bg-contrast/5 hover:text-ink' : 'p-2 rounded-lg text-tone-500 hover:bg-tone-100 hover:text-accent'}>
+        <Named name="panel-expand" fallback={PanelRightOpen} className={bold ? '' : 'w-4 h-4'} />
       </button>
-      {Icon && !panel.items?.length && <Icon className="w-4 h-4 text-accent my-1" aria-hidden="true" />}
+      {Icon && !panel.items?.length && <Icon className={bold ? 'my-1 text-accent-dark' : 'w-4 h-4 text-accent my-1'} aria-hidden="true" />}
       {panel.items?.map((item) => {
-        const ItemIcon = item.icon;
+        const ItemIcon = toIcon(item.icon, iconFor);
         const active = item.id === panel.activeId;
         return (
           <button key={item.id} type="button" onClick={() => panel.onChange?.(item.id)}
             aria-label={item.label} title={item.label} aria-current={active ? 'true' : undefined}
-            className={`relative p-2 rounded-lg ${active ? 'bg-accent/10 text-accent' : 'text-tone-500 hover:bg-tone-100'}`}>
-            {ItemIcon ? <ItemIcon className="w-4 h-4" /> : item.label.slice(0, 2)}
-            {(item.badge > 0 || item.dot) && <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-accent" />}
+            className={bold
+              ? `relative rounded-lg p-2 text-xs ${active ? 'bg-accent/10 text-accent-dark' : 'text-tone-500 hover:bg-contrast/5'}`
+              : `relative p-2 rounded-lg ${active ? 'bg-accent/10 text-accent' : 'text-tone-500 hover:bg-tone-100'}`}>
+            {ItemIcon ? <ItemIcon className={bold ? '' : 'w-4 h-4'} /> : item.label.slice(0, 2)}
+            {(item.badge > 0 || item.dot) && <span className={`absolute top-1 right-1 w-1.5 h-1.5 rounded-full ${bold ? 'bg-accent-strong' : 'bg-accent'}`} />}
           </button>
         );
       })}
@@ -379,6 +440,7 @@ function SidePanelRail({ panel, onExpand }) {
 
 /** Desktop: the right-hand column (or its collapsed rail). */
 export function SidePanelAside({ panel }) {
+  const look = useLook();
   const [collapsed, setCollapsed] = useState(() => readCollapsed(panel));
   const manage = usePanelManage(panel);
   const selection = useSelection(panel);
@@ -387,41 +449,48 @@ export function SidePanelAside({ panel }) {
     try { localStorage.setItem(storageKey(panel), next ? 'collapsed' : 'expanded'); } catch { /* storage unavailable */ }
   };
 
+  const bold = look === 'bold';
   if (collapsed) return <SidePanelRail panel={panel} onExpand={() => toggle(false)} />;
   const hasListNav = panel.items?.length > 0 && panel.navVariant !== 'grid';
 
   return (
     <aside
       aria-label={panel.title}
-      data-side-panel
-      className="hidden lg:flex flex-col w-80 xl:w-[22rem] shrink-0 lg:sticky lg:top-20 lg:max-h-[calc(100dvh-6.5rem)] fit:max-h-full self-start fit:self-stretch bg-surface rounded-2xl shadow-sm border border-tone-100 overflow-hidden"
+      data-side-panel={bold ? 'expanded' : true}
+      className={bold
+        ? 'hidden lg:flex w-72 2xl:w-80 shrink-0 flex-col self-start overflow-hidden rounded-2xl border border-tone-100 bg-surface lg:sticky lg:top-20 lg:max-h-[calc(100dvh-6.5rem)] fit:max-h-full fit:self-stretch'
+        : 'hidden lg:flex flex-col w-80 xl:w-[22rem] shrink-0 lg:sticky lg:top-20 lg:max-h-[calc(100dvh-6.5rem)] fit:max-h-full self-start fit:self-stretch bg-surface rounded-2xl shadow-sm border border-tone-100 overflow-hidden'}
     >
       {/* Pinned: title (and a compact tab grid, which is a toolbar, not a list) */}
-      <div className="shrink-0 p-4 pb-3 space-y-3 border-b border-tone-100">
+      <div className={bold ? 'shrink-0 border-b border-tone-100 p-4 pb-3' : 'shrink-0 p-4 pb-3 space-y-3 border-b border-tone-100'}>
         <PanelHeader panel={panel}>
           {manage.bulkActions.length > 0 && <SelectToggle selection={selection} />}
           <button type="button" onClick={() => toggle(true)} aria-label={`Hide ${panel.title}`} title="Collapse panel"
-            className="p-1.5 -m-1 rounded-lg text-tone-400 hover:bg-tone-100 hover:text-tone-600">
-            <PanelRightClose className="w-4 h-4" />
+            className={bold ? '-m-1 rounded-lg p-1.5 text-tone-400 hover:bg-contrast/5 hover:text-ink' : 'p-1.5 -m-1 rounded-lg text-tone-400 hover:bg-tone-100 hover:text-tone-600'}>
+            <Named name="panel-collapse" fallback={PanelRightClose} className={bold ? '' : 'w-4 h-4'} />
           </button>
         </PanelHeader>
         {panel.navVariant === 'grid' && <SidePanelNav panel={panel} />}
       </div>
       {/* Scrolls: the links and any tools/list */}
       {(hasListNav || panel.content) && (
-        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-3 space-y-4">
+        <div className={bold ? 'min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain p-3' : 'flex-1 min-h-0 overflow-y-auto overscroll-contain p-3 space-y-4'}>
           {hasListNav && <SidePanelNav panel={panel} manage={manage} selection={selection} />}
           {panel.content && <div className="px-1">{panel.content}</div>}
         </div>
       )}
       {selection.selecting && <BulkBar selection={selection} actions={manage.bulkActions} />}
-      {panel.footer && !selection.selecting && <div className="shrink-0 p-4 pt-3 border-t border-tone-100 bg-accent/[0.03]">{panel.footer}</div>}
+      {panel.footer && !selection.selecting && (
+        <div className={bold ? 'shrink-0 border-t border-tone-100 p-4 pt-3 text-sm text-tone-500' : 'shrink-0 p-4 pt-3 border-t border-tone-100 bg-accent/[0.03]'}>{panel.footer}</div>
+      )}
     </aside>
   );
 }
 
 /** Mobile: section chips that keep the active one scrolled into view. */
 function ChipRow({ panel, onPicked, className = '-mx-4 px-4' }) {
+  const { iconFor } = useDashboard();
+  const bold = useLook() === 'bold';
   const rowRef = useRef(null);
   const { items = [], activeId, onChange } = panel;
 
@@ -431,9 +500,9 @@ function ChipRow({ panel, onPicked, className = '-mx-4 px-4' }) {
   }, [activeId]);
 
   return (
-    <div ref={rowRef} className={`flex gap-2 overflow-x-auto scrollbar-hide py-0.5 snap-x ${className}`} aria-label={panel.title} role="navigation">
+    <div ref={rowRef} className={bold ? `flex snap-x gap-2 overflow-x-auto py-0.5 ${className}` : `flex gap-2 overflow-x-auto scrollbar-hide py-0.5 snap-x ${className}`} aria-label={panel.title} role="navigation">
       {items.map((item) => {
-        const Icon = item.icon;
+        const Icon = toIcon(item.icon, iconFor);
         const active = item.id === activeId;
         return (
           <button
@@ -441,13 +510,16 @@ function ChipRow({ panel, onPicked, className = '-mx-4 px-4' }) {
             type="button"
             aria-current={active ? 'true' : undefined}
             onClick={() => { onChange?.(item.id); onPicked?.(item.id); }}
-            className={`${buttonClass({ variant: active ? 'secondary' : 'primary', size: 'sm' })} snap-start shrink-0 !rounded-full relative`}
+            className={bold
+              ? `inline-flex shrink-0 snap-start items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium transition ${
+                active ? 'border-accent-strong/40 bg-accent/15 text-ink' : 'border-contrast/10 bg-contrast/5 text-contrast/70 hover:text-ink'}`
+              : `${buttonClass({ variant: active ? 'secondary' : 'primary', size: 'sm' })} snap-start shrink-0 !rounded-full relative`}
           >
-            {Icon && <Icon aria-hidden="true" />}
+            {Icon && <Icon className={bold ? 'text-xs' : undefined} aria-hidden="true" />}
             <span className={`max-w-[14rem] truncate ${item.muted && !active ? 'opacity-60' : ''}`}>{item.label}</span>
-            {item.count != null && <span className={`tabular-nums ${active ? 'opacity-80' : 'opacity-60'}`}>{item.count}</span>}
+            {item.count != null && <span className={`tabular-nums ${active && !bold ? 'opacity-80' : 'opacity-60'}`}>{item.count}</span>}
             {(item.badge > 0 || item.dot) && (
-              <span className={`w-1.5 h-1.5 rounded-full ${active ? 'bg-white' : 'bg-accent'}`} aria-hidden="true" />
+              <span className={`w-1.5 h-1.5 rounded-full ${bold ? 'bg-accent-strong' : active ? 'bg-white' : 'bg-accent'}`} aria-hidden="true" />
             )}
           </button>
         );
@@ -464,8 +536,9 @@ function ChipRow({ panel, onPicked, className = '-mx-4 px-4' }) {
 function BottomSheet({ panel, manage, onClose }) {
   const dragControls = useDragControls();
   const selection = useSelection(panel);
+  const bold = useLook() === 'bold';
   return (
-    <Overlay onClose={onClose} className="flex items-end justify-center" backdropClassName="bg-black/25" zIndex={60}>
+    <Overlay onClose={onClose} className="flex items-end justify-center" backdropClassName={bold ? 'bg-black/50' : 'bg-black/25'} zIndex={60}>
       <motion.div
         role="dialog"
         aria-modal="true"
@@ -481,16 +554,18 @@ function BottomSheet({ panel, manage, onClose }) {
         dragConstraints={{ top: 0, bottom: 0 }}
         dragElastic={{ top: 0, bottom: 0.6 }}
         onDragEnd={(_, info) => { if (info.offset.y > 90 || info.velocity.y > 500) onClose(); }}
-        className="w-full max-h-[78dvh] bg-surface rounded-t-3xl shadow-2xl flex flex-col pb-[env(safe-area-inset-bottom)]"
+        className={bold
+          ? 'flex max-h-[78dvh] w-full flex-col rounded-t-3xl border-t border-contrast/10 bg-surface pb-[env(safe-area-inset-bottom)] shadow-2xl'
+          : 'w-full max-h-[78dvh] bg-surface rounded-t-3xl shadow-2xl flex flex-col pb-[env(safe-area-inset-bottom)]'}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="shrink-0 pt-2 pb-3 px-4 space-y-3 border-b border-tone-100 cursor-grab active:cursor-grabbing touch-none"
+        <div className={`shrink-0 pt-2 pb-3 px-4 space-y-3 border-b ${bold ? 'border-tone-100' : 'border-tone-100'} cursor-grab active:cursor-grabbing touch-none`}
           onPointerDown={(e) => dragControls.start(e)}>
-          <div className="mx-auto w-10 h-1.5 rounded-full bg-tone-200" aria-hidden="true" />
+          <div className={`mx-auto w-10 h-1.5 rounded-full ${bold ? 'bg-contrast/15' : 'bg-tone-200'}`} aria-hidden="true" />
           <PanelHeader panel={panel}>
             {manage && manage.bulkActions.length > 0 && <SelectToggle selection={selection} />}
-            <button type="button" onClick={onClose} aria-label="Close panel" className="p-1.5 -m-1 rounded-lg text-tone-500 hover:bg-tone-100">
-              <X className="w-5 h-5" />
+            <button type="button" onClick={onClose} aria-label="Close panel" className={bold ? '-m-1 rounded-lg p-1.5 text-tone-600 hover:bg-contrast/5' : 'p-1.5 -m-1 rounded-lg text-tone-500 hover:bg-tone-100'}>
+              <Named name="close" fallback={X} className={bold ? '' : 'w-5 h-5'} />
             </button>
           </PanelHeader>
           {!manage && panel.items?.length > 0 && <ChipRow panel={panel} />}
@@ -507,15 +582,21 @@ function BottomSheet({ panel, manage, onClose }) {
 
 /** Mobile: the bar under the header (chips, or a button that opens the sheet). */
 export function SidePanelMobileBar({ panel }) {
+  const { iconFor } = useDashboard();
   const [sheet, setSheet] = useState(null); // null | 'content' | 'manage'
   const manage = usePanelManage(panel);
   const hasContent = !!panel.content;
   const hasItems = panel.items?.length > 0;
   const manageable = manage.canReorder || manage.bulkActions.length > 0;
-  const Icon = panel.icon;
+  const Icon = toIcon(panel.icon, iconFor);
+  const bold = useLook() === 'bold';
+  // Nothing to switch to and nothing to open: no bar.
+  if (!hasContent && !hasItems) return null;
 
   return (
-    <div className="lg:hidden sticky top-16 z-20 -mx-4 sm:-mx-6 px-4 sm:px-6 py-2 bg-paper/95 backdrop-blur border-b border-accent/10">
+    <div className={bold
+      ? 'sticky top-16 z-20 -mx-4 mb-4 border-b border-contrast/[0.06] bg-paper/95 px-4 py-2 backdrop-blur lg:hidden'
+      : 'lg:hidden sticky top-16 z-20 -mx-4 sm:-mx-6 px-4 sm:px-6 py-2 bg-paper/95 backdrop-blur border-b border-accent/10'}>
       {hasItems && (
         <div className="flex items-center gap-2">
           <ChipRow panel={panel} className={manageable ? 'flex-1 min-w-0 -ml-4 pl-4 pr-1' : '-mx-4 px-4 flex-1 min-w-0'}
@@ -530,14 +611,16 @@ export function SidePanelMobileBar({ panel }) {
         <button
           type="button"
           onClick={() => setSheet('content')}
-          className={`${buttonClass({ variant: 'primary', size: 'sm', fullWidth: true })} !justify-between`}
+          className={bold
+            ? 'flex w-full items-center justify-between gap-2 rounded-xl border border-contrast/10 bg-contrast/5 px-3 py-2 text-sm font-medium text-ink'
+            : `${buttonClass({ variant: 'primary', size: 'sm', fullWidth: true })} !justify-between`}
           aria-haspopup="dialog"
         >
           <span className="flex items-center gap-2 min-w-0">
-            {Icon && <Icon aria-hidden="true" />}
+            {Icon && <Icon className={bold ? 'text-accent-dark' : undefined} aria-hidden="true" />}
             <span className="truncate">{panel.sheetLabel || panel.title}</span>
           </span>
-          <ChevronUp aria-hidden="true" />
+          <Named name="chevron-up" fallback={ChevronUp} className={bold ? 'text-xs text-tone-500' : undefined} />
         </button>
       )}
       <AnimatePresence>

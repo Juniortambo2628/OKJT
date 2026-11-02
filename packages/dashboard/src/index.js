@@ -1,4 +1,4 @@
-export { DashboardProvider, useDashboard } from './DashboardProvider.js';
+export { DashboardProvider, useDashboard, useComponentDefaults } from './DashboardProvider.js';
 export { AdminChromeProvider, useAdminChrome, AdminHeaderStatus } from './AdminChromeContext.js';
 export { SearchProvider, useSearch } from './SearchContext.js';
 
@@ -20,6 +20,7 @@ export { default as EditableFieldset } from './EditableFieldset.js';
 export { default as DeleteButton } from './DeleteButton.js';
 export { default as ToggleButton } from './ToggleButton.js';
 export { default as EmptyState } from './EmptyState.js';
+export { default as DashboardIcon } from './DashboardIcon.js';
 export { default as QueryError } from './QueryError.js';
 export { default as UnsavedChangesStatus } from './UnsavedChangesStatus.js';
 export { default as AdminTutorial } from './AdminTutorial.js';

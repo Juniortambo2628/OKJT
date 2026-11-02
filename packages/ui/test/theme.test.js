@@ -43,6 +43,7 @@ test('surface and contrast default to white and black, and can be set', () => {
   const css = compileTheme({ theme: { colors } });
   assert.match(css, /--color-surface: #ffffff;/);
   assert.match(css, /--color-contrast: #000000;/);
+  assert.match(css, /--color-action: var\(--color-accent\);/);
   assert.match(compileTheme({ theme: { colors: { ...colors, surface: '#fafafa' } } }), /--color-surface: #fafafa;/);
 });
 

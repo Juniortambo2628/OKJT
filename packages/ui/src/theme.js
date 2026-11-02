@@ -32,6 +32,7 @@ export const COLOR_TOKENS = {
 export const OPTIONAL_COLOR_TOKENS = {
   surface: ['Cards, panels, menus and dialogs on the page', '#ffffff'],
   contrast: ['What hovers and pressed states shade toward: black on light, white on dark', '#000000'],
+  action: ['Solid action buttons (e.g. an empty list\'s next step)', 'var(--color-accent)'],
 };
 
 /** Steps of the grey ramp (`theme.colors.tone`), as Tailwind numbers them. */
