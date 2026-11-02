@@ -1,5 +1,54 @@
 # Upgrading
 
+## 0.3.0 → 0.4.0 (dashboard 0.4.0, laravel-kit 0.4.0)
+
+Upgrade both together: the server's two-step sign-in changed.
+
+1. `npm i @okjt/dashboard@^0.4.0` and `composer require okjt/laravel-kit:^0.4.0`
+2. `php artisan migrate`: the kit's `login_codes` table (skipped where the
+   app already has one).
+3. **Breaking: two-step sign-in needs the challenge.** `/login` (and an
+   emailed code, a passkey, Google, an email link) now answers a two-step
+   person with `{ requires_2fa, email, challenge }`; `/verify-2fa` takes
+   `{ challenge, code }`. A code with an email address alone no longer
+   signs anyone in. The kit's SignInPage and GoogleCallbackPage pass the
+   challenge for you; your own calls use `verify2fa(challenge, code)`.
+4. Wrong passwords are now throttled per address (5 a minute,
+   `okjt.auth.throttle`); the wording is `okjt.messages.bad_credentials`.
+
+New, all optional:
+
+- **Session mode** (`okjt.auth.mode = 'session'`, and
+  `<AuthProvider mode="session">`): sign in with Laravel's session cookie
+  instead of a bearer token, for an app on the API's own origin. Put the
+  auth routes on the `web` middleware. `initialUser` skips asking `/user`.
+- **Sign in with an emailed code**: LoginCodeController (`/login-code`,
+  `/login-code/verify`), and `emailCode` on SignInPage. Send your own email
+  with `okjt.auth.login_codes.notification`.
+- **Forgotten passwords**: PasswordResetController (`/forgot-password`,
+  `/reset-password`), ForgotPasswordPage and ResetPasswordPage. The emailed
+  link opens `{app.frontend_url}{okjt.auth.password_reset.path}/{token}`.
+- **Confirming the password**: ConfirmPasswordController
+  (`/confirm-password`, `/confirmed-password-status`), ConfirmPasswordPage.
+- **Recovery codes** for two-step sign-in: handed out when it's turned on,
+  `GET`/`POST /2fa/recovery-codes`, and accepted at the second step
+  ("Use a recovery code instead").
+- SignInPage: `remember`, `status`, `passkey` (false, or your own button),
+  `labels`, `emailAutoComplete`.
+- `okjt.auth.two_factor.secrets_encrypted`: secrets kept as Laravel Fortify
+  keeps them (an app moving from Fortify keeps everyone's two-step sign-in).
+- `okjt.auth.verified_to_sign_in` (default true): false lets people sign in
+  before verifying their address.
+- **The bold look** (`componentDefaults` in DashboardProvider, e.g.
+  `{ SidePanel: { variant: 'bold' } }`) for EmptyState, the side panel, the
+  floating toolbar, summary cards, page layout and hero; **icons by name**
+  (`iconFor` in DashboardProvider, DashboardIcon); `shell.menuNewsDot`;
+  `countActiveFilterLists`.
+
+Nothing changes on screen unless you ask for it. Naoa's dashboard and its
+sign-in page were compared element by element: no differences, except the
+new "Use a recovery code instead" link at the two-step step.
+
 ## Dashboard 0.2.2 → 0.3.0 (with @okjt/ui 0.1 → 0.2)
 
 Nothing changes on screen unless you ask for it. Naoa's dashboard was compared
