@@ -809,6 +809,43 @@ the product, a brand colour and a text colour, what people work on together
   verification email (each generated project carries a copy now), and the
   dashboard's base CSS (`fit:` and the `.admin-theme` styles).
 
+## Phase 6: Najenga on the kit
+
+Done 2026-11-02; live at najenga.okjtech.co.ke.
+
+* **(a) Roles like Naoa's:** superadmins, and a project's managers became
+  co-owners; clients own accounts, managers are their staff
+  (`okjt/laravel-kit` accounts).
+* **(b) The app** (`frontend/`, React 19, Tailwind 4): the public pages on
+  `@okjt/site` (restyled into the kit's layout, approved), and the dashboard
+  in the kit's `DashboardShell`, dressed as Najenga's dark dashboard with kit
+  0.3.0's `theme.dashboard` and shell options. Najenga's own pages
+  (`resources/js/Pages`) render inside it unchanged, through a small page API
+  (`Link`, `router`, `useForm`, `usePage`, `Head`). Moved one page group at a
+  time behind a switch, with screenshots of every page compared with the
+  Inertia pages before each step.
+* **(c) Inertia removed:** `App\Http\Page` answers the app with each page's
+  data as JSON, and a browser with `index.html` and the page inside; the
+  root Vite/Tailwind 3 build, `inertiajs/inertia-laravel`, `@inertiajs/react`
+  and Ziggy are gone. `frontend/` owns every JS package and runs all the JS
+  tests.
+* **Checked:** 40 dashboard pages and 10 sign-in and error pages at 1280 and
+  390 px identical to Najenga's before (the date fields' calendar icon is now
+  visible, the one agreed difference); sign-in (password, two-factor, email
+  code, reset), forms, validation, bulk actions and logout walked through;
+  705 PHP and 257 JS tests.
+
+**What the kit gained from it (0.3.0):** dark dashboards (`surface`,
+`contrast`, `theme.dashboard`), and shell options for frames unlike Naoa's
+(collapsible sidebar, header slots and actions, class hooks). Naoa compared
+element by element after each change: no differences.
+
+**Next, optional:** Najenga's pages still use their own list, panel and
+toolbar components, which mirror the kit's; they can move to the kit's
+(`AdminListPanel`, `AdminSidePanel`, `AdminFloatingToolbar`) one at a time,
+and the sign-in pages to the kit's `SignInPage` once Najenga's auth moves to
+`okjt/laravel-kit`'s API.
+
 ## Publishing
 
 All packages are public. Since v0.1.0 npm publishing uses Trusted
