@@ -32,6 +32,11 @@ class KitServiceProvider extends ServiceProvider
         // For new projects; a project that already has these tables skips them.
         $this->publishesMigrations([__DIR__.'/../database/migrations' => database_path('migrations')], 'okjt-migrations');
 
+        // The emailed reset link opens the app's reset page (PasswordResetController).
+        // A project that builds its own link calls createUrlUsing after this.
+        \Illuminate\Auth\Notifications\ResetPassword::createUrlUsing(fn ($user, string $token) => rtrim(config('app.frontend_url') ?: config('app.url'), '/')
+            .config('okjt.auth.password_reset.path', '/reset-password').'/'.$token.'?'.http_build_query(['email' => $user->getEmailForPasswordReset()]));
+
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'okjt');
 
         if ($this->app->runningInConsole()) {

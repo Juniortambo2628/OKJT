@@ -7,11 +7,30 @@ import { loginWithPasskey, passkeysSupported } from './passkeys.js';
 
 /**
  * Signing in: email and password, a passkey, or `google` (e.g. a
- * GoogleButton); then verifying the email address or a two-step code when
- * the server asks. `onSignedIn(result)` takes it from there (where to go);
- * return a message to show instead, e.g. when this person has no access here.
- * `layout` is the project's AuthLayout (its logo and panel).
+ * GoogleButton); then verifying the email address or a two-step code (or a
+ * recovery code) when the server asks. `onSignedIn(result)` takes it from
+ * there (where to go); return a message to show instead, e.g. when this
+ * person has no access here. `layout` is the project's AuthLayout (its logo
+ * and panel).
+ *
+ * Optional: `remember` (a "Remember me" box), `forgotHint` (e.g. a link to
+ * the ForgotPasswordPage, beside it), `emailCode` (a link to sign in with a
+ * code sent by email instead), `status` (a note above the form, e.g. "Your
+ * password has been reset."), `passkey` (false hides the passkey button; a
+ * node replaces it) and `labels` (the button and placeholder wording).
  */
+const LABELS = {
+  submit: 'Sign in',
+  submitting: 'Signing in…',
+  sendCode: 'Email me a code',
+  verifyCode: 'Verify & sign in',
+  emailPlaceholder: 'you@example.com',
+  passwordPlaceholder: 'Type your password',
+  remember: 'Remember me',
+  useCode: 'Email me a sign-in code instead',
+  usePassword: 'Use password instead',
+};
+
 export default function SignInPage({
   layout: Layout = AuthLayout,
   onSignedIn,
@@ -19,45 +38,85 @@ export default function SignInPage({
   subtitle,
   footer,
   forgotHint,
+  remember: offerRemember = false,
+  emailCode = false,
+  status,
+  passkey,
+  labels: labelsIn,
   google,
   idPrefix = 'sign-in',
 }) {
-  const { login, verify2fa, resendVerification, signedIn } = useAuth();
+  const labels = { ...LABELS, ...labelsIn };
+  const { login, verify2fa, resendVerification, signedIn, requestLoginCode, verifyLoginCode } = useAuth();
   const [error, setError] = useState(null);
+  const [notice, setNotice] = useState(status ?? null);
   const [loading, setLoading] = useState(false);
-  const [is2faRequired, setIs2faRequired] = useState(false);
-  const [emailFor2fa, setEmailFor2fa] = useState('');
+  const [challenge, setChallenge] = useState(null);
   const [twoFactorCode, setTwoFactorCode] = useState('');
+  const [useRecovery, setUseRecovery] = useState(false);
   const [needsVerification, setNeedsVerification] = useState(null);
   const [resendState, setResendState] = useState(null);
+  // 'password', or 'code' (an emailed code); codeFor is the address it went to.
+  const [method, setMethod] = useState('password');
+  const [codeFor, setCodeFor] = useState(null);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [emailedCode, setEmailedCode] = useState('');
 
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const { register, handleSubmit, resetField, formState: { errors } } = useForm();
 
   const done = (result) => {
     const problem = onSignedIn?.(result);
     if (typeof problem === 'string') setError(problem);
   };
 
-  const onSubmit = async (data) => {
-    setLoading(true);
-    setError(null);
-
-    const result = await login(data.email, data.password);
-
+  // What the server answered to any first step.
+  const settle = (result) => {
     if (result.requires_verification) {
       setNeedsVerification(result.email);
       setError(null);
     } else if (result.success) {
       if (result.requires_2fa) {
-        setIs2faRequired(true);
-        setEmailFor2fa(result.email);
+        setChallenge(result.challenge ?? '');
       } else {
         done(result);
       }
     } else {
-      setError(result.message);
+      setError(result.errors?.code?.[0] || result.message);
     }
+  };
+
+  const onSubmit = async (data) => {
+    setLoading(true);
+    setError(null);
+
+    if (method === 'code') {
+      if (!codeFor) {
+        const result = await requestLoginCode(data.email);
+        if (result.success) {
+          setCodeFor(data.email);
+          setNotice(result.message || 'If that address exists, a sign-in code is on its way.');
+        } else {
+          setError(result.message);
+        }
+      } else {
+        setNotice(null);
+        settle(await verifyLoginCode(codeFor, emailedCode));
+      }
+      setLoading(false);
+      return;
+    }
+
+    settle(await login(data.email, data.password, offerRemember && rememberMe ? { remember: true } : {}));
     setLoading(false);
+  };
+
+  const switchMethod = () => {
+    setMethod((m) => (m === 'password' ? 'code' : 'password'));
+    setCodeFor(null);
+    setError(null);
+    setNotice(null);
+    resetField('password');
+    setEmailedCode('');
   };
 
   const handleResend = async () => {
@@ -76,8 +135,7 @@ export default function SignInPage({
         return;
       }
       if (result.requires_2fa) {
-        setIs2faRequired(true);
-        setEmailFor2fa(result.email);
+        setChallenge(result.challenge ?? '');
         return;
       }
       done(signedIn(result));
@@ -93,7 +151,7 @@ export default function SignInPage({
     setLoading(true);
     setError(null);
 
-    const result = await verify2fa(emailFor2fa, twoFactorCode);
+    const result = await verify2fa(challenge, twoFactorCode);
 
     if (result.success) {
       done(result);
@@ -131,21 +189,46 @@ export default function SignInPage({
     );
   }
 
-  if (is2faRequired) {
+  if (challenge !== null) {
     return (
       <Layout
         title="Two-step verification"
-        subtitle="Enter the 6-digit code from your authenticator app to finish signing in."
-        footer={<button type="button" onClick={() => { setIs2faRequired(false); setError(null); }} className="hover:text-body">← Use a different account</button>}
+        subtitle={useRecovery
+          ? 'Enter one of the recovery codes you saved when you turned two-step sign-in on.'
+          : 'Enter the 6-digit code from your authenticator app to finish signing in.'}
+        footer={<button type="button" onClick={() => { setChallenge(null); setTwoFactorCode(''); setUseRecovery(false); setError(null); }} className="hover:text-body">← Use a different account</button>}
       >
         <AuthError>{error}</AuthError>
-        <TwoFactorForm id={`${idPrefix}-2fa`} code={twoFactorCode} onCode={setTwoFactorCode} loading={loading} onSubmit={handle2faVerify} />
+        <TwoFactorForm id={`${idPrefix}-2fa`} code={twoFactorCode} onCode={setTwoFactorCode} loading={loading} onSubmit={handle2faVerify} recovery={useRecovery} />
+        <div className="mt-4 text-center">
+          <button type="button" onClick={() => { setUseRecovery((r) => !r); setTwoFactorCode(''); setError(null); }} className="text-sm text-muted hover:text-body">
+            {useRecovery ? 'Use your authenticator app instead' : 'Use a recovery code instead'}
+          </button>
+        </div>
       </Layout>
     );
   }
 
+  const byCode = method === 'code';
+  const passkeyButton = passkey !== undefined ? passkey : passkeysSupported() && (
+    <button
+      type="button"
+      onClick={handlePasskey}
+      disabled={loading}
+      className="mb-3 flex w-full items-center justify-center gap-2 rounded-full border border-tone-200 bg-white px-4 py-3 text-sm font-semibold text-ink shadow-sm transition-colors hover:bg-tone-50 disabled:opacity-50"
+    >
+      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" />
+      </svg>
+      Sign in with a passkey
+    </button>
+  );
+
   return (
     <Layout title={title} subtitle={subtitle} footer={footer}>
+      {notice && (
+        <div role="status" className="mb-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-center text-sm text-emerald-700">{notice}</div>
+      )}
       <AuthError>{error}</AuthError>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
         <AuthField
@@ -153,7 +236,8 @@ export default function SignInPage({
           label="Email"
           type="email"
           autoComplete="email"
-          placeholder="you@example.com"
+          placeholder={labels.emailPlaceholder}
+          readOnly={byCode && !!codeFor}
           error={errors.email?.message}
           {...register('email', {
             required: 'Email is required',
@@ -163,41 +247,68 @@ export default function SignInPage({
             },
           })}
         />
-        <AuthField
-          id={`${idPrefix}-password`}
-          label="Password"
-          type="password"
-          autoComplete="current-password"
-          placeholder="Type your password"
-          error={errors.password?.message}
-          {...register('password', {
-            required: 'Password is required',
-            minLength: { value: 6, message: 'Password must be at least 6 characters' },
-          })}
-        />
-        {forgotHint && <div className="text-xs text-faint text-right -mt-1">{forgotHint}</div>}
+        {!byCode && (
+          <AuthField
+            id={`${idPrefix}-password`}
+            label="Password"
+            type="password"
+            autoComplete="current-password"
+            placeholder={labels.passwordPlaceholder}
+            error={errors.password?.message}
+            {...register('password', {
+              required: 'Password is required',
+              minLength: { value: 6, message: 'Password must be at least 6 characters' },
+            })}
+          />
+        )}
+        {byCode && codeFor && (
+          <AuthField
+            id={`${idPrefix}-code`}
+            label="Sign-in code"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            placeholder="6-digit code"
+            maxLength={6}
+            autoFocus
+            required
+            value={emailedCode}
+            onChange={(e) => setEmailedCode(e.target.value.replace(/\D/g, ''))}
+          />
+        )}
+        {!byCode && (offerRemember || forgotHint) && (
+          <div className={`flex items-center gap-3 -mt-1 ${offerRemember ? 'justify-between' : 'justify-end'}`}>
+            {offerRemember && (
+              <label className="flex cursor-pointer items-center gap-2 text-sm text-muted">
+                <input type="checkbox" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} className="h-4 w-4 rounded border-line accent-[var(--okjt-auth-focus,var(--color-accent))]" />
+                {labels.remember}
+              </label>
+            )}
+            {forgotHint && <div className={offerRemember ? 'text-sm text-muted' : 'text-xs text-faint text-right'}>{forgotHint}</div>}
+          </div>
+        )}
         <div className="pt-2">
-          <AuthSubmit loading={loading}>{loading ? 'Signing in…' : 'Sign in'}</AuthSubmit>
+          <AuthSubmit loading={loading}>
+            {loading ? labels.submitting : !byCode ? labels.submit : codeFor ? labels.verifyCode : labels.sendCode}
+          </AuthSubmit>
         </div>
       </form>
-      <div className="relative my-5" aria-hidden="true">
-        <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-tone-200" /></div>
-        <div className="relative flex justify-center text-xs"><span className="bg-white px-3 text-faint">or</span></div>
-      </div>
-      {passkeysSupported() && (
-        <button
-          type="button"
-          onClick={handlePasskey}
-          disabled={loading}
-          className="mb-3 flex w-full items-center justify-center gap-2 rounded-full border border-tone-200 bg-white px-4 py-3 text-sm font-semibold text-ink shadow-sm transition-colors hover:bg-tone-50 disabled:opacity-50"
-        >
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" />
-          </svg>
-          Sign in with a passkey
-        </button>
+      {(passkeyButton || google) && (
+        <>
+          <div className="relative my-5" aria-hidden="true">
+            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-tone-200" /></div>
+            <div className="relative flex justify-center text-xs"><span className="bg-white px-3 text-faint">or</span></div>
+          </div>
+          {passkeyButton}
+          {google}
+        </>
       )}
-      {google}
+      {emailCode && (
+        <div className="mt-4 text-center">
+          <button type="button" onClick={switchMethod} className="text-sm text-muted hover:text-body">
+            {byCode ? labels.usePassword : labels.useCode}
+          </button>
+        </div>
+      )}
     </Layout>
   );
 }

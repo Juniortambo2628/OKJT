@@ -6,8 +6,8 @@ import { AuthProvider, useAuth, DashboardProvider, NotificationsBell } from '../
 let auth
 function Probe() { auth = useAuth(); return <p>{auth.isAuthenticated ? `in as ${auth.user.name}` : 'out'}</p> }
 
-const wrap = (api, extend) => ({ children }) => (
-  <QueryClientProvider client={new QueryClient()}><AuthProvider api={api} extend={extend}>{children}</AuthProvider></QueryClientProvider>
+const wrap = (api, extend, mode) => ({ children }) => (
+  <QueryClientProvider client={new QueryClient()}><AuthProvider api={api} extend={extend} mode={mode}>{children}</AuthProvider></QueryClientProvider>
 )
 
 beforeEach(() => localStorage.clear())
@@ -37,12 +37,12 @@ describe('AuthProvider', () => {
   })
 
   it('passes on the two-step and unverified answers without signing in', async () => {
-    const answers = { a: { requires_2fa: true, email: 'a@x.co' }, b: { requires_verification: true, email: 'b@x.co' } }
+    const answers = { a: { requires_2fa: true, email: 'a@x.co', challenge: 'C' }, b: { requires_verification: true, email: 'b@x.co' } }
     const api = { get: vi.fn(), post: vi.fn(async (url, body) => ({ data: answers[body.email[0]] })) }
     render(<Probe />, { wrapper: wrap(api) })
     let r
     await act(async () => { r = await auth.login('a@x.co', 'pw') })
-    expect(r).toMatchObject({ success: true, requires_2fa: true })
+    expect(r).toMatchObject({ success: true, requires_2fa: true, challenge: 'C' })
     await act(async () => { r = await auth.login('b@x.co', 'pw') })
     expect(r).toMatchObject({ success: false, requires_verification: true, email: 'b@x.co' })
     expect(localStorage.getItem('auth_token')).toBeNull()
@@ -54,6 +54,21 @@ describe('AuthProvider', () => {
     render(<Probe />, { wrapper: wrap(api) })
     await waitFor(() => expect(screen.getByText('in as Bo')).toBeInTheDocument())
     expect(api.get).toHaveBeenCalledWith('/user')
+  })
+
+  it('in session mode, asks who is signed in without a token, and keeps none', async () => {
+    const api = {
+      get: vi.fn(async () => { throw new Error('401') }),
+      post: vi.fn(async () => ({ data: { user: { id: 5, name: 'Di' } } })),
+    }
+    render(<Probe />, { wrapper: wrap(api, undefined, 'session') })
+    await waitFor(() => expect(screen.getByText('out')).toBeInTheDocument())
+    expect(api.get).toHaveBeenCalledWith('/user')
+
+    await act(async () => { await auth.login('di@x.co', 'pw', { remember: true }) })
+    expect(api.post).toHaveBeenCalledWith('/login', { email: 'di@x.co', password: 'pw', remember: true })
+    expect(screen.getByText('in as Di')).toBeInTheDocument()
+    expect(localStorage.getItem('auth_token')).toBeNull()
   })
 })
 

@@ -57,5 +57,9 @@ export { default as AuthLayout, AuthField, AuthSubmit, AuthError } from './AuthL
 export { default as SignInPage } from './SignInPage.js';
 export { default as GoogleCallbackPage } from './GoogleCallbackPage.js';
 export { default as VerifyEmailPage } from './VerifyEmailPage.js';
+export { default as ForgotPasswordPage } from './ForgotPasswordPage.js';
+export { default as ResetPasswordPage } from './ResetPasswordPage.js';
+export { default as ConfirmPasswordPage } from './ConfirmPasswordPage.js';
+export { default as TwoFactorForm } from './TwoFactorForm.js';
 export { default as AcceptInvitePage } from './AcceptInvitePage.js';
 export { default as AccountMenu } from './AccountMenu.js';

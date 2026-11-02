@@ -25,7 +25,7 @@ use Okjt\Kit\Support\ApiResponse;
  * password does.
  *
  *   GET    /passkeys/login/options              → options
- *   POST   /passkeys/login                      → token, or requires_verification / requires_2fa
+ *   POST   /passkeys/login                      → signed in, or requires_verification / requires_2fa + challenge
  *   GET    /passkeys/options      (signed in)   → options for a new passkey
  *   POST   /passkeys              (signed in)   { name, credential }
  *   GET    /passkeys              (signed in)   → your passkeys
@@ -60,14 +60,7 @@ class PasskeyController extends Controller
             ], 'Please verify your email before signing in.');
         }
 
-        if ($user->two_factor_confirmed_at !== null) {
-            return $this->successResponse([
-                'requires_2fa' => true,
-                'email' => $user->email,
-            ]);
-        }
-
-        return $this->successResponse(['token' => $this->issueToken($user)] + $this->signedIn($user));
+        return $this->successResponse($this->signInOrChallenge($request, $user));
     }
 
     public function registerOptions(Request $request, GenerateRegistrationOptions $generate): JsonResponse

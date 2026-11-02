@@ -24,7 +24,7 @@ use Okjt\Kit\Support\Messages;
  *
  *   GET  /auth/google            (web)  → Google
  *   GET  /auth/google/callback   (web)  → {frontend}{okjt.auth.social.return_path}?code=…
- *   POST /api/auth/google        { code } → token, or requires_2fa
+ *   POST /api/auth/google        { code } → signed in, or requires_2fa + challenge
  *
  * Projects add what a first sign-in creates (joined), and what signing in
  * hands back (signedIn, see SignsPeopleIn).
@@ -77,14 +77,7 @@ class SocialAuthController extends Controller
             return $this->errorResponse(Messages::get('account_not_found'), 404);
         }
 
-        if ($user->two_factor_confirmed_at !== null) {
-            return $this->successResponse([
-                'requires_2fa' => true,
-                'email' => $user->email,
-            ]);
-        }
-
-        return $this->successResponse(['token' => $this->issueToken($user)] + $this->signedIn($user));
+        return $this->successResponse($this->signInOrChallenge($request, $user));
     }
 
     // ---- What a project changes ---------------------------------------------

@@ -247,9 +247,21 @@ class CollaborationController extends Controller
         Mail::raw($body, fn ($mail) => $mail->to($invitee->email)->subject("{$inviter->name} invited you to ".config('app.name')));
     }
 
-    /** What a newly accepted invitee gets back: a token to sign in with, and who they are. */
+    /**
+     * What a newly accepted invitee gets back: who they are, signed in (a
+     * token, or in session mode the session; see SignsPeopleIn).
+     */
     protected function acceptedPayload(Model $user): array
     {
+        if (config('okjt.auth.mode') === 'session') {
+            \Illuminate\Support\Facades\Auth::guard(config('okjt.auth.guard', 'web'))->login($user);
+            if (request()->hasSession()) {
+                request()->session()->regenerate();
+            }
+
+            return ['user' => $user->only(['id', 'name', 'email'])];
+        }
+
         return [
             'token' => $user->createToken(config('okjt.collaboration.token_name'))->plainTextToken,
             'user' => $user->only(['id', 'name', 'email']),

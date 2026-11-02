@@ -22,6 +22,8 @@ abstract class TestCase extends Orchestra
     {
         $app['config']->set('database.default', 'testing');
         $app['config']->set('okjt.user_model', User::class);
+        // Two-step sign-in seals its challenge with the app key.
+        $app['config']->set('app.key', 'base64:'.base64_encode(str_repeat('k', 32)));
         $app['config']->set('okjt.workspace.model', Project::class);
         $app['config']->set('okjt.accounts.model', Account::class);
         // Tests sign in with actingAs() on the default guard; apps use Sanctum.

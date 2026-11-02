@@ -107,9 +107,20 @@ class AuthTest extends TestCase
         $this->postJson('/api/2fa/confirm', ['code' => '000000'], $auth)->assertStatus(422);
         $this->postJson('/api/2fa/confirm', ['code' => (new Google2FA)->getCurrentOtp($secret)], $auth)->assertOk();
 
-        $this->postJson('/api/login', ['email' => 'bo@example.com', 'password' => 'secret-pass'])->assertJsonPath('data.requires_2fa', true);
-        $this->postJson('/api/verify-2fa', ['email' => 'bo@example.com', 'code' => '000000'])->assertStatus(422)->assertJson(['message' => 'Invalid 2FA code']);
-        $this->postJson('/api/verify-2fa', ['email' => 'bo@example.com', 'code' => (new Google2FA)->getCurrentOtp($secret)])
+        $login = $this->postJson('/api/login', ['email' => 'bo@example.com', 'password' => 'secret-pass'])
+            ->assertJsonPath('data.requires_2fa', true)->assertJsonMissingPath('data.token');
+        $challenge = $login->json('data.challenge');
+        $code = (new Google2FA)->getCurrentOtp($secret);
+
+        // A code alone, a forged challenge or a stale one signs nobody in.
+        $this->postJson('/api/verify-2fa', ['email' => 'bo@example.com', 'code' => $code])->assertStatus(422)->assertJsonValidationErrors('challenge');
+        $this->postJson('/api/verify-2fa', ['challenge' => 'forged', 'code' => $code])->assertStatus(422)->assertJson(['message' => 'This sign-in has expired. Please start again.']);
+        $this->travel(6)->minutes();
+        $this->postJson('/api/verify-2fa', ['challenge' => $challenge, 'code' => (new Google2FA)->getCurrentOtp($secret)])->assertStatus(422);
+        $this->travelBack();
+
+        $this->postJson('/api/verify-2fa', ['challenge' => $challenge, 'code' => '000000'])->assertStatus(422)->assertJson(['message' => 'Invalid 2FA code']);
+        $this->postJson('/api/verify-2fa', ['challenge' => $challenge, 'code' => $code])
             ->assertOk()->assertJsonStructure(['data' => ['token', 'user']]);
 
         $this->postJson('/api/2fa/disable', [], $auth)->assertOk();

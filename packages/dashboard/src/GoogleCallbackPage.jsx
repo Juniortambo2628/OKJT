@@ -14,7 +14,7 @@ export default function GoogleCallbackPage({ layout: Layout = AuthLayout, onSign
   const { loginWithGoogle, verify2fa } = useAuth();
   const [error, setError] = useState(null);
   const [needs2fa, setNeeds2fa] = useState(false);
-  const [emailFor2fa, setEmailFor2fa] = useState('');
+  const [challenge, setChallenge] = useState('');
   const [code2fa, setCode2fa] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -32,7 +32,7 @@ export default function GoogleCallbackPage({ layout: Layout = AuthLayout, onSign
       if (cancelled) return;
       if (result.requires_2fa) {
         setNeeds2fa(true);
-        setEmailFor2fa(result.email);
+        setChallenge(result.challenge);
         setLoading(false);
         return;
       }
@@ -55,7 +55,7 @@ export default function GoogleCallbackPage({ layout: Layout = AuthLayout, onSign
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const result = await verify2fa(emailFor2fa, code2fa);
+    const result = await verify2fa(challenge, code2fa);
     if (result.success) {
       const problem = onSignedIn?.(result);
       if (typeof problem === 'string') setError(problem);

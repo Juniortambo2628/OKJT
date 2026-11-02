@@ -7,14 +7,21 @@ const AuthContext = createContext(null);
  * Who is signed in, and every way of signing in and out, against
  * okjt/laravel-kit's routes (/login, /verify-2fa, /register, /email/*,
  * /auth/google, /logout, /user) through `api` (axios-like, resolving to the
- * response body). The token is kept in localStorage as `auth_token`; the
- * app's API client sends it.
+ * response body).
+ *
+ * `mode` matches the server's okjt.auth.mode: 'token' (the default) keeps
+ * the bearer token in localStorage as `auth_token` for the app's API client
+ * to send; 'session' keeps nothing, the session cookie signs them in.
+ *
+ * A two-step sign-in answers { requires_2fa, email, challenge }: hand the
+ * challenge to verify2fa(challenge, code).
  *
  * Whatever the server hands back beside `token` and `user` (e.g. the
  * workspaces you can open) is kept on `user`. `extend(value, { setUser })`
  * adds the project's own fields to what useAuth() returns.
  */
-export function AuthProvider({ api, extend, children }) {
+export function AuthProvider({ api, extend, mode = 'token', children }) {
+  const session = mode === 'session';
   const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -26,15 +33,22 @@ export function AuthProvider({ api, extend, children }) {
     checkAuth();
   }, []);
 
+  // Keeps (or, in session mode, ignores) the token from a sign-in answer.
+  const keepToken = (token) => {
+    if (!session && token) localStorage.setItem('auth_token', token);
+  };
+  const forgetToken = () => {
+    if (!session) localStorage.removeItem('auth_token');
+  };
+
   const checkAuth = async () => {
-    const token = localStorage.getItem('auth_token');
-    if (token) {
+    if (session || localStorage.getItem('auth_token')) {
       try {
         const response = await api.get('/user');
         setUser(response.data);
         setIsAuthenticated(true);
       } catch {
-        localStorage.removeItem('auth_token');
+        forgetToken();
         setUser(null);
         setIsAuthenticated(false);
       }
@@ -42,53 +56,96 @@ export function AuthProvider({ api, extend, children }) {
     setLoading(false);
   };
 
-  const login = async (email, password) => {
-    try {
-      const response = await api.post('/login', { email, password });
-      
-      if (response.data.requires_verification) {
-        return {
-          success: false,
-          requires_verification: true,
-          email: response.data.email,
-          message: response.data.message || 'Please verify your email before signing in.',
-        };
-      }
-
-      if (response.data.requires_2fa) {
-        return { 
-          success: true, 
-          requires_2fa: true, 
-          email: response.data.email 
-        };
-      }
-
-      const { token, user, ...extra } = response.data;
-      localStorage.setItem('auth_token', token);
-      setUser({ ...user, ...extra });
-      setIsAuthenticated(true);
-      return { success: true, ...extra };
-    } catch (error) {
-      return { 
-        success: false, 
-        message: error.response?.data?.message || 'Login failed' 
+  // A sign-in answer: { requires_verification } or { requires_2fa, email,
+  // challenge }, or { token?, user, …extra } (signed in).
+  const answer = (response) => {
+    const data = response.data ?? {};
+    if (data.requires_verification) {
+      return {
+        success: false,
+        requires_verification: true,
+        email: data.email,
+        message: data.message || response.message || 'Please verify your email before signing in.',
       };
+    }
+    if (data.requires_2fa) {
+      return { success: true, requires_2fa: true, email: data.email, challenge: data.challenge };
+    }
+    return signedIn(data);
+  };
+  const failure = (error, fallback) => ({
+    success: false,
+    message: error.response?.data?.message || fallback,
+    errors: error.response?.data?.errors || {},
+  });
+
+  /** Email and password; `options.remember` keeps them signed in (session mode). */
+  const login = async (email, password, options = {}) => {
+    try {
+      const response = await api.post('/login', { email, password, ...(options.remember ? { remember: true } : {}) });
+      return answer(response);
+    } catch (error) {
+      return failure(error, 'Login failed');
     }
   };
 
-  const verify2fa = async (email, code) => {
+  /** The second step: the challenge from the first, and a code (or a recovery code). */
+  const verify2fa = async (challenge, code) => {
     try {
-      const response = await api.post('/verify-2fa', { email, code });
-      const { token, user, ...extra } = response.data;
-      localStorage.setItem('auth_token', token);
-      setUser({ ...user, ...extra });
-      setIsAuthenticated(true);
-      return { success: true, ...extra };
+      const response = await api.post('/verify-2fa', { challenge, code });
+      return answer(response);
     } catch (error) {
-      return { 
-        success: false, 
-        message: error.response?.data?.message || 'Invalid 2FA code' 
-      };
+      return failure(error, 'Invalid 2FA code');
+    }
+  };
+
+  /** Email me a sign-in code (the same answer whether or not the address exists). */
+  const requestLoginCode = async (email) => {
+    try {
+      const response = await api.post('/login-code', { email });
+      return { success: true, message: response.message ?? response.data?.message };
+    } catch (error) {
+      return failure(error, 'Could not send a code — try again.');
+    }
+  };
+
+  /** Sign in with the emailed code. */
+  const verifyLoginCode = async (email, code) => {
+    try {
+      const response = await api.post('/login-code/verify', { email, code });
+      return answer(response);
+    } catch (error) {
+      return failure(error, 'That sign-in code is invalid or expired.');
+    }
+  };
+
+  /** Email a password reset link. */
+  const forgotPassword = async (email) => {
+    try {
+      const response = await api.post('/forgot-password', { email });
+      return { success: true, message: response.message ?? response.data?.message };
+    } catch (error) {
+      return failure(error, 'Could not send the link — try again.');
+    }
+  };
+
+  /** Choose a new password: { token, email, password, password_confirmation }. */
+  const resetPassword = async (data) => {
+    try {
+      const response = await api.post('/reset-password', data);
+      return { success: true, message: response.message ?? response.data?.message };
+    } catch (error) {
+      return failure(error, 'Could not reset the password — try again.');
+    }
+  };
+
+  /** Type the password again before something sensitive. */
+  const confirmPassword = async (password) => {
+    try {
+      await api.post('/confirm-password', { password });
+      return { success: true };
+    } catch (error) {
+      return failure(error, 'That password is incorrect.');
     }
   };
 
@@ -105,10 +162,7 @@ export function AuthProvider({ api, extend, children }) {
           message: payload.message,
         };
       }
-      const { token, user, ...extra } = payload;
-      localStorage.setItem('auth_token', token);
-      setUser({ ...user, ...extra });
-      setIsAuthenticated(true);
+      signedIn(payload);
       return { success: true };
     } catch (error) {
       return {
@@ -135,8 +189,8 @@ export function AuthProvider({ api, extend, children }) {
     try {
       const response = await api.post('/email/verify', { id, hash, expires, signature });
       const { token, user, message: _message, email_verified: _verified, ...extra } = response.data;
-      if (token) {
-        localStorage.setItem('auth_token', token);
+      if (token || (session && user)) {
+        keepToken(token);
         setUser({ ...user, ...extra });
         setIsAuthenticated(true);
       } else {
@@ -152,14 +206,7 @@ export function AuthProvider({ api, extend, children }) {
   const loginWithGoogle = async (code) => {
     try {
       const response = await api.post('/auth/google', { code });
-      if (response.data.requires_2fa) {
-        return { success: true, requires_2fa: true, email: response.data.email };
-      }
-      const { token, user, ...extra } = response.data;
-      localStorage.setItem('auth_token', token);
-      setUser({ ...user, ...extra });
-      setIsAuthenticated(true);
-      return { success: true, ...extra };
+      return answer(response);
     } catch (error) {
       return {
         success: false,
@@ -170,7 +217,7 @@ export function AuthProvider({ api, extend, children }) {
 
   /** Sign in with a token issued elsewhere (e.g. accepting a collaborator invite); `extra` is kept on the user. */
   const loginWithToken = (token, authUser, extra = {}) => {
-    localStorage.setItem('auth_token', token);
+    keepToken(token);
     setUser({ ...authUser, ...extra });
     setIsAuthenticated(true);
   };
@@ -187,7 +234,7 @@ export function AuthProvider({ api, extend, children }) {
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
-      localStorage.removeItem('auth_token');
+      forgetToken();
       // Forget everything loaded while signed in (an unpublished site's
       // content included), so nothing outlives the session.
       queryClient.clear();
@@ -205,6 +252,12 @@ export function AuthProvider({ api, extend, children }) {
     login,
     register,
     verify2fa,
+    requestLoginCode,
+    verifyLoginCode,
+    forgotPassword,
+    resetPassword,
+    confirmPassword,
+    mode,
     loginWithToken,
     signedIn,
     loginWithGoogle,

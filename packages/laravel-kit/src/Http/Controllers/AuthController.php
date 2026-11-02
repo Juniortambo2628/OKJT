@@ -2,29 +2,44 @@
 
 namespace Okjt\Kit\Http\Controllers;
 
+use Illuminate\Auth\Events\Failed;
+use Illuminate\Auth\Events\Lockout;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Okjt\Kit\Auth\SignsPeopleIn;
 use Okjt\Kit\Auth\TwoFactor;
 use Okjt\Kit\Support\ApiResponse;
+use Okjt\Kit\Support\Messages;
 
 /**
  * Signing in with an email and password (then a code, if two-step
- * verification is on), signing up, signing out, and who you are. Tokens are
- * Sanctum bearer tokens.
+ * verification is on), signing up, signing out, and who you are. In token
+ * mode the answer carries a Sanctum token; in session mode the session
+ * cookie signs them in (okjt.auth.mode, see SignsPeopleIn).
  *
- *   POST /login        { email, password }   → token, or requires_verification / requires_2fa
- *   POST /verify-2fa   { email, code }       → token
+ *   POST /login        { email, password, remember? } → signed in, or
+ *                       requires_verification, or requires_2fa + challenge
+ *   POST /verify-2fa   { challenge, code }    → signed in (code: the app's, or a recovery code)
  *   POST /register     { name, email, password, password_confirmation, … }
- *   POST /logout                             (signed in)
- *   GET  /user                               (signed in)
+ *   POST /logout                              (signed in)
+ *   GET  /user                                (signed in)
  *
- * Projects add sign-up fields (registrationRules), what sign-up creates
- * (registered), and what signing in hands back (signedIn, see SignsPeopleIn).
+ * Wrong passwords are throttled per email and address
+ * (okjt.auth.throttle), and the Failed, Lockout and Registered events fire.
+ *
+ * Projects add sign-up fields (registrationRules, or replace the defaults
+ * with baseRegistrationRules), what sign-up creates (registered), and what
+ * signing in hands back (signedIn, see SignsPeopleIn).
  */
 class AuthController extends Controller
 {
@@ -37,12 +52,25 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $user = config('okjt.user_model')::where('email', $request->email)->first();
-        if (! $user || ! Hash::check($request->password, $user->password)) {
+        $key = $this->throttleKey($request);
+        $attempts = (int) config('okjt.auth.throttle.attempts', 5);
+        if (RateLimiter::tooManyAttempts($key, $attempts)) {
+            event(new Lockout($request));
+            $seconds = RateLimiter::availableIn($key);
             throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
+                'email' => [trans('auth.throttle', ['seconds' => $seconds, 'minutes' => (int) ceil($seconds / 60)])],
             ]);
         }
+
+        $user = config('okjt.user_model')::where('email', $request->email)->first();
+        if (! $user || ! Hash::check($request->password, $user->password)) {
+            RateLimiter::hit($key, (int) config('okjt.auth.throttle.decay_seconds', 60));
+            event(new Failed(config('okjt.auth.guard', 'web'), $user, $request->only('email', 'password')));
+            throw ValidationException::withMessages([
+                'email' => [Messages::get('bad_credentials')],
+            ]);
+        }
+        RateLimiter::clear($key);
 
         if (! $user->hasVerifiedEmail()) {
             return $this->successResponse([
@@ -51,27 +79,21 @@ class AuthController extends Controller
             ], 'Please verify your email before signing in.');
         }
 
-        if ($user->two_factor_confirmed_at !== null) {
-            return $this->successResponse([
-                'requires_2fa' => true,
-                'email' => $user->email,
-            ]);
-        }
-
-        return $this->successResponse(['token' => $this->issueToken($user)] + $this->signedIn($user));
+        return $this->successResponse($this->signInOrChallenge($request, $user, $request->boolean('remember')));
     }
 
     public function register(Request $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
-        ] + $this->registrationRules());
+        $validated = $request->validate($this->baseRegistrationRules() + $this->registrationRules());
 
         $user = config('okjt.user_model')::create($this->newUserAttributes($validated));
         $extra = $this->registered($user, $validated);
-        $user->sendEmailVerificationNotification();
+
+        event(new Registered($user));
+        // The framework's own listener sends it where it's registered: never twice.
+        if (! $this->verificationSentByEvent()) {
+            $user->sendEmailVerificationNotification();
+        }
 
         return $this->createdResponse([
             'requires_verification' => true,
@@ -82,27 +104,45 @@ class AuthController extends Controller
     public function verify2fa(Request $request): JsonResponse
     {
         $request->validate([
-            'email' => 'required|email',
+            'challenge' => 'required|string',
             'code' => 'required|string',
         ]);
 
-        $user = config('okjt.user_model')::where('email', $request->email)->first();
-        if (! $user || ! $user->two_factor_secret) {
-            return $this->errorResponse('Invalid request', 422);
+        $challenged = $this->challengedUser($request->challenge);
+        if (! $challenged) {
+            return $this->errorResponse('This sign-in has expired. Please start again.', 422);
         }
 
-        if (! TwoFactor::verify($user->two_factor_secret, $request->code)) {
+        $key = 'okjt-2fa:'.$challenged['user']->getKey().'|'.$request->ip();
+        if (RateLimiter::tooManyAttempts($key, 5)) {
+            return $this->errorResponse('Too many attempts. Please wait a minute.', 429);
+        }
+
+        if (! TwoFactor::check($challenged['user'], $request->code)) {
+            RateLimiter::hit($key, 60);
+
             return $this->errorResponse('Invalid 2FA code', 422);
         }
+        RateLimiter::clear($key);
 
-        return $this->successResponse(['token' => $this->issueToken($user)] + $this->signedIn($user));
+        return $this->successResponse($this->signIn($request, $challenged['user'], $challenged['remember']));
     }
 
     public function logout(Request $request): JsonResponse
     {
-        $request->user()->currentAccessToken()->delete();
+        $user = $request->user();
         // Drop out of other collaborators' "who's here" right away.
-        $request->user()->forceFill(['last_active_at' => null, 'current_module' => null, 'current_path' => null])->saveQuietly();
+        $user?->forceFill(['last_active_at' => null, 'current_module' => null, 'current_path' => null])->saveQuietly();
+
+        if (static::sessionMode()) {
+            Auth::guard(config('okjt.auth.guard', 'web'))->logout();
+            if ($request->hasSession()) {
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+            }
+        } else {
+            $user?->currentAccessToken()?->delete();
+        }
 
         return $this->successResponse(null, 'Logged out successfully');
     }
@@ -112,9 +152,30 @@ class AuthController extends Controller
         return $this->successResponse($this->currentUser($request->user()));
     }
 
+    protected function throttleKey(Request $request): string
+    {
+        return 'okjt-login:'.Str::transliterate(Str::lower((string) $request->input('email'))).'|'.$request->ip();
+    }
+
+    protected function verificationSentByEvent(): bool
+    {
+        return collect(Event::getRawListeners()[Registered::class] ?? [])
+            ->contains(fn ($listener) => is_string($listener) && str_starts_with($listener, SendEmailVerificationNotification::class));
+    }
+
     // ---- What a project changes ---------------------------------------------
 
-    /** Sign-up fields beyond name, email and password (e.g. accept_terms, a business name). */
+    /** The sign-up fields every project has; replace them for a different form (e.g. first and last name). */
+    protected function baseRegistrationRules(): array
+    {
+        return [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email',
+            'password' => 'required|string|min:8|confirmed',
+        ];
+    }
+
+    /** Sign-up fields beyond those (e.g. accept_terms, a business name). */
     protected function registrationRules(): array
     {
         return [];

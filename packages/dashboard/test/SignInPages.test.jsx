@@ -3,11 +3,11 @@ import { MemoryRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Settings } from 'lucide-react'
 import { Routes, Route } from 'react-router-dom'
-import { AuthProvider, SignInPage, GoogleCallbackPage, AcceptInvitePage, AccountMenu, AuthLayout, VerifyEmailPage } from '../dist/index.js'
+import { AuthProvider, SignInPage, GoogleCallbackPage, AcceptInvitePage, AccountMenu, AuthLayout, VerifyEmailPage, ForgotPasswordPage, ResetPasswordPage, ConfirmPasswordPage } from '../dist/index.js'
 
-const renderWith = (api, ui, path = '/') => render(
+const renderWith = (api, ui, path = '/', mode) => render(
   <QueryClientProvider client={new QueryClient()}>
-    <MemoryRouter initialEntries={[path]}><AuthProvider api={api}>{ui}</AuthProvider></MemoryRouter>
+    <MemoryRouter initialEntries={[path]}><AuthProvider api={api} mode={mode}>{ui}</AuthProvider></MemoryRouter>
   </QueryClientProvider>,
 )
 const fill = (label, value) => fireEvent.change(screen.getByLabelText(label), { target: { value } })
@@ -30,7 +30,7 @@ describe('SignInPage', () => {
   })
 
   it('asks for the two-step code, then signs in with it', async () => {
-    const api = { get: vi.fn(), post: vi.fn(async (url) => ({ data: url === '/login' ? { requires_2fa: true, email: 'ann@x.co' } : { token: 'T', user: { id: 1 } } })) }
+    const api = { get: vi.fn(), post: vi.fn(async (url) => ({ data: url === '/login' ? { requires_2fa: true, email: 'ann@x.co', challenge: 'C1' } : { token: 'T', user: { id: 1 } } })) }
     const onSignedIn = vi.fn()
     renderWith(api, <SignInPage onSignedIn={onSignedIn} />)
 
@@ -43,7 +43,73 @@ describe('SignInPage', () => {
     expect(screen.getByLabelText('Verification code')).toHaveValue('123456')
     fireEvent.click(screen.getByRole('button', { name: 'Verify & sign in' }))
     await waitFor(() => expect(onSignedIn).toHaveBeenCalled())
-    expect(api.post).toHaveBeenLastCalledWith('/verify-2fa', { email: 'ann@x.co', code: '123456' })
+    expect(api.post).toHaveBeenLastCalledWith('/verify-2fa', { challenge: 'C1', code: '123456' })
+  })
+
+  it('takes a recovery code instead of the app\'s code', async () => {
+    const api = { get: vi.fn(), post: vi.fn(async (url) => ({ data: url === '/login' ? { requires_2fa: true, email: 'ann@x.co', challenge: 'C2' } : { user: { id: 1 } } })) }
+    const onSignedIn = vi.fn()
+    renderWith(api, <SignInPage onSignedIn={onSignedIn} />)
+
+    fill('Email', 'ann@x.co')
+    fill('Password', 'secret1')
+    fireEvent.click(screen.getByRole('button', { name: 'Sign in' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Use a recovery code instead' }))
+    fill('Recovery code', ' abcdefghij-klmnopqrst ')
+    fireEvent.click(screen.getByRole('button', { name: 'Verify & sign in' }))
+    await waitFor(() => expect(onSignedIn).toHaveBeenCalled())
+    expect(api.post).toHaveBeenLastCalledWith('/verify-2fa', { challenge: 'C2', code: 'abcdefghij-klmnopqrst' })
+  })
+
+  it('remembers the person when asked, and links to the forgotten-password page', async () => {
+    const api = { get: vi.fn(), post: vi.fn(async () => ({ data: { user: { id: 1 } } })) }
+    renderWith(api, <SignInPage remember forgotHint={<a href="/forgot-password">Forgot password?</a>} />, '/', 'session')
+
+    expect(screen.getByRole('link', { name: 'Forgot password?' })).toHaveAttribute('href', '/forgot-password')
+    fill('Email', 'ann@x.co')
+    fill('Password', 'secret1')
+    fireEvent.click(screen.getByLabelText('Remember me'))
+    fireEvent.click(screen.getByRole('button', { name: 'Sign in' }))
+    await waitFor(() => expect(api.post).toHaveBeenCalledWith('/login', { email: 'ann@x.co', password: 'secret1', remember: true }))
+    expect(localStorage.getItem('auth_token')).toBeNull()
+  })
+
+  it('signs in with a code sent by email', async () => {
+    const api = {
+      get: vi.fn(),
+      post: vi.fn(async (url) => (url === '/login-code'
+        ? { message: 'If that address exists, a sign-in code is on its way.', data: { email: 'ann@x.co' } }
+        : { data: { user: { id: 1 } } })),
+    }
+    const onSignedIn = vi.fn()
+    renderWith(api, <SignInPage emailCode onSignedIn={onSignedIn} passkey={false} />, '/', 'session')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Email me a sign-in code instead' }))
+    expect(screen.queryByLabelText('Password')).toBeNull()
+    fill('Email', 'ann@x.co')
+    fireEvent.click(screen.getByRole('button', { name: 'Email me a code' }))
+    expect(await screen.findByRole('status')).toHaveTextContent('a sign-in code is on its way')
+    expect(api.post).toHaveBeenCalledWith('/login-code', { email: 'ann@x.co' })
+
+    fill('Sign-in code', '12x3456')
+    expect(screen.getByLabelText('Sign-in code')).toHaveValue('123456')
+    fireEvent.click(screen.getByRole('button', { name: 'Verify & sign in' }))
+    await waitFor(() => expect(onSignedIn).toHaveBeenCalled())
+    expect(api.post).toHaveBeenLastCalledWith('/login-code/verify', { email: 'ann@x.co', code: '123456' })
+  })
+
+  it('shows a refused code', async () => {
+    const refusal = Object.assign(new Error('no'), { response: { data: { message: 'The given data was invalid.', errors: { code: ['That sign-in code is invalid or expired.'] } } } })
+    const api = { get: vi.fn(), post: vi.fn(async (url) => { if (url === '/login-code') return { data: {} }; throw refusal }) }
+    renderWith(api, <SignInPage emailCode passkey={false} />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Email me a sign-in code instead' }))
+    fill('Email', 'ann@x.co')
+    fireEvent.click(screen.getByRole('button', { name: 'Email me a code' }))
+    await screen.findByLabelText('Sign-in code')
+    fill('Sign-in code', '000000')
+    fireEvent.click(screen.getByRole('button', { name: 'Verify & sign in' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent('That sign-in code is invalid or expired.')
   })
 
   it('asks an unverified person to verify, and can resend the email', async () => {
@@ -67,6 +133,62 @@ describe('SignInPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Sign in' }))
     expect(await screen.findByText('Email is required')).toBeInTheDocument()
     expect(api.post).not.toHaveBeenCalled()
+  })
+})
+
+describe('ForgotPasswordPage', () => {
+  it('sends the link and says so', async () => {
+    const api = { get: vi.fn(), post: vi.fn(async () => ({ message: 'If that address has an account, a reset link is on its way.', data: null })) }
+    renderWith(api, <ForgotPasswordPage />)
+    fill('Email', 'ann@x.co')
+    fireEvent.click(screen.getByRole('button', { name: 'Email me a reset link' }))
+    expect(await screen.findByRole('status')).toHaveTextContent('a reset link is on its way')
+    expect(api.post).toHaveBeenCalledWith('/forgot-password', { email: 'ann@x.co' })
+  })
+})
+
+describe('ResetPasswordPage', () => {
+  it('takes the token and address from the link, needs matching passwords, and resets', async () => {
+    const api = { get: vi.fn(), post: vi.fn(async () => ({ message: 'Your password has been reset.', data: null })) }
+    const onReset = vi.fn()
+    renderWith(api, <Routes><Route path="/reset-password/:token" element={<ResetPasswordPage onReset={onReset} />} /></Routes>, '/reset-password/tok1?email=ann@x.co')
+
+    expect(screen.getByLabelText('Email')).toHaveValue('ann@x.co')
+    fill('New password', 'longenough1')
+    fill('Confirm password', 'other')
+    fireEvent.click(screen.getByRole('button', { name: 'Reset password' }))
+    expect(await screen.findByText('The passwords don’t match.')).toBeInTheDocument()
+
+    fill('Confirm password', 'longenough1')
+    fireEvent.click(screen.getByRole('button', { name: 'Reset password' }))
+    await waitFor(() => expect(onReset).toHaveBeenCalledWith(expect.objectContaining({ success: true, message: 'Your password has been reset.' })))
+    expect(api.post).toHaveBeenCalledWith('/reset-password', { token: 'tok1', email: 'ann@x.co', password: 'longenough1', password_confirmation: 'longenough1' })
+  })
+
+  it('shows the server\'s refusal on its field', async () => {
+    const refusal = Object.assign(new Error('no'), { response: { data: { message: 'x', errors: { email: ['This password reset token is invalid.'] } } } })
+    const api = { get: vi.fn(), post: vi.fn(async () => { throw refusal }) }
+    renderWith(api, <ResetPasswordPage token="t" email="ann@x.co" />)
+    fill('New password', 'longenough1')
+    fill('Confirm password', 'longenough1')
+    fireEvent.click(screen.getByRole('button', { name: 'Reset password' }))
+    expect(await screen.findByText('This password reset token is invalid.')).toBeInTheDocument()
+  })
+})
+
+describe('ConfirmPasswordPage', () => {
+  it('checks the password, then carries on', async () => {
+    const refusal = Object.assign(new Error('no'), { response: { data: { message: 'x', errors: { password: ['The provided password is incorrect.'] } } } })
+    const api = { get: vi.fn(), post: vi.fn(async (url, body) => { if (body.password !== 'right') throw refusal; return { data: { confirmed: true } } }) }
+    const onConfirmed = vi.fn()
+    renderWith(api, <ConfirmPasswordPage onConfirmed={onConfirmed} />)
+
+    fill('Password', 'wrong')
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent('The provided password is incorrect.')
+    fill('Password', 'right')
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm' }))
+    await waitFor(() => expect(onConfirmed).toHaveBeenCalled())
   })
 })
 

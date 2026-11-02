@@ -48,7 +48,7 @@ class EmailVerificationController extends Controller
             event(new Verified($user));
         }
 
-        return $this->successResponse(['token' => $this->issueToken($user)] + $this->signedIn($user) + ['email_verified' => true], 'Email verified — welcome!');
+        return $this->successResponse($this->signInOrChallenge($request, $user) + ['email_verified' => true], 'Email verified — welcome!');
     }
 
     /** Resend the verification email for the signed-in user, or for an address mid-sign-up. */

@@ -101,6 +101,7 @@ return [
         'confirm_address' => 'Type the :workspace’s web address exactly to confirm.',
         'sign_in_expired' => 'That sign-in link expired — try again.',
         'account_not_found' => 'Account not found.',
+        'bad_credentials' => 'The provided credentials are incorrect.',
     ],
 
     /*
@@ -119,14 +120,35 @@ return [
     ],
 
     /*
-     * Signing in (AuthController, EmailVerificationController): the name of
-     * the Sanctum tokens issued, and what a new sign-up is told. Signing in
-     * with Google (SocialAuthController) sends the browser back to
+     * Signing in (AuthController and the other sign-in controllers).
+     *
+     * mode: 'token' answers with a Sanctum bearer token (an app on another
+     * origin); 'session' signs in with Laravel's session cookie on `guard`
+     * (an app served from the API's own origin; its first page load then
+     * knows who is signed in). token_name names the tokens.
+     *
+     * Wrong passwords are throttled (throttle.attempts per decay_seconds,
+     * per email and address). A two-step sign-in's challenge lasts
+     * challenge_minutes. two_factor.secrets_encrypted: secrets and recovery
+     * codes stored encrypted as Laravel Fortify stores them (for an app
+     * moving from Fortify). login_codes: sign-in codes by email
+     * (LoginCodeController). password_reset.path: where the emailed reset
+     * link opens ({app.frontend_url}{path}/{token}?email=…).
+     *
+     * welcome is what a new sign-up is told. Signing in with Google
+     * (SocialAuthController) sends the browser back to
      * {app.frontend_url}{social.return_path} with a code that lasts
      * social.code_minutes; new_user_name is for accounts without a name.
      */
     'auth' => [
+        'mode' => env('OKJT_AUTH_MODE', 'token'),
+        'guard' => 'web',
         'token_name' => 'dashboard',
+        'throttle' => ['attempts' => 5, 'decay_seconds' => 60],
+        'challenge_minutes' => 5,
+        'two_factor' => ['secrets_encrypted' => false],
+        'login_codes' => ['minutes' => 10, 'verify_attempts' => 6, 'verify_window' => 900],
+        'password_reset' => ['path' => '/reset-password'],
         'welcome' => 'Welcome — check your inbox to verify your email.',
         'new_user_name' => 'New user',
         'social' => [
