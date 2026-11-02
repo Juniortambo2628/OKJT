@@ -145,6 +145,9 @@ return [
         'guard' => 'web',
         'token_name' => 'dashboard',
         'throttle' => ['attempts' => 5, 'decay_seconds' => 60],
+        // False lets people sign in before verifying their address (an app that
+        // doesn't ask for verification).
+        'verified_to_sign_in' => true,
         'challenge_minutes' => 5,
         'two_factor' => ['secrets_encrypted' => false],
         'login_codes' => ['minutes' => 10, 'verify_attempts' => 6, 'verify_window' => 900],

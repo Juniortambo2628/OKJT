@@ -88,6 +88,16 @@ class SignInWaysTest extends TestCase
         $this->assertGuest('web');
     }
 
+    public function test_signing_out_where_the_users_table_has_no_presence_columns(): void
+    {
+        \Illuminate\Support\Facades\Schema::table('users', fn ($table) => $table->dropColumn(['last_active_at', 'current_module', 'current_path']));
+        $user = $this->verified('nia@example.com');
+        $this->actingAs($user, 'web');
+
+        $this->postJson('/api/logout')->assertOk();
+        $this->assertGuest('web');
+    }
+
     public function test_two_step_sign_in_in_session_mode_and_recovery_codes(): void
     {
         $user = $this->verified('bo@example.com');
@@ -129,6 +139,17 @@ class SignInWaysTest extends TestCase
         $codes = $this->postJson('/api/2fa/confirm', ['code' => (new Google2FA)->getCurrentOtp($secret)])->assertOk()->json('recovery_codes');
         $this->assertSame($codes, json_decode(decrypt($user->fresh()->two_factor_recovery_codes), true));
         $this->assertTrue(TwoFactor::check($user->fresh(), (new Google2FA)->getCurrentOtp($secret)));
+    }
+
+    public function test_an_app_can_let_people_sign_in_before_verifying(): void
+    {
+        $user = $this->person('ivy@example.com');
+        $user->forceFill(['password' => 'secret-pass'])->save();
+        $this->postJson('/api/login', ['email' => 'ivy@example.com', 'password' => 'secret-pass'])->assertJsonPath('data.requires_verification', true);
+
+        config(['okjt.auth.verified_to_sign_in' => false]);
+        $this->postJson('/api/login', ['email' => 'ivy@example.com', 'password' => 'secret-pass'])->assertOk()->assertJsonPath('data.user.email', 'ivy@example.com');
+        $this->assertAuthenticatedAs($user, 'web');
     }
 
     public function test_wrong_passwords_are_throttled(): void

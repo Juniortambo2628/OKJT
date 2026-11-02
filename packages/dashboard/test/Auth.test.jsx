@@ -56,6 +56,16 @@ describe('AuthProvider', () => {
     expect(api.get).toHaveBeenCalledWith('/user')
   })
 
+  it('takes who is signed in from the page when given, without asking', async () => {
+    const api = { get: vi.fn(), post: vi.fn() }
+    const { unmount } = render(<QueryClientProvider client={new QueryClient()}><AuthProvider api={api} mode="session" initialUser={{ id: 9, name: 'Eve' }}><Probe /></AuthProvider></QueryClientProvider>)
+    await waitFor(() => expect(screen.getByText('in as Eve')).toBeInTheDocument())
+    unmount()
+    render(<QueryClientProvider client={new QueryClient()}><AuthProvider api={api} mode="session" initialUser={null}><Probe /></AuthProvider></QueryClientProvider>)
+    await waitFor(() => expect(screen.getByText('out')).toBeInTheDocument())
+    expect(api.get).not.toHaveBeenCalled()
+  })
+
   it('in session mode, asks who is signed in without a token, and keeps none', async () => {
     const api = {
       get: vi.fn(async () => { throw new Error('401') }),

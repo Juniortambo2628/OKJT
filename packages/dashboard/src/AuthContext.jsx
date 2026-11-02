@@ -16,11 +16,13 @@ const AuthContext = createContext(null);
  * A two-step sign-in answers { requires_2fa, email, challenge }: hand the
  * challenge to verify2fa(challenge, code).
  *
+ * `initialUser` (the signed-in person, or null) skips asking /user at start.
+ *
  * Whatever the server hands back beside `token` and `user` (e.g. the
  * workspaces you can open) is kept on `user`. `extend(value, { setUser })`
  * adds the project's own fields to what useAuth() returns.
  */
-export function AuthProvider({ api, extend, mode = 'token', children }) {
+export function AuthProvider({ api, extend, mode = 'token', initialUser, children }) {
   const session = mode === 'session';
   const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
@@ -30,6 +32,13 @@ export function AuthProvider({ api, extend, mode = 'token', children }) {
   const [signedOut, setSignedOut] = useState(false);
 
   useEffect(() => {
+    // Already known (e.g. a server-rendered page says who's signed in): no need to ask.
+    if (initialUser !== undefined) {
+      setUser(initialUser);
+      setIsAuthenticated(!!initialUser);
+      setLoading(false);
+      return;
+    }
     checkAuth();
   }, []);
 

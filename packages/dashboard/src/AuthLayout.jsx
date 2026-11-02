@@ -4,10 +4,11 @@ import { AlertCircle, ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 /**
- * Three colours of the sign-in fields can be set in the app's CSS, and
+ * Four colours of the sign-in pages can be set in the app's CSS, and
  * otherwise follow the theme: --okjt-auth-glow (where the button's gradient
  * ends; accent-soft), --okjt-auth-focus (a focused field's border and ring;
- * accent) and --okjt-auth-placeholder (faint).
+ * accent), --okjt-auth-placeholder (faint) and --okjt-auth-card (behind the
+ * "or" between the ways of signing in; white).
  *
  * The sign-in pages' frame: a light card with the form, and on desktop a
  * panel beside it (`aside`, e.g. a showcase of the app). Phones get the form

@@ -17,7 +17,8 @@ import { loginWithPasskey, passkeysSupported } from './passkeys.js';
  * the ForgotPasswordPage, beside it), `emailCode` (a link to sign in with a
  * code sent by email instead), `status` (a note above the form, e.g. "Your
  * password has been reset."), `passkey` (false hides the passkey button; a
- * node replaces it) and `labels` (the button and placeholder wording).
+ * node replaces it), `labels` (the button and placeholder wording) and
+ * `emailAutoComplete` ('username webauthn' for passkey autofill).
  */
 const LABELS = {
   submit: 'Sign in',
@@ -43,6 +44,7 @@ export default function SignInPage({
   status,
   passkey,
   labels: labelsIn,
+  emailAutoComplete = 'email',
   google,
   idPrefix = 'sign-in',
 }) {
@@ -235,7 +237,7 @@ export default function SignInPage({
           id={`${idPrefix}-email`}
           label="Email"
           type="email"
-          autoComplete="email"
+          autoComplete={emailAutoComplete}
           placeholder={labels.emailPlaceholder}
           readOnly={byCode && !!codeFor}
           error={errors.email?.message}
@@ -275,17 +277,16 @@ export default function SignInPage({
             onChange={(e) => setEmailedCode(e.target.value.replace(/\D/g, ''))}
           />
         )}
-        {!byCode && (offerRemember || forgotHint) && (
-          <div className={`flex items-center gap-3 -mt-1 ${offerRemember ? 'justify-between' : 'justify-end'}`}>
-            {offerRemember && (
-              <label className="flex cursor-pointer items-center gap-2 text-sm text-muted">
-                <input type="checkbox" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} className="h-4 w-4 rounded border-line accent-[var(--okjt-auth-focus,var(--color-accent))]" />
-                {labels.remember}
-              </label>
-            )}
-            {forgotHint && <div className={offerRemember ? 'text-sm text-muted' : 'text-xs text-faint text-right'}>{forgotHint}</div>}
+        {!byCode && offerRemember && (
+          <div className="flex items-center justify-between gap-3 -mt-1">
+            <label className="flex cursor-pointer items-center gap-2 text-sm text-muted">
+              <input type="checkbox" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} className="h-4 w-4 rounded border-line accent-[var(--okjt-auth-focus,var(--color-accent))]" />
+              {labels.remember}
+            </label>
+            {forgotHint && <div className="text-sm text-muted">{forgotHint}</div>}
           </div>
         )}
+        {!byCode && !offerRemember && forgotHint && <div className="text-xs text-faint text-right -mt-1">{forgotHint}</div>}
         <div className="pt-2">
           <AuthSubmit loading={loading}>
             {loading ? labels.submitting : !byCode ? labels.submit : codeFor ? labels.verifyCode : labels.sendCode}
@@ -296,7 +297,7 @@ export default function SignInPage({
         <>
           <div className="relative my-5" aria-hidden="true">
             <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-tone-200" /></div>
-            <div className="relative flex justify-center text-xs"><span className="bg-white px-3 text-faint">or</span></div>
+            <div className="relative flex justify-center text-xs"><span className="bg-[var(--okjt-auth-card,#fff)] px-3 text-faint">or</span></div>
           </div>
           {passkeyButton}
           {google}

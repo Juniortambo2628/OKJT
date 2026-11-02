@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Okjt\Kit\Auth\SignsPeopleIn;
@@ -72,7 +73,7 @@ class AuthController extends Controller
         }
         RateLimiter::clear($key);
 
-        if (! $user->hasVerifiedEmail()) {
+        if (config('okjt.auth.verified_to_sign_in', true) && ! $user->hasVerifiedEmail()) {
             return $this->successResponse([
                 'requires_verification' => true,
                 'email' => $user->email,
@@ -131,8 +132,7 @@ class AuthController extends Controller
     public function logout(Request $request): JsonResponse
     {
         $user = $request->user();
-        // Drop out of other collaborators' "who's here" right away.
-        $user?->forceFill(['last_active_at' => null, 'current_module' => null, 'current_path' => null])->saveQuietly();
+        $this->leavePresence($user);
 
         if (static::sessionMode()) {
             Auth::guard(config('okjt.auth.guard', 'web'))->logout();
@@ -150,6 +150,14 @@ class AuthController extends Controller
     public function user(Request $request): JsonResponse
     {
         return $this->successResponse($this->currentUser($request->user()));
+    }
+
+    /** Drop out of other collaborators' "who's here" right away (where the users table has presence). */
+    protected function leavePresence(?Model $user): void
+    {
+        if ($user && Schema::hasColumn($user->getTable(), 'last_active_at')) {
+            $user->forceFill(['last_active_at' => null, 'current_module' => null, 'current_path' => null])->saveQuietly();
+        }
     }
 
     protected function throttleKey(Request $request): string
