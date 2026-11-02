@@ -26,7 +26,9 @@ name: Packages release
 on:
   push:
     branches: [main]
-    paths: ['packages/VERSION']
+    # VERSION: a new release. This file: re-run the steps for the current
+    # VERSION (each skips what is already done), e.g. after fixing a failure.
+    paths: ['packages/VERSION', '.github/workflows/packages-release.yml']
     tags: ['v*']
   workflow_dispatch:
     inputs:
@@ -64,8 +66,8 @@ jobs:
           else
             tag="v$(tr -d '[:space:]' < packages/VERSION)"
             if git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
-              echo "::notice::$tag already exists: nothing to release."
-              echo "tag=" >> "$GITHUB_OUTPUT"
+              echo "::notice::$tag is already released: checking npm and Composer have it."
+              echo "tag=$tag" >> "$GITHUB_OUTPUT"
             else
               # Made with this run's token, so it doesn't start this workflow again.
               gh release create "$tag" --target "$GITHUB_SHA" --title "$tag" --generate-notes \
@@ -108,18 +110,27 @@ jobs:
       # on npmjs.com (Staged Packages), which publishes it.
       - name: Stage new versions
         run: |
+          failed=0
           for dir in $(node -p "require('./package.json').workspaces.join(' ')"); do
             name=$(node -p "require('./$dir/package.json').name")
             version=$(node -p "require('./$dir/package.json').version")
             if npm view "$name@$version" version >/dev/null 2>&1; then
               echo "$name@$version is already published"
-            else
-              # npm stage doesn't understand workspaces, so it runs in the package's folder.
-              # --loglevel verbose: npm's trusted-publishing (oidc) lines say why a sign-in failed.
-              (cd "$dir" && npm stage publish --provenance --access public --loglevel verbose)
+              continue
+            fi
+            # npm stage doesn't understand workspaces, so it runs in the package's folder.
+            # --loglevel verbose: npm's trusted-publishing (oidc) lines say why a sign-in failed.
+            if (cd "$dir" && npm stage publish --provenance --access public --loglevel verbose) > "/tmp/$dir.log" 2>&1; then
               echo "::notice::$name@$version is staged: approve it on npmjs.com (Staged Packages) to publish it."
+            else
+              failed=1
+              cat "/tmp/$dir.log"
+              # The reason, where it shows without the log (annotations).
+              reason=$(grep -E 'npm (error|ERR!)|oidc|OIDC' "/tmp/$dir.log" | grep -v 'npm error A complete log' | tail -8 | tr '\n' ' ' | cut -c1-900)
+              echo "::error title=$name@$version was not staged::$reason"
             fi
           done
+          exit $failed
 
   composer:
     name: Release okjt/laravel-kit
