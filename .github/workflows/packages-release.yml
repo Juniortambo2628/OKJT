@@ -1,6 +1,9 @@
 name: Packages release
 
-# Push a tag such as v0.1.0 (on a commit that has the packages) to:
+# A release happens when packages/VERSION names a version that has no
+# release yet and that commit reaches main: this workflow creates the tag
+# v<VERSION> and its GitHub release, then does the two steps below. (Pushing
+# a tag such as v0.1.0 by hand still works too.) The steps:
 #   1. publish every npm package in packages/ whose version is not on npm yet;
 #   2. copy packages/laravel-kit to its own repository and tag it there, which
 #      is where Composer installs okjt/laravel-kit from.
@@ -22,6 +25,8 @@ name: Packages release
 # versions it already has.
 on:
   push:
+    branches: [main]
+    paths: ['packages/VERSION']
     tags: ['v*']
   workflow_dispatch:
     inputs:
@@ -34,14 +39,54 @@ permissions:
   id-token: write # npm trusted publishing and provenance
 
 jobs:
+  # Which tag this run releases: the pushed tag, the one asked for, or (on
+  # main) v<packages/VERSION> if it has no release yet, made here.
+  release:
+    name: Tag and GitHub release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_TAG: ${{ inputs.tag }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = workflow_dispatch ]; then
+            echo "tag=$INPUT_TAG" >> "$GITHUB_OUTPUT"
+          elif [ "$GITHUB_REF_TYPE" = tag ]; then
+            echo "tag=$GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
+          else
+            tag="v$(tr -d '[:space:]' < packages/VERSION)"
+            if git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
+              echo "::notice::$tag already exists: nothing to release."
+              echo "tag=" >> "$GITHUB_OUTPUT"
+            else
+              # Made with this run's token, so it doesn't start this workflow again.
+              gh release create "$tag" --target "$GITHUB_SHA" --title "$tag" --generate-notes \
+                --notes "What changed and how to upgrade: [packages/UPGRADING.md](https://github.com/$GITHUB_REPOSITORY/blob/$tag/packages/UPGRADING.md)"
+              echo "::notice::Released $tag. Approve the staged npm versions on npmjs.com (Staged Packages)."
+              echo "tag=$tag" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
   npm:
     name: Publish to npm
+    needs: release
+    if: needs.release.outputs.tag != ''
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: packages
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release.outputs.tag }}
 
       # Node 24 ships npm 11, which trusted publishing needs (11.5.1 or later).
       # No registry-url: that writes a placeholder token into .npmrc, which npm
@@ -78,13 +123,15 @@ jobs:
 
   composer:
     name: Release okjt/laravel-kit
+    needs: release
+    if: needs.release.outputs.tag != ''
     runs-on: ubuntu-latest
     permissions:
       contents: read
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.tag || github.ref }}
+          ref: ${{ needs.release.outputs.tag }}
           fetch-depth: 0
           # Otherwise git keeps sending this run's own token, which may not
           # write to another repository, instead of SPLIT_TOKEN.
@@ -93,7 +140,7 @@ jobs:
       - name: Copy packages/laravel-kit to its own repository, and tag it
         env:
           SPLIT_TOKEN: ${{ secrets.SPLIT_TOKEN }}
-          TAG: ${{ inputs.tag || github.ref_name }}
+          TAG: ${{ needs.release.outputs.tag }}
         run: |
           if [ -z "$SPLIT_TOKEN" ]; then echo "::error::The SPLIT_TOKEN secret is not set"; exit 1; fi
           git subtree split --prefix packages/laravel-kit -b laravel-kit-split
