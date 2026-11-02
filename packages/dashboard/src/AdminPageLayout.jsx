@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import AdminFloatingToolbar from './AdminFloatingToolbar.js';
 import { SidePanelAside, SidePanelMobileBar } from './AdminSidePanel.js';
-import { useDashboard } from './DashboardProvider.js';
+import { useComponentDefaults, useDashboard } from './DashboardProvider.js';
 
 /**
  * AdminPageLayout — standardized layout shared by every admin dashboard page.
@@ -35,8 +35,20 @@ import { useDashboard } from './DashboardProvider.js';
  *                                      default panel (DashboardProvider), if any.
  *                                      A page panel makes the page fit the viewport
  *                                      like `fill` (the left column scrolls).
+ *
+ * variant="bold" (or componentDefaults.PageLayout): for dark dashboards. The
+ * toolbar is the bold one, given whole as `toolbar` (its props: search,
+ * filters, view, actions, selection); a panel with `desktopOnly` has no phone
+ * bar; `onClick`, `className` and `bodyClassName` go on the page, and the
+ * content column scrolls itself on tall-enough desktops (`fill`: an
+ * AdminListPanel scrolls its rows instead).
  */
-export default function AdminPageLayout({
+export default function AdminPageLayout(ownProps) {
+  const { variant = 'plain', ...props } = useComponentDefaults('PageLayout', ownProps);
+  return variant === 'bold' ? <BoldPageLayout {...props} /> : <PlainPageLayout {...props} />;
+}
+
+function PlainPageLayout({
   hero,
   summary,
   children,
@@ -96,5 +108,36 @@ export default function AdminPageLayout({
         </AdminFloatingToolbar>
       )}
     </>
+  );
+}
+
+function BoldPageLayout({ hero, summary = null, toolbar = null, panel: pagePanel, fill = false, onClick, className = '', bodyClassName = '', children }) {
+  const defaultPanel = useDashboard().useDefaultPanel();
+  const panel = pagePanel === false ? null : pagePanel || defaultPanel;
+  // Header 4rem + the content area's padding (2rem top, 6rem bottom for the toolbar).
+  const classes = `fit:h-[calc(100dvh-12rem)] fit:flex fit:flex-col ${className}`.trim();
+  // Without an AdminListPanel to scroll, the content column scrolls itself.
+  const body = fill
+    ? 'fit:h-full fit:flex fit:flex-col'
+    : 'fit:h-full fit:overflow-y-auto fit:overscroll-contain fit:-mx-1 fit:px-1 fit:pb-2';
+
+  return (
+    <div onClick={onClick} className={classes} data-layout={fill ? 'fill' : 'fit'}>
+      <div className="fit:shrink-0">
+        {hero}
+        {summary && <div className="mb-6">{summary}</div>}
+      </div>
+
+      {toolbar && <AdminFloatingToolbar variant="bold" {...toolbar} />}
+
+      {panel && !panel.desktopOnly && panel.mobile !== false && <SidePanelMobileBar panel={panel} />}
+
+      <div className={`fit:flex-1 fit:min-h-0 ${panel ? 'lg:flex lg:gap-5' : ''}`}>
+        <div data-scroll-region={fill ? undefined : true} className={`min-w-0 ${panel ? 'lg:flex-1' : ''} ${body} ${bodyClassName}`}>
+          {children}
+        </div>
+        {panel && <SidePanelAside key={panel.id || panel.title} panel={panel} />}
+      </div>
+    </div>
   );
 }

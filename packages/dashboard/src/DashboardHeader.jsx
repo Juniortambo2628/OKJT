@@ -39,7 +39,7 @@ export default function DashboardHeader({ onMenuClick, onRestartTutorial, titleS
           className={`${shell.collapsible ? '' : 'lg:hidden '}relative p-2 rounded-lg shrink-0 ${shell.menuButtonClass}`}
         >
           {shell.MenuIcon ? <shell.MenuIcon /> : <Menu className="w-6 h-6 text-body" />}
-          {hasNews && <span className={`absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-accent ring-2 ring-paper ${shell.collapsible ? 'lg:hidden' : ''}`} aria-hidden="true" />}
+          {hasNews && shell.menuNewsDot && <span className={`absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-accent ring-2 ring-paper ${shell.collapsible ? 'lg:hidden' : ''}`} aria-hidden="true" />}
         </button>
         {/* Compact page title, filled by AdminPageHero once it scrolls away */}
         <div ref={titleSlotRef} className={`min-w-0 ${shell.HeaderStart ? 'empty:hidden' : 'flex-1'}`} />

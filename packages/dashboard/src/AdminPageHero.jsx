@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
-import { ChevronRight } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { ArrowUp, ChevronRight } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import DashboardIcon from './DashboardIcon.js';
 import { useAdminChrome } from './AdminChromeContext.js';
-import { useDashboard } from './DashboardProvider.js';
+import { useComponentDefaults, useDashboard } from './DashboardProvider.js';
 
 // Height of the sticky admin header; the hero counts as hidden once it is
 // fully behind it.
@@ -38,8 +39,17 @@ function useVisibleBelowHeader(ref) {
  * Once the hero scrolls behind the sticky header, a compact copy (icon,
  * parent crumb and title) appears in the header so the page context stays
  * visible.
+ *
+ * variant="bold" (or componentDefaults.PageHero): a bold title, `subtitle`
+ * (or description), `breadcrumbs` as given ([{ label, href? }], no home
+ * added) and `actions` on the right.
  */
-export default function AdminPageHero({ title, description, breadcrumb, icon }) {
+export default function AdminPageHero(ownProps) {
+  const { variant = 'plain', ...props } = useComponentDefaults('PageHero', ownProps);
+  return variant === 'bold' ? <BoldPageHero {...props} /> : <PlainPageHero {...props} />;
+}
+
+function PlainPageHero({ title, description, breadcrumb, icon }) {
   const { home } = useDashboard();
   const crumbs = Array.isArray(breadcrumb)
     ? breadcrumb
@@ -136,6 +146,82 @@ export default function AdminPageHero({ title, description, breadcrumb, icon }) 
           </div>
         </div>
 
+      </div>
+    </div>
+  );
+}
+
+const SmallUpArrow = ({ className = '' }) => <ArrowUp className={`${className} inline h-3 w-3`} />;
+
+function BoldBreadcrumb({ items }) {
+  if (!items?.length) return null;
+  return (
+    <nav className="flex items-center gap-2 mb-3 text-sm">
+      {items.map((item, index) => (
+        <span key={index} className="flex items-center gap-2">
+          {index > 0 && <DashboardIcon icon="crumb" fallback={ChevronRight} className="text-faint/70 text-xs" />}
+          {item.href || item.path ? (
+            <Link to={item.href || item.path} className="text-soft hover:text-ink transition">{item.label}</Link>
+          ) : (
+            <span className="text-body">{item.label}</span>
+          )}
+        </span>
+      ))}
+    </nav>
+  );
+}
+
+function BoldPageHero({ title, subtitle, description, breadcrumbs = [], breadcrumb, actions = null }) {
+  const crumbs = breadcrumbs.length ? breadcrumbs : Array.isArray(breadcrumb) ? breadcrumb : [];
+  const heroRef = useRef(null);
+  const visible = useVisibleBelowHeader(heroRef);
+  const { titleSlot } = useAdminChrome();
+  const parent = crumbs.length > 1 ? crumbs[crumbs.length - 2] : null;
+  const parentTo = parent?.href || parent?.path;
+
+  const compactTitle = titleSlot && createPortal(
+    <AnimatePresence initial={false}>
+      {!visible && (
+        <motion.div
+          key="compact-title"
+          initial={{ opacity: 0, y: -6 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -6 }}
+          transition={{ duration: 0.15 }}
+          className="flex items-center gap-3 min-w-0"
+        >
+          <div className="min-w-0 leading-tight">
+            {parent && (
+              <p className="hidden sm:block text-[11px] text-soft truncate">
+                {parentTo ? <Link to={parentTo} className="hover:text-ink transition">{parent.label}</Link> : parent.label}
+              </p>
+            )}
+            <p className="text-ink font-semibold truncate">{title}</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="hidden md:inline text-xs text-soft hover:text-ink whitespace-nowrap transition"
+            title="Back to top"
+          >
+            <DashboardIcon icon="arrow-up" fallback={SmallUpArrow} className="mr-1" />Top
+          </button>
+        </motion.div>
+      )}
+    </AnimatePresence>,
+    titleSlot
+  );
+
+  return (
+    <div className="mb-6" ref={heroRef}>
+      {compactTitle}
+      <BoldBreadcrumb items={crumbs} />
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-ink">{title}</h1>
+          {(subtitle || description) && <p className="text-soft mt-1 text-sm md:text-base">{subtitle || description}</p>}
+        </div>
+        {actions && <div className="flex items-center gap-2 flex-wrap">{actions}</div>}
       </div>
     </div>
   );

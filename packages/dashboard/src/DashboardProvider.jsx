@@ -57,6 +57,7 @@ const DEFAULT_SHELL = {
   headerEndClass: 'gap-1 sm:gap-2 shrink-0',
   menuButtonClass: 'hover:bg-contrast/5',
   MenuIcon: null,
+  menuNewsDot: true,
   mainClass: 'p-4 sm:p-6',
   headerButtonClass: 'text-soft hover:bg-accent/10 hover:text-accent',
   headerActions: ['online', 'share', 'history', 'tour'],
@@ -106,6 +107,7 @@ const DEFAULT_SHELL = {
  *                     its logo, group titles and pages, the header and its
  *                     buttons, and the content area
  *   shell.MenuIcon    the menu button's icon
+ *   shell.menuNewsDot a dot on the menu button when other pages have changes (true)
  *   shell.headerActions  the header's buttons, in order: 'online' (who's
  *                     online), 'share', 'history', 'tour', or the project's
  *                     own components (leave one out to hide it)
