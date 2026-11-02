@@ -1,10 +1,10 @@
 # Upgrading
 
-## 0.3.0 → 0.4.0 (dashboard 0.4.0, laravel-kit 0.4.0)
+## 0.3.0 → 0.4.0 (dashboard 0.4.0, ui 0.2.1, laravel-kit 0.4.0, create-okjt-app 0.1.3)
 
 Upgrade both together: the server's two-step sign-in changed.
 
-1. `npm i @okjt/dashboard@^0.4.0` and `composer require okjt/laravel-kit:^0.4.0`
+1. `npm i @okjt/dashboard@^0.4.0 @okjt/ui@^0.2.1` and `composer require okjt/laravel-kit:^0.4.0`
 2. `php artisan migrate`: the kit's `login_codes` table (skipped where the
    app already has one).
 3. **Breaking: two-step sign-in needs the challenge.** `/login` (and an
