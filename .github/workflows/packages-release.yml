@@ -126,6 +126,9 @@ jobs:
             # --loglevel verbose: npm's trusted-publishing (oidc) lines say why a sign-in failed.
             if (cd "$dir" && npm stage publish --provenance --access public --loglevel verbose) > "/tmp/$dir.log" 2>&1; then
               echo "::notice::$name@$version is staged: approve it on npmjs.com (Staged Packages) to publish it."
+            elif grep -q 'Cannot stage previously published version' "/tmp/$dir.log"; then
+              # Staged by an earlier run and not yet approved (or rejected).
+              echo "::notice::$name@$version is already staged: approve it on npmjs.com (Staged Packages)."
             else
               failed=1
               cat "/tmp/$dir.log"
