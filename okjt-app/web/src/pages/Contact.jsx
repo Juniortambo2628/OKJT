@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { CheckCircle2 } from 'lucide-react';
 import JourneyPage from '../components/Journey';
@@ -25,7 +26,12 @@ function ContactForm() {
   const { data: services } = useServices();
   const [sent, setSent] = useState(false);
   const [failure, setFailure] = useState('');
-  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm();
+  const [params] = useSearchParams();
+  const similar = params.get('project');
+  // From a case study's "Request Similar Work": the brief starts from that project.
+  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm({
+    defaultValues: similar ? { subject: '', message: `I'd like something similar to ${similar}. ` } : {},
+  });
 
   const submit = handleSubmit(async (values) => {
     setFailure('');

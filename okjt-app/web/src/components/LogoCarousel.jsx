@@ -18,7 +18,7 @@ export const logoFor = (project) => project.logo || KNOWN.find((k) => k.match.te
 function Mark({ project, logo }) {
   return (
     <Link to={`/projects/${project.slug}`} title={project.title} className="flex h-16 shrink-0 items-center px-8 opacity-80 transition-opacity hover:opacity-100 sm:px-12">
-      <img src={mediaUrl(logo)} alt={project.title} className="h-10 w-auto max-w-[11rem] object-contain brightness-0 invert sm:h-12" loading="lazy" />
+      <img src={mediaUrl(logo)} alt={project.title} className="logo-light h-10 w-auto max-w-[11rem] object-contain sm:h-12" loading="lazy" />
     </Link>
   );
 }

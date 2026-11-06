@@ -128,6 +128,21 @@ body {
   letter-spacing: 0.01em;
 }
 
+/* Logos are monochrome: white on dark, dark brown on light, their own
+   colours on hover. (.logo-light / .logo-dark on any logo image.) */
+.logo-light, .logo-dark { transition: filter 0.25s ease, opacity 0.25s ease; }
+.logo-light { filter: brightness(0) invert(1); }
+.logo-dark { filter: brightness(0) invert(12%) sepia(30%) saturate(600%); }
+:is(a, button, li, div):hover > .logo-light, .logo-light:hover,
+:is(a, button, li, div):hover > .logo-dark, .logo-dark:hover { filter: none; }
+/* The kit's logo in the top bar: white over the hero, dark brown on cream. */
+.okjt-site-nav-over img { filter: brightness(0) invert(1); transition: filter 0.25s ease; }
+.okjt-site-nav-solid img { filter: brightness(0) invert(12%) sepia(30%) saturate(600%); transition: filter 0.25s ease; }
+.okjt-site-nav a:hover > img { filter: none; }
+/* The footer's logos sit on the dark panel. */
+footer img { filter: brightness(0) invert(1); transition: filter 0.25s ease; }
+footer a:hover > img { filter: none; }
+
 /* The flagship logos sliding under the hero (LogoCarousel): two copies
    in a row, moved by half their width, so the loop never shows a seam. */
 .logo-marquee { animation: logo-marquee 38s linear infinite; }

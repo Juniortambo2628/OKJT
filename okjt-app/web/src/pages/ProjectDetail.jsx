@@ -4,6 +4,8 @@ import { Eyebrow } from '@okjt/site';
 import JourneyPage from '../components/Journey';
 import usePageMeta from '../components/usePageMeta';
 import Stack from '../components/Stack';
+import Gallery from '../components/Gallery';
+import SimilarWorkPrompt from '../components/SimilarWorkPrompt';
 import { live, useItem, useProjects } from '../lib/content';
 import { sectorOf } from '../lib/sectors';
 import { address, clip, listItems, strip } from '../lib/text';
@@ -99,7 +101,6 @@ export default function ProjectDetail() {
         media: project?.bg_image || project?.image,
         eyebrow: project ? (project.type === 'flagship' ? 'Flagship product' : project.client_name || 'Client project') : '',
         title: project?.title || '',
-        text: project?.tagline,
         breadcrumbs: [{ to: '/', label: 'Home' }, { to: '/projects', label: 'Projects' }, { label: project?.title || '…' }],
         cta: { to: '/contact', label: 'Start a Similar Project' },
         actions: project?.url && (
@@ -116,6 +117,7 @@ export default function ProjectDetail() {
       ] : []}
       label="The case study"
       chapters={chapters}
+      navExtra={pictures.length ? [{ id: 'gallery', label: 'Gallery' }] : []}
       toolkit={{
         eyebrow: 'More work',
         title: project?.type === 'flagship' ? 'Other flagship products' : `More in ${sector?.label?.toLowerCase() || 'this sector'}`,
@@ -123,6 +125,9 @@ export default function ProjectDetail() {
       }}
       onward={{ to: '/contact', tags: ['Next step'], title: 'Something like this, for you?', text: 'Share a short brief. Every brief receives a reply with next steps within two business days.' }}
       faqs={false}
-    />
+    >
+      <Gallery title={project ? `${project.title.split(':')[0]}, in pictures` : ''} images={pictures} />
+      <SimilarWorkPrompt project={project} />
+    </JourneyPage>
   );
 }

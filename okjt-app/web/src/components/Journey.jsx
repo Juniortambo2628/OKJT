@@ -146,9 +146,10 @@ export function JourneyChapter({ chapter, index, detailsLabel = 'The nitty-gritt
  *   faqs     [{ q, a }]  (default: the studio's questions); false for none
  *   extra    sections after the toolkit, before the questions
  */
-export default function JourneyPage({ hero, glance, label = 'On this page', chapters = [], toolkit, onward, faqs = FAQS, extra, children, loading }) {
+export default function JourneyPage({ hero, glance, label = 'On this page', chapters = [], navExtra = [], toolkit, onward, faqs = FAQS, extra, children, loading }) {
   const sections = [
     ...chapters.map((c) => ({ id: c.id, label: c.navLabel || c.title })),
+    ...navExtra,
     ...(toolkit?.cards?.length ? [{ id: 'toolkit', label: toolkit.navLabel || toolkit.eyebrow }] : []),
     ...(faqs ? [{ id: 'faq', label: 'Questions' }] : []),
   ];
