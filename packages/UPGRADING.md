@@ -1,5 +1,27 @@
 # Upgrading
 
+## site 0.1.0 → 0.2.0 (with @okjt/ui 0.2.2): dark public pages
+
+Also `@okjt/dashboard` 0.4.1 (nothing to change): presence isn't asked for
+without the kit's `api`; the sign-in card's border and the floating
+toolbar's glass, border and shadow can be set in CSS (`--okjt-toolbar-bg`,
+`--okjt-toolbar-border`, `--okjt-shadow`) for dark dashboards.
+
+1. `npm i @okjt/site@^0.2.0 @okjt/ui@^0.2.2`
+2. **Regenerate the theme** (`npx okjt-theme`): the public pages now use two
+   new colours, `onInk`, `panel`, `fill` and `fillHover`. Skipping this leaves the dark buttons'
+   text and the footer panel without a colour.
+
+Shadows on the public pages are tinted with `--okjt-shadow` (CSS, default
+`ink`); dark pages set it to black in their CSS.
+
+Nothing changes on screen unless you set them: `onInk` defaults to white and
+`panel` to `ink`, `fill` (dark buttons, the chosen tab or chip) to `ink` and `fillHover` to `body`, and cards, pills and menus that were white are now
+`surface` (default white). For dark public pages, swap the light and dark
+tokens (`paper`/`tint` dark, `ink`/`body` light), set `surface` to the card
+colour, `onInk` to a dark colour and `panel` to a dark one. OKJTech's own
+site (`okjt-app/web`) does this.
+
 ## 0.3.0 → 0.4.0 (dashboard 0.4.0, ui 0.2.1, laravel-kit 0.4.0, create-okjt-app 0.1.3)
 
 Upgrade both together: the server's two-step sign-in changed.

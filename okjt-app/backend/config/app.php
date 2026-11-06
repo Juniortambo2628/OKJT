@@ -56,23 +56,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Next.js Frontend URL
-    |--------------------------------------------------------------------------
-    |
-    | The URL of the Next.js frontend, used for ISR cache revalidation
-    | when CMS content is updated.
-    |
-    */
-
-    'next_url' => env('NEXT_URL', 'http://localhost:3000'),
-    'next_revalidation_secret' => env('NEXT_REVALIDATION_SECRET', 'okjt-webhook-secret-change-me-in-production'),
-
-    /*
-    |--------------------------------------------------------------------------
     | Public Frontend URL
     |--------------------------------------------------------------------------
     |
-    | The canonical origin of the Next.js site, used to build absolute links
+    | The canonical origin of the public site, used to build absolute links
     | in outgoing emails (password resets, receipts, confirmations). FRONTEND_URL
     | is also read by cors.php as a comma-separated allow-list, so only the
     | first entry is used here.

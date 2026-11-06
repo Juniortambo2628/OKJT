@@ -34,7 +34,7 @@ export default function SectionNav({ sections, label, numbered = false, classNam
                 key={section.id}
                 href={`#${section.id}`}
                 aria-current={current ? 'location' : undefined}
-                className={`shrink-0 rounded-full px-4 py-2 text-xs font-semibold transition-colors ${current ? 'bg-ink text-white' : 'bg-white text-soft hover:text-ink'}`}
+                className={`shrink-0 rounded-full px-4 py-2 text-xs font-semibold transition-colors ${current ? 'bg-fill text-on-ink' : 'bg-surface text-soft hover:text-ink'}`}
               >
                 {numbered && <span className={`mr-1.5 tabular-nums ${current ? 'text-accent-soft' : 'text-faint'}`}>{String(i + 1).padStart(2, '0')}</span>}
                 {section.label}

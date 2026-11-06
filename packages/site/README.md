@@ -107,7 +107,7 @@ Any path not in `seo.pages` (and not resolved) gets the defaults and `noindex`.
 | `Container`, `Logo`, `PillLink`, `Eyebrow`, `Chip`, `SectionHeading` | Page width, the brand mark, call-to-action links, labels, headings |
 | `PhotoHero`, `HeroOrnament` | A full-bleed photo hero with a large light headline |
 | `ImageCard` | A large rounded card with a photo behind its words; a link when given `to` |
-| `Photo` | A photo filling its parent; a list of keys cross-fades |
+| `Photo` | A photo filling its parent; a list of keys cross-fades. While loading or if it fails, a warm gradient shows (restyle it with `.okjt-photo`) |
 | `MediaFrame`, `MediaFill` | A product screen or clip in a browser or phone frame, or bare |
 | `FeatureExplorer` | Feature groups as tabs beside a large photo card with a summary, numbers and a screen |
 | `FeatureGroup` | One feature group in depth: heading, numbers, photo card and screen, every tool |
@@ -118,6 +118,9 @@ Any path not in `seo.pages` (and not resolved) gets the defaults and `noindex`.
 | `PricingSection` | Plan cards, already worded by the project |
 | `LegalPage` | A legal document with its contents beside it |
 | `RollingWord`, `useRolling` | Words that roll through a list in a headline |
+
+Dark public pages: swap the theme's light and dark tokens and set `surface`,
+`onInk` and `panel` (see `packages/UPGRADING.md`, site 0.2.0).
 
 Headings inside the kit's components carry `!` on their font and colour, so a
 host app's own global `h1`–`h3` styles don't change them.

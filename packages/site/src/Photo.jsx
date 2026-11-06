@@ -35,7 +35,7 @@ export default function Photo({ image, phoneImage, width = 1600, alt, position =
   }, [rotating, nextSrc, index]);
 
   return (
-    <div className={`absolute inset-0 overflow-hidden bg-gradient-to-br from-accent-soft via-accent to-body ${className}`}>
+    <div className={`okjt-photo absolute inset-0 overflow-hidden bg-gradient-to-br from-accent-soft via-accent to-body ${className}`}>
       <AnimatePresence initial={false}>
         {!failed && (
           <motion.picture

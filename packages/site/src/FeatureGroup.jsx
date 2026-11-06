@@ -29,7 +29,7 @@ export default function FeatureGroup({ group, index }) {
           </div>
           <dl className="grid grid-cols-3 gap-3 lg:col-span-5">
             {group.stats.map(([value, label]) => (
-              <div key={label} className="rounded-2xl border border-line bg-white/60 p-4">
+              <div key={label} className="rounded-2xl border border-line bg-surface/60 p-4">
                 <dd className="font-display text-xl font-normal tracking-tight text-ink sm:text-2xl">{value}</dd>
                 <dt className="mt-1 text-xs text-muted">{label}</dt>
               </div>
@@ -40,14 +40,14 @@ export default function FeatureGroup({ group, index }) {
         <div className={`mt-12 grid gap-5 lg:grid-cols-12 ${flip ? 'lg:[&>*:first-child]:order-2' : ''}`}>
           <ImageCard image={place(`group-${group.id}-card`)} tags={[group.eyebrow]} title={group.features[0].title} text={group.features[0].text} className="min-h-[24rem] lg:col-span-5" />
           <div className="relative overflow-hidden rounded-[1.75rem] bg-line p-4 sm:p-8 lg:col-span-7">
-            <div className="absolute -right-24 -top-24 h-64 w-64 rounded-full bg-white/50 blur-3xl" aria-hidden="true" />
+            <div className="absolute -right-24 -top-24 h-64 w-64 rounded-full bg-surface/50 blur-3xl" aria-hidden="true" />
             <MediaFrame media={media} className="relative" />
           </div>
         </div>
 
         <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {group.features.map((feature) => (
-            <article key={feature.title} className="flex flex-col rounded-[1.75rem] border border-line bg-white p-6 sm:p-7">
+            <article key={feature.title} className="flex flex-col rounded-[1.75rem] border border-line bg-surface p-6 sm:p-7">
               <h3 className="!font-display text-xl !font-medium !text-ink">{feature.title}</h3>
               <div className="mt-3 text-sm leading-relaxed text-soft">{feature.text}</div>
               {feature.details.length > 0 && (

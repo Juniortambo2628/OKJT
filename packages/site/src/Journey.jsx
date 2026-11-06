@@ -7,7 +7,7 @@ import { useMedia } from './SiteProvider.js';
 /** "At a glance" numbers, overlapping the hero. */
 export function JourneyGlance({ journey }) {
   return (
-    <div className="rounded-[2rem] bg-white p-6 shadow-[0_40px_80px_-40px_color-mix(in_srgb,var(--color-ink)_50%,transparent)] sm:p-10">
+    <div className="rounded-[2rem] bg-surface p-6 shadow-[0_40px_80px_-40px_color-mix(in_srgb,var(--okjt-shadow,var(--color-ink))_50%,transparent)] sm:p-10">
       <dl className="grid grid-cols-2 gap-6 lg:grid-cols-4">
         {journey.glance.map(([value, label]) => (
           <div key={label} className="rounded-2xl bg-tint p-5">
@@ -37,12 +37,12 @@ export function JourneyChapter({ chapter, index, detailsLabel = 'The nitty-gritt
       <div className={`${phone ? 'lg:col-span-7' : 'lg:col-span-5'}`}>
         <div className="flex items-center gap-3">
           <span className="font-display text-4xl font-extralight text-accent-soft">{String(index + 1).padStart(2, '0')}</span>
-          <span className="rounded-full bg-ink px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.15em] text-white">{chapter.when}</span>
+          <span className="rounded-full bg-fill px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.15em] text-on-ink">{chapter.when}</span>
         </div>
         <h2 className="mt-3 !font-display text-3xl !font-light tracking-tight !text-ink sm:text-4xl">{chapter.title}</h2>
         <div className="mt-3 leading-relaxed text-soft">{chapter.intro}</div>
 
-        <ol className="mt-6 divide-y divide-tint rounded-3xl border border-line bg-white">
+        <ol className="mt-6 divide-y divide-tint rounded-3xl border border-line bg-surface">
           {chapter.steps.map((step, i) => (
             <li key={step.title} className="flex gap-4 p-5">
               <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-tint text-xs font-semibold text-accent">{i + 1}</span>
@@ -65,11 +65,11 @@ export function JourneyChapter({ chapter, index, detailsLabel = 'The nitty-gritt
           </div>
         )}
         {chapter.tip && (
-          <div className="mt-4 flex gap-4 rounded-3xl bg-ink p-5 text-white">
+          <div className="mt-4 flex gap-4 rounded-3xl bg-fill p-5 text-on-ink">
             <Lightbulb className="h-5 w-5 shrink-0 text-accent-soft" aria-hidden="true" />
             <div>
               <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-accent-soft">{tipLabel}</div>
-              <div className="mt-2 text-sm leading-relaxed text-white/85">{chapter.tip}</div>
+              <div className="mt-2 text-sm leading-relaxed text-on-ink/85">{chapter.tip}</div>
             </div>
           </div>
         )}

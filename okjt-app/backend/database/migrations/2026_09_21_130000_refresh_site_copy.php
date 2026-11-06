@@ -1,6 +1,5 @@
 <?php
 
-use App\Services\RevalidationService;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -84,10 +83,6 @@ Every project begins with ecosystem mapping, a method from the Afrilabs programm
             'all_values', 'all_pillars', 'all_pillars_admin', 'all_services', 'all_stats', 'all_team_members',
         ] as $cacheKey) {
             Cache::forget($cacheKey);
-        }
-
-        if (! app()->runningUnitTests()) {
-            app(RevalidationService::class)->revalidateAll();
         }
     }
 

@@ -17,3 +17,10 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+
+# The site (okjt-app/web) built into public/ by the deploy
+/public/index.html
+/public/assets
+/public/logos
+/public/brand
+/public/favicon.png

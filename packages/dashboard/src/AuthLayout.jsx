@@ -22,7 +22,7 @@ export default function AuthLayout({ title, subtitle, children, footer, brand, b
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45 }}
-        className={`w-full ${aside ? 'max-w-6xl grid lg:grid-cols-2' : 'max-w-xl grid'} gap-3 p-3 rounded-[2rem] bg-paper border border-white shadow-[0_30px_80px_-30px_color-mix(in_srgb,var(--color-body)_35%,transparent)]`}
+        className={`w-full ${aside ? 'max-w-6xl grid lg:grid-cols-2' : 'max-w-xl grid'} gap-3 p-3 rounded-[2rem] bg-paper border border-surface shadow-[0_30px_80px_-30px_color-mix(in_srgb,var(--okjt-shadow,var(--color-body))_35%,transparent)]`}
       >
         <section className="flex flex-col px-5 py-8 sm:px-10 lg:px-14 lg:py-12">
           <div className="flex items-center justify-between gap-4">
@@ -52,7 +52,7 @@ export default function AuthLayout({ title, subtitle, children, footer, brand, b
   );
 }
 
-const fieldClass = 'w-full h-12 px-5 rounded-full bg-white border border-line text-sm text-ink placeholder:text-[var(--okjt-auth-placeholder,var(--color-faint))] shadow-[0_1px_2px_color-mix(in_srgb,var(--color-body)_4%,transparent)] outline-none transition focus:border-[var(--okjt-auth-focus,var(--color-accent))] focus:ring-4 focus:ring-[var(--okjt-auth-focus,var(--color-accent))]/15 read-only:bg-tint read-only:text-muted';
+const fieldClass = 'w-full h-12 px-5 rounded-full bg-surface border border-line text-sm text-ink placeholder:text-[var(--okjt-auth-placeholder,var(--color-faint))] shadow-[0_1px_2px_color-mix(in_srgb,var(--okjt-shadow,var(--color-body))_4%,transparent)] outline-none transition focus:border-[var(--okjt-auth-focus,var(--color-accent))] focus:ring-4 focus:ring-[var(--okjt-auth-focus,var(--color-accent))]/15 read-only:bg-tint read-only:text-muted';
 
 /** A labelled pill input; `type="password"` gets a show/hide toggle. */
 export function AuthField({ id, label, type = 'text', error, className = '', inputClassName = '', ...props }) {

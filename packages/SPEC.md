@@ -905,4 +905,4 @@ okjt/laravel-kit` in `backend/`).
 | 2 | Najenga's project **manager** role | Becomes **owner** (co-owner). Deleting a project stays with the owner whose `client_id` it is. |
 | 3 | Public or private | **Public**: npmjs.com and Packagist |
 | 4 | Names | Scope **`@okjt`**: `@okjt/ui`, `@okjt/site`, `@okjt/dashboard`, `create-okjt-app`; Composer `okjt/laravel-kit` |
-| — | `okjt-app` (Next.js) | Out of scope for now |
+| — | `okjt-app` (Next.js) | Moved onto the kit (2026-11-06): `okjt-app/web`, a static app on `@okjt/site` and `@okjt/dashboard` in OKJTech's deep brown, served by the Laravel API (no Node process on the VPS). It links the kit from `packages/` rather than npm, so it always builds with the kit at the same commit. |

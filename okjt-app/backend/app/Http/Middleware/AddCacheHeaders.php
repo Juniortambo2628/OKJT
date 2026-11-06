@@ -17,8 +17,9 @@ class AddCacheHeaders
     {
         $response = $next($request);
 
-        // Only add cache headers for GET requests on public API routes
-        if ($request->isMethod('GET') && ! $request->user()) {
+        // Only add cache headers for visitors' GET requests on public API
+        // routes: the dashboard (a bearer token) must see its saves at once.
+        if ($request->isMethod('GET') && ! $request->user() && ! $request->bearerToken()) {
             // Cache for 1 minute in browser, 5 minutes in CDN
             $response->headers->set('Cache-Control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=60');
 

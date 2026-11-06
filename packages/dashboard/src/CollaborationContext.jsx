@@ -46,7 +46,8 @@ export function CollaborationProvider({ children }) {
   latest.current = { module, pathname };
 
   const beat = useCallback(async () => {
-    if (document.visibilityState === 'hidden') return;
+    // Without the kit's API (no `api`), there is no presence to report.
+    if (!api || document.visibilityState === 'hidden') return;
     try {
       const res = await api.post('/collaboration/heartbeat', { module: latest.current.module, path: latest.current.pathname });
       setState({ presence: res.data?.presence || [], badges: res.data?.badges || {} });

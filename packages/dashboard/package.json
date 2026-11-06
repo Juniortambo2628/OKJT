@@ -1,6 +1,6 @@
 {
   "name": "@okjt/dashboard",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Dashboard pages for OKJTech projects: page layout, hero, summary cards, floating toolbar with search and filters, side panel, lists, bulk actions, one way to save, and working together: presence, version history, sharing; the dashboard shell, sign-in pages and account menu",
   "type": "module",
   "license": "MIT",
@@ -23,7 +23,7 @@
     "test": "node build.mjs && vitest run"
   },
   "dependencies": {
-    "@okjt/ui": "^0.2.1"
+    "@okjt/ui": "^0.2.2"
   },
   "peerDependencies": {
     "@tanstack/react-query": ">=5",

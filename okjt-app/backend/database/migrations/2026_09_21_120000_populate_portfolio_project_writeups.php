@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\Project;
-use App\Services\RevalidationService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Cache;
@@ -58,12 +57,6 @@ return new class extends Migration
         // The API caches project lists forever; clear them so the new copy is served.
         foreach (['projects_all', 'projects_client', 'projects_flagship'] as $key) {
             Cache::forget($key);
-        }
-
-        // One cache refresh for the Next.js front end instead of one per row.
-        // Best-effort: the service swallows network failures.
-        if (! app()->runningUnitTests()) {
-            app(RevalidationService::class)->revalidatePaths($paths);
         }
     }
 
