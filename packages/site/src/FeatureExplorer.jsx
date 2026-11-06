@@ -31,11 +31,11 @@ export default function FeatureExplorer({
               role="tab"
               aria-selected={selected}
               onClick={() => setActiveId(group.id)}
-              className={`relative shrink-0 rounded-full px-4 py-2 text-left transition-colors lg:block lg:w-full lg:rounded-none lg:px-6 lg:py-3 ${selected ? 'bg-ink text-on-ink lg:bg-transparent lg:text-ink' : 'bg-surface/60 text-muted hover:text-ink lg:bg-transparent'}`}
+              className={`relative shrink-0 rounded-full px-4 py-2 text-left transition-colors lg:block lg:w-full lg:rounded-none lg:px-6 lg:py-3 ${selected ? 'bg-fill text-on-ink lg:bg-transparent lg:text-ink' : 'bg-surface/60 text-muted hover:text-ink lg:bg-transparent'}`}
             >
               {selected && <motion.span layoutId="explorer-bar" className="absolute -left-px top-0 hidden h-full w-0.5 bg-ink lg:block" />}
               <span className="block whitespace-nowrap text-sm font-semibold lg:text-base lg:font-medium">{group.eyebrow}</span>
-              <span className="hidden text-xs text-faint lg:block">{group.features.length} {countLabel}</span>
+              {group.features?.length > 0 && <span className="hidden text-xs text-faint lg:block">{group.features.length} {countLabel}</span>}
             </button>
           );
         })}

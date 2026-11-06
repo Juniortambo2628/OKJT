@@ -24,7 +24,7 @@ export default function FaqSection({ id = 'faq', items, eyebrow = 'FAQ', title =
                   className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left font-medium text-ink sm:px-8"
                 >
                   {item.q}
-                  <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-full transition-all ${open ? 'rotate-45 bg-ink text-on-ink' : 'bg-tint text-accent'}`}>
+                  <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-full transition-all ${open ? 'rotate-45 bg-fill text-on-ink' : 'bg-tint text-accent'}`}>
                     <Plus className="h-4 w-4" aria-hidden="true" />
                   </span>
                 </button>

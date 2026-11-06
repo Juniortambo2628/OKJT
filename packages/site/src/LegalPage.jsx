@@ -19,7 +19,7 @@ function Sidebar({ sections, active }) {
             <NavLink
               key={doc.to}
               to={doc.to}
-              className={({ isActive }) => `flex min-w-[10rem] flex-1 items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition-colors ${isActive ? 'bg-ink text-on-ink' : 'bg-surface text-body hover:bg-tint'}`}
+              className={({ isActive }) => `flex min-w-[10rem] flex-1 items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition-colors ${isActive ? 'bg-fill text-on-ink' : 'bg-surface text-body hover:bg-tint'}`}
             >
               <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />{doc.label}
             </NavLink>

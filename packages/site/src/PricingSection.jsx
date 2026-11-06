@@ -21,7 +21,7 @@ export default function PricingSection({ id = 'pricing', eyebrow = 'Pricing', ti
             <div
               key={plan.id}
               className={`relative flex flex-col overflow-hidden rounded-[2rem] p-8 sm:p-10 ${plan.highlight
-                ? 'bg-ink text-on-ink shadow-[0_40px_80px_-40px_color-mix(in_srgb,var(--okjt-shadow,var(--color-ink))_80%,transparent)]'
+                ? 'bg-fill text-on-ink shadow-[0_40px_80px_-40px_color-mix(in_srgb,var(--okjt-shadow,var(--color-ink))_80%,transparent)]'
                 : 'border border-line bg-surface'}`}
             >
               {plan.highlight && <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-accent-soft/20 blur-2xl" aria-hidden="true" />}

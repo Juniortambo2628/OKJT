@@ -13,7 +13,7 @@ const strip = (html) => String(html ?? '').replace(/<[^>]+>/g, ' ').replace(/\s+
 
 export function InsightCard({ insight }) {
   return (
-    <Link to={`/insights/${insight.slug}`} className="group flex flex-col overflow-hidden rounded-[1.75rem] border border-line bg-surface transition-colors hover:border-accent/50">
+    <Link to={`/insights/${insight.slug}`} className="group flex flex-col overflow-hidden rounded-[1.75rem] glass transition-colors hover:border-accent/50">
       <div className="relative aspect-[16/10]"><MediaFill src={insight.image} /></div>
       <div className="flex flex-1 flex-col p-6">
         <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-accent">{insight.category || 'Insight'}</div>
@@ -50,7 +50,7 @@ export default function Insights() {
           <div role="group" aria-label="Topics" className="mb-8 flex flex-wrap gap-2">
             {categories.map((c) => (
               <button key={c} type="button" aria-pressed={category === c} onClick={() => setCategory(c)}
-                className={`rounded-full px-4 py-2 text-xs font-semibold transition-colors ${category === c ? 'bg-ink text-on-ink' : 'bg-surface text-soft hover:text-ink'}`}>{c}</button>
+                className={`rounded-full px-4 py-2 text-xs font-semibold transition-colors ${category === c ? 'bg-fill text-on-ink' : 'bg-surface text-soft hover:text-ink'}`}>{c}</button>
             ))}
           </div>
         )}

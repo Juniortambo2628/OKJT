@@ -32,7 +32,11 @@ export default {
       surface: '#211c12',
       contrast: '#ffffff',
       action: '#ebc882',
-      onInk: '#14110b',
+      // Filled controls (buttons, the chosen tab) sit close to the page, in
+      // dark brown with gold text; headlines stay cream (ink).
+      fill: '#2a2418',
+      fillHover: '#3a3221',
+      onInk: '#f3d9a0',
       panel: '#0d0b07',
       tone: {
         50: '#1e1a11',

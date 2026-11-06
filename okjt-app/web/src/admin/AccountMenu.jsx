@@ -17,7 +17,7 @@ export default function AccountMenu() {
     <div className="relative" ref={ref}>
       <button type="button" onClick={() => setOpen((v) => !v)} aria-haspopup="menu" aria-expanded={open} aria-label={`Account menu for ${user?.name || 'you'}`}
         className="flex items-center gap-2 rounded-full p-1 pr-2 transition-colors hover:bg-contrast/5">
-        <span className="grid h-8 w-8 place-items-center rounded-full bg-accent text-sm font-semibold text-on-ink">{user?.name?.charAt(0)?.toUpperCase() || 'A'}</span>
+        <span className="grid h-8 w-8 place-items-center rounded-full bg-accent text-sm font-semibold text-paper">{user?.name?.charAt(0)?.toUpperCase() || 'A'}</span>
         <span className="hidden max-w-[8rem] truncate text-sm font-medium text-body xl:block">{user?.name || 'Admin'}</span>
         <ChevronDown className={`h-4 w-4 text-tone-400 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden="true" />
       </button>

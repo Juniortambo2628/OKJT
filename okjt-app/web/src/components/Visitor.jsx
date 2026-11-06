@@ -18,12 +18,12 @@ export function CookieConsent() {
   if (answered) return null;
   const answer = (analytics) => { saveConsent(analytics); setAnswered(true); };
   return (
-    <div role="dialog" aria-label="Cookies" className="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-xl rounded-3xl border border-line bg-surface/95 p-5 shadow-2xl backdrop-blur-xl sm:bottom-5">
+    <div role="dialog" aria-label="Cookies" className="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-xl rounded-3xl glass p-5 shadow-2xl backdrop-blur-xl sm:bottom-5">
       <p className="text-sm leading-relaxed text-body">
         This site keeps a few essentials in your browser. With your permission it also counts page visits, anonymously, to see which pages help. <Link to="/cookies" className="text-accent underline">Cookie policy</Link>
       </p>
       <div className="mt-4 flex flex-wrap gap-2">
-        <button type="button" onClick={() => answer(true)} className="rounded-full bg-ink px-5 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-on-ink hover:bg-body">Allow</button>
+        <button type="button" onClick={() => answer(true)} className="rounded-full bg-fill px-5 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-on-ink hover:bg-fill-hover">Allow</button>
         <button type="button" onClick={() => answer(false)} className="rounded-full border border-line-strong px-5 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-body hover:border-accent">Essentials only</button>
       </div>
     </div>
@@ -97,7 +97,7 @@ export function Assistant() {
   return (
     <div className="fixed bottom-5 right-5 z-40">
       {open && (
-        <div role="dialog" aria-label="OKJTech assistant" className="mb-3 flex h-[28rem] w-[min(22rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-3xl border border-line bg-surface shadow-2xl">
+        <div role="dialog" aria-label="OKJTech assistant" className="mb-3 flex h-[28rem] w-[min(22rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-3xl glass shadow-2xl">
           <div className="flex items-center justify-between border-b border-line px-5 py-4">
             <div className="flex items-center gap-2 text-sm font-semibold text-ink"><Bot className="h-4 w-4 text-accent" aria-hidden="true" /> OKJTech assistant</div>
             <button type="button" onClick={() => setOpen(false)} aria-label="Close the assistant" className="rounded-full p-1 text-soft hover:text-ink"><X className="h-4 w-4" /></button>
@@ -105,7 +105,7 @@ export function Assistant() {
           <div className="flex-1 space-y-3 overflow-y-auto p-4 text-sm" aria-live="polite">
             <p className="rounded-2xl bg-tone-100 px-4 py-3 text-body">Hello. Ask about the work, the process or how to start a project.</p>
             {messages.map((m, i) => (
-              <p key={i} className={`rounded-2xl px-4 py-3 ${m.role === 'user' ? 'ml-8 bg-ink text-on-ink' : 'mr-8 bg-tone-100 text-body'}`}>{m.text}</p>
+              <p key={i} className={`rounded-2xl px-4 py-3 ${m.role === 'user' ? 'ml-8 bg-fill text-on-ink' : 'mr-8 bg-tone-100 text-body'}`}>{m.text}</p>
             ))}
             {messages.length === 0 && (
               <div className="flex flex-wrap gap-2">
@@ -117,11 +117,11 @@ export function Assistant() {
           <form onSubmit={(e) => { e.preventDefault(); ask(input); }} className="flex gap-2 border-t border-line p-3">
             <label htmlFor="assistant-input" className="sr-only">Your question</label>
             <input id="assistant-input" value={input} onChange={(e) => setInput(e.target.value)} placeholder="Type a question…" className="min-w-0 flex-1 rounded-full border border-line bg-paper px-4 py-2 text-sm text-ink placeholder:text-faint focus:border-accent focus:outline-none" />
-            <button type="submit" aria-label="Send" className="grid h-9 w-9 place-items-center rounded-full bg-ink text-on-ink"><Send className="h-4 w-4" /></button>
+            <button type="submit" aria-label="Send" className="grid h-9 w-9 place-items-center rounded-full bg-fill text-on-ink"><Send className="h-4 w-4" /></button>
           </form>
         </div>
       )}
-      <button type="button" onClick={() => setOpen((v) => !v)} aria-expanded={open} aria-label={open ? 'Close the assistant' : 'Ask the assistant'} className="ml-auto grid h-12 w-12 place-items-center rounded-full bg-ink text-on-ink shadow-lg transition-transform hover:scale-105">
+      <button type="button" onClick={() => setOpen((v) => !v)} aria-expanded={open} aria-label={open ? 'Close the assistant' : 'Ask the assistant'} className="ml-auto grid h-12 w-12 place-items-center rounded-full bg-fill text-on-ink shadow-lg transition-transform hover:scale-105">
         {open ? <X className="h-5 w-5" /> : <MessageCircle className="h-5 w-5" />}
       </button>
     </div>

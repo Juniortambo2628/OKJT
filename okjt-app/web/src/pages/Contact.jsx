@@ -56,7 +56,7 @@ export default function Contact() {
       />
       <Section id="message" media={setting('bg_contact_form')}>
         <div className="grid gap-8 lg:grid-cols-12">
-          <div className="rounded-[2rem] border border-line bg-surface/95 p-6 backdrop-blur sm:p-10 lg:col-span-8">
+          <div className="rounded-[2rem] glass p-6 sm:p-10 lg:col-span-8">
             {sent ? (
               <div className="py-12 text-center" role="status">
                 <CheckCircle2 className="mx-auto h-12 w-12 text-positive" aria-hidden="true" />
@@ -89,7 +89,7 @@ export default function Contact() {
                   <textarea rows={6} className={field} placeholder="Who will use it, what it should do, and when you need it." {...register('message', { required: 'A few lines about the project.' })} />
                 </Field>
                 {failure && <p role="alert" className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">{failure}</p>}
-                <button type="submit" disabled={isSubmitting} className="inline-flex w-full items-center justify-center rounded-full bg-ink px-7 py-3.5 text-sm font-semibold uppercase tracking-[0.08em] text-on-ink transition-colors hover:bg-body disabled:opacity-60 sm:w-auto">
+                <button type="submit" disabled={isSubmitting} className="inline-flex w-full items-center justify-center rounded-full bg-fill px-7 py-3.5 text-sm font-semibold uppercase tracking-[0.08em] text-on-ink transition-colors hover:bg-fill-hover disabled:opacity-60 sm:w-auto">
                   {isSubmitting ? 'Sending…' : 'Send the brief'}
                 </button>
               </form>
@@ -104,8 +104,8 @@ export default function Contact() {
                 </>
               );
               return href
-                ? <a key={label} href={href} className="flex items-center gap-4 rounded-[1.5rem] border border-line bg-surface p-5 transition-colors hover:border-accent/50">{body}</a>
-                : <div key={label} className="flex items-center gap-4 rounded-[1.5rem] border border-line bg-surface p-5">{body}</div>;
+                ? <a key={label} href={href} className="flex items-center gap-4 rounded-[1.5rem] glass p-5 transition-colors hover:border-accent/50">{body}</a>
+                : <div key={label} className="flex items-center gap-4 rounded-[1.5rem] glass p-5">{body}</div>;
             })}
             <div className="rounded-[1.5rem] border border-accent/30 bg-panel p-6 text-body">
               <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-accent">What happens next</div>

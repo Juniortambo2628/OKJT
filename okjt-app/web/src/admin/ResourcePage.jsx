@@ -65,7 +65,7 @@ function Editor({ resource, record, onClose, onSaved }) {
           <p role="alert" className="min-w-0 text-sm text-red-400">{error}</p>
           <div className="flex shrink-0 gap-2">
             <button type="button" onClick={onClose} className="rounded-full border border-tone-200 px-5 py-2 text-sm font-medium text-tone-700 hover:border-accent hover:text-ink">Cancel</button>
-            <button type="submit" disabled={save.pending} className="rounded-full bg-accent px-6 py-2 text-sm font-semibold text-on-ink hover:bg-accent-strong disabled:opacity-60">{save.pending ? 'Saving…' : isNew ? 'Add' : 'Save'}</button>
+            <button type="submit" disabled={save.pending} className="rounded-full bg-accent px-6 py-2 text-sm font-semibold text-paper hover:bg-accent-strong disabled:opacity-60">{save.pending ? 'Saving…' : isNew ? 'Add' : 'Save'}</button>
           </div>
         </div>
       </form>

@@ -18,7 +18,7 @@ export function Logo({ light = false, className = '' }) {
 }
 
 const PILL_VARIANTS = {
-  dark: 'bg-ink text-on-ink hover:bg-body shadow-[0_10px_30px_-12px_color-mix(in_srgb,var(--okjt-shadow,var(--color-ink))_60%,transparent)]',
+  dark: 'bg-fill text-on-ink hover:bg-fill-hover shadow-[0_10px_30px_-12px_color-mix(in_srgb,var(--okjt-shadow,var(--color-ink))_60%,transparent)]',
   light: 'bg-surface text-ink hover:bg-tint shadow-[0_10px_30px_-12px_color-mix(in_srgb,var(--okjt-shadow,var(--color-ink))_35%,transparent)]',
   outline: 'border border-line-strong text-body hover:border-accent hover:text-ink',
   glass: 'border border-white/40 bg-white/10 text-white backdrop-blur hover:bg-white/20',

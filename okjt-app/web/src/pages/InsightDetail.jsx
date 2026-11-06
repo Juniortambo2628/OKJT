@@ -28,7 +28,7 @@ export default function InsightDetail() {
         breadcrumbs={[{ to: '/', label: 'Home' }, { to: '/insights', label: 'Insights' }, { label: insight?.title || '…' }]}
       />
       <Container className="py-16">
-        <article className="mx-auto max-w-3xl rounded-[2rem] border border-line bg-surface p-6 text-[1.05rem] sm:p-12">
+        <article className="mx-auto max-w-3xl rounded-[2rem] glass p-6 text-[1.05rem] sm:p-12">
           {isLoading && <div className="space-y-3">{[1, 2, 3, 4].map((n) => <Skeleton key={n} className="h-4 !bg-tone-100" />)}</div>}
           {isError && <LoadError what="this article" />}
           {insight && <Html html={insight.content} />}

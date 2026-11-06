@@ -42,7 +42,7 @@ export default function ClientImpact() {
         {live(testimonials).length ? (
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {live(testimonials).map((t) => (
-              <figure key={t.id} className="flex flex-col rounded-[1.75rem] border border-line bg-surface/90 p-7 backdrop-blur">
+              <figure key={t.id} className="flex flex-col rounded-[1.75rem] glass p-7">
                 <Quote className="h-6 w-6 text-accent" aria-hidden="true" />
                 {t.rating > 0 && <div className="mt-3 flex gap-0.5" aria-label={`${t.rating} out of 5`}>{Array.from({ length: t.rating }).map((_, i) => <Star key={i} className="h-3.5 w-3.5 fill-accent text-accent" aria-hidden="true" />)}</div>}
                 <blockquote className="mt-4 flex-1 leading-relaxed text-body">“{t.quote}”</blockquote>
@@ -65,8 +65,8 @@ export default function ClientImpact() {
               return (
                 <li key={c.id}>
                   {c.website
-                    ? <a href={c.website} target="_blank" rel="noopener noreferrer" className="group grid h-28 place-items-center rounded-2xl border border-line bg-surface p-5">{inner}</a>
-                    : <div className="group grid h-28 place-items-center rounded-2xl border border-line bg-surface p-5">{inner}</div>}
+                    ? <a href={c.website} target="_blank" rel="noopener noreferrer" className="group grid h-28 place-items-center rounded-2xl glass p-5">{inner}</a>
+                    : <div className="group grid h-28 place-items-center rounded-2xl glass p-5">{inner}</div>}
                 </li>
               );
             })}

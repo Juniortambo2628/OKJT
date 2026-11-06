@@ -37,7 +37,7 @@ export function JourneyChapter({ chapter, index, detailsLabel = 'The nitty-gritt
       <div className={`${phone ? 'lg:col-span-7' : 'lg:col-span-5'}`}>
         <div className="flex items-center gap-3">
           <span className="font-display text-4xl font-extralight text-accent-soft">{String(index + 1).padStart(2, '0')}</span>
-          <span className="rounded-full bg-ink px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.15em] text-on-ink">{chapter.when}</span>
+          <span className="rounded-full bg-fill px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.15em] text-on-ink">{chapter.when}</span>
         </div>
         <h2 className="mt-3 !font-display text-3xl !font-light tracking-tight !text-ink sm:text-4xl">{chapter.title}</h2>
         <div className="mt-3 leading-relaxed text-soft">{chapter.intro}</div>
@@ -65,7 +65,7 @@ export function JourneyChapter({ chapter, index, detailsLabel = 'The nitty-gritt
           </div>
         )}
         {chapter.tip && (
-          <div className="mt-4 flex gap-4 rounded-3xl bg-ink p-5 text-on-ink">
+          <div className="mt-4 flex gap-4 rounded-3xl bg-fill p-5 text-on-ink">
             <Lightbulb className="h-5 w-5 shrink-0 text-accent-soft" aria-hidden="true" />
             <div>
               <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-accent-soft">{tipLabel}</div>

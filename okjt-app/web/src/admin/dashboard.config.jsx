@@ -62,7 +62,7 @@ export const dashboard = {
     sidebarClass: 'border-r border-line',
     logoClass: 'h-9 w-auto',
     navTitleClass: 'px-3 mb-1 text-[10px] font-bold uppercase tracking-[0.18em] text-tone-400',
-    navActiveClass: 'text-on-ink bg-accent shadow-sm',
+    navActiveClass: 'text-accent bg-fill',
     navIdleClass: 'text-tone-600 hover:text-ink hover:bg-tone-100',
     headerButtonClass: 'text-soft hover:bg-accent/10 hover:text-accent',
     headerActions: [],

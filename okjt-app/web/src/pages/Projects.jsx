@@ -54,7 +54,7 @@ export default function Projects({ flagship = false }) {
               ['Design for each group', 'Every group gets a clear reason to take part and a clear benefit.'],
               ['Build, launch, grow', 'The product ships in stages and keeps growing with the people using it.'],
             ].map(([title, text], i) => (
-              <li key={title} className="rounded-[1.75rem] border border-line bg-surface p-7">
+              <li key={title} className="rounded-[1.75rem] glass p-7">
                 <div className="font-display text-sm text-accent">{String(i + 1).padStart(2, '0')}</div>
                 <h3 className="mt-3 !font-display text-xl !font-normal !text-ink">{title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-soft">{text}</p>

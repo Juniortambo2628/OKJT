@@ -35,7 +35,7 @@ export default function ServiceDetail() {
         {isError && <LoadError what="this service" />}
         {service && (
           <div className="grid gap-10 lg:grid-cols-12">
-            <article className="rounded-[2rem] border border-line bg-surface p-6 sm:p-10 lg:col-span-8">
+            <article className="rounded-[2rem] glass-strong p-6 sm:p-10 lg:col-span-8">
               <Html html={service.content || service.description} />
             </article>
             <aside className="space-y-4 lg:col-span-4">

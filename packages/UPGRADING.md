@@ -9,14 +9,14 @@ toolbar's glass, border and shadow can be set in CSS (`--okjt-toolbar-bg`,
 
 1. `npm i @okjt/site@^0.2.0 @okjt/ui@^0.2.2`
 2. **Regenerate the theme** (`npx okjt-theme`): the public pages now use two
-   new colours, `onInk` and `panel`. Skipping this leaves the dark buttons'
+   new colours, `onInk`, `panel`, `fill` and `fillHover`. Skipping this leaves the dark buttons'
    text and the footer panel without a colour.
 
 Shadows on the public pages are tinted with `--okjt-shadow` (CSS, default
 `ink`); dark pages set it to black in their CSS.
 
 Nothing changes on screen unless you set them: `onInk` defaults to white and
-`panel` to `ink`, and cards, pills and menus that were white are now
+`panel` to `ink`, `fill` (dark buttons, the chosen tab or chip) to `ink` and `fillHover` to `body`, and cards, pills and menus that were white are now
 `surface` (default white). For dark public pages, swap the light and dark
 tokens (`paper`/`tint` dark, `ink`/`body` light), set `surface` to the card
 colour, `onInk` to a dark colour and `panel` to a dark one. OKJTech's own

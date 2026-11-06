@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Cookie, FileText, Handshake, LifeBuoy, MapPin, ShieldCheck } from 'lucide-react';
-import { live, useServices, useSettings } from './lib/content';
+import { live, usePillars, useServices, useSettings } from './lib/content';
 import { mediaUrl } from './lib/media';
 import { getToken } from './lib/api';
 import ServicesMega from './components/ServicesMega';
@@ -22,6 +22,9 @@ const PLACES = {
   'impact-testimonials': 'bg_client_impact_testimonials',
 };
 
+/** A service category as an address-safe id: 'UI/UX Design' → 'ui-ux-design'. */
+export const categorySlug = (text) => String(text || 'other').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
 export const DESCRIPTION = 'Web applications for health, legal, construction, events, commerce and nonprofit organisations, designed and built end to end in Nairobi, Kenya.';
 
 const page = (title, description = DESCRIPTION) => ({ title: `${title} | OKJTech`, description });
@@ -42,8 +45,18 @@ const DETAIL = [
 export function useSiteConfig() {
   const { setting } = useSettings();
   const { data: services } = useServices();
+  const { data: pillars } = usePillars();
 
   return useMemo(() => {
+    // Photos of the home page's tabbed sections (FeatureExplorer's `group-<id>`):
+    // each pillar's image, and each service category's first image (or the
+    // category's background from Site settings).
+    const groupPhotos = {};
+    for (const p of live(pillars)) groupPhotos[`group-pillar-${p.slug}`] = p.image || null;
+    for (const svc of live(services)) {
+      const key = `group-cat-${categorySlug(svc.category)}`;
+      groupPhotos[key] ||= svc.image || setting(`bg_services_${categorySlug(svc.category).replace(/-/g, '_')}`) || null;
+    }
     const logo = mediaUrl(setting('logo_dark', LOGO));
     const serviceLinks = live(services).slice(0, 6).map((s) => ({ to: `/services/${s.slug}`, label: s.title }));
     return {
@@ -68,7 +81,7 @@ export function useSiteConfig() {
 
       // A record without a picture gets the brand's dark placeholder.
       usePhotos: () => ({ url: (key) => (key ? mediaUrl(key) : PLACEHOLDER), alt: () => '' }),
-      usePlaces: () => (place) => (PLACES[place] ? setting(PLACES[place]) || null : null),
+      usePlaces: () => (place) => (PLACES[place] ? setting(PLACES[place]) || null : groupPhotos[place] ?? null),
       media: {},
 
       footer: {
@@ -148,5 +161,5 @@ export function useSiteConfig() {
         },
       },
     };
-  }, [setting, services]);
+  }, [setting, services, pillars]);
 }

@@ -43,7 +43,7 @@ export default function ProjectDetail() {
         text={project?.tagline}
         breadcrumbs={[{ to: '/', label: 'Home' }, { to: '/projects', label: 'Projects' }, { label: project?.title || '…' }]}
       >
-        {project?.url && <a href={project.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 rounded-full bg-ink px-7 py-3.5 text-sm font-semibold uppercase tracking-[0.08em] text-on-ink hover:bg-body">Visit the platform <ExternalLink className="h-4 w-4" aria-hidden="true" /></a>}
+        {project?.url && <a href={project.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 rounded-full bg-fill px-7 py-3.5 text-sm font-semibold uppercase tracking-[0.08em] text-on-ink hover:bg-fill-hover">Visit the platform <ExternalLink className="h-4 w-4" aria-hidden="true" /></a>}
         <PillLink to="/contact" variant="glass" size="lg">Start a similar project</PillLink>
       </PageHero>
       {project && sections.length > 1 && <SectionNav sections={sections} label="Project" />}
@@ -54,7 +54,7 @@ export default function ProjectDetail() {
           <Section id="overview">
             <div className="grid gap-10 lg:grid-cols-12">
               <div className="lg:col-span-8"><Html html={project.description} className="text-lg" /></div>
-              <aside className="space-y-6 rounded-[2rem] border border-line bg-surface p-7 lg:col-span-4">
+              <aside className="space-y-6 rounded-[2rem] glass p-7 lg:col-span-4">
                 {project.significant_figure && (
                   <div>
                     <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted">Impact</div>
@@ -93,7 +93,7 @@ export default function ProjectDetail() {
           )}
           {project.testimonial_quote && (
             <Container className="py-16" >
-              <figure id="testimonial" className="mx-auto max-w-4xl rounded-[2rem] bg-ink p-8 text-on-ink sm:p-14">
+              <figure id="testimonial" className="mx-auto max-w-4xl rounded-[2rem] bg-fill p-8 text-on-ink sm:p-14">
                 <Quote className="h-8 w-8 opacity-50" aria-hidden="true" />
                 <blockquote className="mt-4 font-display text-2xl font-light leading-snug sm:text-3xl">{project.testimonial_quote}</blockquote>
                 {project.testimonial_author && <figcaption className="mt-6 text-sm font-semibold uppercase tracking-[0.15em] opacity-70">{project.testimonial_author}</figcaption>}

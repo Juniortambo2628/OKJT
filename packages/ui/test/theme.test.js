@@ -51,6 +51,8 @@ test('onInk and panel keep light-page looks unless set, for dark public pages', 
   const css = compileTheme({ theme: { colors } });
   assert.match(css, /--color-on-ink: #ffffff;/);
   assert.match(css, /--color-panel: var\(--color-ink\);/);
+  assert.match(css, /--color-fill: var\(--color-ink\);/);
+  assert.match(css, /--color-fill-hover: var\(--color-body\);/);
   const dark = compileTheme({ theme: { colors: { ...colors, onInk: '#14110b', panel: '#0d0b07' } } });
   assert.match(dark, /--color-on-ink: #14110b;/);
   assert.match(dark, /--color-panel: #0d0b07;/);

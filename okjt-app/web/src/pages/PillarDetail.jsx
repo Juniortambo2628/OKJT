@@ -34,7 +34,7 @@ export default function PillarDetail() {
         {isLoading && <div className="h-64 animate-pulse rounded-[2rem] bg-surface" />}
         {isError && <LoadError what="this principle" />}
         {pillar && (
-          <article className="mx-auto max-w-3xl rounded-[2rem] border border-line bg-surface p-6 text-[1.05rem] sm:p-12">
+          <article className="mx-auto max-w-3xl rounded-[2rem] glass p-6 text-[1.05rem] sm:p-12">
             <Html html={pillar.content || pillar.overview} />
           </article>
         )}

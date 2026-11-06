@@ -30,5 +30,6 @@ test('text on ink fills uses on-ink, cards use surface, so dark themes read', as
   for (const file of await readdir(src)) {
     const code = await readFile(new URL(file, src), 'utf8');
     assert.doesNotMatch(code, /bg-ink text-white/, `${file}: use text-on-ink on bg-ink`);
+    assert.doesNotMatch(code, /bg-ink text-on-ink/, `${file}: filled controls use bg-fill`);
   }
 });

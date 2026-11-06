@@ -31,7 +31,7 @@ export default function ServicesMega({ id, onNavigate }) {
   return (
     <div id={id} className="absolute inset-x-0 top-full pt-2">
       <Container>
-        <div className="rounded-3xl border border-line bg-surface/95 p-6 shadow-2xl backdrop-blur-xl lg:p-8">
+        <div className="rounded-3xl glass p-6 shadow-2xl backdrop-blur-xl lg:p-8">
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {groups.map((group) => (
               <div key={group.key}>

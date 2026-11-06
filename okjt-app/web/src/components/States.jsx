@@ -18,7 +18,7 @@ export function Empty({ children }) {
 /** A failed load, with a way back. */
 export function LoadError({ what = 'this page' }) {
   return (
-    <div className="rounded-3xl border border-line bg-surface px-6 py-16 text-center">
+    <div className="rounded-3xl glass px-6 py-16 text-center">
       <p className="text-ink">We couldn’t load {what}.</p>
       <p className="mt-2 text-sm text-muted">Check your connection and refresh, or <Link to="/" className="text-accent underline">go to the home page</Link>.</p>
     </div>
