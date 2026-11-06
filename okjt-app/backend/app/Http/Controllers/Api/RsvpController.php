@@ -54,7 +54,8 @@ class RsvpController extends Controller
     protected function afterStore($record, $validated, $request)
     {
         try {
-            Mail::to($record->email)->queue(new RsvpConfirmation($record));
+            // Sent straight away: the site runs no queue worker.
+            Mail::to($record->email)->send(new RsvpConfirmation($record));
         } catch (\Exception $e) {
             logger()->error('Failed to send RSVP confirmation mail: '.$e->getMessage());
         }

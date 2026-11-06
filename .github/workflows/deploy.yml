@@ -4,13 +4,8 @@ on:
   push:
     branches:
       - main
-    # The shared kit (packages/) has its own CI and release workflows and
-    # isn't part of the site: a push that only changes it doesn't redeploy.
-    # A push that also changes anything else still deploys as before.
-    paths-ignore:
-      - 'packages/**'
-      - '.github/workflows/packages-ci.yml'
-      - '.github/workflows/packages-release.yml'
+    # The site is built on the kit in packages/, so a kit change redeploys it
+    # too (with the kit at the same commit).
   workflow_dispatch:
 
 concurrency:
@@ -23,7 +18,7 @@ permissions:
 
 env:
   BACKEND_DIR: okjt-app/backend
-  FRONTEND_DIR: okjt-app/frontend
+  FRONTEND_DIR: okjt-app/web
 
 jobs:
   lint-and-fix:
@@ -55,18 +50,15 @@ jobs:
         with:
           node-version: '24'
           cache: 'npm'
-          cache-dependency-path: ${{ env.FRONTEND_DIR }}/package-lock.json
+          cache-dependency-path: |
+            ${{ env.FRONTEND_DIR }}/package-lock.json
+            packages/package-lock.json
 
       - name: Install frontend dependencies
         working-directory: ${{ env.FRONTEND_DIR }}
         run: npm ci
 
-      - name: Fix frontend styling with ESLint
-        working-directory: ${{ env.FRONTEND_DIR }}
-        run: npm run lint -- --fix || npx eslint --fix .
-        continue-on-error: true
-
-      - name: Verify frontend build
+      - name: Verify the site and dashboard build
         working-directory: ${{ env.FRONTEND_DIR }}
         run: npm run build
 
@@ -116,16 +108,24 @@ jobs:
           DB_DATABASE: database/database.sqlite
         run: php artisan test
 
-  # Both deploys use the shared deploy-kit in this repo (deploy-kit/README.md).
-  deploy-api:
+  # One deploy (deploy-kit, deploy-kit/README.md): the Laravel API with the
+  # site and dashboard (okjt-app/web) built into its public/. nginx serves
+  # the app's files and PHP-FPM answers /api and each page's HTML, so no
+  # Node process runs on the VPS. The app lives in api.okjtech.co.ke's
+  # folder (its .env, uploads and releases); okjtech.co.ke and www are
+  # aliases of that web domain (DEPLOYMENT.md, "Moving off Next.js").
+  deploy:
     needs: test-backend
     uses: ./.github/workflows/deploy-laravel.yml
     with:
       domain: api.okjtech.co.ke
       app_name: okjt-api
       app_dir: okjt-app/backend
+      spa_dir: okjt-app/web
       php_version: "8.3"
-      build_assets: false   # API only; no views use @vite
+      build_assets: false   # the backend has no Vite build of its own
+      queue: false          # nothing is queued: no worker process
+      scheduler: false      # nothing is scheduled: no scheduler process
       health_path: /up
     secrets:
       VPS_HOST: ${{ secrets.VPS_HOST }}
@@ -134,19 +134,3 @@ jobs:
       VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
       VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
       ENV_FILE: ${{ secrets.BACKEND_ENV }}
-
-  deploy-web:
-    needs: [lint-and-fix, deploy-api]
-    uses: ./.github/workflows/deploy-next.yml
-    with:
-      domain: okjtech.co.ke
-      app_name: okjt-web
-      app_dir: okjt-app/frontend
-      port: 3100
-    secrets:
-      VPS_HOST: ${{ secrets.VPS_HOST }}
-      VPS_PORT: ${{ secrets.VPS_PORT }}
-      VPS_USER: ${{ secrets.VPS_USER }}
-      VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
-      VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
-      ENV_FILE: ${{ secrets.FRONTEND_ENV }}

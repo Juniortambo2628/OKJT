@@ -84,13 +84,13 @@ export default function Home() {
         title={setting('vp_section_title', 'One continuous build, concept to production')}
         text={setting('vp_section_subtitle')}
       >
-        {pillars.isLoading ? <CardGridSkeleton count={3} /> : (
+        {pillars.isLoading ? <CardGridSkeleton count={3} /> : live(pillars.data).length ? (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {live(pillars.data).map((p) => (
               <ImageCard key={p.id} image={p.image} title={p.title} text={strip(p.overview).slice(0, 140)} to={`/our-approach/${p.slug}`} />
             ))}
           </div>
-        )}
+        ) : <Empty>The principles will be listed here.</Empty>}
         <div className="mt-10 text-center"><PillLink to="/our-approach" variant="outline" arrow>Explore the approach</PillLink></div>
       </Section>
 

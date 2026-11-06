@@ -7,12 +7,11 @@
   "scripts": {
     "kit": "npm --prefix ../../packages ci --no-audit --no-fund && npm --prefix ../../packages run build",
     "theme": "okjt-theme",
-    "predev": "okjt-theme",
+    "predev": "node scripts/ensure-kit.mjs && okjt-theme",
     "dev": "vite",
-    "prebuild": "okjt-theme",
+    "prebuild": "node scripts/ensure-kit.mjs && okjt-theme",
     "build": "vite build",
-    "preview": "vite preview",
-    "test": "vitest run"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@okjt/dashboard": "file:../../packages/dashboard",

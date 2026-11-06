@@ -9,7 +9,7 @@ verified. Rollback = repoint a symlink.
 |---|---|---|
 | Laravel (Blade) | `deploy-laravel.yml` with `build_assets: false` | PHP-FPM (Hestia pool) |
 | Laravel + Vite / React / Inertia | `deploy-laravel.yml` (default `build_assets: true`) | PHP-FPM |
-| Laravel API + separate Vite/React app on one domain | `deploy-laravel.yml` with `spa_dir: frontend` (see below) | PHP-FPM |
+| Laravel API + separate Vite/React app on one domain | `deploy-laravel.yml` with `spa_dir: frontend` (see below) | PHP-FPM, no Node process (OKJTech itself) |
 | Laravel API + Next.js | `deploy-laravel.yml` for the API **and** `deploy-next.yml` for the web app | PHP-FPM + Node under PM2 |
 | Next.js alone | `deploy-next.yml` | Node under PM2 |
 
@@ -98,7 +98,7 @@ The deploy key's public half is in `/home/dev/.ssh/authorized_keys`.
 6. **Cutover**: hosts-file test → A record → Hestia SSL + Let's Encrypt +
    HTTPS redirect → `APP_ENV=production` in the env secret, re-run deploy.
 
-Ports in use: `okjt-web` 3100.
+Ports in use: none (OKJTech's own site moved off Next.js; see DEPLOYMENT.md).
 
 ## Inputs
 

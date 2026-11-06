@@ -13,7 +13,7 @@ permissions:
 
 env:
   BACKEND_DIR: okjt-app/backend
-  FRONTEND_DIR: okjt-app/frontend
+  FRONTEND_DIR: okjt-app/web
 
 jobs:
   backend:
@@ -61,7 +61,7 @@ jobs:
         run: php artisan test
 
   frontend:
-    name: Frontend (lint + build)
+    name: Site and dashboard (build)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -72,16 +72,15 @@ jobs:
         with:
           node-version: '24'
           cache: 'npm'
-          cache-dependency-path: ${{ env.FRONTEND_DIR }}/package-lock.json
+          cache-dependency-path: |
+            ${{ env.FRONTEND_DIR }}/package-lock.json
+            packages/package-lock.json
 
       - name: Install frontend dependencies
         working-directory: ${{ env.FRONTEND_DIR }}
         run: npm ci
 
-      - name: Lint frontend
-        working-directory: ${{ env.FRONTEND_DIR }}
-        run: npm run lint
-
-      - name: Build frontend
+      # Builds the OKJT kit in packages/ first (the app links it), then the app.
+      - name: Build the site and dashboard
         working-directory: ${{ env.FRONTEND_DIR }}
         run: npm run build
