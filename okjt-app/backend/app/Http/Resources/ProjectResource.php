@@ -28,6 +28,7 @@ class ProjectResource extends JsonResource
             'testimonial_author' => $this->testimonial_author,
             'image' => $this->image,
             'bg_image' => $this->bg_image,
+            'logo' => $this->logo,
             'gallery' => $this->gallery,
             'url' => $this->url,
             'is_active' => (bool) $this->is_active,

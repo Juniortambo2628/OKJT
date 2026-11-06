@@ -5,8 +5,10 @@ import {
   Container, Eyebrow, FeatureExplorer, ImageCard, PillLink, RollingWord, SECTION_OFFSET, SectionHeading, SectionNav, SiteLayout, useRolling,
 } from '@okjt/site';
 import PageHero, { lines } from '../components/PageHero';
+import LogoCarousel from '../components/LogoCarousel';
 import { CardGridSkeleton, Empty } from '../components/States';
 import { bySector } from '../lib/sectors';
+import { principleFor } from '../lib/principles';
 import { formatDate, live, useInsights, usePillars, useProjects, useSettings, useStats } from '../lib/content';
 import { DEFAULT_HERO } from '../lib/defaults';
 
@@ -136,9 +138,9 @@ function ApproachExplorer() {
         </>
       ),
       features: services,
-      stats: [
+      stats: principleFor(p)?.stats ?? [
         [String(i + 1).padStart(2, '0'), `of ${pillars.length} principles`],
-        services.length > 0 ? [String(services.length), services.length === 1 ? 'service built on it' : 'services built on it'] : ['Every', 'project, every stage'],
+        [String(services.length), services.length === 1 ? 'service built on it' : 'services built on it'],
         ['1', 'team, brief to launch'],
       ],
     };
@@ -225,7 +227,7 @@ export default function Home() {
             <span className="block text-body/80">{setting('hero_title_line2', 'Built end to end.')}</span>
           </>
         )}
-        text={setting('hero_subtitle', 'Bespoke, high-performance web applications, robust APIs and clean admin systems, designed and built end to end.')}
+        text={<LogoCarousel />}
         after={<HeroPanel />}
       >
         <PillLink to="/contact" variant="dark" size="lg">Start a Project</PillLink>

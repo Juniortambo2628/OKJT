@@ -2,11 +2,13 @@
  * What goes into each principle of the approach, for the Approach page and
  * each principle's own page. Matched to a pillar by its title. A pillar
  * whose text in the dashboard has a bullet list uses that list instead of
- * these points; `projects` are the words its standout projects are picked by.
+ * these points; `projects` are the words its standout projects are picked by;
+ * `stats` are the three figures its tab on the home page highlights.
  */
 export const PRINCIPLES = [
   {
     match: ['design'],
+    stats: [['0', 'templates: every layout drawn for its own people'], ['5', 'parts of an identity, from tone to type'], ['2', 'screens for every view: desktop and phone']],
     lead: 'What goes into design',
     points: [
       { title: 'Tone', text: 'How the platform speaks: measured for a law firm, warm for a clinic, lively for an event. Agreed before a word is written.' },
@@ -20,6 +22,7 @@ export const PRINCIPLES = [
   },
   {
     match: ['style'],
+    stats: [['1', 'set of components behind every page'], ['1', 'icon family, start to finish'], ['3', 'signal colours: success, warning, error']],
     lead: 'What goes into style',
     points: [
       { title: 'Typography', text: 'A type scale with a clear order for headings, body text and data, readable at every size.' },
@@ -33,6 +36,7 @@ export const PRINCIPLES = [
   },
   {
     match: ['human', 'experience', 'ux'],
+    stats: [['Every', 'group it touches, mapped before building'], ['AA', 'contrast aimed for on every screen'], ['Real', 'people test the prototypes']],
     lead: 'What goes into a human-centred experience',
     points: [
       { title: 'Everyone it touches', text: 'Each group who will use the platform or be affected by it, mapped with what they need from it.' },
@@ -46,6 +50,7 @@ export const PRINCIPLES = [
   },
   {
     match: ['speed', 'fast', 'performance'],
+    stats: [['WebP', 'images, converted as they upload'], ['1920px', 'the largest picture ever sent'], ['Mobile', 'data: the first speed test']],
     lead: 'What goes into speed',
     points: [
       { title: 'A fast first load', text: 'Pages light enough to open quickly on mobile data, where most visitors are.' },
@@ -59,6 +64,7 @@ export const PRINCIPLES = [
   },
   {
     match: ['launch', 'deploy', 'release'],
+    stats: [['Staging', 'copy tried before every release'], ['SSL', 'on every domain, from day one'], ['Auto', 'deployments, checked before going live']],
     lead: 'What goes into a launch',
     points: [
       { title: 'Staging first', text: 'Every change tried on a copy of the live platform before anyone else sees it.' },
@@ -72,6 +78,7 @@ export const PRINCIPLES = [
   },
   {
     match: ['scale', 'grow'],
+    stats: [['M-Pesa', 'and Paystack, ready to connect'], ['Roles', 'from owners to viewers'], ['1', 'team caring for it after launch']],
     lead: 'What goes into scale',
     points: [
       { title: 'Built to grow', text: 'A structure that takes more users, data and features without a rebuild.' },
