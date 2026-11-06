@@ -31,7 +31,7 @@ export default function FeatureExplorer({
               role="tab"
               aria-selected={selected}
               onClick={() => setActiveId(group.id)}
-              className={`relative shrink-0 rounded-full px-4 py-2 text-left transition-colors lg:block lg:w-full lg:rounded-none lg:px-6 lg:py-3 ${selected ? 'bg-ink text-white lg:bg-transparent lg:text-ink' : 'bg-white/60 text-muted hover:text-ink lg:bg-transparent'}`}
+              className={`relative shrink-0 rounded-full px-4 py-2 text-left transition-colors lg:block lg:w-full lg:rounded-none lg:px-6 lg:py-3 ${selected ? 'bg-ink text-on-ink lg:bg-transparent lg:text-ink' : 'bg-surface/60 text-muted hover:text-ink lg:bg-transparent'}`}
             >
               {selected && <motion.span layoutId="explorer-bar" className="absolute -left-px top-0 hidden h-full w-0.5 bg-ink lg:block" />}
               <span className="block whitespace-nowrap text-sm font-semibold lg:text-base lg:font-medium">{group.eyebrow}</span>
@@ -55,7 +55,7 @@ export default function FeatureExplorer({
             <Photo image={place(`group-${active.id}`)} className="-z-10" />
             <div className="absolute inset-0 -z-10 bg-gradient-to-t from-ink-deep/85 via-ink-deep/10 to-ink-deep/10" />
 
-            <div className="max-w-sm rounded-3xl border border-white/50 bg-white/75 p-6 shadow-xl backdrop-blur-xl">
+            <div className="max-w-sm rounded-3xl border border-surface/50 bg-surface/75 p-6 shadow-xl backdrop-blur-xl">
               <h3 className="!font-display text-2xl !font-normal tracking-tight !text-ink">{active.title}</h3>
               <div className="mt-3 text-sm leading-relaxed text-body">{active.summary}</div>
               <Link to={href(active)} className="mt-5 inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-[0.15em] text-ink hover:text-accent">

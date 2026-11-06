@@ -19,7 +19,7 @@ export default function ImageCard({
       <Photo image={image} position={position} className="-z-10" />
       <div className="absolute inset-0 -z-10 bg-gradient-to-t from-ink-deep/85 via-ink-deep/25 to-transparent" />
       {to && (
-        <span className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-full bg-white/15 backdrop-blur transition-colors group-hover:bg-white group-hover:text-ink" aria-hidden="true">
+        <span className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-full bg-white/15 backdrop-blur transition-colors group-hover:bg-surface group-hover:text-ink" aria-hidden="true">
           <ArrowUpRight className="h-4 w-4" />
         </span>
       )}

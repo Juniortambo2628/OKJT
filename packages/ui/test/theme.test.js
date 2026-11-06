@@ -47,6 +47,15 @@ test('surface and contrast default to white and black, and can be set', () => {
   assert.match(compileTheme({ theme: { colors: { ...colors, surface: '#fafafa' } } }), /--color-surface: #fafafa;/);
 });
 
+test('onInk and panel keep light-page looks unless set, for dark public pages', () => {
+  const css = compileTheme({ theme: { colors } });
+  assert.match(css, /--color-on-ink: #ffffff;/);
+  assert.match(css, /--color-panel: var\(--color-ink\);/);
+  const dark = compileTheme({ theme: { colors: { ...colors, onInk: '#14110b', panel: '#0d0b07' } } });
+  assert.match(dark, /--color-on-ink: #14110b;/);
+  assert.match(dark, /--color-panel: #0d0b07;/);
+});
+
 test('theme.dashboard overrides colours on the dashboard only', () => {
   const css = compileTheme({ theme: { colors, dashboard: { colorScheme: 'dark', colors: { paper: '#0b0c0d', surface: '#141517', contrast: '#ffffff', tone: 'zinc' } } } });
   const [base, dashboard] = css.split(':root.admin-theme {');

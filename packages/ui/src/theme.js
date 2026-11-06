@@ -33,6 +33,8 @@ export const OPTIONAL_COLOR_TOKENS = {
   surface: ['Cards, panels, menus and dialogs on the page', '#ffffff'],
   contrast: ['What hovers and pressed states shade toward: black on light, white on dark', '#000000'],
   action: ['Solid action buttons (e.g. an empty list\'s next step)', 'var(--color-accent)'],
+  onInk: ['Text and icons on ink-coloured fills (dark buttons, chosen tabs): white on light pages, dark on dark pages', '#ffffff'],
+  panel: ['Dark panels that always carry light text (the footer)', 'var(--color-ink)'],
 };
 
 /** Steps of the grey ramp (`theme.colors.tone`), as Tailwind numbers them. */

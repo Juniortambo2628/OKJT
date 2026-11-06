@@ -18,8 +18,8 @@ export function Logo({ light = false, className = '' }) {
 }
 
 const PILL_VARIANTS = {
-  dark: 'bg-ink text-white hover:bg-body shadow-[0_10px_30px_-12px_color-mix(in_srgb,var(--color-ink)_60%,transparent)]',
-  light: 'bg-white text-ink hover:bg-tint shadow-[0_10px_30px_-12px_color-mix(in_srgb,var(--color-ink)_35%,transparent)]',
+  dark: 'bg-ink text-on-ink hover:bg-body shadow-[0_10px_30px_-12px_color-mix(in_srgb,var(--color-ink)_60%,transparent)]',
+  light: 'bg-surface text-ink hover:bg-tint shadow-[0_10px_30px_-12px_color-mix(in_srgb,var(--color-ink)_35%,transparent)]',
   outline: 'border border-line-strong text-body hover:border-accent hover:text-ink',
   glass: 'border border-white/40 bg-white/10 text-white backdrop-blur hover:bg-white/20',
 };
@@ -51,7 +51,7 @@ export function Eyebrow({ light = false, className = '', children }) {
 /** Rounded tag chip, as on photo cards ("Article", "Design"). */
 export function Chip({ light = true, children }) {
   return (
-    <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-semibold ${light ? 'bg-white text-ink' : 'bg-ink/5 text-body'}`}>
+    <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-semibold ${light ? 'bg-surface text-ink' : 'bg-ink/5 text-body'}`}>
       {children}
     </span>
   );

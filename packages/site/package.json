@@ -1,6 +1,6 @@
 {
   "name": "@okjt/site",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Public pages for OKJTech projects: layout, navigation, footer, hero, feature, pricing, FAQ and legal sections",
   "type": "module",
   "license": "MIT",

@@ -25,3 +25,10 @@ test('no project-specific words in the kit: they come from `site`', async () => 
     assert.doesNotMatch(code, /naoa|najenga|wedding|okjtech/i, file);
   }
 });
+
+test('text on ink fills uses on-ink, cards use surface, so dark themes read', async () => {
+  for (const file of await readdir(src)) {
+    const code = await readFile(new URL(file, src), 'utf8');
+    assert.doesNotMatch(code, /bg-ink text-white/, `${file}: use text-on-ink on bg-ink`);
+  }
+});

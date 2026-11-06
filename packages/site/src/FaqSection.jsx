@@ -16,7 +16,7 @@ export default function FaqSection({ id = 'faq', items, eyebrow = 'FAQ', title =
           {items.map((item, i) => {
             const open = openIndex === i;
             return (
-              <div key={item.q} className={`rounded-3xl border transition-colors ${open ? 'border-transparent bg-white shadow-[0_20px_50px_-35px_color-mix(in_srgb,var(--color-ink)_50%,transparent)]' : 'border-line bg-white/50'}`}>
+              <div key={item.q} className={`rounded-3xl border transition-colors ${open ? 'border-transparent bg-surface shadow-[0_20px_50px_-35px_color-mix(in_srgb,var(--color-ink)_50%,transparent)]' : 'border-line bg-surface/50'}`}>
                 <button
                   type="button"
                   onClick={() => setOpenIndex(open ? -1 : i)}
@@ -24,7 +24,7 @@ export default function FaqSection({ id = 'faq', items, eyebrow = 'FAQ', title =
                   className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left font-medium text-ink sm:px-8"
                 >
                   {item.q}
-                  <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-full transition-all ${open ? 'rotate-45 bg-ink text-white' : 'bg-tint text-accent'}`}>
+                  <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-full transition-all ${open ? 'rotate-45 bg-ink text-on-ink' : 'bg-tint text-accent'}`}>
                     <Plus className="h-4 w-4" aria-hidden="true" />
                   </span>
                 </button>

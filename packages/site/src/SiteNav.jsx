@@ -38,7 +38,7 @@ export default function SiteNav({ overlay = false }) {
   const closeAll = () => { setMega(false); setOpen(false); };
   const pillLink = ({ isActive }) => `rounded-full px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors ${
     isActive
-      ? 'bg-white text-ink shadow-sm'
+      ? 'bg-surface text-ink shadow-sm'
       : light ? 'text-white/85 hover:text-white' : 'text-soft hover:text-ink'
   }`;
   // "/#pricing" is a place on the home page, not a page of its own.
@@ -101,7 +101,7 @@ export default function SiteNav({ overlay = false }) {
 
       {open && (
         <Container className="lg:hidden">
-          <nav aria-label="Main" className="mt-3 max-h-[calc(100svh-6rem)] overflow-y-auto rounded-3xl border border-line bg-white p-3 shadow-xl">
+          <nav aria-label="Main" className="mt-3 max-h-[calc(100svh-6rem)] overflow-y-auto rounded-3xl border border-line bg-surface p-3 shadow-xl">
             {nav.map((item) => (item.mega
               ? <item.mega.MobileList key={item.to} onNavigate={closeAll} />
               : <Link key={item.to} to={item.to} onClick={() => setOpen(false)} className="block rounded-2xl px-4 py-3 text-body hover:bg-tint">{item.label}</Link>))}

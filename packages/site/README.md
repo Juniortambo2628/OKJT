@@ -119,5 +119,8 @@ Any path not in `seo.pages` (and not resolved) gets the defaults and `noindex`.
 | `LegalPage` | A legal document with its contents beside it |
 | `RollingWord`, `useRolling` | Words that roll through a list in a headline |
 
+Dark public pages: swap the theme's light and dark tokens and set `surface`,
+`onInk` and `panel` (see `packages/UPGRADING.md`, site 0.2.0).
+
 Headings inside the kit's components carry `!` on their font and colour, so a
 host app's own global `h1`–`h3` styles don't change them.

@@ -43,7 +43,7 @@ export default function SiteFooter({ cta = true }) {
     <footer className="pt-10">
       {cta && footer.cta && <FooterCta cta={footer.cta} />}
       <div className="px-2 pb-2 sm:px-4 sm:pb-4">
-        <div className="relative overflow-hidden rounded-[2rem] bg-ink text-white">
+        <div className="relative overflow-hidden rounded-[2rem] bg-panel text-white">
           <div className="pointer-events-none absolute -bottom-10 right-0 select-none font-display text-[9rem] font-semibold leading-none tracking-tighter text-white/[0.04] sm:text-[16rem] lg:text-[22rem]" aria-hidden="true">
             {footer.watermark}
           </div>

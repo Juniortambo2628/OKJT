@@ -52,6 +52,8 @@ rendering as no colour at all.
 | `line`, `lineStrong` | Borders and dividers; borders that must show |
 | `tint`, `paper`, `paperWarm` | The palest coloured surface; the page; a second off-white |
 | `positive`, `positiveDark` | Confirmations; positive text on pale surfaces |
+| `surface`, `contrast`, `action` (optional) | Cards, panels, menus (white); what hovers shade toward (black); solid action buttons (accent) |
+| `onInk`, `panel` (optional) | Text on ink-coloured fills (white); dark panels with light text, like the footer (`ink`) |
 | `tone-50` … `tone-950` | The grey ramp, step for step like Tailwind's |
 
 Status colours (errors, warnings, success badges) stay Tailwind's red, amber
