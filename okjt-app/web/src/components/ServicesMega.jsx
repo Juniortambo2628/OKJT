@@ -71,7 +71,7 @@ function MobileList({ onNavigate }) {
               {group.items.map((item) => <Link key={item.to} to={item.to} onClick={onNavigate} className="block py-1.5 text-sm text-soft hover:text-ink">{item.label}</Link>)}
             </div>
           ))}
-          <Link to="/services" onClick={onNavigate} className="block text-sm font-semibold text-accent">All services</Link>
+          <Link to="/services" onClick={onNavigate} className="block text-sm font-semibold text-accent">All Services</Link>
         </div>
       )}
     </div>

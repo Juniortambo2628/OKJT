@@ -100,14 +100,14 @@ export default function About() {
         title: setting('about_title', 'Design-led web engineering,\nbuilt around the people it serves.'),
         text: setting('about_story', 'OKJTechnologies is a web engineering studio in Nairobi. It takes projects from first idea to a live, supported platform.'),
         breadcrumbs: [{ to: '/', label: 'Home' }, { label: 'About' }],
-        cta: { to: '/contact', label: 'Start a project' },
-        secondary: { to: '/projects', label: 'See the work' },
+        cta: { to: '/contact', label: 'Start a Project' },
+        secondary: { to: '/projects', label: 'See the Work' },
       }}
       glance={live(stats).slice(0, 4).map((s) => [s.value, s.label])}
       label="The studio"
       chapters={chapters}
       toolkit={{
-        eyebrow: 'The approach',
+        eyebrow: 'The Approach',
         title: 'The principles behind every build',
         text: 'Each is a part of how the work is done. Open one to see what it means in practice.',
         cards: live(pillars).slice(0, 4).map((p) => ({ to: `/our-approach/${p.slug}`, image: p.image, tags: ['Principle'], title: p.title, text: clip(p.overview, 140) })),

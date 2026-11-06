@@ -5,9 +5,9 @@ import { DEFAULT_HERO } from '../lib/defaults';
 import { clip, sectionsOf, slugify } from '../lib/text';
 
 const DOCUMENTS = [
-  { to: '/privacy', key: 'privacy_policy', title: 'Privacy policy', text: 'What the site collects, why, and the choices you have.' },
-  { to: '/terms', key: 'terms_of_service', title: 'Terms of service', text: 'The terms for using the site and its services.' },
-  { to: '/cookies', key: 'cookie_policy', title: 'Cookie policy', text: 'What is kept in your browser, and how to change your choice.' },
+  { to: '/privacy', key: 'privacy_policy', title: 'Privacy Policy', text: 'What the site collects, why, and the choices you have.' },
+  { to: '/terms', key: 'terms_of_service', title: 'Terms of Service', text: 'The terms for using the site and its services.' },
+  { to: '/cookies', key: 'cookie_policy', title: 'Cookie Policy', text: 'What is kept in your browser, and how to change your choice.' },
 ];
 
 /** Section headings may carry their own numbers ("1.", "5.2"); the chapters number themselves. */

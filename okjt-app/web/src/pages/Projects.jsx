@@ -33,8 +33,7 @@ export default function Projects({ flagship = false }) {
         p.outcome && { title: 'The outcome', text: clip(p.outcome, 180) },
         { title: 'Read the case study', to: `/projects/${p.slug}` },
       ].filter(Boolean),
-      details: p.technologies?.length ? [p.technologies.join(', ')] : undefined,
-      detailsLabel: 'Built with',
+      stack: p.technologies,
       tip: p.significant_figure ? `${p.significant_figure}.` : undefined,
       tipLabel: 'Impact',
     }))
@@ -50,10 +49,7 @@ export default function Projects({ flagship = false }) {
         text: clip(p.tagline || p.description, 140),
         to: `/projects/${p.slug}`,
       })),
-      details: [...new Set(g.projects.flatMap((p) => p.technologies ?? []))].slice(0, 6).length
-        ? [[...new Set(g.projects.flatMap((p) => p.technologies ?? []))].slice(0, 8).join(', ')]
-        : undefined,
-      detailsLabel: 'Built with',
+      stack: g.projects.flatMap((p) => p.technologies ?? []),
     }));
 
   const lead = products.find((p) => p.bg_image || p.image);
@@ -64,14 +60,14 @@ export default function Projects({ flagship = false }) {
       loading={isLoading}
       hero={{
         media: setting('hero_projects_media') || DEFAULT_HERO,
-        eyebrow: flagship ? 'Flagship products' : 'Portfolio',
+        eyebrow: flagship ? 'Flagship Products' : 'Portfolio',
         title: flagship ? 'Products built <br />from the ground up.' : 'Real platforms, <br />built end to end.',
         text: flagship
           ? 'Flagship products developed by OKJTechnologies, each designed around a whole ecosystem of users and partners.'
           : 'Web platforms for health, law, construction, events, commerce and nonprofits. Each project shows the opportunity it responds to and what was built.',
         breadcrumbs: flagship ? [{ to: '/', label: 'Home' }, { to: '/projects', label: 'Projects' }, { label: 'Flagship' }] : [{ to: '/', label: 'Home' }, { label: 'Projects' }],
-        cta: { to: '/contact', label: 'Start a project' },
-        secondary: flagship ? { to: '/projects', label: 'Client work' } : { to: '/projects/flagship', label: 'Flagship products' },
+        cta: { to: '/contact', label: 'Start a Project' },
+        secondary: flagship ? { to: '/projects', label: 'Client Work' } : { to: '/projects/flagship', label: 'Flagship Products' },
       }}
       glance={flagship ? [
         [String(products.length), 'flagship products'],
@@ -84,24 +80,24 @@ export default function Projects({ flagship = false }) {
         [String(organisations), 'organisations served'],
         [String(products.length), 'flagship products'],
       ]}
-      label={flagship ? 'The products' : 'Work by sector'}
+      label={flagship ? 'The products' : 'Work by Sector'}
       chapters={chapters}
       toolkit={flagship ? {
-        eyebrow: 'Client work',
-        navLabel: 'Client work',
+        eyebrow: 'Client Work',
+        navLabel: 'Client Work',
         title: 'Platforms built for clients',
         text: 'The same team, the same principles, for organisations across every sector.',
         cards: sectors.slice(0, 4).map((g) => ({ to: `/projects#sector-${g.id}`, image: sectorPhoto(g), tags: [g.label, `${g.projects.length} platforms`], title: g.label, text: g.line })),
       } : {
-        eyebrow: 'Flagship products',
+        eyebrow: 'Flagship Products',
         navLabel: 'Flagship',
         title: 'Built and run by OKJTechnologies',
         text: 'Products of our own, each designed around a whole ecosystem of people.',
         cards: products.slice(0, 4).map((p) => ({ to: `/projects/${p.slug}`, image: p.bg_image || p.image, tags: ['Flagship', shortSector(p)], title: p.title, text: p.tagline || clip(strip(p.description), 140) })),
       }}
       onward={flagship
-        ? { to: '/client-impact', image: clientLead?.bg_image || clientLead?.image, tags: ['Client impact'], title: 'Work that clients rely on', text: 'Platforms in daily use, with clients’ own words where they have shared them.' }
-        : { to: '/projects/flagship', image: lead?.bg_image || lead?.image, tags: ['Flagship'], title: 'How flagship products are built', text: 'Every product, its opportunity, what was built and what it changed.' }}
+        ? { to: '/client-impact', image: clientLead?.bg_image || clientLead?.image, tags: ['Client Impact'], title: 'Work that clients rely on', text: 'Platforms in daily use, with clients’ own words where they have shared them.' }
+        : { to: '/projects/flagship', image: lead?.bg_image || lead?.image, tags: ['Flagship'], title: 'How Flagship Products Are Built', text: 'Every product, its opportunity, what was built and what it changed.' }}
     />
   );
 }

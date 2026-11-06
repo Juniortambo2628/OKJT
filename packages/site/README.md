@@ -127,7 +127,10 @@ e.g. a gradient or texture), `.okjt-card-shade` (the shade over photos on
 ImageCard and FeatureExplorer, e.g. darker for contrast), `.okjt-photo`
 (a photo's loading or failed state), `.okjt-card` (cards on the page: the
 explorer's summary, questions, a legal document, e.g. to give them their own
-colours).
+colours), `.okjt-section-nav` (the sticky bar of sections), `.okjt-site-nav`
+with `.okjt-site-nav-over` / `.okjt-site-nav-solid` (the top bar over a hero
+or on its own background), `.okjt-pill` and `.okjt-pill-<variant>`
+(call-to-action links).
 
 Headings inside the kit's components carry `!` on their font and colour, so a
 host app's own global `h1`–`h3` styles don't change them.

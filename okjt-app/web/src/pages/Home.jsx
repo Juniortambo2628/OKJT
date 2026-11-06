@@ -12,9 +12,9 @@ import { DEFAULT_HERO } from '../lib/defaults';
 
 /** The bar of sections under the hero. */
 const SECTIONS = [
-  { id: 'approach', label: 'The approach' },
-  { id: 'work', label: 'Work by sector' },
-  { id: 'flagship', label: 'Flagship products' },
+  { id: 'approach', label: 'The Approach' },
+  { id: 'work', label: 'Work by Sector' },
+  { id: 'flagship', label: 'Flagship Products' },
   { id: 'insights', label: 'Insights' },
 ];
 
@@ -54,8 +54,8 @@ function HeroPanel() {
         <div className="mt-6 max-w-md text-sm leading-relaxed text-soft">{firstSentence(story)} {strip(story).slice(firstSentence(story).length).split('. ')[0]}.</div>
       </div>
       {[
-        { to: '/services', icon: Building2, title: 'For organisations', text: 'Platforms for clinics, law firms, builders, event companies and nonprofits, designed and built end to end.' },
-        { to: '/projects/flagship', icon: Rocket, title: 'Flagship products', text: 'Products OKJTechnologies designs, builds and runs itself, each around a whole ecosystem of people.' },
+        { to: '/services', icon: Building2, title: 'For Organisations', text: 'Platforms for clinics, law firms, builders, event companies and nonprofits, designed and built end to end.' },
+        { to: '/projects/flagship', icon: Rocket, title: 'Flagship Products', text: 'Products OKJTechnologies designs, builds and runs itself, each around a whole ecosystem of people.' },
       ].map(({ to, icon: Icon, title, text }) => (
         <Link key={to} to={to} className="glass group flex min-h-[14rem] flex-col justify-between rounded-3xl p-6 transition-colors hover:border-accent/40">
           <div className="flex items-start justify-between">
@@ -145,7 +145,7 @@ function ApproachExplorer() {
   });
   if (isLoading) return <CardGridSkeleton count={2} className="lg:grid-cols-[1fr_3fr]" />;
   if (!groups.length) return <Empty>The principles will be listed here.</Empty>;
-  return <FeatureExplorer groups={groups} href={(g) => `/our-approach/${g.slug}`} linkLabel="Read the principle" countLabel={(n) => (n === 1 ? 'service' : 'services')} label="Principles" />;
+  return <FeatureExplorer groups={groups} href={(g) => `/our-approach/${g.slug}`} linkLabel="Read the Principle" countLabel={(n) => (n === 1 ? 'service' : 'services')} label="Principles" />;
 }
 
 /** Client projects grouped by sector, as Naoa's tabbed explorer. */
@@ -174,7 +174,7 @@ function SectorExplorer() {
   }), [data]);
   if (isLoading) return <CardGridSkeleton count={2} className="lg:grid-cols-[1fr_3fr]" />;
   if (!groups.length) return <Empty>Projects will be listed here.</Empty>;
-  return <FeatureExplorer groups={groups} href={(g) => `/projects?sector=${g.sector}#clients`} linkLabel="See the sector’s work" countLabel={(n) => (n === 1 ? 'project' : 'projects')} label="Sectors" />;
+  return <FeatureExplorer groups={groups} href={(g) => `/projects?sector=${g.sector}#clients`} linkLabel="See the Sector’s Work" countLabel={(n) => (n === 1 ? 'project' : 'projects')} label="Sectors" />;
 }
 
 /** The products OKJTechnologies builds and runs itself: one wide, the rest in pairs. */
@@ -228,8 +228,8 @@ export default function Home() {
         text={setting('hero_subtitle', 'Bespoke, high-performance web applications, robust APIs and clean admin systems, designed and built end to end.')}
         after={<HeroPanel />}
       >
-        <PillLink to="/contact" variant="dark" size="lg">Start a project</PillLink>
-        <PillLink to="/projects" variant="glass" size="lg" arrow>View the work</PillLink>
+        <PillLink to="/contact" variant="dark" size="lg">Start a Project</PillLink>
+        <PillLink to="/projects" variant="glass" size="lg" arrow>View the Work</PillLink>
       </PageHero>
 
       <Facts />
@@ -239,7 +239,7 @@ export default function Home() {
       <section id="approach" className={`${SECTION_OFFSET} pt-24`}>
         <Container>
           <SectionHeading
-            eyebrow={setting('vp_section_tagline', 'The approach')}
+            eyebrow={setting('vp_section_tagline', 'The Approach')}
             title={setting('vp_section_title', 'One continuous build, concept to production')}
             text={setting('vp_section_subtitle', 'Pick a principle to see what it means in practice, and the services built on it.')}
           />
@@ -255,17 +255,17 @@ export default function Home() {
             text="Pick a sector to see the platforms built for it, then read each case study."
           />
           <div className="mt-14"><SectorExplorer /></div>
-          <div className="mt-10 text-center"><PillLink to="/projects" variant="outline" arrow>Every project</PillLink></div>
+          <div className="mt-10 text-center"><PillLink to="/projects" variant="outline" arrow>Every Project</PillLink></div>
         </Container>
       </section>
 
       <section id="flagship" className={`${SECTION_OFFSET} pt-24`}>
         <Container>
           <div className="mb-14 grid gap-6 lg:grid-cols-2 lg:items-end">
-            <SectionHeading align="left" eyebrow="Flagship products" title="Built and run by OKJTechnologies" className="!max-w-none" />
+            <SectionHeading align="left" eyebrow="Flagship Products" title="Built and run by OKJTechnologies" className="!max-w-none" />
             <div className="lg:pb-2">
               <p className="max-w-md text-soft">Products of our own, each designed around a whole ecosystem of people: the users, the businesses beside them and the community they serve.</p>
-              <PillLink to="/projects/flagship" variant="outline" className="mt-6" arrow>How flagship products are built</PillLink>
+              <PillLink to="/projects/flagship" variant="outline" className="mt-6" arrow>How Flagship Products Are Built</PillLink>
             </div>
           </div>
           <Flagships />
@@ -295,7 +295,7 @@ export default function Home() {
               </ol>
             ) : <Empty>New notes are on the way.</Empty>}
           </div>
-          <div className="mt-10 text-center"><PillLink to="/insights" variant="outline" arrow>All insights</PillLink></div>
+          <div className="mt-10 text-center"><PillLink to="/insights" variant="outline" arrow>All Insights</PillLink></div>
         </Container>
       </section>
     </SiteLayout>

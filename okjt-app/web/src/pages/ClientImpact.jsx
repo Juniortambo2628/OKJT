@@ -54,12 +54,12 @@ export default function ClientImpact() {
       loading={isLoading}
       hero={{
         media: setting('hero_client_impact_media') || DEFAULT_HERO,
-        eyebrow: 'Client impact',
+        eyebrow: 'Client Impact',
         title: 'Work that clients rely on.',
         text: 'Platforms in daily use by clinics, law firms, workshops, event companies and nonprofits, with clients’ own words where they have shared them.',
-        breadcrumbs: [{ to: '/', label: 'Home' }, { label: 'Client impact' }],
-        cta: { to: '/contact', label: 'Start a project' },
-        secondary: { to: '/projects', label: 'Every project' },
+        breadcrumbs: [{ to: '/', label: 'Home' }, { label: 'Client Impact' }],
+        cta: { to: '/contact', label: 'Start a Project' },
+        secondary: { to: '/projects', label: 'Every Project' },
       }}
       glance={live(stats).length ? live(stats).slice(0, 4).map((s) => [s.value, s.label]) : [
         [String(clientWork.length), 'client platforms'],

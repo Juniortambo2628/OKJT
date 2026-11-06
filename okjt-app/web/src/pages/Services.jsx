@@ -49,8 +49,8 @@ export default function Services() {
         title: setting('services_title', 'Web applications, designed and built end to end.'),
         text: setting('services_subtitle', 'Each service covers a part of the same journey: shaping the idea, designing the experience, building the platform and keeping it running.'),
         breadcrumbs: [{ to: '/', label: 'Home' }, { label: 'Services' }],
-        cta: { to: '/contact', label: 'Discuss a project' },
-        secondary: { to: '/projects', label: 'See the work' },
+        cta: { to: '/contact', label: 'Discuss a Project' },
+        secondary: { to: '/projects', label: 'See the Work' },
       }}
       glance={[
         [String(services.length), 'services'],
@@ -61,7 +61,7 @@ export default function Services() {
       label="The services"
       chapters={chapters}
       toolkit={{
-        eyebrow: 'The approach',
+        eyebrow: 'The Approach',
         title: 'The principles behind the services',
         text: 'Every service is shaped by the same principles. Open one to see how.',
         cards: live(pillars).slice(0, 4).map((p) => ({ to: `/our-approach/${p.slug}`, image: p.image, tags: ['Principle'], title: p.title, text: clip(p.overview, 140) })),

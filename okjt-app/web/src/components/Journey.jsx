@@ -5,6 +5,7 @@ import PageHero from './PageHero';
 import MediaFill from './MediaFill';
 import Html from './Html';
 import { FAQS } from '../lib/faqs';
+import Stack from './Stack';
 
 /**
  * The frame of every public page, after Naoa's "For couples" and "For
@@ -100,6 +101,26 @@ export function JourneyChapter({ chapter, index, detailsLabel = 'The nitty-gritt
             </ul>
           </div>
         )}
+        {chapter.showcase?.length > 0 && (
+          <div className="glass mt-4 rounded-3xl p-5">
+            <Eyebrow>{chapter.showcaseLabel || 'Standout projects'}</Eyebrow>
+            <ul className="mt-3 space-y-2">
+              {chapter.showcase.map((item) => (
+                <li key={item.to}>
+                  <Link to={item.to} className="group flex items-center gap-3 rounded-2xl p-2 transition-colors hover:bg-paper">
+                    <span className="relative h-12 w-16 shrink-0 overflow-hidden rounded-xl bg-tint ring-1 ring-line"><MediaFill src={item.image} /></span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-semibold text-ink">{item.title}</span>
+                      {item.text && <span className="block truncate text-xs text-muted">{item.text}</span>}
+                    </span>
+                    <ArrowUpRight className="h-4 w-4 shrink-0 text-accent opacity-60 group-hover:opacity-100" aria-hidden="true" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {chapter.stack?.length > 0 && <Stack names={chapter.stack} />}
         {chapter.tip && (
           <div className="mt-4 flex gap-4 rounded-3xl bg-fill p-5 text-on-ink">
             <Lightbulb className="h-5 w-5 shrink-0 text-accent-soft" aria-hidden="true" />
