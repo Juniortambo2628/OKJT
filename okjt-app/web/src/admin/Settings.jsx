@@ -72,7 +72,7 @@ export default function Settings() {
           <nav aria-label="Settings groups" className="flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible">
             {groups.map((g) => (
               <button key={g.id} type="button" onClick={() => { if (!dirty || window.confirm('Leave without saving your changes?')) setActive(g.id); }} aria-current={current?.id === g.id ? 'page' : undefined}
-                className={`shrink-0 rounded-xl px-4 py-2.5 text-left text-sm transition-colors ${current?.id === g.id ? 'bg-fill text-accent' : 'text-tone-600 hover:bg-tone-100 hover:text-ink'}`}>
+                className={`shrink-0 rounded-xl px-4 py-2.5 text-left text-sm transition-colors ${current?.id === g.id ? 'bg-[#f3ead5] text-[#1d160d] shadow-sm' : 'text-tone-600 hover:bg-tone-100 hover:text-ink'}`}>
                 {GROUPS[g.id]?.[0] ?? humanise(g.id)} <span className="opacity-60">· {g.items.length}</span>
               </button>
             ))}
