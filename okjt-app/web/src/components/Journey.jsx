@@ -91,7 +91,7 @@ export function JourneyChapter({ chapter, index, detailsLabel = 'The nitty-gritt
         )}
 
         {chapter.details?.length > 0 && (
-          <div className="mt-4 rounded-3xl bg-paper/60 p-5 ring-1 ring-line/60">
+          <div className="glass mt-4 rounded-3xl p-5">
             <Eyebrow>{chapter.detailsLabel || detailsLabel}</Eyebrow>
             <ul className="mt-3 space-y-2 text-sm text-body">
               {chapter.details.map((detail) => (

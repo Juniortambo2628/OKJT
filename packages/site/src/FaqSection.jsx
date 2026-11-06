@@ -16,7 +16,7 @@ export default function FaqSection({ id = 'faq', items, eyebrow = 'FAQ', title =
           {items.map((item, i) => {
             const open = openIndex === i;
             return (
-              <div key={item.q} className={`rounded-3xl border transition-colors ${open ? 'border-transparent bg-surface shadow-[0_20px_50px_-35px_color-mix(in_srgb,var(--okjt-shadow,var(--color-ink))_50%,transparent)]' : 'border-line bg-surface/50'}`}>
+              <div key={item.q} className={`okjt-card rounded-3xl border transition-colors ${open ? 'border-transparent bg-surface shadow-[0_20px_50px_-35px_color-mix(in_srgb,var(--okjt-shadow,var(--color-ink))_50%,transparent)]' : 'border-line bg-surface/50'}`}>
                 <button
                   type="button"
                   onClick={() => setOpenIndex(open ? -1 : i)}

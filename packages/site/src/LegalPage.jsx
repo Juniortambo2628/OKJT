@@ -76,7 +76,7 @@ export default function LegalPage({ title, intro, sections }) {
         <div className="mt-4 grid gap-10 lg:mt-12 lg:grid-cols-12">
           <aside className="lg:col-span-4 xl:col-span-3"><Sidebar sections={sections} active={active} /></aside>
 
-          <article className="rounded-[2rem] bg-surface p-6 sm:p-10 lg:col-span-8 xl:col-span-9 xl:p-14">
+          <article className="okjt-card rounded-[2rem] bg-surface p-6 sm:p-10 lg:col-span-8 xl:col-span-9 xl:p-14">
             <div className="text-lg leading-relaxed text-body">{intro}</div>
             {sections.map((s, i) => (
               <section key={s.id} id={s.id} className={`${SECTION_OFFSET} lg:scroll-mt-28 border-t border-tint pt-10 mt-10 first-of-type:mt-10`}>
