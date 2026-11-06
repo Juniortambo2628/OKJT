@@ -107,8 +107,8 @@ export default function Contact() {
                 ? <a key={label} href={href} className="flex items-center gap-4 rounded-[1.5rem] border border-line bg-surface p-5 transition-colors hover:border-accent/50">{body}</a>
                 : <div key={label} className="flex items-center gap-4 rounded-[1.5rem] border border-line bg-surface p-5">{body}</div>;
             })}
-            <div className="rounded-[1.5rem] bg-ink p-6 text-on-ink">
-              <div className="text-[11px] font-semibold uppercase tracking-[0.2em] opacity-70">What happens next</div>
+            <div className="rounded-[1.5rem] border border-accent/30 bg-panel p-6 text-body">
+              <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-accent">What happens next</div>
               <ol className="mt-3 space-y-2 text-sm opacity-90">
                 <li>1. The brief is read and the people it serves are mapped.</li>
                 <li>2. A short call to fill the gaps.</li>

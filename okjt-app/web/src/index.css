@@ -18,6 +18,9 @@
   --okjt-auth-placeholder: #7a6a4c;
   /* Shadows on the public pages: black, not the (light) ink. */
   --okjt-shadow: #000000;
+  /* The dashboard's floating toolbar: dark glass with a hairline. */
+  --okjt-toolbar-bg: rgba(33, 28, 18, 0.92);
+  --okjt-toolbar-border: #3a3221;
 }
 
 html {

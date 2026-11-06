@@ -6,6 +6,7 @@ import { getToken } from './lib/api';
 import ServicesMega from './components/ServicesMega';
 
 const LOGO = '/logos/OKJT-Logos/OKJTechLogo-White_Transparent.png';
+const PLACEHOLDER = '/brand/placeholder.svg';
 const FAVICON = '/logos/OKJT-Logos/OKJTechLogo-Black_BG-favicon.png';
 
 /** Settings that hold each named place's picture or clip on the pages. */
@@ -65,7 +66,8 @@ export function useSiteConfig() {
         home: { to: '/admin', label: 'Dashboard' },
       },
 
-      usePhotos: () => ({ url: (key) => mediaUrl(key), alt: () => '' }),
+      // A record without a picture gets the brand's dark placeholder.
+      usePhotos: () => ({ url: (key) => (key ? mediaUrl(key) : PLACEHOLDER), alt: () => '' }),
       usePlaces: () => (place) => (PLACES[place] ? setting(PLACES[place]) || null : null),
       media: {},
 

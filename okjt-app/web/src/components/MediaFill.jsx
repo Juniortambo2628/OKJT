@@ -9,7 +9,7 @@ import { isVideo, mediaUrl } from '../lib/media';
  */
 export default function MediaFill({ src, poster, eager = false, className = '' }) {
   const reduceMotion = useReducedMotion();
-  if (!src) return <div className={`absolute inset-0 bg-gradient-to-br from-surface via-paper to-ink-deep ${className}`} />;
+  if (!src) return <div className={`absolute inset-0 bg-[url(/brand/placeholder.svg)] bg-cover bg-center ${className}`} />;
   if (isVideo(src)) {
     return (
       <div className={`absolute inset-0 overflow-hidden bg-ink-deep ${className}`}>

@@ -2,6 +2,11 @@
 
 ## site 0.1.0 → 0.2.0 (with @okjt/ui 0.2.2): dark public pages
 
+Also `@okjt/dashboard` 0.4.1 (nothing to change): presence isn't asked for
+without the kit's `api`; the sign-in card's border and the floating
+toolbar's glass, border and shadow can be set in CSS (`--okjt-toolbar-bg`,
+`--okjt-toolbar-border`, `--okjt-shadow`) for dark dashboards.
+
 1. `npm i @okjt/site@^0.2.0 @okjt/ui@^0.2.2`
 2. **Regenerate the theme** (`npx okjt-theme`): the public pages now use two
    new colours, `onInk` and `panel`. Skipping this leaves the dark buttons'

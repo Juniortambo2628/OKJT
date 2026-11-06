@@ -11,7 +11,6 @@ use App\Models\TeamMember;
 use App\Models\Testimonial;
 use App\Models\User;
 use App\Models\Value;
-use App\Services\RevalidationService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Cache;
@@ -61,9 +60,6 @@ class AccurateContentSeeder extends Seeder
         // The API caches the settings/content responses; drop them so the
         // reseed is visible without a manual `php artisan cache:clear`.
         Cache::flush();
-
-        // One best-effort revalidation now that all content is in place.
-        app(RevalidationService::class)->revalidateAll();
 
         Log::info('AccurateContentSeeder: reseed complete.');
     }

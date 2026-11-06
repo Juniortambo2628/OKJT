@@ -10,11 +10,15 @@ const slug = (text, i) => `${String(text).toLowerCase().replace(/<[^>]+>/g, '').
  * cut at its headings into the kit's numbered sections.
  */
 function split(html) {
-  const parts = String(html).split(/<h[23][^>]*>([\s\S]*?)<\/h[23]>/i);
+  // Sections are the top-level headings (h2, or h3 when there are no h2s);
+  // smaller headings stay inside their section.
+  const level = /<h2[\s>]/i.test(html) ? 2 : 3;
+  const parts = String(html).split(new RegExp(`<h${level}[^>]*>([\\s\\S]*?)<\\/h${level}>`, 'i'));
   const intro = parts[0];
   const sections = [];
   for (let i = 1; i < parts.length; i += 2) {
-    const title = parts[i].replace(/<[^>]+>/g, '').trim();
+    // The kit numbers the sections, so drop numbers written into the heading ("1.", "5.2").
+    const title = parts[i].replace(/<[^>]+>/g, '').trim().replace(/^\d+(\.\d+)*\.?\s+/, '');
     sections.push({ id: slug(title, sections.length), title, body: <Html html={parts[i + 1]} /> });
   }
   return { intro, sections };

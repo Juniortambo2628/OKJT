@@ -91,10 +91,13 @@ function PlainToolbar({
           <div
             // Phones: tighter spacing and smaller buttons (see .admin-floating-toolbar
             // in index.css), so the bar takes one or two rows instead of four.
-            className="admin-floating-toolbar flex flex-wrap items-center justify-center gap-1 sm:gap-2 p-1.5 sm:p-2 rounded-2xl border border-white/40 shadow-2xl backdrop-blur-md"
+            className="admin-floating-toolbar flex flex-wrap items-center justify-center gap-1 sm:gap-2 p-1.5 sm:p-2 rounded-2xl border shadow-2xl backdrop-blur-md"
+            // Naoa's warm glass by default; a dark dashboard sets the three
+            // --okjt-toolbar-* / --okjt-shadow variables in its CSS.
             style={{
-              background: 'rgba(255, 249, 245, 0.92)',
-              boxShadow: '0 12px 40px color-mix(in srgb, var(--color-body) 18%, transparent)',
+              background: 'var(--okjt-toolbar-bg, rgba(255, 249, 245, 0.92))',
+              borderColor: 'var(--okjt-toolbar-border, rgba(255, 255, 255, 0.4))',
+              boxShadow: '0 12px 40px color-mix(in srgb, var(--okjt-shadow, var(--color-body)) 18%, transparent)',
             }}
           >
             {searchProps && <AdminToolbarSearch {...searchProps} />}
