@@ -1,104 +1,107 @@
-import { useSearchParams } from 'react-router-dom';
-import { ImageCard, SectionNav, SiteLayout, PillLink } from '@okjt/site';
-import { bySector } from '../lib/sectors';
-import PageHero from '../components/PageHero';
-import Section from '../components/Section';
-import { CardGridSkeleton, Empty, LoadError } from '../components/States';
+import JourneyPage from '../components/Journey';
 import { live, useProjects, useSettings } from '../lib/content';
 import { DEFAULT_HERO } from '../lib/defaults';
+import { bySector, sectorPhoto } from '../lib/sectors';
+import { address, clip, strip } from '../lib/text';
 
-const strip = (html) => String(html ?? '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+const shortSector = (p) => p.category?.split(/[,/]/)[0]?.trim();
 
-export function ProjectCard({ project }) {
-  return (
-    <ImageCard
-      image={project.bg_image || project.image}
-      title={project.title}
-      text={project.tagline || strip(project.description).slice(0, 120)}
-      tags={[project.type === 'flagship' ? 'Flagship' : project.client_name, project.category?.split(/[,/]/)[0]?.trim()].filter(Boolean).slice(0, 2)}
-      to={`/projects/${project.slug}`}
-    />
-  );
-}
-
-/** The work: flagship products, then client platforms. `flagship` shows only the products. */
+/**
+ * The work. All projects: a chapter per sector of client work, then the
+ * flagship products as the toolkit. `flagship`: a chapter per product.
+ */
 export default function Projects({ flagship = false }) {
   const { setting } = useSettings();
-  const { data, isLoading, isError } = useProjects();
+  const { data, isLoading } = useProjects();
   const all = live(data);
   const products = all.filter((p) => p.type === 'flagship');
   const clients = all.filter((p) => p.type !== 'flagship');
   const sectors = bySector(clients);
-  const [params, setParams] = useSearchParams();
-  const chosen = sectors.find((g) => g.id === params.get('sector'));
-  const shownSectors = chosen ? [chosen] : sectors;
-  const choose = (id) => setParams(id ? { sector: id } : {}, { replace: true, preventScrollReset: true });
+  const organisations = new Set(clients.map((p) => p.client_name || p.title)).size;
+
+  const chapters = flagship
+    ? products.map((p) => ({
+      id: p.slug,
+      navLabel: p.title,
+      when: shortSector(p) || 'Flagship',
+      title: p.title,
+      intro: p.tagline || clip(p.description, 220),
+      media: { src: p.bg_image || p.image, url: p.url?.replace(/^https?:\/\//, '') || address(`/projects/${p.slug}`) },
+      steps: [
+        p.problem && { title: 'The opportunity', text: clip(p.problem, 180) },
+        p.methodology && { title: 'What was built', text: clip(p.methodology, 180) },
+        p.outcome && { title: 'The outcome', text: clip(p.outcome, 180) },
+        { title: 'Read the case study', to: `/projects/${p.slug}` },
+      ].filter(Boolean),
+      details: p.technologies?.length ? [p.technologies.join(', ')] : undefined,
+      detailsLabel: 'Built with',
+      tip: p.significant_figure ? `${p.significant_figure}.` : undefined,
+      tipLabel: 'Impact',
+    }))
+    : sectors.map((g) => ({
+      id: `sector-${g.id}`,
+      navLabel: g.label,
+      when: `${g.projects.length} ${g.projects.length === 1 ? 'platform' : 'platforms'}`,
+      title: g.label,
+      intro: g.line,
+      media: { src: sectorPhoto(g), url: address(`/projects?sector=${g.id}`) },
+      steps: g.projects.map((p) => ({
+        title: p.client_name && !p.title.includes(p.client_name) ? `${p.title} · ${p.client_name}` : p.title,
+        text: clip(p.tagline || p.description, 140),
+        to: `/projects/${p.slug}`,
+      })),
+      details: [...new Set(g.projects.flatMap((p) => p.technologies ?? []))].slice(0, 6).length
+        ? [[...new Set(g.projects.flatMap((p) => p.technologies ?? []))].slice(0, 8).join(', ')]
+        : undefined,
+      detailsLabel: 'Built with',
+    }));
+
+  const lead = products.find((p) => p.bg_image || p.image);
+  const clientLead = clients.find((p) => p.is_featured && (p.bg_image || p.image)) || clients.find((p) => p.bg_image || p.image);
 
   return (
-    <SiteLayout overlay>
-      <PageHero
-        media={setting('hero_projects_media') || DEFAULT_HERO}
-        eyebrow={flagship ? 'Flagship work' : 'Portfolio'}
-        title={flagship ? 'Products built <br />from the ground up.' : 'Real platforms, <br />built end to end.'}
-        text={flagship
+    <JourneyPage
+      loading={isLoading}
+      hero={{
+        media: setting('hero_projects_media') || DEFAULT_HERO,
+        eyebrow: flagship ? 'Flagship products' : 'Portfolio',
+        title: flagship ? 'Products built <br />from the ground up.' : 'Real platforms, <br />built end to end.',
+        text: flagship
           ? 'Flagship products developed by OKJTechnologies, each designed around a whole ecosystem of users and partners.'
-          : 'Web platforms for health, law, construction, events, commerce and nonprofits. Each project shows the opportunity it responds to and what was built.'}
-        breadcrumbs={flagship ? [{ to: '/', label: 'Home' }, { to: '/projects', label: 'Projects' }, { label: 'Flagship' }] : [{ to: '/', label: 'Home' }, { label: 'Projects' }]}
-      />
-      {!flagship && <SectionNav sections={[{ id: 'flagship', label: 'Flagship' }, { id: 'clients', label: 'Client work' }]} label="Projects" />}
-      {isError && <Section><LoadError what="the projects" /></Section>}
-      <Section id="flagship" eyebrow="Flagship" title="Flagship projects" text="Products developed and owned by OKJTechnologies." align="left">
-        {isLoading ? <CardGridSkeleton count={3} /> : products.length ? (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{products.map((p) => <ProjectCard key={p.id} project={p} />)}</div>
-        ) : <Empty>Flagship products will be listed here.</Empty>}
-        {!flagship && products.length > 0 && <div className="mt-8"><PillLink to="/projects/flagship" variant="outline" arrow>About the flagship products</PillLink></div>}
-      </Section>
-      {flagship ? (
-        <Section id="stages" eyebrow="Method" title="How flagship products are built" text="Three stages that keep each product tied to the people it serves.">
-          <ol className="grid gap-5 md:grid-cols-3">
-            {[
-              ['Map the ecosystem', 'Everyone the product touches is mapped first, with what each needs from it.'],
-              ['Design for each group', 'Every group gets a clear reason to take part and a clear benefit.'],
-              ['Build, launch, grow', 'The product ships in stages and keeps growing with the people using it.'],
-            ].map(([title, text], i) => (
-              <li key={title} className="rounded-[1.75rem] glass p-7">
-                <div className="font-display text-sm text-accent">{String(i + 1).padStart(2, '0')}</div>
-                <h3 className="mt-3 !font-display text-xl !font-normal !text-ink">{title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-soft">{text}</p>
-              </li>
-            ))}
-          </ol>
-        </Section>
-      ) : (
-        <Section id="clients" eyebrow="Client work" title="Client projects by sector" text="Platforms designed and built for client organisations." align="left">
-          {sectors.length > 1 && (
-            <div role="group" aria-label="Sectors" className="mb-10 flex flex-wrap gap-2">
-              {[{ id: '', label: 'All sectors', projects: clients }, ...sectors].map((g) => {
-                const active = (chosen?.id || '') === g.id;
-                return (
-                  <button key={g.id || 'all'} type="button" aria-pressed={active} onClick={() => choose(g.id)}
-                    className={`rounded-full px-4 py-2 text-xs font-semibold transition-colors ${active ? 'bg-fill text-on-ink' : 'glass text-soft hover:text-ink'}`}>
-                    {g.label} <span className="opacity-60">{g.projects.length}</span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
-          {isLoading ? <CardGridSkeleton /> : clients.length ? (
-            <div className="space-y-14">
-              {shownSectors.map((g) => (
-                <div key={g.id}>
-                  <div className="mb-5 flex flex-wrap items-baseline justify-between gap-2 border-b border-line pb-3">
-                    <h3 className="!font-display text-2xl !font-light !text-ink">{g.label}</h3>
-                    <p className="text-sm text-muted">{g.line}</p>
-                  </div>
-                  <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{g.projects.map((p) => <ProjectCard key={p.id} project={p} />)}</div>
-                </div>
-              ))}
-            </div>
-          ) : <Empty>Client projects will be listed here.</Empty>}
-        </Section>
-      )}
-    </SiteLayout>
+          : 'Web platforms for health, law, construction, events, commerce and nonprofits. Each project shows the opportunity it responds to and what was built.',
+        breadcrumbs: flagship ? [{ to: '/', label: 'Home' }, { to: '/projects', label: 'Projects' }, { label: 'Flagship' }] : [{ to: '/', label: 'Home' }, { label: 'Projects' }],
+        cta: { to: '/contact', label: 'Start a project' },
+        secondary: flagship ? { to: '/projects', label: 'Client work' } : { to: '/projects/flagship', label: 'Flagship products' },
+      }}
+      glance={flagship ? [
+        [String(products.length), 'flagship products'],
+        [String(new Set(products.map(shortSector).filter(Boolean)).size), 'sectors'],
+        [String(new Set(products.flatMap((p) => p.technologies ?? [])).size), 'technologies'],
+        ['1', 'team behind them'],
+      ] : [
+        [String(all.length), 'platforms built'],
+        [String(sectors.length), 'sectors'],
+        [String(organisations), 'organisations served'],
+        [String(products.length), 'flagship products'],
+      ]}
+      label={flagship ? 'The products' : 'Work by sector'}
+      chapters={chapters}
+      toolkit={flagship ? {
+        eyebrow: 'Client work',
+        navLabel: 'Client work',
+        title: 'Platforms built for clients',
+        text: 'The same team, the same principles, for organisations across every sector.',
+        cards: sectors.slice(0, 4).map((g) => ({ to: `/projects#sector-${g.id}`, image: sectorPhoto(g), tags: [g.label, `${g.projects.length} platforms`], title: g.label, text: g.line })),
+      } : {
+        eyebrow: 'Flagship products',
+        navLabel: 'Flagship',
+        title: 'Built and run by OKJTechnologies',
+        text: 'Products of our own, each designed around a whole ecosystem of people.',
+        cards: products.slice(0, 4).map((p) => ({ to: `/projects/${p.slug}`, image: p.bg_image || p.image, tags: ['Flagship', shortSector(p)], title: p.title, text: p.tagline || clip(strip(p.description), 140) })),
+      }}
+      onward={flagship
+        ? { to: '/client-impact', image: clientLead?.bg_image || clientLead?.image, tags: ['Client impact'], title: 'Work that clients rely on', text: 'Platforms in daily use, with clients’ own words where they have shared them.' }
+        : { to: '/projects/flagship', image: lead?.bg_image || lead?.image, tags: ['Flagship'], title: 'How flagship products are built', text: 'Every product, its opportunity, what was built and what it changed.' }}
+    />
   );
 }

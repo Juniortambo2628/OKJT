@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { CheckCircle2, Mail, MapPin, Phone } from 'lucide-react';
-import { SiteLayout } from '@okjt/site';
-import PageHero from '../components/PageHero';
-import Section from '../components/Section';
+import { CheckCircle2 } from 'lucide-react';
+import JourneyPage from '../components/Journey';
+import { HOW_IT_STARTS } from '../lib/faqs';
 import api, { errorMessage } from '../lib/api';
 import { live, useContact, useServices, useSettings } from '../lib/content';
 import { DEFAULT_HERO } from '../lib/defaults';
@@ -20,8 +19,8 @@ function Field({ label, error, children }) {
   );
 }
 
-export default function Contact() {
-  const { setting } = useSettings();
+/** The brief form, sent to the dashboard's Enquiries. */
+function ContactForm() {
   const contact = useContact();
   const { data: services } = useServices();
   const [sent, setSent] = useState(false);
@@ -39,24 +38,8 @@ export default function Contact() {
     }
   });
 
-  const details = [
-    { icon: Mail, label: 'Email', value: contact.email, href: `mailto:${contact.email}` },
-    { icon: Phone, label: 'Phone', value: contact.phone, href: `tel:${contact.phone.replace(/\s/g, '')}` },
-    { icon: MapPin, label: 'Studio', value: contact.address },
-  ];
-
   return (
-    <SiteLayout overlay cta={false}>
-      <PageHero
-        media={setting('hero_contact_media') || DEFAULT_HERO}
-        eyebrow="Start a project"
-        title="Share what <br />needs building."
-        text="Describe the platform, the people it should serve and the timeline. Every brief receives a reply with next steps."
-        breadcrumbs={[{ to: '/', label: 'Home' }, { label: 'Contact' }]}
-      />
-      <Section id="message" media={setting('bg_contact_form')}>
-        <div className="grid gap-8 lg:grid-cols-12">
-          <div className="rounded-[2rem] glass p-6 sm:p-10 lg:col-span-8">
+          <div id="form" className="glass-strong rounded-[2rem] p-6 sm:p-10">
             {sent ? (
               <div className="py-12 text-center" role="status">
                 <CheckCircle2 className="mx-auto h-12 w-12 text-positive" aria-hidden="true" />
@@ -66,7 +49,6 @@ export default function Contact() {
               </div>
             ) : (
               <form onSubmit={submit} noValidate className="space-y-5">
-                <h2 className="!font-display text-3xl !font-light !text-ink">Tell us about the project</h2>
                 <div className="grid gap-5 sm:grid-cols-2">
                   <Field label="First name" error={errors.first_name?.message}>
                     <input className={field} autoComplete="given-name" {...register('first_name', { required: 'Your first name, please.' })} />
@@ -95,29 +77,54 @@ export default function Contact() {
               </form>
             )}
           </div>
-          <aside id="details" className="space-y-4 lg:col-span-4">
-            {details.map(({ icon: Icon, label, value, href }) => {
-              const body = (
-                <>
-                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-tone-100 text-accent"><Icon className="h-5 w-5" aria-hidden="true" /></span>
-                  <span className="min-w-0"><span className="block text-[11px] font-semibold uppercase tracking-[0.2em] text-muted">{label}</span><span className="block truncate text-ink">{value}</span></span>
-                </>
-              );
-              return href
-                ? <a key={label} href={href} className="flex items-center gap-4 rounded-[1.5rem] glass p-5 transition-colors hover:border-accent/50">{body}</a>
-                : <div key={label} className="flex items-center gap-4 rounded-[1.5rem] glass p-5">{body}</div>;
-            })}
-            <div className="rounded-[1.5rem] border border-accent/30 bg-panel p-6 text-body">
-              <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-accent">What happens next</div>
-              <ol className="mt-3 space-y-2 text-sm opacity-90">
-                <li>1. The brief is read and the people it serves are mapped.</li>
-                <li>2. A short call to fill the gaps.</li>
-                <li>3. A technical and financial proposal within two business days.</li>
-              </ol>
-            </div>
-          </aside>
-        </div>
-      </Section>
-    </SiteLayout>
+  );
+}
+
+export default function Contact() {
+  const { setting } = useSettings();
+  const contact = useContact();
+  return (
+    <JourneyPage
+      hero={{
+        media: setting('hero_contact_media') || DEFAULT_HERO,
+        eyebrow: 'Start a project',
+        title: 'Share what <br />needs building.',
+        text: 'Describe the platform, the people it should serve and the timeline. Every brief receives a reply with next steps.',
+        breadcrumbs: [{ to: '/', label: 'Home' }, { label: 'Contact' }],
+      }}
+      glance={[
+        [contact.email, 'email'],
+        [contact.phone, 'phone'],
+        [contact.address, 'studio'],
+        ['2 days', 'to a proposal'],
+      ]}
+      label="Getting in touch"
+      chapters={[
+        {
+          id: 'brief',
+          navLabel: 'Your brief',
+          when: 'Step one',
+          title: 'Tell us about the project',
+          intro: 'Who will use it, what it should do, and when you need it. A few lines is enough to start.',
+          aside: <ContactForm />,
+          steps: [
+            { title: 'Email', text: contact.email },
+            { title: 'Phone', text: contact.phone },
+            { title: 'Studio', text: contact.address },
+          ],
+          tip: 'Prefer email? Write to ' + contact.email + ' and the brief is read the same day.',
+        },
+        {
+          id: 'next',
+          navLabel: 'What happens next',
+          when: 'After you send it',
+          title: 'What happens next',
+          intro: 'The same short path for every project, from brief to proposal.',
+          steps: HOW_IT_STARTS,
+          details: ['A technical and financial proposal within two business days', 'Clear stages and a realistic path to launch', 'One point of contact from start to finish'],
+          detailsLabel: 'What you receive',
+        },
+      ]}
+    />
   );
 }

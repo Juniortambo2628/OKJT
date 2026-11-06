@@ -1,44 +1,53 @@
 import { useParams } from 'react-router-dom';
-import { Container, SiteLayout } from '@okjt/site';
-import PageHero from '../components/PageHero';
-import Section from '../components/Section';
-import Html from '../components/Html';
+import JourneyPage from '../components/Journey';
 import usePageMeta from '../components/usePageMeta';
-import { LoadError } from '../components/States';
-import { Skeleton } from '@okjt/ui';
 import { formatDate, live, readingTime, useInsights, useItem } from '../lib/content';
-import { InsightCard } from './Insights';
+import { address, clip, sectionsOf, slugify } from '../lib/text';
 import NotFound from './NotFound';
 
+/** An article, its sections as chapters. */
 export default function InsightDetail() {
   const { slug } = useParams();
-  const { data: insight, isLoading, isError, error } = useItem(`/insights/${slug}`);
+  const { data: insight, isLoading, error } = useItem(`/insights/${slug}`);
   const { data: all } = useInsights();
   usePageMeta(insight?.title, insight?.excerpt || insight?.content);
   if (error?.response?.status === 404) return <NotFound />;
-  const more = live(all).filter((i) => i.id !== insight?.id).slice(0, 3);
+  const more = live(all).filter((i) => i.id !== insight?.id);
+  const parts = sectionsOf(insight?.content || '');
+
+  const chapters = insight ? parts.map((part, n) => ({
+    id: part.title ? slugify(part.title) : 'introduction',
+    when: n === 0 ? insight.category || 'Insight' : undefined,
+    title: part.title || 'Introduction',
+    body: part.body,
+    media: n === 0 && insight.image ? { src: insight.image, url: address(`/insights/${slug}`) } : undefined,
+  })) : [];
 
   return (
-    <SiteLayout overlay>
-      <PageHero
-        media={insight?.image}
-        eyebrow={insight?.category || 'Insight'}
-        title={insight?.title || ''}
-        text={insight ? `${formatDate(insight.published_at || insight.created_at)} · ${readingTime(insight.content)} min read${insight.user?.name ? ` · ${insight.user.name}` : ''}` : ''}
-        breadcrumbs={[{ to: '/', label: 'Home' }, { to: '/insights', label: 'Insights' }, { label: insight?.title || '…' }]}
-      />
-      <Container className="py-16">
-        <article className="mx-auto max-w-3xl rounded-[2rem] glass p-6 text-[1.05rem] sm:p-12">
-          {isLoading && <div className="space-y-3">{[1, 2, 3, 4].map((n) => <Skeleton key={n} className="h-4 !bg-tone-100" />)}</div>}
-          {isError && <LoadError what="this article" />}
-          {insight && <Html html={insight.content} />}
-        </article>
-      </Container>
-      {more.length > 0 && (
-        <Section id="more" eyebrow="Keep reading" title="More insights">
-          <div className="grid gap-5 md:grid-cols-3">{more.map((i) => <InsightCard key={i.id} insight={i} />)}</div>
-        </Section>
-      )}
-    </SiteLayout>
+    <JourneyPage
+      loading={isLoading}
+      hero={{
+        media: insight?.image,
+        eyebrow: insight?.category || 'Insight',
+        title: insight?.title || '',
+        text: clip(insight?.excerpt, 240),
+        breadcrumbs: [{ to: '/', label: 'Home' }, { to: '/insights', label: 'Insights' }, { label: insight?.title || '…' }],
+      }}
+      glance={insight ? [
+        [formatDate(insight.published_at || insight.created_at), 'published'],
+        [`${readingTime(insight.content)} min`, 'to read'],
+        [insight.category || 'Notes', 'topic'],
+        [insight.user?.name || 'OKJTech', 'written by'],
+      ] : []}
+      label="The article"
+      chapters={chapters}
+      toolkit={{
+        eyebrow: 'Keep reading',
+        title: 'More notes from the work',
+        cards: more.slice(0, 4).map((i) => ({ to: `/insights/${i.slug}`, image: i.image, tags: [i.category], title: i.title, text: clip(i.excerpt || i.content, 140) })),
+      }}
+      onward={{ to: '/contact', tags: ['Next step'], title: 'Have a platform in mind?', text: 'Share a short brief. Every brief receives a reply with next steps.' }}
+      faqs={false}
+    />
   );
 }
