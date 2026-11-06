@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Bold, Heading2, Heading3, ImagePlus, Italic, Link2, List, ListOrdered, Loader2, Quote, Trash2, Upload, X } from 'lucide-react';
+import { Bold, ChevronLeft, ChevronRight, Heading2, Heading3, ImagePlus, Italic, Link2, List, ListOrdered, Loader2, Quote, Trash2, Upload, X } from 'lucide-react';
 import { AdminInput, AdminSelect, AdminTextarea, ToggleButton } from '@okjt/dashboard';
 import api, { errorMessage, unwrap } from '../lib/api';
 import { mediaUrl, isVideo } from '../lib/media';
@@ -22,22 +22,30 @@ export function useMedia(enabled = true) {
 
 /* ---------- Picking from the media library ---------- */
 
-export function MediaPicker({ open, onClose, onPick, accept = 'image' }) {
+export function MediaPicker({ open, onClose, onPick, accept = 'image', multiple = false }) {
   const { data = [], isLoading } = useMedia(open);
+  const [chosen, setChosen] = useState([]);
+  useEffect(() => { if (open) setChosen([]); }, [open]);
   if (!open) return null;
+  const choose = (path) => {
+    if (!multiple) { onPick(path); onClose(); return; }
+    setChosen((c) => (c.includes(path) ? c.filter((p) => p !== path) : [...c, path]));
+  };
   const files = data.filter((f) => accept === 'any' || f.type === accept || (accept === 'media' && f.type !== 'file'));
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 p-4" role="dialog" aria-label="Media library" onClick={onClose}>
       <div className="flex max-h-[85vh] w-full max-w-4xl flex-col rounded-2xl border border-tone-200 bg-surface shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between border-b border-tone-100 px-5 py-4">
-          <h2 className="text-lg font-medium text-ink">Choose from the media library</h2>
+          <h2 className="text-lg font-medium text-ink">{multiple ? 'Choose pictures from the media library' : 'Choose from the media library'}</h2>
           <button type="button" onClick={onClose} aria-label="Close" className="rounded-lg p-1 text-tone-400 hover:bg-tone-100"><X className="h-5 w-5" /></button>
         </div>
         <div className="grid flex-1 grid-cols-2 gap-3 overflow-y-auto p-5 sm:grid-cols-3 md:grid-cols-4">
           {isLoading && <p className="col-span-full text-sm text-tone-500">Loading…</p>}
           {!isLoading && !files.length && <p className="col-span-full text-sm text-tone-500">Nothing uploaded yet.</p>}
           {files.map((f) => (
-            <button key={f.path} type="button" onClick={() => { onPick(`/storage/${f.path}`); onClose(); }} className="group overflow-hidden rounded-xl border border-tone-200 text-left hover:border-accent">
+            <button key={f.path} type="button" onClick={() => choose(`/storage/${f.path}`)} aria-pressed={multiple ? chosen.includes(`/storage/${f.path}`) : undefined}
+              className={`group relative overflow-hidden rounded-xl border text-left hover:border-accent ${chosen.includes(`/storage/${f.path}`) ? 'border-accent ring-2 ring-accent' : 'border-tone-200'}`}>
+              {multiple && chosen.includes(`/storage/${f.path}`) && <span className="absolute right-2 top-2 z-10 grid h-6 w-6 place-items-center rounded-full bg-accent text-xs font-semibold text-paper">{chosen.indexOf(`/storage/${f.path}`) + 1}</span>}
               <div className="aspect-square bg-tone-50">
                 {f.type === 'video'
                   ? <video src={mediaUrl(f.url)} className="h-full w-full object-cover" muted />
@@ -47,7 +55,76 @@ export function MediaPicker({ open, onClose, onPick, accept = 'image' }) {
             </button>
           ))}
         </div>
+        {multiple && (
+          <div className="flex items-center justify-between gap-3 border-t border-tone-100 px-5 py-3">
+            <span className="text-sm text-tone-500">{chosen.length ? `${chosen.length} chosen` : 'Click pictures to choose them'}</span>
+            <button type="button" disabled={!chosen.length} onClick={() => { onPick(chosen); onClose(); }} className="rounded-full bg-accent px-5 py-2 text-sm font-semibold text-paper disabled:opacity-50">Add to Gallery</button>
+          </div>
+        )}
       </div>
+    </div>
+  );
+}
+
+/* ---------- A gallery: pictures to upload or pick, remove and put in order ---------- */
+
+export function GalleryField({ label, value, onChange, hint }) {
+  const images = Array.isArray(value) ? value.filter(Boolean) : [];
+  const [busy, setBusy] = useState(0);
+  const [picking, setPicking] = useState(false);
+  const input = useRef(null);
+  const add = (paths) => onChange([...images, ...paths.filter((p) => !images.includes(p))]);
+  const upload = async (files) => {
+    const list = [...(files ?? [])];
+    setBusy(list.length);
+    const added = [];
+    for (const file of list) {
+      try { added.push(await uploadFile(file)); } catch (err) { notifyError(errorMessage(err, `${file.name} didn’t upload.`)); }
+      setBusy((n) => n - 1);
+    }
+    if (added.length) add(added);
+  };
+  const move = (i, by) => {
+    const next = [...images];
+    const j = i + by;
+    if (j < 0 || j >= next.length) return;
+    [next[i], next[j]] = [next[j], next[i]];
+    onChange(next);
+  };
+  return (
+    <div>
+      <div className="mb-1 flex items-center justify-between">
+        <span className="text-sm font-medium text-tone-600">{label}</span>
+        <span className="text-xs text-tone-500">{images.length} {images.length === 1 ? 'picture' : 'pictures'}</span>
+      </div>
+      <div className="rounded-xl border border-tone-200 p-3">
+        {images.length > 0 ? (
+          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {images.map((src, i) => (
+              <li key={src} className="group relative aspect-[4/3] overflow-hidden rounded-lg border border-tone-200 bg-tone-50">
+                <img src={mediaUrl(src)} alt="" className="h-full w-full object-cover" />
+                {i === 0 && <span className="absolute left-1.5 top-1.5 rounded-full bg-accent px-2 py-0.5 text-[10px] font-semibold text-paper">First</span>}
+                <div className="absolute inset-x-1.5 bottom-1.5 flex justify-between gap-1 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100">
+                  <div className="flex gap-1">
+                    <button type="button" onClick={() => move(i, -1)} disabled={i === 0} aria-label="Move earlier" className="rounded-md bg-black/70 p-1 text-white disabled:opacity-30"><ChevronLeft className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => move(i, 1)} disabled={i === images.length - 1} aria-label="Move later" className="rounded-md bg-black/70 p-1 text-white disabled:opacity-30"><ChevronRight className="h-4 w-4" /></button>
+                  </div>
+                  <button type="button" onClick={() => onChange(images.filter((x) => x !== src))} aria-label="Remove from the gallery" className="rounded-md bg-black/70 p-1 text-white hover:text-red-300"><Trash2 className="h-4 w-4" /></button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : <p className="py-4 text-center text-sm text-tone-500">No pictures yet.</p>}
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <button type="button" onClick={() => input.current?.click()} disabled={busy > 0} className="inline-flex items-center gap-1.5 rounded-lg border border-tone-200 px-3 py-1.5 text-xs font-medium text-tone-700 hover:border-accent hover:text-accent disabled:opacity-60">
+            {busy > 0 ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />} {busy > 0 ? `Uploading ${busy}…` : 'Upload Pictures'}
+          </button>
+          <button type="button" onClick={() => setPicking(true)} className="inline-flex items-center gap-1.5 rounded-lg border border-tone-200 px-3 py-1.5 text-xs font-medium text-tone-700 hover:border-accent hover:text-accent"><ImagePlus className="h-3.5 w-3.5" /> From the Library</button>
+          {hint && <span className="text-xs text-tone-500">{hint}</span>}
+        </div>
+      </div>
+      <input ref={input} type="file" multiple hidden accept="image/*" onChange={(e) => { upload(e.target.files); e.target.value = ''; }} />
+      <MediaPicker open={picking} onClose={() => setPicking(false)} onPick={add} accept="image" multiple />
     </div>
   );
 }
@@ -172,6 +249,7 @@ export function Field({ field, value, onChange, pillars = [] }) {
   if (type === 'rich') return <RichField label={name} value={value} onChange={onChange} tall={field.tall} />;
   if (type === 'image') return <MediaField label={name} value={value} onChange={onChange} hint={hint} />;
   if (type === 'media') return <MediaField label={name} value={value} onChange={onChange} accept="media" hint={hint} />;
+  if (type === 'gallery') return <GalleryField label={name} value={value} onChange={onChange} hint={hint} />;
   if (type === 'switch') {
     return (
       <div className="flex items-center justify-between gap-4 rounded-lg border border-tone-100 px-4 py-3">
