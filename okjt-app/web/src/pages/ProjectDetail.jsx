@@ -37,8 +37,7 @@ export default function ProjectDetail() {
     body: listItems(project[s.key]).length ? project[s.key].replace(/<ul[\s\S]*?<\/ul>/gi, '') : project[s.key],
     steps: listItems(project[s.key]).map((item) => ({ title: item })),
     media: picture(n),
-    details: s.key === 'methodology' && project.technologies?.length ? project.technologies : undefined,
-    detailsLabel: 'Built with',
+    stack: s.key === 'methodology' ? project.technologies : undefined,
     tip: s.key === 'outcome' && project.testimonial_quote ? `“${strip(project.testimonial_quote)}”${project.testimonial_author ? ` — ${project.testimonial_author}` : ''}` : undefined,
     tipLabel: 'In their words',
   }));
@@ -53,7 +52,7 @@ export default function ProjectDetail() {
         title: project?.title || '',
         text: project?.tagline,
         breadcrumbs: [{ to: '/', label: 'Home' }, { to: '/projects', label: 'Projects' }, { label: project?.title || '…' }],
-        cta: { to: '/contact', label: 'Start a similar project' },
+        cta: { to: '/contact', label: 'Start a Similar Project' },
         actions: project?.url && (
           <a href={project.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 rounded-full border border-white/40 bg-white/10 px-7 py-3.5 text-sm font-semibold uppercase tracking-[0.08em] text-white backdrop-blur hover:bg-white/20">
             Visit the platform <ExternalLink className="h-4 w-4" aria-hidden="true" />

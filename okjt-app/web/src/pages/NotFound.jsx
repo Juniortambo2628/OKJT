@@ -30,7 +30,7 @@ export default function NotFound() {
           </div>
         )}
       >
-        <PillLink to="/" variant="dark" size="lg">Go home</PillLink>
+        <PillLink to="/" variant="dark" size="lg">Go Home</PillLink>
       </PageHero>
       <Container className="py-16" />
     </SiteLayout>

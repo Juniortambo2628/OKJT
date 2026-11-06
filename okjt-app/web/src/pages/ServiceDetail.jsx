@@ -45,8 +45,8 @@ export default function ServiceDetail() {
         title: service?.title || '',
         text: clip(service?.description, 220),
         breadcrumbs: [{ to: '/', label: 'Home' }, { to: '/services', label: 'Services' }, { label: service?.title || '…' }],
-        cta: { to: '/contact', label: 'Discuss this service' },
-        secondary: { to: '/services', label: 'Every service' },
+        cta: { to: '/contact', label: 'Discuss This Service' },
+        secondary: { to: '/services', label: 'Every Service' },
       }}
       glance={service ? [
         [service.category || 'Service', 'area of work'],

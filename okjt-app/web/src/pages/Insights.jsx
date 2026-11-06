@@ -42,8 +42,8 @@ export default function Insights() {
         title: setting('insights_title', 'Notes from the work'),
         text: setting('insights_subtitle', 'Practical lessons from real projects in health, law, construction, events and commerce, written for the people who commission and run web platforms.'),
         breadcrumbs: [{ to: '/', label: 'Home' }, { label: 'Insights' }],
-        cta: list[0] ? { to: `/insights/${list[0].slug}`, label: 'Read the latest' } : undefined,
-        secondary: { to: '/projects', label: 'See the work' },
+        cta: list[0] ? { to: `/insights/${list[0].slug}`, label: 'Read the Latest' } : undefined,
+        secondary: { to: '/projects', label: 'See the Work' },
       }}
       glance={[
         [String(list.length), list.length === 1 ? 'article' : 'articles'],

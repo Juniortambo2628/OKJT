@@ -71,6 +71,58 @@ body {
   background: linear-gradient(to top, rgb(6 4 2 / 0.96) 0%, rgb(6 4 2 / 0.78) 38%, rgb(6 4 2 / 0.35) 72%, rgb(6 4 2 / 0.15) 100%);
 }
 
+/* The top bar, once it has a background, and the sticky bar of sections:
+   cream, with dark brown words; the section chips white. */
+.okjt-site-nav-solid, .okjt-section-nav {
+  --color-tint: #f6eedb;
+  --color-line: #e3d6b9;
+  --color-line-strong: #cdbb96;
+  --color-surface: #ffffff;
+  --color-ink: #1d160d;
+  --color-body: #3b2f1f;
+  --color-soft: #3b2f1f;
+  --color-muted: #75654a;
+  --color-faint: #96866a;
+  --color-accent: #8a6526;
+  --color-accent-strong: #6e4f1c;
+  --color-fill: #ffffff;
+  --color-on-ink: #1d160d;
+  color: var(--color-body);
+}
+.okjt-site-nav-solid { background: rgb(246 238 219 / 0.96); border-color: #e3d6b9; }
+.okjt-section-nav { background: rgb(246 238 219 / 0.96); border-color: #e3d6b9; }
+.okjt-section-nav a, .okjt-section-nav button { box-shadow: 0 1px 2px rgb(29 22 13 / 0.08); }
+.okjt-section-nav [aria-current] { box-shadow: inset 0 0 0 1.5px #1d160d; }
+
+/* Buttons: cream with dark brown words, or clear glass. On cream (the top
+   bar, a card) they turn dark brown so they still stand out. */
+.okjt-pill-dark, .okjt-pill-light {
+  background: #f3ead5;
+  color: #1d160d;
+  box-shadow: 0 10px 30px -12px rgb(0 0 0 / 0.7);
+}
+.okjt-pill-dark:hover, .okjt-pill-light:hover { background: #fbf6ea; }
+.okjt-pill-outline, .okjt-pill-glass {
+  background: rgb(255 255 255 / 0.06);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgb(255 255 255 / 0.28);
+  color: #faf5e8;
+}
+.okjt-pill-outline:hover, .okjt-pill-glass:hover { background: rgb(255 255 255 / 0.14); }
+:is(.okjt-site-nav-solid, .glass, .glass-strong, .okjt-card) .okjt-pill {
+  background: #241c11;
+  color: #f3d9a0;
+  border-color: transparent;
+}
+:is(.okjt-site-nav-solid, .glass, .glass-strong, .okjt-card) .okjt-pill:hover { background: #3a2e1d; }
+
+/* Links and buttons in title case, not capitals (labels stay small caps). */
+.okjt-site :is(a, button).uppercase, .okjt-pill {
+  text-transform: none;
+  letter-spacing: 0.01em;
+}
+
 /* Filled controls get a gold hairline so they read on the dark page. */
 .bg-fill {
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-accent) 30%, transparent);
@@ -124,7 +176,7 @@ body {
   }
   /* On photo cards (anywhere, even inside a cream card) badges are dark
      pills with light words over the picture. */
-  .okjt-card-shade ~ * { --color-surface: #241c11; --color-ink: #faf5e8; }
+  .okjt-card-shade ~ :not(.okjt-card) { --color-surface: #241c11; --color-ink: #faf5e8; }
   /* Kit cards that set their own see-through surface take the cream too. */
   .okjt-card.bg-surface\/75, .okjt-card.bg-surface\/50 { background: linear-gradient(160deg, #fbf6ea 0%, #f3e9d3 100%); }
 }

@@ -45,7 +45,7 @@ export default function SiteNav({ overlay = false }) {
   const isPage = (to) => !to.includes('#');
 
   return (
-    <header onMouseLeave={() => setMega(false)} className={`fixed inset-x-0 top-0 z-40 transition-all duration-300 ${light ? 'py-5' : 'border-b border-line/70 bg-tint/85 py-3 backdrop-blur-xl'}`}>
+    <header onMouseLeave={() => setMega(false)} className={`okjt-site-nav ${light ? 'okjt-site-nav-over' : 'okjt-site-nav-solid'} fixed inset-x-0 top-0 z-40 transition-all duration-300 ${light ? 'py-5' : 'border-b border-line/70 bg-tint/85 py-3 backdrop-blur-xl'}`}>
       <Container className="flex items-center justify-between gap-4">
         <Logo light={light} />
 

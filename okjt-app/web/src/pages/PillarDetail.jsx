@@ -1,8 +1,9 @@
 import { useParams } from 'react-router-dom';
 import JourneyPage from '../components/Journey';
 import usePageMeta from '../components/usePageMeta';
-import { live, useItem, usePillars } from '../lib/content';
-import { address, clip, sectionsOf, slugify } from '../lib/text';
+import { live, useItem, usePillars, useProjects } from '../lib/content';
+import { principleFor, standoutProjects } from '../lib/principles';
+import { address, clip, listItems, sectionsOf, slugify } from '../lib/text';
 import NotFound from './NotFound';
 
 /** One principle: its text in chapters, then the services built on it. */
@@ -10,6 +11,7 @@ export default function PillarDetail() {
   const { slug } = useParams();
   const { data: pillar, isLoading, error } = useItem(`/pillars/${slug}`);
   const { data: all } = usePillars();
+  const { data: projects } = useProjects();
   usePageMeta(pillar?.title, pillar?.overview);
   if (error?.response?.status === 404) return <NotFound />;
   const others = live(all).filter((p) => p.id !== pillar?.id);
@@ -25,6 +27,22 @@ export default function PillarDetail() {
       body: part.body,
       media: i === 0 && pillar?.image ? { src: pillar.image, url: address(`/our-approach/${slug}`) } : undefined,
     })),
+    pillar && principleFor(pillar) && !listItems(pillar.content).length && {
+      id: 'what-goes-in',
+      when: 'In practice',
+      title: principleFor(pillar).lead,
+      steps: principleFor(pillar).points,
+      details: principleFor(pillar).receive,
+      detailsLabel: 'What you receive',
+      media: (() => { const x = standoutProjects(principleFor(pillar), live(projects), 1)[0]; return x ? { src: x.bg_image || x.image, url: address(`/projects/${x.slug}`) } : undefined; })(),
+    },
+    pillar && principleFor(pillar) && {
+      id: 'standout',
+      when: 'The work',
+      title: 'Standout projects',
+      intro: `Projects where ${pillar.title.toLowerCase()} made the difference.`,
+      steps: standoutProjects(principleFor(pillar), live(projects), 5).map((x) => ({ title: x.title, text: clip(x.tagline || x.description, 140), to: `/projects/${x.slug}` })),
+    },
     services.length > 0 && {
       id: 'in-practice',
       when: 'In practice',
@@ -43,9 +61,9 @@ export default function PillarDetail() {
         eyebrow: 'Approach',
         title: pillar?.title || '',
         text: clip(pillar?.overview, 220),
-        breadcrumbs: [{ to: '/', label: 'Home' }, { to: '/our-approach', label: 'Our approach' }, { label: pillar?.title || '…' }],
-        cta: { to: '/contact', label: 'Start a project' },
-        secondary: { to: '/our-approach', label: 'All principles' },
+        breadcrumbs: [{ to: '/', label: 'Home' }, { to: '/our-approach', label: 'Our Approach' }, { label: pillar?.title || '…' }],
+        cta: { to: '/contact', label: 'Start a Project' },
+        secondary: { to: '/our-approach', label: 'All Principles' },
       }}
       glance={pillar ? [
         [String(live(all).findIndex((p) => p.id === pillar.id) + 1).padStart(2, '0'), `of ${live(all).length} principles`],

@@ -61,9 +61,11 @@ export function useSiteConfig() {
     }
     for (const group of bySector(live(projects).filter((p) => p.type !== 'flagship'))) groupPhotos[`group-sector-${group.id}`] = sectorPhoto(group);
     const logo = mediaUrl(setting('logo_dark', LOGO));
+    // The dark mark for the cream top bar; the light one over photos and the footer.
+    const logoOnCream = mediaUrl(setting('logo_light', '/logos/OKJT-Logos/OKJTechLogo-Black_Transparent.png'));
     const serviceLinks = live(services).slice(0, 6).map((s) => ({ to: `/services/${s.slug}`, label: s.title }));
     return {
-      brand: { name: 'OKJTech', logo: { light: logo, dark: logo } },
+      brand: { name: 'OKJTech', logo: { light: logo, dark: logoOnCream } },
 
       nav: [
         { to: '/services', label: 'Services', mega: { Menu: ServicesMega, MobileList: ServicesMega.MobileList, id: 'services-menu', buttonLabel: 'show all services' } },
@@ -78,7 +80,7 @@ export function useSiteConfig() {
       useAccount: () => ({ signedIn: Boolean(getToken()) }),
       accountLinks: {
         signIn: { to: '/insights', label: 'Insights' },
-        signUp: { to: '/contact', label: 'Start a project' },
+        signUp: { to: '/contact', label: 'Start a Project' },
         home: { to: '/admin', label: 'Dashboard' },
       },
 
@@ -90,19 +92,19 @@ export function useSiteConfig() {
       footer: {
         about: setting('company_tagline', 'Design-led web engineering from Nairobi. Web applications for health, legal, commerce, events and nonprofit organisations, designed and built end to end.'),
         columns: [
-          { title: 'Services', links: serviceLinks.length ? serviceLinks : [{ to: '/services', label: 'All services' }] },
+          { title: 'Services', links: serviceLinks.length ? serviceLinks : [{ to: '/services', label: 'All Services' }] },
           { title: 'Studio', links: [
             { to: '/about', label: 'About' },
             { to: '/projects', label: 'Projects' },
-            { to: '/our-approach', label: 'Our approach' },
-            { to: '/client-impact', label: 'Client impact' },
+            { to: '/our-approach', label: 'Our Approach' },
+            { to: '/client-impact', label: 'Client Impact' },
             { to: '/insights', label: 'Insights' },
             { to: '/contact', label: 'Contact' },
           ] },
           { title: 'Legal', links: [
-            { to: '/privacy', label: 'Privacy policy' },
-            { to: '/terms', label: 'Terms of service' },
-            { to: '/cookies', label: 'Cookie policy' },
+            { to: '/privacy', label: 'Privacy Policy' },
+            { to: '/terms', label: 'Terms of Service' },
+            { to: '/cookies', label: 'Cookie Policy' },
           ] },
         ],
         promises: [
@@ -115,8 +117,8 @@ export function useSiteConfig() {
           eyebrow: setting('cta_badge', 'Get in touch'),
           title: setting('cta_title', 'Have a platform in mind?'),
           text: setting('cta_subtitle', 'Share a short brief. It will be mapped against the people the platform needs to serve, scoped into clear stages and returned with a realistic path to launch.'),
-          primary: { to: '/contact', label: 'Start a project' },
-          secondary: { to: '/projects', label: 'View the work' },
+          primary: { to: '/contact', label: 'Start a Project' },
+          secondary: { to: '/projects', label: 'View the Work' },
         },
         watermark: 'okjtech.',
         copyright: 'OKJTechnologies',
@@ -125,16 +127,16 @@ export function useSiteConfig() {
 
       legal: {
         documents: [
-          { to: '/privacy', label: 'Privacy policy', icon: ShieldCheck },
-          { to: '/terms', label: 'Terms of service', icon: FileText },
-          { to: '/cookies', label: 'Cookie policy', icon: Cookie },
+          { to: '/privacy', label: 'Privacy Policy', icon: ShieldCheck },
+          { to: '/terms', label: 'Terms of Service', icon: FileText },
+          { to: '/cookies', label: 'Cookie Policy', icon: Cookie },
         ],
         contact: `Questions about these documents: ${setting('contact_email', 'hello@okjtech.co.ke')}.`,
         lastUpdated: setting('legal_last_updated', '2026-03-01'),
         seeAlso: [
-          { to: '/privacy', label: 'Privacy policy' },
-          { to: '/terms', label: 'Terms of service' },
-          { to: '/cookies', label: 'Cookie policy' },
+          { to: '/privacy', label: 'Privacy Policy' },
+          { to: '/terms', label: 'Terms of Service' },
+          { to: '/cookies', label: 'Cookie Policy' },
         ],
       },
 
@@ -150,13 +152,13 @@ export function useSiteConfig() {
           '/services': page('Services', 'Web application engineering, e-commerce, dashboards, interface design and technical strategy.'),
           '/projects': page('Projects', 'Web platforms for health, law, construction, events, commerce and nonprofits, built end to end.'),
           '/projects/flagship': page('Flagship projects', 'Products developed and owned by OKJTechnologies.'),
-          '/our-approach': page('Our approach', 'Six principles guide every project, from the first sketch to a platform that keeps growing.'),
-          '/client-impact': page('Client impact', 'Platforms in daily use by clinics, law firms, workshops, event companies and nonprofits.'),
+          '/our-approach': page('Our Approach', 'Six principles guide every project, from the first sketch to a platform that keeps growing.'),
+          '/client-impact': page('Client Impact', 'Platforms in daily use by clinics, law firms, workshops, event companies and nonprofits.'),
           '/insights': page('Insights', 'Notes on building web platforms that people rely on.'),
           '/contact': page('Contact', 'Describe the platform, the people it should serve and the timeline.'),
-          '/privacy': page('Privacy policy'),
-          '/terms': page('Terms of service'),
-          '/cookies': page('Cookie policy'),
+          '/privacy': page('Privacy Policy'),
+          '/terms': page('Terms of Service'),
+          '/cookies': page('Cookie Policy'),
         },
         resolve: (path) => {
           const match = DETAIL.find(([pattern]) => pattern.test(path));

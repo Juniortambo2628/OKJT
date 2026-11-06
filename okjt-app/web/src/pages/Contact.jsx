@@ -45,7 +45,7 @@ function ContactForm() {
                 <CheckCircle2 className="mx-auto h-12 w-12 text-positive" aria-hidden="true" />
                 <h2 className="mt-4 !font-display text-3xl !font-light !text-ink">Thank you. Your brief is in.</h2>
                 <p className="mx-auto mt-3 max-w-md text-soft">A reply with next steps will reach {contact.email ? 'you' : 'your inbox'} within two business days.</p>
-                <button type="button" onClick={() => setSent(false)} className="mt-8 text-sm font-semibold text-accent hover:text-accent-strong">Send another message</button>
+                <button type="button" onClick={() => setSent(false)} className="mt-8 text-sm font-semibold text-accent hover:text-accent-strong">Send Another Message</button>
               </div>
             ) : (
               <form onSubmit={submit} noValidate className="space-y-5">
@@ -72,7 +72,7 @@ function ContactForm() {
                 </Field>
                 {failure && <p role="alert" className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">{failure}</p>}
                 <button type="submit" disabled={isSubmitting} className="inline-flex w-full items-center justify-center rounded-full bg-fill px-7 py-3.5 text-sm font-semibold uppercase tracking-[0.08em] text-on-ink transition-colors hover:bg-fill-hover disabled:opacity-60 sm:w-auto">
-                  {isSubmitting ? 'Sending…' : 'Send the brief'}
+                  {isSubmitting ? 'Sending…' : 'Send the Brief'}
                 </button>
               </form>
             )}
@@ -87,7 +87,7 @@ export default function Contact() {
     <JourneyPage
       hero={{
         media: setting('hero_contact_media') || DEFAULT_HERO,
-        eyebrow: 'Start a project',
+        eyebrow: 'Start a Project',
         title: 'Share what <br />needs building.',
         text: 'Describe the platform, the people it should serve and the timeline. Every brief receives a reply with next steps.',
         breadcrumbs: [{ to: '/', label: 'Home' }, { label: 'Contact' }],

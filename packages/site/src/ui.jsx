@@ -30,7 +30,7 @@ export function PillLink({ to, variant = 'dark', size = 'md', arrow = false, cla
   return (
     <Link
       to={to}
-      className={`inline-flex items-center justify-center gap-2 rounded-full font-semibold uppercase tracking-[0.08em] transition-colors ${sizes[size]} ${PILL_VARIANTS[variant]} ${className}`}
+      className={`okjt-pill okjt-pill-${variant} inline-flex items-center justify-center gap-2 rounded-full font-semibold uppercase tracking-[0.08em] transition-colors ${sizes[size]} ${PILL_VARIANTS[variant]} ${className}`}
       {...rest}
     >
       {children}

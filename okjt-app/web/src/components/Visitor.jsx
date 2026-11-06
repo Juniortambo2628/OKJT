@@ -20,11 +20,11 @@ export function CookieConsent() {
   return (
     <div role="dialog" aria-label="Cookies" className="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-xl rounded-3xl glass p-5 shadow-2xl backdrop-blur-xl sm:bottom-5">
       <p className="text-sm leading-relaxed text-body">
-        This site keeps a few essentials in your browser. With your permission it also counts page visits, anonymously, to see which pages help. <Link to="/cookies" className="text-accent underline">Cookie policy</Link>
+        This site keeps a few essentials in your browser. With your permission it also counts page visits, anonymously, to see which pages help. <Link to="/cookies" className="text-accent underline">Cookie Policy</Link>
       </p>
       <div className="mt-4 flex flex-wrap gap-2">
         <button type="button" onClick={() => answer(true)} className="rounded-full bg-fill px-5 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-on-ink hover:bg-fill-hover">Allow</button>
-        <button type="button" onClick={() => answer(false)} className="rounded-full border border-line-strong px-5 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-body hover:border-accent">Essentials only</button>
+        <button type="button" onClick={() => answer(false)} className="rounded-full border border-line-strong px-5 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-body hover:border-accent">Essentials Only</button>
       </div>
     </div>
   );

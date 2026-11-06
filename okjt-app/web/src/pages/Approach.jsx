@@ -1,7 +1,8 @@
 import JourneyPage from '../components/Journey';
 import { live, usePillars, useProjects, useServices, useSettings } from '../lib/content';
 import { DEFAULT_HERO } from '../lib/defaults';
-import { address, clip, listItems } from '../lib/text';
+import { address, clip, listItems, strip } from '../lib/text';
+import { principleFor, standoutProjects } from '../lib/principles';
 
 /** The principles, one chapter each, with the services built on them. */
 export default function Approach() {
@@ -12,18 +13,27 @@ export default function Approach() {
   const pillars = live(data);
   const flagship = live(projects).find((p) => p.type === 'flagship' && (p.bg_image || p.image));
 
-  const chapters = pillars.map((p, i) => ({
-    id: p.slug,
-    navLabel: p.title,
-    when: `Principle ${i + 1} of ${pillars.length}`,
-    title: p.title,
-    intro: clip(p.overview, 220),
-    body: listItems(p.content).length ? null : p.content,
-    media: p.image ? { src: p.image, url: address(`/our-approach/${p.slug}`) } : undefined,
-    steps: live(p.services).length
-      ? live(p.services).map((s) => ({ title: s.title, text: clip(s.description, 140), to: `/services/${s.slug}` }))
-      : listItems(p.content).map((item) => ({ title: item })),
-  }));
+  const shown = new Set();
+  const chapters = pillars.map((p, i) => {
+    const principle = principleFor(p);
+    const ownList = listItems(p.content);
+    const picks = standoutProjects(principle, live(projects), 3, shown);
+    picks.forEach((x) => shown.add(x.id));
+    const pictured = picks.find((x) => x.bg_image || x.image);
+    const services = live(p.services);
+    return {
+      id: p.slug,
+      navLabel: p.title,
+      when: `Principle ${i + 1} of ${pillars.length}`,
+      title: p.title,
+      intro: [clip(p.overview, 160), ownList.length ? '' : clip(strip(p.content), 260)].filter(Boolean).join(' '),
+      media: { src: p.image || pictured?.bg_image || pictured?.image, url: address(`/our-approach/${p.slug}`) },
+      steps: ownList.length ? ownList.map((item) => ({ title: item })) : (principle?.points ?? []),
+      details: [...(principle?.receive ?? []), ...services.map((sv) => `Service: ${sv.title}`)],
+      detailsLabel: 'What you receive',
+      showcase: picks.map((x) => ({ to: `/projects/${x.slug}`, image: x.bg_image || x.image, title: x.title, text: x.client_name || x.tagline })),
+    };
+  });
 
   return (
     <JourneyPage
@@ -33,9 +43,9 @@ export default function Approach() {
         eyebrow: 'Approach',
         title: 'How the work <br />gets done.',
         text: setting('vp_section_subtitle', 'Six principles guide every project, from the first sketch to a platform that keeps growing.'),
-        breadcrumbs: [{ to: '/', label: 'Home' }, { label: 'Our approach' }],
-        cta: { to: '/contact', label: 'Start a project' },
-        secondary: { to: '/services', label: 'Every service' },
+        breadcrumbs: [{ to: '/', label: 'Home' }, { label: 'Our Approach' }],
+        cta: { to: '/contact', label: 'Start a Project' },
+        secondary: { to: '/services', label: 'Every Service' },
       }}
       glance={[
         [String(pillars.length), 'principles behind every build'],
