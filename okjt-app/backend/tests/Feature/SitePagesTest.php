@@ -99,4 +99,18 @@ class SitePagesTest extends TestCase
 
         $this->withHeader('Authorization', "Bearer {$token}")->getJson('/api/user')->assertOk()->assertJsonPath('is_admin', true);
     }
+
+    public function test_an_admin_can_give_a_project_a_logo(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $token = $admin->createToken('test')->plainTextToken;
+
+        $id = $this->withHeader('Authorization', "Bearer {$token}")
+            ->postJson('/api/projects', ['type' => 'flagship', 'title' => 'Logo Test Product', 'logo' => '/storage/uploads/logo.png'])
+            ->assertCreated()
+            ->json('id');
+
+        $listed = collect($this->getJson('/api/projects?type=flagship')->assertOk()->json())->firstWhere('id', $id);
+        $this->assertSame('/storage/uploads/logo.png', $listed['logo']);
+    }
 }

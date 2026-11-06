@@ -1,7 +1,9 @@
 import { useParams } from 'react-router-dom';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Quote } from 'lucide-react';
+import { Eyebrow } from '@okjt/site';
 import JourneyPage from '../components/Journey';
 import usePageMeta from '../components/usePageMeta';
+import Stack from '../components/Stack';
 import { live, useItem, useProjects } from '../lib/content';
 import { sectorOf } from '../lib/sectors';
 import { address, clip, listItems, strip } from '../lib/text';
@@ -17,8 +19,9 @@ export default function ProjectDetail() {
 
   const gallery = (project?.gallery ?? []).filter(Boolean);
   const pictures = [...new Set([project?.bg_image || project?.image, ...gallery, project?.image].filter(Boolean))];
-  // One picture: on the first chapter only; more: one per chapter, in turn.
-  const picture = (n) => (pictures.length && (n === 0 || new Set(pictures).size > 1) ? { src: pictures[n % pictures.length], url: project?.url?.replace(/^https?:\/\//, '') || address(`/projects/${slug}`) } : undefined);
+  const frameUrl = project?.url?.replace(/^https?:\/\//, '') || address(`/projects/${slug}`);
+  // Each picture once, in turn; sections past them get a card instead.
+  const picture = (n) => (pictures[n] ? { src: pictures[n], url: frameUrl } : undefined);
   const sector = project ? sectorOf(project) : null;
   const related = live(all).filter((p) => p.id !== project?.id && (project?.type === 'flagship' ? p.type === 'flagship' : sectorOf(p).id === sector?.id));
   const fill = live(all).filter((p) => p.id !== project?.id && !related.includes(p) && p.type === project?.type);
@@ -30,15 +33,61 @@ export default function ProjectDetail() {
     { key: 'outcome', title: 'The outcome', when: 'What changed' },
   ].filter((s) => strip(project[s.key])) : [];
 
+  /* Left-column cards for sections without a picture of their own. */
+  const card = (children) => <div className="glass rounded-[2rem] p-6 sm:p-8">{children}</div>;
+  const facts = project && card(
+    <>
+      <Eyebrow>At a glance</Eyebrow>
+      <dl className="mt-5 grid gap-5 sm:grid-cols-2">
+        {[
+          [project.type === 'flagship' ? 'Built and run by' : 'Client', project.client_name || 'OKJTechnologies'],
+          ['Sector', sector?.label],
+          ['Impact', project.significant_figure],
+          ['Focus', (project.focus_areas ?? []).slice(0, 3).join(', ')],
+        ].filter(([, v]) => v).map(([label, value]) => (
+          <div key={label}><dt className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">{label}</dt><dd className="mt-1 font-display text-xl font-light text-ink">{value}</dd></div>
+        ))}
+      </dl>
+      {project.url && <a href={project.url} target="_blank" rel="noopener noreferrer" className="okjt-pill okjt-pill-dark mt-6 inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold">Visit the Platform <ExternalLink className="h-4 w-4" aria-hidden="true" /></a>}
+    </>,
+  );
+  const impact = project?.significant_figure && card(
+    <>
+      <Eyebrow>Impact</Eyebrow>
+      <div className="mt-4 font-display text-5xl font-extralight leading-tight tracking-tight text-ink sm:text-6xl">{project.significant_figure}</div>
+      {project.tagline && <p className="mt-4 text-soft">{project.tagline}</p>}
+    </>,
+  );
+  const quote = project?.testimonial_quote && card(
+    <figure>
+      <Quote className="h-7 w-7 text-accent" aria-hidden="true" />
+      <blockquote className="mt-4 font-display text-2xl font-light leading-snug text-ink">“{strip(project.testimonial_quote)}”</blockquote>
+      {project.testimonial_author && <figcaption className="mt-5 text-sm font-semibold text-soft">{project.testimonial_author}</figcaption>}
+    </figure>,
+  );
+  const stackCard = project?.technologies?.length > 0 && <Stack names={project.technologies} />;
+  const asideFor = (key) => ({
+    description: facts,
+    problem: impact || facts,
+    methodology: stackCard || facts,
+    outcome: quote || impact || facts,
+  }[key] || facts);
+
   const chapters = story.map((s, n) => ({
     id: s.key === 'description' ? 'overview' : s.key,
     when: s.when,
     title: s.title,
     body: listItems(project[s.key]).length ? project[s.key].replace(/<ul[\s\S]*?<\/ul>/gi, '') : project[s.key],
-    steps: listItems(project[s.key]).map((item) => ({ title: item })),
+    // "Public website. Loads quickly…": the first sentence as the step's title.
+    steps: listItems(project[s.key]).map((item) => {
+      const [, head, rest] = item.match(/^(.{3,60}?[.:])\s+(.+)$/) || [];
+      return head ? { title: head.replace(/[.:]$/, ''), text: rest } : { title: item };
+    }),
     media: picture(n),
-    stack: s.key === 'methodology' ? project.technologies : undefined,
-    tip: s.key === 'outcome' && project.testimonial_quote ? `“${strip(project.testimonial_quote)}”${project.testimonial_author ? ` — ${project.testimonial_author}` : ''}` : undefined,
+    aside: picture(n) ? undefined : asideFor(s.key),
+    // The stack sits beside the words when the left column holds a picture.
+    stack: s.key === 'methodology' && (picture(n) || !stackCard) ? project.technologies : undefined,
+    tip: s.key === 'outcome' && project.testimonial_quote && (picture(n) || asideFor('outcome') !== quote) ? `“${strip(project.testimonial_quote)}”${project.testimonial_author ? ` — ${project.testimonial_author}` : ''}` : undefined,
     tipLabel: 'In their words',
   }));
   if (project && !chapters.length) chapters.push({ id: 'overview', when: 'The project', title: project.title, intro: project.tagline, media: picture(0) });

@@ -90,7 +90,12 @@ body {
   color: var(--color-body);
 }
 .okjt-site-nav-solid { background: rgb(246 238 219 / 0.96); border-color: #e3d6b9; }
-.okjt-section-nav { background: rgb(246 238 219 / 0.96); border-color: #e3d6b9; }
+.okjt-section-nav {
+  background: rgb(246 238 219 / 0.88);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+  border-color: rgb(255 250 235 / 0.35);
+}
 .okjt-section-nav a, .okjt-section-nav button { box-shadow: 0 1px 2px rgb(29 22 13 / 0.08); }
 .okjt-section-nav [aria-current] { box-shadow: inset 0 0 0 1.5px #1d160d; }
 
@@ -122,6 +127,24 @@ body {
   text-transform: none;
   letter-spacing: 0.01em;
 }
+
+/* The flagship logos sliding under the hero (LogoCarousel): two copies
+   in a row, moved by half their width, so the loop never shows a seam. */
+.logo-marquee { animation: logo-marquee 38s linear infinite; }
+.logo-marquee:hover { animation-play-state: paused; }
+@keyframes logo-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* The highlight figures on a tab's photo (FeatureExplorer): the figure
+   first, large and gold, its words under it. */
+[role='tabpanel'] > dl > div { display: flex; flex-direction: column-reverse; justify-content: flex-end; }
+[role='tabpanel'] > dl dd { margin: 0 0 0.35rem; font-size: clamp(1.75rem, 3.2vw, 2.75rem); line-height: 1.05; color: #f3d9a0; }
+[role='tabpanel'] > dl dt { font-size: 0.8125rem; line-height: 1.35; color: rgb(255 255 255 / 0.78); }
+
+/* A bigger top bar: larger logo and links. */
+.okjt-site-nav img { height: 3rem; }
+.okjt-site-nav nav :is(a, button) { font-size: 0.875rem; }
+.okjt-site-nav > div > div :is(a) { font-size: 0.875rem; }
+@media (min-width: 64rem) { .okjt-site-nav img { height: 3.5rem; } }
 
 /* Filled controls get a gold hairline so they read on the dark page. */
 .bg-fill {
