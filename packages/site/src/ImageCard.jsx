@@ -14,7 +14,7 @@ export default function ImageCard({
   return (
     <Wrapper
       to={to}
-      className={`group relative isolate flex flex-col justify-end overflow-hidden rounded-[1.75rem] p-6 text-white shadow-[0_30px_60px_-35px_color-mix(in_srgb,var(--color-ink)_70%,transparent)] sm:p-8 ${className}`}
+      className={`group relative isolate flex flex-col justify-end overflow-hidden rounded-[1.75rem] p-6 text-white shadow-[0_30px_60px_-35px_color-mix(in_srgb,var(--okjt-shadow,var(--color-ink))_70%,transparent)] sm:p-8 ${className}`}
     >
       <Photo image={image} position={position} className="-z-10" />
       <div className="absolute inset-0 -z-10 bg-gradient-to-t from-ink-deep/85 via-ink-deep/25 to-transparent" />

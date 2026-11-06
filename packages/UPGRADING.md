@@ -7,6 +7,9 @@
    new colours, `onInk` and `panel`. Skipping this leaves the dark buttons'
    text and the footer panel without a colour.
 
+Shadows on the public pages are tinted with `--okjt-shadow` (CSS, default
+`ink`); dark pages set it to black in their CSS.
+
 Nothing changes on screen unless you set them: `onInk` defaults to white and
 `panel` to `ink`, and cards, pills and menus that were white are now
 `surface` (default white). For dark public pages, swap the light and dark

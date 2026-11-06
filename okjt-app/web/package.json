@@ -1,0 +1,38 @@
+{
+  "name": "okjt-web",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "OKJTech's public site and dashboard: a static React app on the OKJT kit, served by the Laravel API's domain",
+  "scripts": {
+    "kit": "npm --prefix ../../packages ci --no-audit --no-fund && npm --prefix ../../packages run build",
+    "theme": "okjt-theme",
+    "predev": "okjt-theme",
+    "dev": "vite",
+    "prebuild": "okjt-theme",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@okjt/dashboard": "file:../../packages/dashboard",
+    "@okjt/site": "file:../../packages/site",
+    "@okjt/ui": "file:../../packages/ui",
+    "@tanstack/react-query": "^5.90.12",
+    "axios": "^1.13.2",
+    "date-fns": "^4.1.0",
+    "framer-motion": "^12.23.26",
+    "lucide-react": "^0.559.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-hook-form": "^7.68.0",
+    "react-hot-toast": "^2.6.0",
+    "react-router-dom": "^7.10.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.17",
+    "@vitejs/plugin-react": "^5.2.0",
+    "tailwindcss": "^4.1.17",
+    "vite": "^7.2.4"
+  }
+}

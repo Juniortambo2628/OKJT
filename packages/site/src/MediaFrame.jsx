@@ -47,7 +47,7 @@ export default function MediaFrame({ media, className = '', variant }) {
 
   if (kind === 'phone') {
     return (
-      <div className={`relative mx-auto aspect-[9/19] w-full max-w-[17rem] overflow-hidden rounded-[2.4rem] border-[7px] border-ink bg-ink shadow-[0_40px_80px_-30px_color-mix(in_srgb,var(--color-ink)_70%,transparent)] ${className}`}>
+      <div className={`relative mx-auto aspect-[9/19] w-full max-w-[17rem] overflow-hidden rounded-[2.4rem] border-[7px] border-ink bg-ink shadow-[0_40px_80px_-30px_color-mix(in_srgb,var(--okjt-shadow,var(--color-ink))_70%,transparent)] ${className}`}>
         <div className="absolute left-1/2 top-2 z-10 h-5 w-20 -translate-x-1/2 rounded-full bg-ink" aria-hidden="true" />
         <div className="h-full overflow-hidden rounded-[1.9rem] bg-surface"><MediaFill media={item} /></div>
       </div>
@@ -55,7 +55,7 @@ export default function MediaFrame({ media, className = '', variant }) {
   }
 
   return (
-    <div className={`overflow-hidden rounded-2xl border border-surface/60 bg-surface shadow-[0_40px_80px_-35px_color-mix(in_srgb,var(--color-ink)_55%,transparent)] ${className}`}>
+    <div className={`overflow-hidden rounded-2xl border border-surface/60 bg-surface shadow-[0_40px_80px_-35px_color-mix(in_srgb,var(--okjt-shadow,var(--color-ink))_55%,transparent)] ${className}`}>
       <div className="flex items-center gap-2 border-b border-line bg-paper px-4 py-2.5" aria-hidden="true">
         <span className="h-2.5 w-2.5 rounded-full bg-[#E8C4B8]" />
         <span className="h-2.5 w-2.5 rounded-full bg-line" />

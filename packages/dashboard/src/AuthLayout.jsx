@@ -52,7 +52,7 @@ export default function AuthLayout({ title, subtitle, children, footer, brand, b
   );
 }
 
-const fieldClass = 'w-full h-12 px-5 rounded-full bg-white border border-line text-sm text-ink placeholder:text-[var(--okjt-auth-placeholder,var(--color-faint))] shadow-[0_1px_2px_color-mix(in_srgb,var(--color-body)_4%,transparent)] outline-none transition focus:border-[var(--okjt-auth-focus,var(--color-accent))] focus:ring-4 focus:ring-[var(--okjt-auth-focus,var(--color-accent))]/15 read-only:bg-tint read-only:text-muted';
+const fieldClass = 'w-full h-12 px-5 rounded-full bg-surface border border-line text-sm text-ink placeholder:text-[var(--okjt-auth-placeholder,var(--color-faint))] shadow-[0_1px_2px_color-mix(in_srgb,var(--color-body)_4%,transparent)] outline-none transition focus:border-[var(--okjt-auth-focus,var(--color-accent))] focus:ring-4 focus:ring-[var(--okjt-auth-focus,var(--color-accent))]/15 read-only:bg-tint read-only:text-muted';
 
 /** A labelled pill input; `type="password"` gets a show/hide toggle. */
 export function AuthField({ id, label, type = 'text', error, className = '', inputClassName = '', ...props }) {

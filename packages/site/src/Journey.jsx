@@ -7,7 +7,7 @@ import { useMedia } from './SiteProvider.js';
 /** "At a glance" numbers, overlapping the hero. */
 export function JourneyGlance({ journey }) {
   return (
-    <div className="rounded-[2rem] bg-surface p-6 shadow-[0_40px_80px_-40px_color-mix(in_srgb,var(--color-ink)_50%,transparent)] sm:p-10">
+    <div className="rounded-[2rem] bg-surface p-6 shadow-[0_40px_80px_-40px_color-mix(in_srgb,var(--okjt-shadow,var(--color-ink))_50%,transparent)] sm:p-10">
       <dl className="grid grid-cols-2 gap-6 lg:grid-cols-4">
         {journey.glance.map(([value, label]) => (
           <div key={label} className="rounded-2xl bg-tint p-5">
