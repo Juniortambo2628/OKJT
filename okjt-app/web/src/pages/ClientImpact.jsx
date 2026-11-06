@@ -1,4 +1,5 @@
 import JourneyPage from '../components/Journey';
+import ClientLogos from '../components/ClientLogos';
 import { live, useClients, useProjects, useSettings, useStats, useTestimonials } from '../lib/content';
 import { DEFAULT_HERO } from '../lib/defaults';
 import { bySector, sectorOf, sectorPhoto } from '../lib/sectors';
@@ -37,16 +38,6 @@ export default function ClientImpact() {
       media: setting('bg_client_impact_testimonials') ? { src: setting('bg_client_impact_testimonials'), url: address('/client-impact#in-their-words') } : undefined,
       steps: quotes.map((t) => ({ title: `“${t.quote}”`, text: [t.name, t.role, t.company].filter(Boolean).join(', ') })),
     },
-    orgs.length > 0 && {
-      id: 'clients',
-      when: `${orgs.length} organisations`,
-      title: 'Organisations served',
-      intro: 'Some of the organisations the studio has designed and built for.',
-      media: setting('bg_client_impact_clients') ? { src: setting('bg_client_impact_clients'), url: address('/client-impact#clients') } : undefined,
-      steps: orgs.map((c) => ({ title: c.name, text: c.category || undefined })),
-      tip: 'Every brief is mapped against the people the platform serves before anything is built.',
-      tipLabel: 'How the work starts',
-    },
   ].filter(Boolean);
 
   return (
@@ -68,12 +59,15 @@ export default function ClientImpact() {
       ]}
       label="The impact"
       chapters={chapters}
+      navExtra={orgs.length ? [{ id: 'clients', label: 'Organisations' }] : []}
       toolkit={{
         eyebrow: 'By sector',
         title: 'The work, sector by sector',
         cards: bySector(clientWork).slice(0, 4).map((g) => ({ to: `/projects#sector-${g.id}`, image: sectorPhoto(g), tags: [g.label, `${g.projects.length} platforms`], title: g.label, text: g.line })),
       }}
       onward={{ to: '/contact', tags: ['Next step'], title: 'Your platform next?', text: 'Share a short brief. Every brief receives a reply with next steps.' }}
-    />
+    >
+      <ClientLogos clients={orgs} text="Some of the organisations whose platforms OKJTechnologies has designed, built and looked after." />
+    </JourneyPage>
   );
 }
