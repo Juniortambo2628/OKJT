@@ -14,9 +14,10 @@ function Bars({ points = [] }) {
   return (
     <div className="flex h-44 items-end gap-1.5" role="img" aria-label={`Page views per day: ${points.map((p) => `${p.date} ${p.views}`).join(', ')}`}>
       {points.map((p) => (
-        <div key={p.date} className="group flex flex-1 flex-col items-center gap-1">
+        <div key={p.date} className="group flex h-full flex-1 flex-col items-center justify-end gap-1">
           <span className="text-[10px] text-tone-500 opacity-0 group-hover:opacity-100">{p.views}</span>
-          <div className="w-full rounded-t-md bg-accent/70 transition-colors group-hover:bg-accent" style={{ height: `${Math.max(4, (p.views / max) * 100)}%` }} />
+          {/* Pixels, not %: a percentage of an auto-height column is nothing. */}
+          <div className="w-full rounded-t-md bg-accent/70 transition-colors group-hover:bg-accent" style={{ height: `${Math.max(4, Math.round((p.views / max) * 128))}px` }} />
           <span className="text-[10px] text-tone-400">{new Date(p.date).getDate()}</span>
         </div>
       ))}

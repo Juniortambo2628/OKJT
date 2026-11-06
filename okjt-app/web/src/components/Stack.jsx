@@ -9,7 +9,7 @@ function Logo({ slug, names }) {
   if (failed) return <li className="self-center rounded-full bg-paper px-3 py-1.5 text-xs font-medium text-body ring-1 ring-line">{label}</li>;
   return (
     <li title={label} className="grid h-14 w-14 place-items-center rounded-2xl bg-white shadow-[0_6px_16px_-10px_rgb(0_0_0/0.5)] ring-1 ring-line">
-      <img src={logoUrl(slug)} alt={label} width="28" height="28" loading="lazy" onError={() => setFailed(true)} className="h-7 w-7" />
+      <img src={logoUrl(slug)} alt={label} width="28" height="28" loading="lazy" onError={() => setFailed(true)} className="logo-dark h-7 w-7" />
     </li>
   );
 }

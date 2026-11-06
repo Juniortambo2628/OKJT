@@ -1,94 +1,98 @@
 import JourneyPage from '../components/Journey';
-import { live, usePillars, useProjects, useSettings, useStats, useTeam, useValues } from '../lib/content';
+import { live, useClients, useProjects, useSettings, useStats, useTeam, useTestimonials } from '../lib/content';
 import { DEFAULT_HERO } from '../lib/defaults';
+import { bySector, sectorPhoto } from '../lib/sectors';
 import { address, clip } from '../lib/text';
 
-const DEFAULT_CATEGORIES = [
-    {
-        key: 'digital-policy',
-        label: 'Digital Policy',
-        items: [
-            { title: 'Lawyers Hub Digital Policy website', summary: 'A leading Kenyan resource on digital policy, from its structure and build to its ongoing care.', href: '/projects/lawyers-hub-digital-policy', tag: 'Platform' },
-            { title: 'Africa Law Tech Festival platform', summary: 'Online ticketing, live updates and event maps for an annual festival with a continental audience.', href: '/projects/africa-law-tech-festival', tag: 'Event platform' },
-            { title: 'ADPI training delivery', summary: 'Support for the Africa Data Protection Course and the CIPP/E certification programme.', href: '/projects/adpi-courses', tag: 'Training' },
-        ],
-    },
-    {
-        key: 'ui-ux',
-        label: 'Interface Design',
-        items: [
-            { title: 'Najenga: construction coordination', summary: 'Drawings, budgets, timelines and team conversations brought into one shared workspace.', href: '/projects/najenga', tag: 'Product' },
-            { title: 'Naoa: digital wedding platform', summary: 'Invitations, RSVPs, gifts and live guest updates in one experience.', href: '/projects/naoa', tag: 'Product' },
-            { title: 'Tibu: healthcare interface', summary: 'Clinical workflows designed for the doctors, nurses and staff who use them on desktop and mobile.', href: '/projects/tibu', tag: 'Interface' },
-        ],
-    },
-    {
-        key: 'engineering',
-        label: 'Web Engineering',
-        items: [
-            { title: 'Laravel and Next.js platforms', summary: 'Complete web applications with secure sign-in, admin dashboards, automated tasks and reliable launches.', href: '/services', tag: 'Engineering' },
-            { title: 'Launch and ongoing care', summary: 'Hosting, domains, automatic deployments, monitoring and maintenance after launch.', href: '/services', tag: 'Operations' },
-        ],
-    },
-    {
-        key: 'ecosystem',
-        label: 'Ecosystem Strategy',
-        items: [
-            { title: 'Ecosystem mapping practice', summary: 'Everyone a platform touches is mapped before scoping, so each has a clear reason to take part.', href: '/our-approach', tag: 'Method' },
-            { title: 'Boda-Boda Law Project', summary: 'Field research in Kisumu and Namanga that informed a published legal report.', href: '/projects/boda-boda-law', tag: 'Research' },
-        ],
-    },
-]
-
-/** The studio's story, as a journey: approach, experience, principles, the team. */
+/**
+ * About OKJTech, told for a client deciding whether to get in touch: what
+ * gets built, who it's for, how working together goes, why clients choose
+ * the studio, and who they'll work with. Plain words, no method jargon.
+ */
 export default function About() {
-  const { setting, json } = useSettings();
-  const { data: team } = useTeam();
-  const { data: values } = useValues();
-  const { data: stats } = useStats();
-  const { data: pillars } = usePillars();
+  const { setting } = useSettings();
   const { data: projects } = useProjects();
-  const configured = json('about_experience_categories', null);
-  const categories = Array.isArray(configured) && configured.length ? configured : DEFAULT_CATEGORIES;
-  const flagship = live(projects).find((p) => p.type === 'flagship' && (p.bg_image || p.image));
+  const { data: clients } = useClients();
+  const { data: stats } = useStats();
+  const { data: team } = useTeam();
+  const { data: testimonials } = useTestimonials();
+
+  const work = live(projects);
+  const clientWork = work.filter((p) => p.type !== 'flagship');
+  const sectors = bySector(clientWork);
+  const pictured = [...work.filter((p) => p.is_featured), ...work].filter((p) => p.bg_image || p.image);
+  const pic = (n) => (pictured[n] ? { src: pictured[n].bg_image || pictured[n].image, url: address(`/projects/${pictured[n].slug}`) } : undefined);
+  const quote = live(testimonials).find((t) => t.is_featured) || live(testimonials)[0];
+  const people = live(team);
+  // Example clients for a sector, leaving out unnamed ones ("Private Client").
+  const names = (g) => [...new Set(g.projects.map((p) => p.client_name).filter((n) => n && !/private/i.test(n)))].slice(0, 3).join(', ');
 
   const chapters = [
     {
-      id: 'approach',
-      when: 'Before anything is built',
-      title: setting('about_mission_title', 'Every stakeholder is mapped before anything is built.'),
-      intro: setting('about_mission_text1', 'Each project starts by mapping everyone the platform will touch: the client, the people who will use it every day, regulators, partners and the wider community.'),
-      media: { src: setting('bg_about_mission') || setting('hero_about_media') || DEFAULT_HERO, url: address('/about') },
+      id: 'what',
+      navLabel: 'What gets built',
+      when: 'What you get',
+      title: 'Platforms your clients and your staff use every day',
+      intro: 'From the website people find you on to the system your staff log in to each morning, OKJTechnologies designs it, builds it and keeps it running.',
+      media: pic(0),
       steps: [
-        { title: 'Map everyone it touches', text: 'The client, the people who use it every day, regulators, partners and the community around it.' },
-        { title: 'Give each a reason to use it', text: setting('about_mission_text2', 'The platform is designed so each of those groups has a clear reason to use it and a clear benefit from it.') },
-        { title: 'Build in clear stages', text: 'Planning, interface design, engineering, launch and ongoing care, as one piece of work.' },
+        { title: 'Websites that bring in enquiries', text: 'Clear, fast sites that explain what you do and turn visits into conversations.' },
+        { title: 'Portals and dashboards', text: 'Places for your clients, staff or members to sign in, book, track and manage their work.' },
+        { title: 'Online stores and payments', text: 'Selling and ordering online, with M-Pesa, card and Paystack payments built in.' },
+        { title: 'Care after launch', text: 'Hosting, updates and fixes taken care of, so the platform keeps working as you grow.' },
       ],
-      tip: 'The method comes from the Afrilabs programme on ecosystem mapping in Addis Ababa.',
     },
-    ...categories.map((category) => ({
-      id: `experience-${category.key}`,
-      navLabel: category.label,
-      when: 'Experience',
-      title: category.label,
-      intro: setting('about_experience_subtitle', 'Selected work across the disciplines behind every OKJTechnologies project, each linked to the platform it shaped.'),
-      steps: (category.items ?? []).map((item) => ({ title: item.title, text: item.summary, to: item.href })),
-    })),
-    live(values).length > 0 && {
-      id: 'principles',
-      when: 'Every day',
-      title: 'Working principles',
-      intro: 'What every project is held to, from the first sketch to the platform in daily use.',
-      steps: live(values).map((v) => ({ title: v.title, text: v.description })),
+    sectors.length > 0 && {
+      id: 'who',
+      navLabel: 'Who it’s for',
+      when: `${sectors.length} sectors`,
+      title: 'Organisations that need their platform to work, every day',
+      intro: 'Clinics, law firms, builders, event companies, shops and nonprofits already run on platforms built here.',
+      media: { src: sectorPhoto(sectors[0]), url: address('/projects') },
+      steps: sectors.slice(0, 6).map((g) => ({
+        title: g.label,
+        text: names(g) ? `${names(g)}${g.projects.length > 3 ? ' and more' : ''}` : `${g.projects.length} ${g.projects.length === 1 ? 'platform' : 'platforms'}`,
+        to: `/projects#sector-${g.id}`,
+      })),
     },
     {
-      id: 'studio',
-      when: 'Who you work with',
-      title: setting('about_team_title', 'One continuous thread, from concept to live platform'),
-      intro: setting('about_team_subtitle', 'Every project is designed, built, launched and supported as one continuous piece of work, with a single point of accountability from start to finish.'),
-      media: live(team).find((m) => m.image) ? { src: live(team).find((m) => m.image).image, url: address('/about#studio') } : { src: setting('bg_about_team'), url: address('/about#studio') },
-      steps: live(team).map((m) => ({ title: `${m.name} · ${m.role}`, text: clip(m.bio, 180) })),
-      tip: 'There are no hand-offs between teams, so no context is lost between stages.',
+      id: 'how',
+      navLabel: 'Working together',
+      when: 'Four steps',
+      title: 'How working together goes',
+      intro: 'Simple from the first message to launch day, with one point of contact throughout.',
+      media: pic(1),
+      steps: [
+        { title: 'Share what you need', text: 'A short brief or a call is enough to start.' },
+        { title: 'Get a clear proposal', text: 'Scope, timeline and cost in writing, usually within two business days.' },
+        { title: 'See it take shape', text: 'Review working screens as they are built, not only at the end.' },
+        { title: 'Launch, then keep improving', text: 'Your platform goes live, your staff learn to use it, and support carries on.' },
+      ],
+      tip: 'The person you brief on day one is the person you speak to on launch day.',
+      tipLabel: 'Good to know',
+    },
+    {
+      id: 'why',
+      navLabel: 'Why OKJTech',
+      when: 'Why clients choose OKJTech',
+      title: 'Built well, explained plainly, looked after',
+      media: pic(2),
+      steps: [
+        { title: 'Design and engineering in one place', text: 'No hand-offs between agencies, so nothing is lost between the look and the build.' },
+        { title: 'Made for how people here use the web', text: 'Quick on mobile data, easy on a phone, with local payments ready.' },
+        { title: 'Proven across sectors', text: `${work.length} platforms for ${live(clients).length || sectors.length} organisations, from clinics to law firms.` },
+        { title: 'Still here after launch', text: 'The studio that built your platform keeps looking after it.' },
+      ],
+      tip: quote ? `“${clip(quote.quote, 220)}” — ${[quote.name, quote.company].filter(Boolean).join(', ')}` : undefined,
+      tipLabel: 'In a client’s words',
+    },
+    people.length > 0 && {
+      id: 'people',
+      navLabel: 'Who you’ll work with',
+      when: 'People',
+      title: 'Who you’ll work with',
+      media: people.find((m) => m.image) ? { src: people.find((m) => m.image).image, url: address('/about#people') } : undefined,
+      steps: people.map((m) => ({ title: m.name, text: m.role })),
     },
   ].filter(Boolean);
 
@@ -96,23 +100,24 @@ export default function About() {
     <JourneyPage
       hero={{
         media: setting('hero_about_media') || DEFAULT_HERO,
-        eyebrow: setting('about_tagline', 'How the work gets done'),
-        title: setting('about_title', 'Design-led web engineering,\nbuilt around the people it serves.'),
-        text: setting('about_story', 'OKJTechnologies is a web engineering studio in Nairobi. It takes projects from first idea to a live, supported platform.'),
+        eyebrow: 'About OKJTech',
+        title: 'Web platforms your\norganisation can run on.',
+        text: 'OKJTechnologies is a Nairobi studio that designs, builds and looks after websites, portals and online stores, so you can get on with your work.',
         breadcrumbs: [{ to: '/', label: 'Home' }, { label: 'About' }],
         cta: { to: '/contact', label: 'Start a Project' },
         secondary: { to: '/projects', label: 'See the Work' },
       }}
       glance={live(stats).slice(0, 4).map((s) => [s.value, s.label])}
-      label="The studio"
+      label="About"
       chapters={chapters}
       toolkit={{
-        eyebrow: 'The Approach',
-        title: 'The principles behind every build',
-        text: 'Each is a part of how the work is done. Open one to see what it means in practice.',
-        cards: live(pillars).slice(0, 4).map((p) => ({ to: `/our-approach/${p.slug}`, image: p.image, tags: ['Principle'], title: p.title, text: clip(p.overview, 140) })),
+        eyebrow: 'The work',
+        navLabel: 'The work',
+        title: 'See what has been built',
+        text: 'A few of the platforms in daily use. Each case study shows the problem, what was built and what changed.',
+        cards: pictured.slice(0, 4).map((p) => ({ to: `/projects/${p.slug}`, image: p.bg_image || p.image, tags: [p.type === 'flagship' ? 'Flagship' : p.client_name], title: p.title, text: p.tagline })),
       }}
-      onward={{ to: '/projects', image: flagship?.bg_image || flagship?.image, tags: ['The work'], title: 'Platforms people rely on every day', text: 'Case studies of the platforms designed, built and run for clients and as flagship products.' }}
+      onward={{ to: '/contact', tags: ['Next step'], title: 'Start with a short brief', text: 'A few lines about your project is enough. You’ll get a reply with next steps.' }}
     />
   );
 }
