@@ -1,34 +1,57 @@
-import { ImageCard, SiteLayout } from '@okjt/site';
-import PageHero from '../components/PageHero';
-import Section from '../components/Section';
-import { CardGridSkeleton, Empty, LoadError } from '../components/States';
-import { live, usePillars, useSettings } from '../lib/content';
+import JourneyPage from '../components/Journey';
+import { live, usePillars, useProjects, useServices, useSettings } from '../lib/content';
 import { DEFAULT_HERO } from '../lib/defaults';
+import { address, clip, listItems } from '../lib/text';
 
-const strip = (html) => String(html ?? '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-
+/** The principles, one chapter each, with the services built on them. */
 export default function Approach() {
   const { setting } = useSettings();
-  const { data, isLoading, isError } = usePillars();
+  const { data, isLoading } = usePillars();
+  const { data: services } = useServices();
+  const { data: projects } = useProjects();
   const pillars = live(data);
+  const flagship = live(projects).find((p) => p.type === 'flagship' && (p.bg_image || p.image));
+
+  const chapters = pillars.map((p, i) => ({
+    id: p.slug,
+    navLabel: p.title,
+    when: `Principle ${i + 1} of ${pillars.length}`,
+    title: p.title,
+    intro: clip(p.overview, 220),
+    body: listItems(p.content).length ? null : p.content,
+    media: p.image ? { src: p.image, url: address(`/our-approach/${p.slug}`) } : undefined,
+    steps: live(p.services).length
+      ? live(p.services).map((s) => ({ title: s.title, text: clip(s.description, 140), to: `/services/${s.slug}` }))
+      : listItems(p.content).map((item) => ({ title: item })),
+  }));
+
   return (
-    <SiteLayout overlay>
-      <PageHero
-        media={setting('hero_products_media') || DEFAULT_HERO}
-        eyebrow="Approach"
-        title="How the work <br />gets done."
-        text="Six principles guide every project, from the first sketch to a platform that keeps growing."
-        breadcrumbs={[{ to: '/', label: 'Home' }, { label: 'Our approach' }]}
-      />
-      <Section id="principles" eyebrow="Principles" title={setting('vp_section_title', 'One continuous build, concept to production')} text={setting('vp_section_subtitle')}>
-        {isLoading ? <CardGridSkeleton /> : isError ? <LoadError what="the approach" /> : pillars.length ? (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {pillars.map((p, i) => (
-              <ImageCard key={p.id} image={p.image} title={p.title} text={strip(p.overview).slice(0, 160)} tags={[String(i + 1).padStart(2, '0')]} to={`/our-approach/${p.slug}`} className="min-h-[26rem]" />
-            ))}
-          </div>
-        ) : <Empty>The principles will be listed here.</Empty>}
-      </Section>
-    </SiteLayout>
+    <JourneyPage
+      loading={isLoading}
+      hero={{
+        media: setting('hero_products_media') || DEFAULT_HERO,
+        eyebrow: 'Approach',
+        title: 'How the work <br />gets done.',
+        text: setting('vp_section_subtitle', 'Six principles guide every project, from the first sketch to a platform that keeps growing.'),
+        breadcrumbs: [{ to: '/', label: 'Home' }, { label: 'Our approach' }],
+        cta: { to: '/contact', label: 'Start a project' },
+        secondary: { to: '/services', label: 'Every service' },
+      }}
+      glance={[
+        [String(pillars.length), 'principles behind every build'],
+        [String(live(services).length), 'services built on them'],
+        ['1', 'team from brief to launch'],
+        ['0', 'hand-offs between stages'],
+      ]}
+      label="The principles"
+      chapters={chapters}
+      toolkit={{
+        eyebrow: 'In depth',
+        title: 'Each principle, on its own page',
+        text: 'Open one to read it in full, with the services that put it into practice.',
+        cards: pillars.slice(0, 4).map((p) => ({ to: `/our-approach/${p.slug}`, image: p.image, tags: ['Principle'], title: p.title, text: clip(p.overview, 140) })),
+      }}
+      onward={{ to: '/projects', image: flagship?.bg_image || flagship?.image, tags: ['The work'], title: 'See the principles at work', text: 'Platforms designed and built for clients across health, law, construction, events, commerce and nonprofits.' }}
+    />
   );
 }

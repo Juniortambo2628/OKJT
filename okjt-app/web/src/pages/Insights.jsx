@@ -1,63 +1,64 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowUpRight } from 'lucide-react';
-import { SiteLayout } from '@okjt/site';
-import PageHero from '../components/PageHero';
-import Section from '../components/Section';
-import MediaFill from '../components/MediaFill';
-import { CardGridSkeleton, Empty, LoadError } from '../components/States';
+import { useMemo } from 'react';
+import JourneyPage from '../components/Journey';
 import { formatDate, live, readingTime, useInsights, useSettings } from '../lib/content';
 import { DEFAULT_HERO } from '../lib/defaults';
+import { address, clip, slugify } from '../lib/text';
 
-const strip = (html) => String(html ?? '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-
-export function InsightCard({ insight }) {
-  return (
-    <Link to={`/insights/${insight.slug}`} className="group flex flex-col overflow-hidden rounded-[1.75rem] glass transition-colors hover:border-accent/50">
-      <div className="relative aspect-[16/10]"><MediaFill src={insight.image} /></div>
-      <div className="flex flex-1 flex-col p-6">
-        <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-accent">{insight.category || 'Insight'}</div>
-        <h3 className="mt-3 !font-display text-xl !font-normal leading-snug !text-ink">{insight.title}</h3>
-        <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-soft">{strip(insight.excerpt || insight.content)}</p>
-        <div className="mt-auto flex items-center justify-between pt-6 text-xs text-muted">
-          <span>{formatDate(insight.published_at || insight.created_at)} · {readingTime(insight.content)} min read</span>
-          <ArrowUpRight className="h-4 w-4 text-accent" aria-hidden="true" />
-        </div>
-      </div>
-    </Link>
-  );
-}
-
+/** The articles, a chapter per topic. */
 export default function Insights() {
   const { setting } = useSettings();
-  const { data, isLoading, isError } = useInsights();
-  const [category, setCategory] = useState('All');
+  const { data, isLoading } = useInsights();
   const list = live(data);
-  const categories = ['All', ...new Set(list.map((i) => i.category).filter(Boolean))];
-  const shown = category === 'All' ? list : list.filter((i) => i.category === category);
+  const topics = useMemo(() => {
+    const map = new Map();
+    for (const i of list) {
+      const title = i.category || 'Notes';
+      if (!map.has(title)) map.set(title, []);
+      map.get(title).push(i);
+    }
+    return [...map.entries()];
+  }, [list]);
+  const minutes = list.reduce((sum, i) => sum + readingTime(i.content), 0);
+
+  const chapters = topics.map(([title, items]) => {
+    const pictured = items.find((i) => i.image);
+    return {
+      id: slugify(title),
+      navLabel: title,
+      when: `${items.length} ${items.length === 1 ? 'article' : 'articles'}`,
+      title,
+      intro: clip(items[0].excerpt || items[0].content, 200),
+      media: pictured ? { src: pictured.image, url: address(`/insights/${pictured.slug}`) } : undefined,
+      steps: items.map((i) => ({ title: i.title, text: `${formatDate(i.published_at || i.created_at)} · ${readingTime(i.content)} min read`, to: `/insights/${i.slug}` })),
+    };
+  });
 
   return (
-    <SiteLayout overlay>
-      <PageHero
-        media={setting('hero_insights_media') || DEFAULT_HERO}
-        eyebrow="Insights"
-        title={setting('insights_title', 'Notes from the work')}
-        text={setting('insights_subtitle', 'Practical lessons from real projects in health, law, construction, events and commerce, written for the people who commission and run web platforms.')}
-        breadcrumbs={[{ to: '/', label: 'Home' }, { label: 'Insights' }]}
-      />
-      <Section id="articles">
-        {categories.length > 2 && (
-          <div role="group" aria-label="Topics" className="mb-8 flex flex-wrap gap-2">
-            {categories.map((c) => (
-              <button key={c} type="button" aria-pressed={category === c} onClick={() => setCategory(c)}
-                className={`rounded-full px-4 py-2 text-xs font-semibold transition-colors ${category === c ? 'bg-fill text-on-ink' : 'bg-surface text-soft hover:text-ink'}`}>{c}</button>
-            ))}
-          </div>
-        )}
-        {isLoading ? <CardGridSkeleton /> : isError ? <LoadError what="the insights" /> : shown.length ? (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{shown.map((i) => <InsightCard key={i.id} insight={i} />)}</div>
-        ) : <Empty>New notes are on the way.</Empty>}
-      </Section>
-    </SiteLayout>
+    <JourneyPage
+      loading={isLoading}
+      hero={{
+        media: setting('hero_insights_media') || DEFAULT_HERO,
+        eyebrow: 'Insights',
+        title: setting('insights_title', 'Notes from the work'),
+        text: setting('insights_subtitle', 'Practical lessons from real projects in health, law, construction, events and commerce, written for the people who commission and run web platforms.'),
+        breadcrumbs: [{ to: '/', label: 'Home' }, { label: 'Insights' }],
+        cta: list[0] ? { to: `/insights/${list[0].slug}`, label: 'Read the latest' } : undefined,
+        secondary: { to: '/projects', label: 'See the work' },
+      }}
+      glance={[
+        [String(list.length), list.length === 1 ? 'article' : 'articles'],
+        [String(topics.length), topics.length === 1 ? 'topic' : 'topics'],
+        [`${minutes} min`, 'of reading'],
+        [list[0] ? formatDate(list[0].published_at || list[0].created_at).replace(/^\d+ /, '') : '—', 'latest note'],
+      ]}
+      label="Topics"
+      chapters={chapters}
+      toolkit={{
+        eyebrow: 'Latest',
+        title: 'The newest notes',
+        cards: list.slice(0, 4).map((i) => ({ to: `/insights/${i.slug}`, image: i.image, tags: [i.category], title: i.title, text: clip(i.excerpt || i.content, 140) })),
+      }}
+      onward={{ to: '/contact', tags: ['Next step'], title: 'Have a platform in mind?', text: 'Share a short brief. Every brief receives a reply with next steps.' }}
+    />
   );
 }

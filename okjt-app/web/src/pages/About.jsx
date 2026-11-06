@@ -1,21 +1,9 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowUpRight, Linkedin } from 'lucide-react';
-import { SectionNav, SiteLayout } from '@okjt/site';
-import PageHero from '../components/PageHero';
-import Section from '../components/Section';
-import MediaFill from '../components/MediaFill';
-import { live, useSettings, useTeam, useValues } from '../lib/content';
+import JourneyPage from '../components/Journey';
+import { live, usePillars, useProjects, useSettings, useStats, useTeam, useValues } from '../lib/content';
 import { DEFAULT_HERO } from '../lib/defaults';
+import { address, clip } from '../lib/text';
 
-const SECTIONS = [
-  { id: 'approach', label: 'Approach' },
-  { id: 'experience', label: 'Experience' },
-  { id: 'values', label: 'Values' },
-  { id: 'studio', label: 'Studio' },
-];
-
-const defaultCategories = [
+const DEFAULT_CATEGORIES = [
     {
         key: 'digital-policy',
         label: 'Digital Policy',
@@ -52,98 +40,79 @@ const defaultCategories = [
     },
 ]
 
+/** The studio's story, as a journey: approach, experience, principles, the team. */
 export default function About() {
   const { setting, json } = useSettings();
   const { data: team } = useTeam();
   const { data: values } = useValues();
-  const categories = (() => {
-    const configured = json('about_experience_categories', null);
-    return Array.isArray(configured) && configured.length ? configured : defaultCategories;
-  })();
-  const [active, setActive] = useState(null);
-  const current = categories.find((c) => c.key === active) ?? categories[0];
+  const { data: stats } = useStats();
+  const { data: pillars } = usePillars();
+  const { data: projects } = useProjects();
+  const configured = json('about_experience_categories', null);
+  const categories = Array.isArray(configured) && configured.length ? configured : DEFAULT_CATEGORIES;
+  const flagship = live(projects).find((p) => p.type === 'flagship' && (p.bg_image || p.image));
+
+  const chapters = [
+    {
+      id: 'approach',
+      when: 'Before anything is built',
+      title: setting('about_mission_title', 'Every stakeholder is mapped before anything is built.'),
+      intro: setting('about_mission_text1', 'Each project starts by mapping everyone the platform will touch: the client, the people who will use it every day, regulators, partners and the wider community.'),
+      media: { src: setting('bg_about_mission') || setting('hero_about_media') || DEFAULT_HERO, url: address('/about') },
+      steps: [
+        { title: 'Map everyone it touches', text: 'The client, the people who use it every day, regulators, partners and the community around it.' },
+        { title: 'Give each a reason to use it', text: setting('about_mission_text2', 'The platform is designed so each of those groups has a clear reason to use it and a clear benefit from it.') },
+        { title: 'Build in clear stages', text: 'Planning, interface design, engineering, launch and ongoing care, as one piece of work.' },
+      ],
+      tip: 'The method comes from the Afrilabs programme on ecosystem mapping in Addis Ababa.',
+    },
+    ...categories.map((category) => ({
+      id: `experience-${category.key}`,
+      navLabel: category.label,
+      when: 'Experience',
+      title: category.label,
+      intro: setting('about_experience_subtitle', 'Selected work across the disciplines behind every OKJTechnologies project, each linked to the platform it shaped.'),
+      steps: (category.items ?? []).map((item) => ({ title: item.title, text: item.summary, to: item.href })),
+    })),
+    live(values).length > 0 && {
+      id: 'principles',
+      when: 'Every day',
+      title: 'Working principles',
+      intro: 'What every project is held to, from the first sketch to the platform in daily use.',
+      steps: live(values).map((v) => ({ title: v.title, text: v.description })),
+    },
+    {
+      id: 'studio',
+      when: 'Who you work with',
+      title: setting('about_team_title', 'One continuous thread, from concept to live platform'),
+      intro: setting('about_team_subtitle', 'Every project is designed, built, launched and supported as one continuous piece of work, with a single point of accountability from start to finish.'),
+      media: live(team).find((m) => m.image) ? { src: live(team).find((m) => m.image).image, url: address('/about#studio') } : { src: setting('bg_about_team'), url: address('/about#studio') },
+      steps: live(team).map((m) => ({ title: `${m.name} · ${m.role}`, text: clip(m.bio, 180) })),
+      tip: 'There are no hand-offs between teams, so no context is lost between stages.',
+    },
+  ].filter(Boolean);
 
   return (
-    <SiteLayout overlay>
-      <PageHero
-        media={setting('hero_about_media') || DEFAULT_HERO}
-        eyebrow={setting('about_tagline', 'How the work gets done')}
-        title={setting('about_title', 'Design-led web engineering,\nbuilt around the people it serves.')}
-        text={setting('about_story', 'OKJTechnologies is a web engineering studio in Nairobi. It takes projects from first idea to a live, supported platform: planning, interface design, engineering, launch and ongoing administration. The work spans hospitals, law firms, construction teams, event companies, nonprofits and online stores.')}
-        breadcrumbs={[{ to: '/', label: 'Home' }, { label: 'About' }]}
-      />
-      <SectionNav sections={SECTIONS} label="On this page" />
-
-      <Section id="approach" media={setting('bg_about_mission')}>
-        <div className="grid gap-10 lg:grid-cols-12 lg:items-start">
-          <div className="lg:col-span-5">
-            <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-accent">Approach</div>
-            <h2 className="mt-3 !font-display text-4xl !font-light leading-tight tracking-tight !text-ink sm:text-5xl">{setting('about_mission_title', 'Every stakeholder is mapped before anything is built.')}</h2>
-          </div>
-          <div className="space-y-5 text-lg leading-relaxed text-body lg:col-span-7">
-            <p>{setting('about_mission_text1', 'Each project starts by mapping everyone the platform will touch: the client, the people who will use it every day, regulators, partners and the wider community.')}</p>
-            <p className="text-soft">{setting('about_mission_text2', 'The platform is then designed so each of those groups has a clear reason to use it and a clear benefit from it.')}</p>
-          </div>
-        </div>
-      </Section>
-
-      <Section id="experience" eyebrow="Experience" title={setting('about_experience_title', 'Where the experience comes from')} text={setting('about_experience_subtitle', 'Selected work across the disciplines behind every OKJTechnologies project, each linked to the platform it shaped.')}>
-        <div role="tablist" aria-label="Disciplines" className="mb-8 flex flex-wrap justify-center gap-2">
-          {categories.map((c) => (
-            <button key={c.key} type="button" role="tab" aria-selected={current?.key === c.key} onClick={() => setActive(c.key)}
-              className={`rounded-full px-4 py-2 text-xs font-semibold transition-colors ${current?.key === c.key ? 'bg-fill text-on-ink' : 'bg-surface text-soft hover:text-ink'}`}>{c.label}</button>
-          ))}
-        </div>
-        <div role="tabpanel" className="grid gap-5 md:grid-cols-2">
-          {(current?.items ?? []).map((item) => (
-            <Link key={item.title} to={item.href || '/projects'} className="group rounded-[1.75rem] glass p-7 transition-colors hover:border-accent/50">
-              <div className="flex items-center justify-between">
-                <span className="rounded-full bg-tone-100 px-3 py-1 text-[11px] font-semibold text-accent">{item.tag}</span>
-                <ArrowUpRight className="h-4 w-4 text-accent" aria-hidden="true" />
-              </div>
-              <h3 className="mt-5 !font-display text-2xl !font-normal !text-ink">{item.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-soft">{item.summary}</p>
-            </Link>
-          ))}
-        </div>
-      </Section>
-
-      {live(values).length > 0 && (
-        <Section id="values" media={setting('bg_about_values')} eyebrow="Values" title="Working principles">
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {live(values).map((v, i) => (
-              <div key={v.id} className="rounded-[1.75rem] glass p-7">
-                <div className="font-display text-sm text-accent">{String(i + 1).padStart(2, '0')}</div>
-                <h3 className="mt-3 !font-display text-xl !font-normal !text-ink">{v.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-soft">{v.description}</p>
-              </div>
-            ))}
-          </div>
-        </Section>
-      )}
-
-      <Section id="studio" media={setting('bg_about_team')} eyebrow="Studio" title={setting('about_team_title', 'One continuous thread, from concept to live platform')} text={setting('about_team_subtitle', 'Every project is designed, built, launched and supported as one continuous piece of work.')}>
-        {live(team).length > 0 && (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {live(team).map((m) => (
-              <div key={m.id} className="overflow-hidden rounded-[1.75rem] glass">
-                <div className="relative aspect-[4/3]"><MediaFill src={m.image} /></div>
-                <div className="p-6">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <h3 className="!font-display text-xl !font-normal !text-ink">{m.name}</h3>
-                      <div className="mt-1 text-xs font-semibold uppercase tracking-[0.15em] text-accent">{m.role}</div>
-                    </div>
-                    {m.linkedin && <a href={m.linkedin} target="_blank" rel="noopener noreferrer" aria-label={`${m.name} on LinkedIn`} className="rounded-full p-2 text-soft hover:bg-tone-100 hover:text-accent"><Linkedin className="h-4 w-4" /></a>}
-                  </div>
-                  {m.bio && <p className="mt-3 text-sm leading-relaxed text-soft">{m.bio}</p>}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </Section>
-    </SiteLayout>
+    <JourneyPage
+      hero={{
+        media: setting('hero_about_media') || DEFAULT_HERO,
+        eyebrow: setting('about_tagline', 'How the work gets done'),
+        title: setting('about_title', 'Design-led web engineering,\nbuilt around the people it serves.'),
+        text: setting('about_story', 'OKJTechnologies is a web engineering studio in Nairobi. It takes projects from first idea to a live, supported platform.'),
+        breadcrumbs: [{ to: '/', label: 'Home' }, { label: 'About' }],
+        cta: { to: '/contact', label: 'Start a project' },
+        secondary: { to: '/projects', label: 'See the work' },
+      }}
+      glance={live(stats).slice(0, 4).map((s) => [s.value, s.label])}
+      label="The studio"
+      chapters={chapters}
+      toolkit={{
+        eyebrow: 'The approach',
+        title: 'The principles behind every build',
+        text: 'Each is a part of how the work is done. Open one to see what it means in practice.',
+        cards: live(pillars).slice(0, 4).map((p) => ({ to: `/our-approach/${p.slug}`, image: p.image, tags: ['Principle'], title: p.title, text: clip(p.overview, 140) })),
+      }}
+      onward={{ to: '/projects', image: flagship?.bg_image || flagship?.image, tags: ['The work'], title: 'Platforms people rely on every day', text: 'Case studies of the platforms designed, built and run for clients and as flagship products.' }}
+    />
   );
 }
-

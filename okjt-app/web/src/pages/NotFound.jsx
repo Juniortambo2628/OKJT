@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { Container, PillLink, SiteLayout } from '@okjt/site';
+import PageHero from '../components/PageHero';
+import { DEFAULT_HERO } from '../lib/defaults';
 
 export default function NotFound() {
   useEffect(() => {
@@ -7,16 +9,30 @@ export default function NotFound() {
     document.querySelector('meta[name="robots"]')?.setAttribute('content', 'noindex, nofollow');
   }, []);
   return (
-    <SiteLayout cta={false}>
-      <Container className="py-32 text-center">
-        <div className="font-display text-[8rem] font-extralight leading-none text-accent/40 sm:text-[12rem]">404</div>
-        <h1 className="mt-4 !font-display text-4xl !font-light !text-ink">This page isn’t here.</h1>
-        <p className="mx-auto mt-4 max-w-md text-soft">It may have moved, or the address may have a typo.</p>
-        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-          <PillLink to="/">Go home</PillLink>
-          <PillLink to="/projects" variant="outline">See the work</PillLink>
-        </div>
-      </Container>
+    <SiteLayout overlay cta={false}>
+      <PageHero
+        media={DEFAULT_HERO}
+        eyebrow="404"
+        title="This page isn’t here."
+        text="It may have moved, or the address may have a typo."
+        after={(
+          <div className="glass-strong grid gap-4 rounded-[2rem] p-4 sm:p-5 md:grid-cols-3">
+            {[
+              ['/', 'Home', 'The studio, the approach and the work.'],
+              ['/projects', 'Projects', 'Platforms built for clients, by sector.'],
+              ['/contact', 'Contact', 'Share a brief and get a reply with next steps.'],
+            ].map(([to, label, text]) => (
+              <a key={to} href={to} className="rounded-3xl bg-paper/60 p-6 transition-colors hover:bg-tint">
+                <div className="!font-display text-2xl !font-normal text-ink">{label}</div>
+                <div className="mt-2 text-sm text-soft">{text}</div>
+              </a>
+            ))}
+          </div>
+        )}
+      >
+        <PillLink to="/" variant="dark" size="lg">Go home</PillLink>
+      </PageHero>
+      <Container className="py-16" />
     </SiteLayout>
   );
 }

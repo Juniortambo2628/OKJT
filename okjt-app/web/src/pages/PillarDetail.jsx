@@ -1,58 +1,65 @@
 import { useParams } from 'react-router-dom';
-import { ImageCard, PillLink, SiteLayout } from '@okjt/site';
-import PageHero from '../components/PageHero';
-import Section from '../components/Section';
-import Html from '../components/Html';
+import JourneyPage from '../components/Journey';
 import usePageMeta from '../components/usePageMeta';
-import { LoadError } from '../components/States';
 import { live, useItem, usePillars } from '../lib/content';
+import { address, clip, sectionsOf, slugify } from '../lib/text';
 import NotFound from './NotFound';
 
-const strip = (html) => String(html ?? '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-
+/** One principle: its text in chapters, then the services built on it. */
 export default function PillarDetail() {
   const { slug } = useParams();
-  const { data: pillar, isLoading, isError, error } = useItem(`/pillars/${slug}`);
+  const { data: pillar, isLoading, error } = useItem(`/pillars/${slug}`);
   const { data: all } = usePillars();
   usePageMeta(pillar?.title, pillar?.overview);
   if (error?.response?.status === 404) return <NotFound />;
   const others = live(all).filter((p) => p.id !== pillar?.id);
   const services = live(pillar?.services);
+  const parts = sectionsOf(pillar?.content || '');
+
+  const chapters = [
+    ...parts.map((part, i) => ({
+      id: part.title ? slugify(part.title) : 'principle',
+      when: i === 0 ? 'The principle' : undefined,
+      title: part.title || pillar?.title || '',
+      intro: i === 0 && !part.title ? clip(pillar?.overview, 240) : undefined,
+      body: part.body,
+      media: i === 0 && pillar?.image ? { src: pillar.image, url: address(`/our-approach/${slug}`) } : undefined,
+    })),
+    services.length > 0 && {
+      id: 'in-practice',
+      when: 'In practice',
+      title: `Services built on ${pillar?.title?.toLowerCase() || 'it'}`,
+      intro: 'Where this principle shows up in the work.',
+      steps: services.map((s) => ({ title: s.title, text: clip(s.description, 140), to: `/services/${s.slug}` })),
+    },
+  ].filter(Boolean);
+  if (pillar && !chapters.length) chapters.push({ id: 'principle', when: 'The principle', title: pillar.title, intro: pillar.overview, media: pillar.image ? { src: pillar.image, url: address(`/our-approach/${slug}`) } : undefined });
 
   return (
-    <SiteLayout overlay>
-      <PageHero
-        media={pillar?.image}
-        eyebrow="Approach"
-        title={pillar?.title || ''}
-        text={strip(pillar?.overview)}
-        breadcrumbs={[{ to: '/', label: 'Home' }, { to: '/our-approach', label: 'Our approach' }, { label: pillar?.title || '…' }]}
-      >
-        <PillLink to="/contact" variant="dark" size="lg">Start a project</PillLink>
-      </PageHero>
-      <Section id="principle">
-        {isLoading && <div className="h-64 animate-pulse rounded-[2rem] bg-surface" />}
-        {isError && <LoadError what="this principle" />}
-        {pillar && (
-          <article className="mx-auto max-w-3xl rounded-[2rem] glass p-6 text-[1.05rem] sm:p-12">
-            <Html html={pillar.content || pillar.overview} />
-          </article>
-        )}
-      </Section>
-      {services.length > 0 && (
-        <Section id="services" eyebrow="In practice" title="Services under this principle">
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {services.map((s) => <ImageCard key={s.id} image={s.image} title={s.title} text={strip(s.description).slice(0, 120)} to={`/services/${s.slug}`} />)}
-          </div>
-        </Section>
-      )}
-      {others.length > 0 && (
-        <Section id="more" eyebrow="Approach" title="The other principles">
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {others.map((p) => <ImageCard key={p.id} image={p.image} title={p.title} text={strip(p.overview).slice(0, 120)} to={`/our-approach/${p.slug}`} className="min-h-[18rem]" />)}
-          </div>
-        </Section>
-      )}
-    </SiteLayout>
+    <JourneyPage
+      loading={isLoading}
+      hero={{
+        media: pillar?.image,
+        eyebrow: 'Approach',
+        title: pillar?.title || '',
+        text: clip(pillar?.overview, 220),
+        breadcrumbs: [{ to: '/', label: 'Home' }, { to: '/our-approach', label: 'Our approach' }, { label: pillar?.title || '…' }],
+        cta: { to: '/contact', label: 'Start a project' },
+        secondary: { to: '/our-approach', label: 'All principles' },
+      }}
+      glance={pillar ? [
+        [String(live(all).findIndex((p) => p.id === pillar.id) + 1).padStart(2, '0'), `of ${live(all).length} principles`],
+        [String(services.length), services.length === 1 ? 'service built on it' : 'services built on it'],
+        ['1', 'team from brief to launch'],
+      ] : []}
+      label="The principle"
+      chapters={chapters}
+      toolkit={{
+        eyebrow: 'The other principles',
+        title: 'How the rest of the work gets done',
+        cards: others.slice(0, 4).map((p) => ({ to: `/our-approach/${p.slug}`, image: p.image, tags: ['Principle'], title: p.title, text: clip(p.overview, 140) })),
+      }}
+      onward={{ to: '/contact', tags: ['Next step'], title: 'Have a platform in mind?', text: 'Share a short brief. Every brief receives a reply with next steps.' }}
+    />
   );
 }

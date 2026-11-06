@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Cookie, FileText, Handshake, LifeBuoy, MapPin, ShieldCheck } from 'lucide-react';
-import { live, usePillars, useServices, useSettings } from './lib/content';
+import { live, usePillars, useProjects, useServices, useSettings } from './lib/content';
+import { bySector, sectorPhoto } from './lib/sectors';
 import { mediaUrl } from './lib/media';
 import { getToken } from './lib/api';
 import ServicesMega from './components/ServicesMega';
@@ -46,6 +47,7 @@ export function useSiteConfig() {
   const { setting } = useSettings();
   const { data: services } = useServices();
   const { data: pillars } = usePillars();
+  const { data: projects } = useProjects();
 
   return useMemo(() => {
     // Photos of the home page's tabbed sections (FeatureExplorer's `group-<id>`):
@@ -57,6 +59,7 @@ export function useSiteConfig() {
       const key = `group-cat-${categorySlug(svc.category)}`;
       groupPhotos[key] ||= svc.image || setting(`bg_services_${categorySlug(svc.category).replace(/-/g, '_')}`) || null;
     }
+    for (const group of bySector(live(projects).filter((p) => p.type !== 'flagship'))) groupPhotos[`group-sector-${group.id}`] = sectorPhoto(group);
     const logo = mediaUrl(setting('logo_dark', LOGO));
     const serviceLinks = live(services).slice(0, 6).map((s) => ({ to: `/services/${s.slug}`, label: s.title }));
     return {
@@ -161,5 +164,5 @@ export function useSiteConfig() {
         },
       },
     };
-  }, [setting, services, pillars]);
+  }, [setting, services, pillars, projects]);
 }

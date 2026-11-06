@@ -10,6 +10,7 @@ import { usePlaces, useSite } from './SiteProvider.js';
  * A list of feature groups on the left; the chosen one as a large photo card
  * on the right, with a glass summary, its key numbers and a product screen.
  * Each group's photo is the place `group-<id>`; its link goes to `href(group)`.
+ * `countLabel` is a word, or `(count) => word` for singular and plural.
  */
 export default function FeatureExplorer({
   groups, href = (group) => `/features#${group.id}`, linkLabel = 'See every detail', countLabel = 'tools', label = 'Feature areas',
@@ -35,7 +36,7 @@ export default function FeatureExplorer({
             >
               {selected && <motion.span layoutId="explorer-bar" className="absolute -left-px top-0 hidden h-full w-0.5 bg-ink lg:block" />}
               <span className="block whitespace-nowrap text-sm font-semibold lg:text-base lg:font-medium">{group.eyebrow}</span>
-              {group.features?.length > 0 && <span className="hidden text-xs text-faint lg:block">{group.features.length} {countLabel}</span>}
+              {group.features?.length > 0 && <span className="hidden text-xs text-faint lg:block">{group.features.length} {typeof countLabel === 'function' ? countLabel(group.features.length) : countLabel}</span>}
             </button>
           );
         })}
@@ -53,9 +54,9 @@ export default function FeatureExplorer({
             className="group relative isolate flex min-h-[34rem] flex-col justify-between overflow-hidden rounded-[2rem] p-4 sm:p-6 lg:min-h-[38rem]"
           >
             <Photo image={place(`group-${active.id}`)} className="-z-10" />
-            <div className="absolute inset-0 -z-10 bg-gradient-to-t from-ink-deep/85 via-ink-deep/10 to-ink-deep/10" />
+            <div className="okjt-card-shade absolute inset-0 -z-10 bg-gradient-to-t from-ink-deep/85 via-ink-deep/10 to-ink-deep/10" />
 
-            <div className="max-w-sm rounded-3xl border border-surface/50 bg-surface/75 p-6 shadow-xl backdrop-blur-xl">
+            <div className="okjt-card max-w-sm rounded-3xl border border-surface/50 bg-surface/75 p-6 shadow-xl backdrop-blur-xl">
               <h3 className="!font-display text-2xl !font-normal tracking-tight !text-ink">{active.title}</h3>
               <div className="mt-3 text-sm leading-relaxed text-body">{active.summary}</div>
               <Link to={href(active)} className="mt-5 inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-[0.15em] text-ink hover:text-accent">

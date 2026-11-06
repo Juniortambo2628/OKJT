@@ -32,7 +32,7 @@ function useScrollToHash() {
 export default function SiteLayout({ overlay = false, cta = true, children }) {
   useScrollToHash();
   return (
-    <div className="min-h-dvh bg-tint font-sans text-ink antialiased">
+    <div className="okjt-site min-h-dvh bg-tint font-sans text-ink antialiased">
       <Seo />
       <SiteNav overlay={overlay} />
       <main className={overlay ? '' : 'pt-24'}>{children}</main>

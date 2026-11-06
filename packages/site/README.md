@@ -122,5 +122,12 @@ Any path not in `seo.pages` (and not resolved) gets the defaults and `noindex`.
 Dark public pages: swap the theme's light and dark tokens and set `surface`,
 `onInk` and `panel` (see `packages/UPGRADING.md`, site 0.2.0).
 
+Class hooks for a project's CSS: `.okjt-site` (the page behind everything,
+e.g. a gradient or texture), `.okjt-card-shade` (the shade over photos on
+ImageCard and FeatureExplorer, e.g. darker for contrast), `.okjt-photo`
+(a photo's loading or failed state), `.okjt-card` (cards on the page: the
+explorer's summary, questions, a legal document, e.g. to give them their own
+colours).
+
 Headings inside the kit's components carry `!` on their font and colour, so a
 host app's own global `h1`–`h3` styles don't change them.

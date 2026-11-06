@@ -17,7 +17,7 @@ export default function ImageCard({
       className={`group relative isolate flex flex-col justify-end overflow-hidden rounded-[1.75rem] p-6 text-white shadow-[0_30px_60px_-35px_color-mix(in_srgb,var(--okjt-shadow,var(--color-ink))_70%,transparent)] sm:p-8 ${className}`}
     >
       <Photo image={image} position={position} className="-z-10" />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-ink-deep/85 via-ink-deep/25 to-transparent" />
+      <div className="okjt-card-shade absolute inset-0 -z-10 bg-gradient-to-t from-ink-deep/85 via-ink-deep/25 to-transparent" />
       {to && (
         <span className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-full bg-white/15 backdrop-blur transition-colors group-hover:bg-surface group-hover:text-ink" aria-hidden="true">
           <ArrowUpRight className="h-4 w-4" />

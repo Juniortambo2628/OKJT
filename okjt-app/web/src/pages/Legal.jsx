@@ -1,36 +1,78 @@
-import { useMemo } from 'react';
-import { LegalPage, SiteLayout, Container } from '@okjt/site';
-import Html from '../components/Html';
-import { useSettings } from '../lib/content';
+import { useEffect } from 'react';
+import JourneyPage from '../components/Journey';
+import { useContact, useSettings } from '../lib/content';
+import { DEFAULT_HERO } from '../lib/defaults';
+import { clip, sectionsOf, slugify } from '../lib/text';
 
-const slug = (text, i) => `${String(text).toLowerCase().replace(/<[^>]+>/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'section'}-${i + 1}`;
+const DOCUMENTS = [
+  { to: '/privacy', key: 'privacy_policy', title: 'Privacy policy', text: 'What the site collects, why, and the choices you have.' },
+  { to: '/terms', key: 'terms_of_service', title: 'Terms of service', text: 'The terms for using the site and its services.' },
+  { to: '/cookies', key: 'cookie_policy', title: 'Cookie policy', text: 'What is kept in your browser, and how to change your choice.' },
+];
 
-/**
- * A legal document written in the dashboard (Settings → Legal) as HTML,
- * cut at its headings into the kit's numbered sections.
- */
-function split(html) {
-  // Sections are the top-level headings (h2, or h3 when there are no h2s);
-  // smaller headings stay inside their section.
-  const level = /<h2[\s>]/i.test(html) ? 2 : 3;
-  const parts = String(html).split(new RegExp(`<h${level}[^>]*>([\\s\\S]*?)<\\/h${level}>`, 'i'));
-  const intro = parts[0];
-  const sections = [];
-  for (let i = 1; i < parts.length; i += 2) {
-    // The kit numbers the sections, so drop numbers written into the heading ("1.", "5.2").
-    const title = parts[i].replace(/<[^>]+>/g, '').trim().replace(/^\d+(\.\d+)*\.?\s+/, '');
-    sections.push({ id: slug(title, sections.length), title, body: <Html html={parts[i + 1]} /> });
-  }
-  return { intro, sections };
+/** Section headings may carry their own numbers ("1.", "5.2"); the chapters number themselves. */
+const unnumber = (title) => String(title).replace(/^\d+(\.\d+)*\.?\s+/, '');
+
+/** Rich text cut at h2, or at h3 when it has no h2s. */
+function sections(html) {
+  if (/<h2[\s>]/i.test(html)) return sectionsOf(html);
+  return sectionsOf(String(html).replace(/<(\/?)h3/gi, '<$1h2'));
 }
 
+/**
+ * A legal document written in the dashboard (Site settings → Legal
+ * documents), as a journey: each heading a chapter, the other documents
+ * as the toolkit.
+ */
 export default function Legal({ title, settingKey }) {
   const { setting, isLoading } = useSettings();
+  const contact = useContact();
   const html = setting(settingKey);
-  const doc = useMemo(() => split(html), [html]);
-  if (isLoading) return <SiteLayout cta={false}><Container className="py-32"><div className="h-64 animate-pulse rounded-[2rem] bg-surface" /></Container></SiteLayout>;
-  if (!html) {
-    return <LegalPage title={title} intro={<p>This document is being updated. Please check back shortly, or contact us with any questions.</p>} sections={[]} />;
-  }
-  return <LegalPage title={title} intro={<Html html={doc.intro} />} sections={doc.sections} />;
+  const updated = setting('legal_last_updated', '2026-03-01');
+  const parts = html ? sections(html) : [];
+  const words = String(html).replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
+  const ownTitle = DOCUMENTS.find((d) => d.key === settingKey);
+
+  useEffect(() => { document.querySelector('meta[name="robots"]')?.setAttribute('content', 'index, follow'); }, []);
+
+  const chapters = html ? parts.map((part, i) => ({
+    id: part.title ? slugify(unnumber(part.title)) : 'introduction',
+    navLabel: part.title ? unnumber(part.title) : 'Introduction',
+    when: i === 0 ? title : undefined,
+    title: part.title ? unnumber(part.title) : 'Introduction',
+    body: part.body,
+  })) : [{
+    id: 'updating',
+    when: title,
+    title: 'This document is being updated',
+    intro: `Please check back shortly. Questions in the meantime: ${contact.email}.`,
+  }];
+
+  return (
+    <JourneyPage
+      loading={isLoading}
+      hero={{
+        media: setting('hero_legal_media') || DEFAULT_HERO,
+        eyebrow: 'Legal',
+        title,
+        text: ownTitle?.text,
+        breadcrumbs: [{ to: '/', label: 'Home' }, { label: title }],
+      }}
+      glance={[
+        [new Date(`${updated}T00:00:00`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }), 'last updated'],
+        [String(parts.filter((p) => p.title).length || 1), 'sections'],
+        [`${Math.max(1, Math.round(words / 220))} min`, 'to read'],
+        [contact.email, 'questions'],
+      ]}
+      label="Contents"
+      chapters={chapters}
+      toolkit={{
+        eyebrow: 'Legal',
+        navLabel: 'Other documents',
+        title: 'The other documents',
+        cards: DOCUMENTS.filter((d) => d.key !== settingKey).map((d) => ({ to: d.to, tags: ['Legal'], title: d.title, text: clip(d.text, 140) })),
+      }}
+      faqs={false}
+    />
+  );
 }
