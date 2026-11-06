@@ -6,15 +6,15 @@ import {
 } from '@okjt/site';
 import PageHero, { lines } from '../components/PageHero';
 import { CardGridSkeleton, Empty } from '../components/States';
-import { categorySlug } from '../site.config';
-import { formatDate, live, useInsights, usePillars, useProjects, useServices, useSettings, useStats } from '../lib/content';
+import { bySector } from '../lib/sectors';
+import { formatDate, live, useInsights, usePillars, useProjects, useSettings, useStats } from '../lib/content';
 import { DEFAULT_HERO } from '../lib/defaults';
 
 /** The bar of sections under the hero. */
 const SECTIONS = [
   { id: 'approach', label: 'The approach' },
-  { id: 'capabilities', label: 'Capabilities' },
-  { id: 'work', label: 'The work' },
+  { id: 'work', label: 'Work by sector' },
+  { id: 'flagship', label: 'Flagship products' },
   { id: 'insights', label: 'Insights' },
 ];
 
@@ -145,53 +145,63 @@ function ApproachExplorer() {
   });
   if (isLoading) return <CardGridSkeleton count={2} className="lg:grid-cols-[1fr_3fr]" />;
   if (!groups.length) return <Empty>The principles will be listed here.</Empty>;
-  return <FeatureExplorer groups={groups} href={(g) => `/our-approach/${g.slug}`} linkLabel="Read the principle" countLabel="services" label="Principles" />;
+  return <FeatureExplorer groups={groups} href={(g) => `/our-approach/${g.slug}`} linkLabel="Read the principle" countLabel={(n) => (n === 1 ? 'service' : 'services')} label="Principles" />;
 }
 
-/** The services, grouped by category, as Naoa's tabbed explorer. */
-function CapabilitiesExplorer() {
-  const { data, isLoading } = useServices();
-  const groups = useMemo(() => {
-    const map = new Map();
-    for (const s of live(data)) {
-      const id = `cat-${categorySlug(s.category)}`;
-      if (!map.has(id)) map.set(id, { id, category: s.category || 'Services', items: [] });
-      map.get(id).items.push(s);
-    }
-    return [...map.values()].map((g) => ({
-      id: g.id,
-      category: g.category,
-      eyebrow: g.category,
-      title: g.items[0] ? firstSentence(g.items[0].description) || g.category : g.category,
-      summary: <LinkList items={g.items.map((s) => ({ to: `/services/${s.slug}`, label: s.title }))} more={g.items.length > 5 && <div className="mt-2 px-3 text-xs text-muted">and {g.items.length - 5} more</div>} />,
-      features: g.items,
-      stats: [[String(g.items.length), g.items.length === 1 ? 'service' : 'services'], ['End to end', 'design to launch'], ['Nairobi', 'designed and built']],
-    }));
-  }, [data]);
-  if (isLoading) return <CardGridSkeleton count={2} className="lg:grid-cols-[1fr_3fr]" />;
-  if (!groups.length) return <Empty>The services will be listed here.</Empty>;
-  return <FeatureExplorer groups={groups} href={(g) => `/services?category=${encodeURIComponent(g.category)}`} linkLabel="See these services" countLabel="services" label="Service categories" />;
-}
-
-/** Two large photo cards and a wide one: the latest client work and products. */
-function Work() {
+/** Client projects grouped by sector, as Naoa's tabbed explorer. */
+function SectorExplorer() {
   const { data, isLoading } = useProjects();
-  const projects = live(data);
-  const client = projects.filter((p) => p.type !== 'flagship');
-  const picks = [...client.filter((p) => p.is_featured), ...client.filter((p) => !p.is_featured)].slice(0, 3);
+  const groups = useMemo(() => bySector(live(data).filter((p) => p.type !== 'flagship')).map((g) => {
+    const clients = new Set(g.projects.map((p) => p.client_name || p.title));
+    return {
+      id: `sector-${g.id}`,
+      sector: g.id,
+      eyebrow: g.label,
+      title: g.line,
+      summary: (
+        <LinkList
+          items={g.projects.map((p) => ({ to: `/projects/${p.slug}`, label: p.client_name && !p.title.includes(p.client_name) ? `${p.title} · ${p.client_name}` : p.title }))}
+          more={g.projects.length > 5 && <div className="mt-2 px-3 text-xs text-muted">and {g.projects.length - 5} more</div>}
+        />
+      ),
+      features: g.projects,
+      stats: [
+        [String(g.projects.length), g.projects.length === 1 ? 'platform built' : 'platforms built'],
+        [String(clients.size), clients.size === 1 ? 'organisation served' : 'organisations served'],
+        ['Live', 'in daily use'],
+      ],
+    };
+  }), [data]);
+  if (isLoading) return <CardGridSkeleton count={2} className="lg:grid-cols-[1fr_3fr]" />;
+  if (!groups.length) return <Empty>Projects will be listed here.</Empty>;
+  return <FeatureExplorer groups={groups} href={(g) => `/projects?sector=${g.sector}#clients`} linkLabel="See the sector’s work" countLabel={(n) => (n === 1 ? 'project' : 'projects')} label="Sectors" />;
+}
+
+/** The products OKJTechnologies builds and runs itself: one wide, the rest in pairs. */
+function Flagships() {
+  const { data, isLoading } = useProjects();
+  const flagships = live(data).filter((p) => p.type === 'flagship');
   if (isLoading) return <CardGridSkeleton count={2} className="lg:grid-cols-2" />;
-  if (!picks.length) return <Empty>Projects will be listed here.</Empty>;
-  const [a, b, c] = picks;
-  const card = (p, className) => (
-    <ImageCard key={p.id} to={`/projects/${p.slug}`} image={p.bg_image || p.image} tags={[p.client_name, p.category].filter(Boolean).slice(0, 2)} title={p.title} text={p.tagline} className={className} titleClass="text-3xl sm:text-5xl" />
+  if (!flagships.length) return <Empty>Flagship products will be listed here.</Empty>;
+  const [lead, ...rest] = [...flagships.filter((p) => p.is_featured), ...flagships.filter((p) => !p.is_featured)];
+  const card = (p, className, titleClass = 'text-3xl sm:text-4xl') => (
+    <ImageCard
+      key={p.id}
+      to={`/projects/${p.slug}`}
+      image={p.bg_image || p.image}
+      tags={['Flagship', p.category?.split(/[,/]/)[0]?.trim()].filter(Boolean)}
+      title={p.title}
+      text={p.tagline}
+      className={className}
+      titleClass={titleClass}
+    >
+      {p.significant_figure && <div className="mt-4 font-display text-2xl font-extralight text-accent">{p.significant_figure}</div>}
+    </ImageCard>
   );
   return (
     <>
-      <div className="grid gap-5 lg:grid-cols-2">
-        {card(a, 'min-h-[30rem]')}
-        {b && card(b, 'min-h-[30rem]')}
-      </div>
-      {c && card(c, 'mt-5 min-h-[24rem]')}
+      {card(lead, 'min-h-[30rem]', 'text-3xl sm:text-5xl')}
+      {rest.length > 0 && <div className="mt-5 grid gap-5 md:grid-cols-2 lg:grid-cols-3">{rest.map((p) => card(p, 'min-h-[22rem]', 'text-2xl sm:text-3xl'))}</div>}
     </>
   );
 }
@@ -237,23 +247,28 @@ export default function Home() {
         </Container>
       </section>
 
-      <section id="capabilities" className={`${SECTION_OFFSET} pt-24`}>
+      <section id="work" className={`${SECTION_OFFSET} pt-24`}>
         <Container>
           <SectionHeading
-            eyebrow={setting('services_tagline', 'Services')}
-            title={setting('services_title', 'Tailored technical capabilities')}
-            text="Pick an area to see the services in it, then read every detail."
+            eyebrow="The work"
+            title={setting('work_title', 'Web applications, designed and built end to end')}
+            text="Pick a sector to see the platforms built for it, then read each case study."
           />
-          <div className="mt-14"><CapabilitiesExplorer /></div>
-          <div className="mt-10 text-center"><PillLink to="/services" variant="outline" arrow>All services</PillLink></div>
+          <div className="mt-14"><SectorExplorer /></div>
+          <div className="mt-10 text-center"><PillLink to="/projects" variant="outline" arrow>Every project</PillLink></div>
         </Container>
       </section>
 
-      <section id="work" className={`${SECTION_OFFSET} pt-24`}>
+      <section id="flagship" className={`${SECTION_OFFSET} pt-24`}>
         <Container>
-          <SectionHeading eyebrow="The work" title="Platforms people rely on every day" />
-          <div className="mt-14"><Work /></div>
-          <div className="mt-10 text-center"><PillLink to="/projects" variant="outline" arrow>Every project</PillLink></div>
+          <div className="mb-14 grid gap-6 lg:grid-cols-2 lg:items-end">
+            <SectionHeading align="left" eyebrow="Flagship products" title="Built and run by OKJTechnologies" className="!max-w-none" />
+            <div className="lg:pb-2">
+              <p className="max-w-md text-soft">Products of our own, each designed around a whole ecosystem of people: the users, the businesses beside them and the community they serve.</p>
+              <PillLink to="/projects/flagship" variant="outline" className="mt-6" arrow>How flagship products are built</PillLink>
+            </div>
+          </div>
+          <Flagships />
         </Container>
       </section>
 

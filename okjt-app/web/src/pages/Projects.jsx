@@ -1,4 +1,6 @@
+import { useSearchParams } from 'react-router-dom';
 import { ImageCard, SectionNav, SiteLayout, PillLink } from '@okjt/site';
+import { bySector } from '../lib/sectors';
 import PageHero from '../components/PageHero';
 import Section from '../components/Section';
 import { CardGridSkeleton, Empty, LoadError } from '../components/States';
@@ -13,7 +15,7 @@ export function ProjectCard({ project }) {
       image={project.bg_image || project.image}
       title={project.title}
       text={project.tagline || strip(project.description).slice(0, 120)}
-      tags={[project.type === 'flagship' ? 'Flagship' : project.client_name, project.category].filter(Boolean).slice(0, 2)}
+      tags={[project.type === 'flagship' ? 'Flagship' : project.client_name, project.category?.split(/[,/]/)[0]?.trim()].filter(Boolean).slice(0, 2)}
       to={`/projects/${project.slug}`}
     />
   );
@@ -26,6 +28,11 @@ export default function Projects({ flagship = false }) {
   const all = live(data);
   const products = all.filter((p) => p.type === 'flagship');
   const clients = all.filter((p) => p.type !== 'flagship');
+  const sectors = bySector(clients);
+  const [params, setParams] = useSearchParams();
+  const chosen = sectors.find((g) => g.id === params.get('sector'));
+  const shownSectors = chosen ? [chosen] : sectors;
+  const choose = (id) => setParams(id ? { sector: id } : {}, { replace: true, preventScrollReset: true });
 
   return (
     <SiteLayout overlay>
@@ -63,9 +70,32 @@ export default function Projects({ flagship = false }) {
           </ol>
         </Section>
       ) : (
-        <Section id="clients" eyebrow="Client work" title="Client projects" text="Platforms designed and built for client organisations." align="left">
+        <Section id="clients" eyebrow="Client work" title="Client projects by sector" text="Platforms designed and built for client organisations." align="left">
+          {sectors.length > 1 && (
+            <div role="group" aria-label="Sectors" className="mb-10 flex flex-wrap gap-2">
+              {[{ id: '', label: 'All sectors', projects: clients }, ...sectors].map((g) => {
+                const active = (chosen?.id || '') === g.id;
+                return (
+                  <button key={g.id || 'all'} type="button" aria-pressed={active} onClick={() => choose(g.id)}
+                    className={`rounded-full px-4 py-2 text-xs font-semibold transition-colors ${active ? 'bg-fill text-on-ink' : 'glass text-soft hover:text-ink'}`}>
+                    {g.label} <span className="opacity-60">{g.projects.length}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
           {isLoading ? <CardGridSkeleton /> : clients.length ? (
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{clients.map((p) => <ProjectCard key={p.id} project={p} />)}</div>
+            <div className="space-y-14">
+              {shownSectors.map((g) => (
+                <div key={g.id}>
+                  <div className="mb-5 flex flex-wrap items-baseline justify-between gap-2 border-b border-line pb-3">
+                    <h3 className="!font-display text-2xl !font-light !text-ink">{g.label}</h3>
+                    <p className="text-sm text-muted">{g.line}</p>
+                  </div>
+                  <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{g.projects.map((p) => <ProjectCard key={p.id} project={p} />)}</div>
+                </div>
+              ))}
+            </div>
           ) : <Empty>Client projects will be listed here.</Empty>}
         </Section>
       )}
