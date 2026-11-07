@@ -56,7 +56,7 @@ function Editor({ resource, record, onClose, onSaved }) {
         </div>
         <div className="grid flex-1 content-start gap-5 overflow-y-auto px-6 py-6 sm:grid-cols-2">
           {resource.fields.map((field) => (
-            <div key={field.key} className={field.wide || ['rich', 'image', 'media'].includes(field.type) ? 'sm:col-span-2' : ''}>
+            <div key={field.key} className={field.wide || ['rich', 'image', 'media', 'gallery'].includes(field.type) ? 'sm:col-span-2' : ''}>
               <Field field={field} value={form[field.key]} onChange={(v) => setForm((f) => ({ ...f, [field.key]: v }))} pillars={unwrap(pillars.data) ?? []} />
             </div>
           ))}

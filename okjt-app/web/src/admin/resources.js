@@ -34,7 +34,7 @@ export const RESOURCES = {
       { key: 'image', label: 'Card image', type: 'image' },
       { key: 'bg_image', label: 'Hero image', type: 'image' },
       { key: 'logo', label: 'Logo', type: 'image', hint: 'Flagship products: shown white in the home page’s logo carousel. A transparent PNG or SVG works best.' },
-      { key: 'gallery', label: 'Gallery (image addresses)', type: 'list', wide: true, hint: 'Comma-separated; pick from the Media library and paste the address' },
+      { key: 'gallery', label: 'Gallery', type: 'gallery', wide: true, hint: 'Shown in the project’s gallery, in this order.' },
       { key: 'is_featured', label: 'Featured on Client impact', type: 'switch' },
       { key: 'is_active', label: 'Live on the website', type: 'switch' },
     ],
