@@ -39,7 +39,8 @@ export function MediaPicker({ open, onClose, onPick, accept = 'image', multiple 
           <h2 className="text-lg font-medium text-ink">{multiple ? 'Choose pictures from the media library' : 'Choose from the media library'}</h2>
           <button type="button" onClick={onClose} aria-label="Close" className="rounded-lg p-1 text-tone-400 hover:bg-tone-100"><X className="h-5 w-5" /></button>
         </div>
-        <div className="grid flex-1 grid-cols-2 gap-3 overflow-y-auto p-5 sm:grid-cols-3 md:grid-cols-4">
+        <div className="min-h-0 flex-1 overflow-y-auto">
+        <div className="grid grid-cols-2 content-start gap-3 p-5 sm:grid-cols-3 md:grid-cols-4">
           {isLoading && <p className="col-span-full text-sm text-tone-500">Loading…</p>}
           {!isLoading && !files.length && <p className="col-span-full text-sm text-tone-500">Nothing uploaded yet.</p>}
           {files.map((f) => (
@@ -54,6 +55,7 @@ export function MediaPicker({ open, onClose, onPick, accept = 'image', multiple 
               <div className="truncate px-2 py-1.5 text-xs text-tone-600">{f.filename}</div>
             </button>
           ))}
+        </div>
         </div>
         {multiple && (
           <div className="flex items-center justify-between gap-3 border-t border-tone-100 px-5 py-3">
