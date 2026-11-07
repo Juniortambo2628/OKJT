@@ -92,7 +92,7 @@ function Facts() {
           {stats.map((stat) => (
             <div key={stat.id} className="flex flex-col-reverse justify-end bg-tint p-6 sm:p-8">
               <dt className="mt-2 text-sm text-soft">{stat.label}{stat.description && <span className="mt-1 block text-xs text-muted">{stat.description}</span>}</dt>
-              <dd className="font-display text-5xl font-extralight tracking-tight text-ink sm:text-6xl">{stat.value}</dd>
+              <dd className="font-display text-4xl font-extralight tracking-tight text-ink sm:text-6xl">{stat.value}</dd>
             </div>
           ))}
         </dl>

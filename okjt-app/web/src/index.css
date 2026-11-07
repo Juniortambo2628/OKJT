@@ -281,3 +281,9 @@ footer a:hover > img { filter: none; }
 .admin-theme fieldset:disabled :is(input, select, textarea, button, label) {
   cursor: not-allowed;
 }
+
+/* Responsive: grid columns may shrink below their content (long words,
+   address chips), and no page scrolls sideways on a phone. */
+.okjt-site { overflow-x: clip; }
+.okjt-site .grid > * { min-width: 0; }
+.okjt-site h1, .okjt-site h2, .okjt-site h3 { overflow-wrap: break-word; hyphens: manual; }

@@ -18,12 +18,12 @@ import Stack from './Stack';
 /** The page's numbers at a glance, overlapping the hero: [[value, label]]. */
 export function JourneyGlance({ glance }) {
   return (
-    <div className="glass-strong rounded-[2rem] p-6 sm:p-10">
-      <dl className={`grid grid-cols-2 gap-4 sm:gap-6 ${glance.length >= 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3'}`}>
+    <div className="glass-strong rounded-[1.75rem] p-3 sm:rounded-[2rem] sm:p-10">
+      <dl className={`grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-6 ${glance.length >= 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3'}`}>
         {glance.map(([value, label]) => (
-          <div key={label} className="flex flex-col-reverse justify-end rounded-2xl bg-paper/50 p-5">
-            <dt className="mt-1 text-sm text-soft">{label}</dt>
-            <dd className={`break-words font-display font-light tracking-tight text-ink ${String(value).length > 14 ? 'text-xl sm:text-2xl' : 'text-3xl sm:text-4xl'}`}>{value}</dd>
+          <div key={label} className="flex min-w-0 items-baseline justify-between gap-4 rounded-2xl bg-paper/50 px-4 py-3 sm:flex-col-reverse sm:items-stretch sm:justify-end sm:gap-0 sm:p-5">
+            <dt className="shrink-0 text-sm text-soft sm:mt-1">{label}</dt>
+            <dd className={`hyphens-none text-right font-display font-light leading-tight tracking-tight text-ink [overflow-wrap:normal] sm:text-left ${String(value).length > 10 ? 'text-lg sm:text-2xl' : 'text-2xl sm:text-4xl'}`}>{value}</dd>
           </div>
         ))}
       </dl>
@@ -34,12 +34,12 @@ export function JourneyGlance({ glance }) {
 /** A picture or clip in a browser frame, its address in the bar. */
 function Frame({ media }) {
   return (
-    <div className="glass overflow-hidden rounded-2xl">
+    <div className="glass min-w-0 overflow-hidden rounded-2xl">
       <div className="flex items-center gap-2 border-b border-line/70 px-4 py-2.5" aria-hidden="true">
         <span className="h-2.5 w-2.5 rounded-full bg-accent/50" />
         <span className="h-2.5 w-2.5 rounded-full bg-line-strong" />
         <span className="h-2.5 w-2.5 rounded-full bg-line-strong" />
-        <span className="ml-3 truncate rounded-full bg-paper/60 px-3 py-0.5 text-[11px] text-muted">{media.url || 'okjtech.co.ke'}</span>
+        <span className="ml-3 min-w-0 truncate rounded-full bg-paper/60 px-3 py-0.5 text-[11px] text-muted">{media.url || 'okjtech.co.ke'}</span>
       </div>
       <div className="relative aspect-[16/10]"><MediaFill src={media.src} /></div>
     </div>
@@ -56,14 +56,14 @@ export function JourneyChapter({ chapter, index, detailsLabel = 'The nitty-gritt
   const side = chapter.aside || (chapter.media && <Frame media={chapter.media} />);
   return (
     <article id={chapter.id} className={`${SECTION_OFFSET} grid gap-8 border-t border-line py-14 first:border-t-0 first:pt-0 lg:grid-cols-12 lg:gap-12 lg:py-16`}>
-      {side && <div className="lg:sticky lg:top-40 lg:col-span-7 lg:self-start">{side}</div>}
+      {side && <div className="min-w-0 lg:sticky lg:top-40 lg:col-span-7 lg:self-start">{side}</div>}
 
-      <div className={side ? 'lg:col-span-5' : 'lg:col-span-8 lg:col-start-3'}>
+      <div className={`min-w-0 ${side ? 'lg:col-span-5' : 'lg:col-span-8 lg:col-start-3'}`}>
         <div className="flex flex-wrap items-center gap-3">
           <span className="font-display text-4xl font-extralight text-accent-soft">{String(index + 1).padStart(2, '0')}</span>
           {chapter.when && <span className="rounded-full bg-fill px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.15em] text-on-ink">{chapter.when}</span>}
         </div>
-        <h2 className="mt-3 !font-display text-3xl !font-light tracking-tight !text-ink sm:text-4xl">{chapter.title}</h2>
+        <h2 className="mt-3 !font-display text-[1.75rem] !font-light leading-tight tracking-tight !text-ink [overflow-wrap:anywhere] sm:text-4xl">{chapter.title}</h2>
         {chapter.intro && <div className="mt-3 leading-relaxed text-soft">{chapter.intro}</div>}
         {chapter.body && <Html html={chapter.body} className="mt-5" />}
 
@@ -83,8 +83,8 @@ export function JourneyChapter({ chapter, index, detailsLabel = 'The nitty-gritt
               return (
                 <li key={`${step.title}-${i}`}>
                   {step.to
-                    ? <Link to={step.to} className="group flex gap-4 p-5 transition-colors hover:bg-paper/40">{inner}</Link>
-                    : <div className="flex gap-4 p-5">{inner}</div>}
+                    ? <Link to={step.to} className="group flex gap-3 p-4 transition-colors sm:gap-4 sm:p-5 hover:bg-paper/40">{inner}</Link>
+                    : <div className="flex gap-3 p-4 sm:gap-4 sm:p-5">{inner}</div>}
                 </li>
               );
             })}
