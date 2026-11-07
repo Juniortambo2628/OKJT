@@ -91,7 +91,7 @@ body {
 }
 .okjt-site-nav-solid { background: rgb(246 238 219 / 0.96); border-color: #e3d6b9; }
 .okjt-section-nav {
-  background: rgb(246 238 219 / 0.88);
+  background: rgb(231 218 189 / 0.94);
   -webkit-backdrop-filter: blur(18px) saturate(160%);
   backdrop-filter: blur(18px) saturate(160%);
   border-color: rgb(255 250 235 / 0.35);

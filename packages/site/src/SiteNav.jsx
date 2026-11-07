@@ -30,7 +30,7 @@ export default function SiteNav({ overlay = false }) {
     const set = () => root.style.setProperty('--okjt-nav-h', `${el.offsetHeight}px`);
     set();
     const observer = new ResizeObserver(set);
-    observer.observe(el);
+    observer.observe(el, { box: 'border-box' });
     return () => { observer.disconnect(); root.style.removeProperty('--okjt-nav-h'); };
   }, []);
 
