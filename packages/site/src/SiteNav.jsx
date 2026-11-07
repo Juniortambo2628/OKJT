@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { ChevronDown, Menu, X } from 'lucide-react';
 import { useSignedIn, useSite } from './SiteProvider.js';
@@ -19,6 +19,20 @@ export default function SiteNav({ overlay = false }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [mega, setMega] = useState(false);
+  const header = useRef(null);
+
+  // Publish the bar's height so sticky bars under it (SectionNav) sit flush
+  // below it instead of tucking their top under it.
+  useEffect(() => {
+    const el = header.current;
+    if (!el || typeof ResizeObserver === 'undefined') return undefined;
+    const root = document.documentElement;
+    const set = () => root.style.setProperty('--okjt-nav-h', `${el.offsetHeight}px`);
+    set();
+    const observer = new ResizeObserver(set);
+    observer.observe(el);
+    return () => { observer.disconnect(); root.style.removeProperty('--okjt-nav-h'); };
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -45,7 +59,7 @@ export default function SiteNav({ overlay = false }) {
   const isPage = (to) => !to.includes('#');
 
   return (
-    <header onMouseLeave={() => setMega(false)} className={`okjt-site-nav ${light ? 'okjt-site-nav-over' : 'okjt-site-nav-solid'} fixed inset-x-0 top-0 z-40 transition-all duration-300 ${light ? 'py-5' : 'border-b border-line/70 bg-tint/85 py-3 backdrop-blur-xl'}`}>
+    <header ref={header} onMouseLeave={() => setMega(false)} className={`okjt-site-nav ${light ? 'okjt-site-nav-over' : 'okjt-site-nav-solid'} fixed inset-x-0 top-0 z-40 transition-all duration-300 ${light ? 'py-5' : 'border-b border-line/70 bg-tint/85 py-3 backdrop-blur-xl'}`}>
       <Container className="flex items-center justify-between gap-4">
         <Logo light={light} />
 

@@ -108,9 +108,9 @@ function LinkList({ items, more }) {
       <ul className="mt-4 space-y-1.5">
         {items.slice(0, 5).map((item) => (
           <li key={item.to}>
-            <Link to={item.to} className="group/link flex items-center justify-between gap-3 rounded-xl px-3 py-2 text-sm text-ink transition-colors hover:bg-fill">
+            <Link to={item.to} className="group/link flex items-center justify-between gap-3 rounded-xl px-3 py-2 text-sm text-ink transition-colors hover:bg-fill hover:text-paper">
               <span className="truncate">{item.label}</span>
-              <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-accent opacity-60 group-hover/link:opacity-100" aria-hidden="true" />
+              <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-accent opacity-60 transition-colors group-hover/link:text-paper group-hover/link:opacity-100" aria-hidden="true" />
             </Link>
           </li>
         ))}

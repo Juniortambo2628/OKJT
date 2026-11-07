@@ -24,9 +24,9 @@ export default function SectionNav({ sections, label, numbered = false, classNam
   }, [active]);
 
   return (
-    <div className={`okjt-section-nav sticky top-[4.25rem] z-30 border-y border-line/70 bg-tint/90 backdrop-blur-xl ${className}`}>
+    <div className={`okjt-section-nav sticky top-[var(--okjt-nav-h,4.25rem)] z-30 border-y border-line/70 bg-tint/90 backdrop-blur-xl ${className}`}>
       <Container>
-        <nav ref={bar} aria-label={label} className="-mx-4 flex gap-2 overflow-x-auto px-4 py-3 [scrollbar-width:none] [mask-image:linear-gradient(to_right,black_calc(100%-2.5rem),transparent)]">
+        <nav ref={bar} aria-label={label} className="-mx-4 flex items-center gap-2 overflow-x-auto px-4 py-3 [scrollbar-width:none] [mask-image:linear-gradient(to_right,black_calc(100%-2.5rem),transparent)]">
           {sections.map((section, i) => {
             const current = active === section.id;
             return (
