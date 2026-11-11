@@ -242,11 +242,12 @@ HTML,
                 'title' => 'Leading the AI and digital trade hackathon at ALTF 2023',
                 'category' => 'Events',
                 'published_at' => '2026-10-28 09:00:00',
-                'image' => '/assets/images/insights/altf-2023-hackathon.webp',
+                'image' => '/assets/images/insights/altf-2023-coordinating.webp',
                 'excerpt' => 'At the 2023 Africa Law Tech Festival I ran a hackathon asking how AI could help Africa trade with itself. Eleven innovations were shortlisted. Here is how it worked, and what I learnt.',
                 'content' => <<<'HTML'
 <p>In July 2023 the Africa Law Tech Festival in Nairobi took on a big theme: <em>Digital Trade in Africa: The AfCFTA and the Single Digital Market</em>. On the justice innovation team I was put in charge of the festival's <strong>AI &amp; Digital Trade Policy Hackathon</strong>, and I built the site that brought it together, with an interactive map of the continent showing where participants came from.</p>
 <p>Eleven innovations were shortlisted. I still think about the teams behind them.</p>
+<figure><img src="/assets/images/insights/altf-2023-coordinating.webp" alt="Hackathon teams at work with coordinators at the Africa Law Tech Festival 2023" loading="lazy"><figcaption>Coordinating teams on the hackathon floor, Africa Law Tech Festival 2023.</figcaption></figure>
 <h2>The question we asked</h2>
 <p>How could artificial intelligence help Africa trade with itself under the African Continental Free Trade Area? We gave teams four themes to work on:</p>
 <ul>
@@ -257,13 +258,16 @@ HTML,
 </ul>
 <h2>Two tracks, one table</h2>
 <p>We ran it as two hackathons side by side. The policy track worked on the data gap around digital trade in Africa, the shape of an AI governance framework for it, and what policymakers need to consider for a single digital market. The tech track worked on an AI-driven observatory: a living database of the challenges and opportunities in putting the AfCFTA into practice.</p>
+<p>Each track had concrete problem statements: what an AI governance framework for digital trade in Africa should look like; what data an online observatory of digital trade would need; how AI could check the credibility of what is shared on it; and how to keep it current in real time as new AI and trade laws are passed.</p>
 <p>That pairing mattered more than anything else we did. Lawyers, policy people, developers, designers and entrepreneurs were in the same rooms, building one answer instead of handing problems over a wall. The method we committed to was user-driven, deliberative, inclusive and participatory: co-creation, not a pitch contest.</p>
 <h2>How it ran</h2>
+<p>Up to fifty participants took part, in at most ten teams of five. Teams were drawn at random from the registrations, on purpose, so that every team mixed backgrounds rather than friends. It ran in English and French, in person at the festival and online, with a shared whiteboard for each team.</p>
 <ul>
 <li><strong>Briefing, 7 July.</strong> A virtual session to share the objectives and documentation and form the teams.</li>
 <li><strong>Launch, 11 July.</strong> After the festival's opening addresses, teams broke into their own rooms and got to work.</li>
 <li><strong>Pitches and awards, 12 July.</strong> Submissions and pitch videos were due at noon. Pitches were pre-recorded so the main stage could play them without stealing time from the afternoon's speakers, and the judges deliberated before announcing three winners, with prizes of KSh 50,000, 30,000 and 20,000.</li>
 </ul>
+<figure><img src="/assets/images/insights/altf-2023-winners.webp" alt="The SemaPDF team on stage at the Africa Law Tech Festival 2023" loading="lazy"><figcaption>SemaPDF, one of the three winning teams, alongside AfriSoko and AfriTrade.</figcaption></figure>
 <h2>Courage is the first requirement</h2>
 <p>It takes real courage to offer an unfinished idea about something as large as trade across a continent. Every team did that. Some ideas were rough. All of them were brave. A hackathon is one of the few places where we celebrate people for trying before they are sure, and I wish we did more of that everywhere else.</p>
 <h2>Policy problems are people problems</h2>

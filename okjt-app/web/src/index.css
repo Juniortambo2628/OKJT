@@ -255,6 +255,8 @@ footer a:hover > img { filter: none; }
 .prose-okjt li + li { margin-top: 0.4em; }
 .prose-okjt blockquote { border-left: 2px solid var(--color-accent); padding-left: 1em; color: var(--color-soft); font-style: italic; }
 .prose-okjt img { border-radius: 1rem; }
+.prose-okjt figure img { width: 100%; height: auto; }
+.prose-okjt figcaption { margin-top: 0.6em; font-size: 0.85rem; color: var(--color-soft); }
 .prose-okjt strong { color: var(--color-ink); }
 .prose-okjt code { background: var(--color-surface); padding: 0.1em 0.35em; border-radius: 0.35em; }
 

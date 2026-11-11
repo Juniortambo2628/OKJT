@@ -31,10 +31,15 @@ that hasn't been mapped properly yet.
 
 ## How it sounds on the page
 
-- First person singular in articles ("I", "my"); OKJTechnologies is a
-  one-person studio, so never an imagined "team" or "we" for the studio.
-  "We" is fine for genuine shared work (a client and Kevin, Lawyers Hub
-  colleagues).
+- **Keep the focus on the work, not on Kevin.** Case studies, service pages
+  and site copy speak about the work, with **OKJTechnologies** as the subject
+  when someone has to act ("OKJTechnologies built…"), never "I". This makes it
+  easy to say the studio contributed to something larger (a Lawyers Hub
+  programme, a partner's product) without shrinking the work to one person.
+  Never invent a "team" or "we" for the studio either; "we" only for genuinely
+  shared work (with a client, a partner, Lawyers Hub colleagues).
+- Articles lead with the work and the people too. They may use "I" where the
+  author's own experience is the point; Kevin's preference is the work first.
 - Plain words a non-technical reader can follow. A technical term earns its
   place by being explained in one clause.
 - Rhythm: mostly measured sentences, then a short one that lands.

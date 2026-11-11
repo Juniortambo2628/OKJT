@@ -68,7 +68,7 @@ return new class extends Migration
             'ai-policy-lab' => 5,
             'adpi-courses' => 3,
             'boda-boda-law' => 3,
-            'digital-trade-hackathon' => 3,
+            'digital-trade-hackathon' => 9, // 01-06 event photos, 07-09 the site
             'dickson-gongona-advocates' => 5,
             'tamcon-consulting-engineers' => 5,
             'south-ring-autos' => 5,

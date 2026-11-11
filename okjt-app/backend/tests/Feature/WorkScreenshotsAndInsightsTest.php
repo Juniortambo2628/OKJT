@@ -97,5 +97,25 @@ class WorkScreenshotsAndInsightsTest extends TestCase
         $this->runMigration('2026_11_11_000003_flagship_stories_and_lawyers_hub_work');
         $this->assertSame(20, Insight::count());
         $this->assertStringContainsString('Kakamega', Insight::where('slug', 'tibu-the-same-care-in-nairobi-and-kakamega')->value('content'));
+
+        $this->runMigration('2026_11_11_000005_lawyers_hub_survey_findings');
+        $this->assertSame(23, Insight::count());
+    }
+
+    public function test_case_studies_speak_about_the_work_and_nyalife_loses_its_link(): void
+    {
+        $hms = Project::updateOrCreate(['slug' => 'nyalife-hms'], ['type' => 'client', 'title' => 'Nyalife HMS', 'url' => 'https://nyalifewomensclinic.net', 'is_active' => true]);
+        $tibu = Project::updateOrCreate(['slug' => 'tibu'], ['type' => 'flagship', 'title' => 'Tibu', 'description' => 'the Nyalife HMS is its first live instance', 'is_active' => true]);
+
+        $this->runMigration('2026_11_11_000004_case_studies_about_the_work');
+
+        $this->assertNull($hms->fresh()->url);
+        $this->assertStringNotContainsString('first live instance', $tibu->fresh()->description);
+        $this->assertStringContainsString('Kakamega', $tibu->fresh()->problem);
+        foreach (Project::all() as $project) {
+            foreach (['description', 'problem', 'methodology', 'outcome'] as $field) {
+                $this->assertDoesNotMatchRegularExpression('/\\bI (built|designed|chaired|helped)\\b/', (string) $project->{$field}, "{$project->slug}.{$field}");
+            }
+        }
     }
 }

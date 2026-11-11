@@ -24,6 +24,9 @@ slides, with a "coding class tools" folder of practice files).
 - Practical 2: a law-firm landing page from a template (head, header and
   hero, footer, then CSS).
 
+**Photos:** Kevin presenting, the class at work, the practical, and the
+facilitators at the Lawyers Hub (on the site in the article).
+
 **Article:** "Why I taught lawyers to write code".
 
 ## 2. AI & Digital Trade Policy Hackathon: Africa Law Tech Festival 2023
@@ -47,7 +50,17 @@ and opportunities.
 the opening addresses; submissions and pre-recorded pitch videos (Sparkhire)
 by noon Wed 12 July, judging and awards that day.
 **Prizes:** KSh 50,000 / 30,000 / 20,000.
-**Outcome:** 11 shortlisted innovations.
+**Format:** up to 10 teams of 5 (50 participants), drawn at random from
+registrations so every team mixed backgrounds; English and French; in person
+and online (shared Miro boards per team).
+**Problem statements:** an AI governance framework for digital trade in
+Africa; the data an online observatory of digital trade would need; using AI
+to verify the credibility of resources shared on it; keeping it current in
+real time as new AI and trade laws pass.
+**Outcome:** 11 shortlisted innovations; winning teams included **SemaPDF,
+AfriSoko and AfriTrade** (prize order not recorded here).
+**Photos (in Kevin's files and on the site):** coordinating teams on the
+hackathon floor; the three winning teams on stage.
 
 > The catalog previously gave the festival dates as 12–13 July; the
 > hackathon brief puts its own days at 11–12 July.
@@ -96,3 +109,44 @@ appeal to the High Court).
     populations (44.4%), then data protection and privacy (33.3%).
 
 **Article:** "What a small survey taught me about digital identity".
+
+- **Survey on the State of Digital Public Infrastructure in Africa / CSO
+  Roundtable, 2023:** civil society respondents from across Africa (about
+  50 per question; an earlier run had about 35). Top barrier: lack of
+  understanding among government officials (35/46); biggest single
+  challenge: lack of coordination among stakeholders (27/46); top concern:
+  misuse of personal information (37/49); top expected benefit: growth of
+  e-commerce and digital entrepreneurship (40/53); top policy ask:
+  interoperability (38/50); 40 of 43 asked to stay involved.
+- **Ride-hailing apps poll, 2023** (about 35–45): 3 of 38 familiar with
+  their app's privacy policy; 57% don't understand the data collected; 79%
+  uncomfortable sharing it; 16 of 41 contacted by a driver after a trip, for
+  reasons including flirting, dates and money.
+- **TikTok: Responsible Content & Regulation poll, 2023** (about 45–55): 6%
+  had read the privacy policy; 74% concerned about their data; 89% had seen
+  inappropriate content; 81% want more moderation; 93% against a ban in
+  Kenya; 53% for banning it on government devices.
+- **Startup Roundtable, ALTF 2023** (10–16 per question): 9 of 16 found
+  registering a startup extremely or very difficult; 11 of 13 found raising
+  capital extremely or very challenging; 1 of 10 said startup laws are
+  favourable; 8 of 10 expect the AfCFTA to help.
+- **AI Ethics Symposium poll** (Lawyers Hub with the University of
+  Cambridge, 26 June 2023: AI, data protection, privacy and surveillance):
+  poll prepared; no responses were recorded.
+- **Gig economy:** survey questions for stakeholders on the gig economy and
+  the future of work in Africa, and a draft article *The Gig Economy in
+  Africa*. Kevin's authorship and their use are to be confirmed. Their
+  statistics need checking before any reuse (e.g. the "$455bn by 2023"
+  figure is a global estimate, not Africa's).
+
+Respondent lists in these polls name individuals; publish aggregates only.
+
+**Articles:** "Digital public infrastructure: what civil society across
+Africa said"; "Everyday apps and the privacy policies nobody reads"; "What
+founders said at the ALTF 2023 startup roundtable".
+
+## Next: LinkedIn
+
+All of the above (the Lawyers Hub record, the flagships and the client work)
+still needs to go onto Kevin's LinkedIn profile and the OKJTechnologies
+company page.

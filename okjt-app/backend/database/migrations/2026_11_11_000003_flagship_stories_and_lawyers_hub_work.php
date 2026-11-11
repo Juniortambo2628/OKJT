@@ -178,16 +178,18 @@ HTML,
                 'title' => 'Why I taught lawyers to write code',
                 'category' => 'LegalTech',
                 'published_at' => '2026-10-24 09:00:00',
-                'image' => '/assets/images/insights/aliw-2022-coding-class.webp',
+                'image' => '/assets/images/insights/aliw-2022-presenting.webp',
                 'excerpt' => 'At Africa Legal Innovation Week 2022 I designed and taught a coding class for lawyers. The aim: leave with a landing page for your own law firm, and understand why the code you write is yours.',
                 'content' => <<<'HTML'
 <p>At Africa Legal Innovation Week 2022, hosted by the Lawyers Hub, I designed and presented a coding class for lawyers. The brief I set myself was simple: by the end of the session, every person in the room would have built a landing page for their own law firm.</p>
 <h2>Why lawyers should understand code</h2>
 <p>Lawyers are increasingly asked to argue about software: who owns it, who copied it, what a licence allows, what went wrong behind the screen. Understanding how code is actually made makes those disputes easier to handle, including your own, and helps you prepare a defence when you understand what happens in the back end.</p>
 <p>I also believe in taking the mystery out of things. Code can look like a closed world. It isn't, and an afternoon is enough to prove it.</p>
+<figure><img src="/assets/images/insights/aliw-2022-class.webp" alt="Lawyers at laptops during the coding class at the Lawyers Hub" loading="lazy"><figcaption>The coding class at the Lawyers Hub, Africa Legal Innovation Week 2022.</figcaption></figure>
 <h2>Building something you own</h2>
 <p>The first exercise was a page of headings and a paragraph in HTML. Then I asked the room two questions: what legal implications do you accept by claiming you wrote this, and what risks?</p>
 <p>That is where the class came alive, because it is the lawyers' home ground. We talked about the difference between proprietary, personal and open-source programs; that copyright in code is automatic from the moment the work is recorded in a tangible form, because the law protects the expression of an idea rather than the idea itself; that registering software with the Kenya Copyright Board isn't required but adds real protection; and what rights copyright gives a programmer, from reproducing and modifying the code to licensing and selling it.</p>
+<figure><img src="/assets/images/insights/aliw-2022-practical.webp" alt="A participant working through the HTML practical" loading="lazy"><figcaption>Working through the first practical.</figcaption></figure>
 <h2>A landing page for your firm</h2>
 <p>Then we built the real thing. Starting from a template, everyone worked through the structure of a web page, the head with its metadata, the header with the navigation and hero, the footer with contact details, and then applied the style sheets. The moment a plain page transforms as the styles load is the one I love most in any class: something you typed becomes something you can show.</p>
 <h2>What it taught me</h2>
