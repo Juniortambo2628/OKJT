@@ -3,13 +3,17 @@ import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { AuthError, AuthField, AuthLayout, AuthSubmit } from '@okjt/dashboard';
 import api, { errorMessage, getToken } from '../lib/api';
 import { signIn } from './auth';
+import { clipFor } from '../lib/media';
+import { DEFAULT_HERO } from '../lib/defaults';
 
 const brand = <img src="/logos/OKJT-Logos/OKJTechLogo-White_Transparent.png" alt="OKJTech" className="h-8 w-auto" />;
+
+const clip = clipFor(DEFAULT_HERO);
 
 /** The panel beside the form on desktop. */
 const aside = (
   <div className="relative hidden overflow-hidden rounded-[1.6rem] bg-ink-deep lg:block">
-    <video className="absolute inset-0 h-full w-full object-cover opacity-50" src="/assets/videos/okjt-bg-videos/3129977-uhd_3840_2160_30fps - Trim.mp4" autoPlay muted loop playsInline aria-hidden="true" />
+    <video className="absolute inset-0 h-full w-full object-cover opacity-50" src={clip.src} poster={clip.poster} autoPlay muted loop playsInline aria-hidden="true" />
     <div className="absolute inset-0 bg-gradient-to-t from-ink-deep via-ink-deep/40 to-transparent" />
     <div className="absolute inset-x-10 bottom-10">
       <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-accent">OKJTech dashboard</div>
