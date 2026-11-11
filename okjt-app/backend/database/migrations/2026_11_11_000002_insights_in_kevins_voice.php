@@ -128,7 +128,7 @@ HTML,
 <p>A map makes those people visible. Once you can see them, you can ask a better question than <em>what should this system do?</em> You can ask <em>how does each of these people come out of this better off?</em></p>
 <h2>What it changes in practice</h2>
 <ul>
-<li>Tibu, the health product behind Nyalife's hospital system, gives each facility a fully useful system on day one. The national picture comes later, because every facility already has its own reason to join.</li>
+<li>Tibu, the health product that grew out of my work on Nyalife's hospital system, gives each facility a fully useful system on day one. The national picture comes later, because every facility already has its own reason to join.</li>
 <li>Najenga treats the homeowner, the contractor, the site manager and the family back home as equals, with each one seeing exactly what they need and nothing that isn't theirs.</li>
 <li>OmniShop was designed around the person who would have to run it alone at a trade show, not around me.</li>
 </ul>
@@ -192,7 +192,7 @@ HTML,
             [
                 'slug' => 'building-nyalife-hms-first-instance-of-tibu',
                 'published_at' => '2026-08-21 09:00:00', // used only if the article is missing
-                'title' => 'Building Nyalife HMS, the first instance of Tibu',
+                'title' => 'Building Nyalife HMS, where Tibu began',
                 'category' => 'HealthTech',
                 'image' => $img('tibu/01'),
                 'excerpt' => 'A records system for one women\'s clinic, and the first step towards a patient\'s history following them to any facility in the country.',
@@ -203,13 +203,13 @@ HTML,
 <p>In much of Kenya, a patient's medical history lives on paper, in the facility where it was written. Move house, get referred, travel, and you start again. You retell everything, often at the worst possible moment. The quality of what gets written down can depend on which facility you could afford to walk into.</p>
 <p>That is a heavy thing to ask a patient to carry. It is heavy for the nurses and doctors too, rebuilding a picture they should already have.</p>
 <h2>Useful on day one</h2>
-<p>So Nyalife's system is built to be fully useful to the clinic on its own, from the first day: records, scheduling, clinical files and role-based access, with end-to-end tests and a deployment pipeline behind it. It is in use at the clinic now.</p>
-<p>That matters, because it is the foundation for something bigger.</p>
+<p>So Nyalife's system is built to be fully useful to the clinic on its own, from the first day: records, scheduling, clinical files and role-based access, with end-to-end tests and a deployment pipeline behind it. Another developer has since taken the project forward, and the system the clinic runs today is their work. I'm grateful I got to lay the first stone.</p>
+<p>Building it showed me the foundation for something bigger.</p>
 <h2>Tibu: ecosystem by adoption</h2>
-<p>Tibu is the product Nyalife's system runs on. The idea is simple and patient. Facilities join one at a time, each because the system genuinely helps them. As the network grows, the shared foundation makes it possible, with the patient's consent, for their history to follow them from a community clinic to a county referral hospital and back.</p>
+<p>Tibu is the product that grew from that work. The idea is simple and patient. Facilities join one at a time, each because the system genuinely helps them. As the network grows, the shared foundation makes it possible, with the patient's consent, for their history to follow them from a community clinic to a county referral hospital and back.</p>
 <p>Nobody is asked to join a national system on faith. Each person in the picture, patient, practitioner, facility, referral partner and, later, researchers and health authorities, has their own reason to take part before anyone asks them to.</p>
 <h2>Where it stands</h2>
-<p>Nyalife is the first live instance. Tibu's wider goals, connected referrals, equal quality of records across income levels and better data for research, are still ahead. I am honest about that. I am also completely sure they are reachable, because the first step is already working for real people.</p>
+<p>Nyalife was where Tibu began. Tibu's wider goals, connected referrals, equal quality of records across income levels and better data for research, are still ahead. I am honest about that. I am also completely sure they are reachable, because I've seen what the first step can do for a real clinic.</p>
 HTML,
             ],
             [
@@ -301,7 +301,7 @@ HTML,
 <h2>How it shows up in what I build</h2>
 <ul>
 <li><strong>Only what is needed.</strong> If the system doesn't need a piece of information to help someone, it doesn't ask for it.</li>
-<li><strong>The right eyes only.</strong> Role-based access means a receptionist, a doctor and an administrator each see what their work needs. Nyalife's records system and the client portal at Dickson, Gitonga Advocates both work this way.</li>
+<li><strong>The right eyes only.</strong> Role-based access means a receptionist, a doctor and an administrator each see what their work needs. The records system I built for Nyalife and the client portal at Dickson, Gitonga Advocates both work this way.</li>
 <li><strong>Stronger sign-in.</strong> Passkeys on platforms like Global Harmony Initiative and Silversky mean no password to steal or forget.</li>
 <li><strong>Consent that means something.</strong> In Tibu, another facility sees a patient's summary only after the patient approves it.</li>
 </ul>

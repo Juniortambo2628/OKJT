@@ -73,6 +73,7 @@ return new class extends Migration
             'tamcon-consulting-engineers' => 5,
             'south-ring-autos' => 5,
             'nyalife-womens-clinic' => 4,
+            'nyalife-hms' => 6,
             'hucaa' => 4,
             'wisdom-capital' => 5,
             'reytati-communications' => 4,
