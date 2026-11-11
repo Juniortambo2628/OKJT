@@ -100,6 +100,12 @@ class WorkScreenshotsAndInsightsTest extends TestCase
 
         $this->runMigration('2026_11_11_000005_lawyers_hub_survey_findings');
         $this->assertSame(23, Insight::count());
+
+        // Written about the work: no first person outside quotations.
+        foreach (Insight::all() as $insight) {
+            $text = strip_tags(preg_replace('/"[^"]*"|<em>[^<]*<\/em>/', '', $insight->title.' '.$insight->excerpt.' '.$insight->content));
+            $this->assertDoesNotMatchRegularExpression("/\\b(I|I'm|I've|I'll|my|me)\\b/", $text, $insight->slug);
+        }
     }
 
     public function test_case_studies_speak_about_the_work_and_nyalife_loses_its_link(): void

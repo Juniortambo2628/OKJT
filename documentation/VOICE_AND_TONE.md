@@ -38,8 +38,9 @@ that hasn't been mapped properly yet.
   programme, a partner's product) without shrinking the work to one person.
   Never invent a "team" or "we" for the studio either; "we" only for genuinely
   shared work (with a client, a partner, Lawyers Hub colleagues).
-- Articles lead with the work and the people too. They may use "I" where the
-  author's own experience is the point; Kevin's preference is the work first.
+- Articles follow the same rule: the work and the people lead, no "I". Where
+  Kevin's own role matters (the Lawyers Hub years, the hackathon, the coding
+  class), name it as "OKJTechnologies' founder". The byline is OKJTechnologies.
 - Plain words a non-technical reader can follow. A technical term earns its
   place by being explained in one clause.
 - Rhythm: mostly measured sentences, then a short one that lands.

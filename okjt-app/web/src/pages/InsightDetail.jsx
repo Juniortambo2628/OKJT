@@ -44,7 +44,7 @@ export default function InsightDetail() {
         [formatDate(insight.published_at || insight.created_at), 'published'],
         [`${readingTime(insight.content)} min`, 'to read'],
         [insight.category || 'Notes', 'topic'],
-        [byline(insight.user?.name, setting('insights_author', 'Kevin Tambo')), 'written by'],
+        [byline(insight.user?.name, setting('insights_author', 'OKJTechnologies')), 'written by'],
       ] : []}
       label="The article"
       chapters={chapters}

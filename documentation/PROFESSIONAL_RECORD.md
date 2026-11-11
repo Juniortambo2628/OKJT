@@ -27,7 +27,7 @@ slides, with a "coding class tools" folder of practice files).
 **Photos:** Kevin presenting, the class at work, the practical, and the
 facilitators at the Lawyers Hub (on the site in the article).
 
-**Article:** "Why I taught lawyers to write code".
+**Article:** "Teaching lawyers to write code".
 
 ## 2. AI & Digital Trade Policy Hackathon: Africa Law Tech Festival 2023
 
@@ -108,7 +108,7 @@ appeal to the High Court).
   - Top law-reform priority: inclusion and accessibility for marginalised
     populations (44.4%), then data protection and privacy (33.3%).
 
-**Article:** "What a small survey taught me about digital identity".
+**Article:** "What a small survey revealed about digital identity".
 
 - **Survey on the State of Digital Public Infrastructure in Africa / CSO
   Roundtable, 2023:** civil society respondents from across Africa (about

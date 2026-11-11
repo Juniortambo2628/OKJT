@@ -73,17 +73,17 @@ return new class extends Migration
                 'category' => 'HealthTech',
                 'published_at' => '2026-11-08 09:00:00',
                 'image' => '/assets/images/work/tibu/03.webp',
-                'excerpt' => 'Healthcare in Kenya leans towards privilege. I can\'t make it free, but I can make sure a patient\'s records, and the quality of what is written down about them, don\'t depend on which door they walked through.',
+                'excerpt' => 'Healthcare in Kenya leans towards privilege. Tibu can\'t make it free, but it can make sure a patient\'s records, and the quality of what is written down about them, don\'t depend on which door they walked through.',
                 'content' => <<<'HTML'
-<p>Healthcare in Kenya leans towards privilege. Where you live, what you earn and which facility you can reach still decide a great deal about the care you get. Free healthcare isn't something I can deliver. But there is real work to be done on everything around the care itself: how a service is delivered, how carefully it is written down, and whether the patient, the doctor and the hospital can reach the information they need.</p>
+<p>Healthcare in Kenya leans towards privilege. Where you live, what you earn and which facility you can reach still decide a great deal about the care you get. Free healthcare is beyond what any one platform can deliver. But there is real work to be done on everything around the care itself: how a service is delivered, how carefully it is written down, and whether the patient, the doctor and the hospital can reach the information they need.</p>
 <p>Tibu exists to close that gap for all three at once.</p>
 <h2>Two patients</h2>
 <p>Picture one patient walking into a private hospital in Nairobi, and another walking into a small public facility in rural Kakamega. Today their records will almost certainly look different: different systems, different levels of detail, often paper on one side. If either of them moves, is referred, or arrives somewhere unconscious, their history may not follow them at all.</p>
-<p>Tibu is built so those two patients get the same thing: the same quality of documentation, and a history that is theirs wherever they go. It would serve people with the least the most, and that matters to me. But it is deliberately built for everyone. The person in Kakamega deserves exactly what the person in Nairobi already expects.</p>
+<p>Tibu is built so those two patients get the same thing: the same quality of documentation, and a history that is theirs wherever they go. It would serve people with the least the most, and that matters. But it is deliberately built for everyone. The person in Kakamega deserves exactly what the person in Nairobi already expects.</p>
 <h2>The size of the gap</h2>
 <p>This is the shape of the system, not an edge case. A survey of electronic records in Kenyan public hospitals found that even digitised facilities run fragmented systems, bought mainly for billing, with laboratory and radiology records on separate tools that don't talk to each other (University of Oxford, NDM). The country has about 2.6 doctors for every 10,000 people, against a WHO benchmark closer to 10, and households still pay 24.2% of all health spending out of their own pockets (WHO Kenya Health Profile, 2025). Scarce expertise, scattered records and costs that land on patients make each other worse.</p>
 <h2>Three words</h2>
-<p>When I'm asked what Tibu is for, I come back to three words: <strong>access</strong>, <strong>documentation</strong> and <strong>equal quality</strong>. Every facility gets a complete system on day one: records, appointments, lab, pharmacy, billing. As facilities join, they form an ecosystem, so that with the patient's consent their history can follow them from a village dispensary to a national referral hospital and back.</p>
+<p>Ask what Tibu is for and the answer comes back to three words: <strong>access</strong>, <strong>documentation</strong> and <strong>equal quality</strong>. Every facility gets a complete system on day one: records, appointments, lab, pharmacy, billing. As facilities join, they form an ecosystem, so that with the patient's consent their history can follow them from a village dispensary to a national referral hospital and back.</p>
 <h2>Who it is for</h2>
 <ul>
 <li><strong>The patient.</strong> Access to their own health information, and the same standard of record wherever they are treated. For people who have always had the least, that is a kind of power they haven't had before.</li>
@@ -92,7 +92,7 @@ return new class extends Migration
 <li><strong>NGOs and national organisations.</strong> Consolidated, anonymised insights from across the country, so the annual statistics behind health reports and programmes rest on real data rather than estimates.</li>
 </ul>
 <h2>How it grows</h2>
-<p>Nobody is asked to join a national system on faith. Each facility joins because Tibu genuinely helps it run, and the network grows from there. It began with my work on the system for Nyalife Women's Health Clinic, and it is the problem I have chosen to keep solving. It is unfinished. It is also the most meaningful thing I have built, and I'm completely sure it can be done, one honest step at a time.</p>
+<p>Nobody is asked to join a national system on faith. Each facility joins because Tibu genuinely helps it run, and the network grows from there. It began with OKJTechnologies' work on the system for Nyalife Women's Health Clinic, and it is the problem the studio has chosen to keep solving. It is unfinished. It is also the most meaningful work in the portfolio, and it can be done, one honest step at a time.</p>
 HTML,
             ],
             [
@@ -119,7 +119,7 @@ HTML,
 <h2>Care with people's details</h2>
 <p>Naoa is built to Kenya's data protection law. Guest details are used only for planning and are deleted 30 days after the couple's last event. Booking and payment records are kept for the six years the law requires, and the couple's gallery stays until they choose to delete it.</p>
 <h2>Where it came from</h2>
-<p>Naoa started with one couple's wedding site. Building it, I saw how much love and quiet labour goes into a wedding, and how often that labour falls on a few people who end up too tired to enjoy the day. Naoa is my way of carrying some of it for them.</p>
+<p>Naoa started with one couple's wedding site. Building it showed how much love and quiet labour goes into a wedding, and how often that labour falls on a few people who end up too tired to enjoy the day. Naoa exists to carry some of it for them.</p>
 HTML,
             ],
             [
@@ -128,14 +128,14 @@ HTML,
                 'category' => 'PropTech',
                 'published_at' => '2026-11-02 09:00:00',
                 'image' => '/assets/images/work/najenga/04.webp',
-                'excerpt' => 'Najenga is shaped by a real build where every update arrived as a WhatsApp message. Instead of asking people to change how they work, I built the platform around the way they already do.',
+                'excerpt' => 'Najenga is shaped by a real build where every update arrived as a WhatsApp message. Instead of asking people to change how they work, the platform was built around the way they already do.',
                 'content' => <<<'HTML'
-<p>Najenga is shaped by a real home being built in western Kenya, with its owner following along from far away. I want to tell you how that build changed the product, because it taught me something I now bring to everything.</p>
+<p>Najenga is shaped by a real home being built in western Kenya, with its owner following along from far away. That build changed the product, and it holds a lesson for every project.</p>
 <h2>How a build really talks</h2>
 <p>Nobody on that project opened an app. Every evening the updates arrived on WhatsApp: photos of a roof going on, a video of a delivery, a bank debit message, an M-Pesa confirmation, a supplier's invoice as a PDF, a typed note saying five loads of murram had arrived and needed paying for.</p>
 <p>All of it mattered. None of it was organised. And there was a running spreadsheet trying to keep up, which, as these things do, slowly drifted away from what had really been paid.</p>
 <h2>Meet people where they already are</h2>
-<p>The obvious answer was to ask everyone to log in and fill in forms. I didn't believe that would last a week. The people on a building site are busy, and the owner is short of time. Every extra tap costs a little trust.</p>
+<p>The obvious answer was to ask everyone to log in and fill in forms. That would not have lasted a week. The people on a building site are busy, and the owner is short of time. Every extra tap costs a little trust.</p>
 <p>So Najenga learnt to read WhatsApp instead. Send anything to the project's number and Najenga works out what it is: a site photo goes to the gallery, a video to the video track, a payment message becomes a confirmed expense, an invoice becomes a bill waiting to be paid, a typed request becomes something to approve, and ordinary chat is simply logged. The sender gets a reply saying where it was filed, with a chance to say it was wrong.</p>
 <h2>Never count a payment twice</h2>
 <p>One payment can arrive as up to four messages: the bank's debit, the M-Pesa transfer, the supplier's invoice, and sometimes a request sent before any of them. Najenga matches them on the payment reference first, then on amount, date and recipient, in whatever order they arrive. Each expense keeps a trail of every message that was merged into it, so anyone can check the reasoning.</p>
@@ -146,8 +146,8 @@ HTML,
 <li><strong>Everyone</strong> argues less about money, because the record and the receipts agree.</li>
 </ul>
 <h2>Where it is</h2>
-<p>The WhatsApp intake, the sorting and the duplicate matching are built and in use on that project, and I'm still tuning them on real messages. A weekly spending summary sent back on WhatsApp, one-tap confirmations and signing in with WhatsApp are next.</p>
-<p>The lesson I carry into every project from this one: if a system asks people to change how they work before it has helped them, it has already lost them. Start where they are.</p>
+<p>The WhatsApp intake, the sorting and the duplicate matching are built and in use on that project, and are still being tuned on real messages. A weekly spending summary sent back on WhatsApp, one-tap confirmations and signing in with WhatsApp are next.</p>
+<p>The lesson OKJTechnologies carries into every project from this one: if a system asks people to change how they work before it has helped them, it has already lost them. Start where they are.</p>
 HTML,
             ],
             [
@@ -158,7 +158,7 @@ HTML,
                 'image' => '/assets/images/work/the-football-experience/03.webp',
                 'excerpt' => 'Football travel is never one person\'s trip. Fans, schools, academies, parents, airlines and clubs all have a part, and The Football Experience is being built so each of them has a place.',
                 'content' => <<<'HTML'
-<p>The Football Experience started with fans: helping people in Africa follow their team to the tournaments they have dreamt of, with matches, flights, stays and tickets planned in one place. I'm building it with Terik Tours, whose travel expertise makes the whole thing possible.</p>
+<p>The Football Experience started with fans: helping people in Africa follow their team to the tournaments they have dreamt of, with matches, flights, stays and tickets planned in one place. OKJTechnologies is building it with Terik Tours, whose travel expertise makes the whole thing possible.</p>
 <p>The more we worked on it, the clearer it became that a football trip is never one person's trip.</p>
 <h2>Everyone around the game</h2>
 <p>Around every match there is a whole community: fans and supporter groups, airlines and travel partners, clubs, schools and universities, academies, and the parents and families who make it possible for young players to go at all. Each of them needs something different from the platform, and each has something to give.</p>
@@ -166,49 +166,49 @@ HTML,
 <p>Some of the most meaningful trips are the ones that take young players to see the game at its highest level. So schools and sports programmes now have their own place on TFE, with a simple journey: register, discover programmes, join and take part, develop and learn, compete and grow. Programmes show when and where they run, and a Learning Hub offers coaching and safeguarding resources.</p>
 <p>The Learning Hub is open to everyone rather than locked behind a login. A safeguarding policy is worth more the more widely it is read.</p>
 <h2>Protecting children by not holding their data</h2>
-<p>This is the decision I'm proudest of. Our first plan had TFE collecting children's names, dates of birth and consent forms, rebuilding a process every school already runs, and doing it worse. We threw that plan away.</p>
+<p>This is the decision in the project most worth sharing. The first plan had TFE collecting children's names, dates of birth and consent forms, rebuilding a process every school already runs, and doing it worse. That plan was thrown away.</p>
 <p>The new design keeps the school in charge of its pupils. An appointed official at the school confirms that every travelling child has the permissions the school's own process requires, and TFE records that declaration and passes a clear "minors travelling" flag to every partner involved. A teacher never consents on a parent's behalf. And because TFE never holds the children's details, there is nothing about them to lose, misuse or leak.</p>
 <h2>Where it stands</h2>
-<p>The Football Experience is in development, with the platform live for exploring. The schools journey and the Learning Hub are built. The school declaration and the parents and families side are designed but not yet built, and I'll keep saying so until they are.</p>
-<p>What inspires me about this one is simple. Football brings people together like almost nothing else. The platform around it should do the same.</p>
+<p>The Football Experience is in development, with the platform live for exploring. The schools journey and the Learning Hub are built. The school declaration and the parents and families side are designed but not yet built, and will be described that way until they are.</p>
+<p>What inspires this one is simple. Football brings people together like almost nothing else. The platform around it should do the same.</p>
 HTML,
             ],
             [
                 'slug' => 'teaching-lawyers-to-code-at-aliw-2022',
-                'title' => 'Why I taught lawyers to write code',
+                'title' => 'Teaching lawyers to write code',
                 'category' => 'LegalTech',
                 'published_at' => '2026-10-24 09:00:00',
                 'image' => '/assets/images/insights/aliw-2022-presenting.webp',
-                'excerpt' => 'At Africa Legal Innovation Week 2022 I designed and taught a coding class for lawyers. The aim: leave with a landing page for your own law firm, and understand why the code you write is yours.',
+                'excerpt' => 'At Africa Legal Innovation Week 2022, OKJTechnologies\' founder designed and taught a coding class for lawyers. The aim: leave with a landing page for your own law firm, and understand why the code you write is yours.',
                 'content' => <<<'HTML'
-<p>At Africa Legal Innovation Week 2022, hosted by the Lawyers Hub, I designed and presented a coding class for lawyers. The brief I set myself was simple: by the end of the session, every person in the room would have built a landing page for their own law firm.</p>
+<p>At Africa Legal Innovation Week 2022, hosted by the Lawyers Hub, OKJTechnologies' founder designed and presented a coding class for lawyers. The brief was simple: by the end of the session, every person in the room would have built a landing page for their own law firm.</p>
 <h2>Why lawyers should understand code</h2>
 <p>Lawyers are increasingly asked to argue about software: who owns it, who copied it, what a licence allows, what went wrong behind the screen. Understanding how code is actually made makes those disputes easier to handle, including your own, and helps you prepare a defence when you understand what happens in the back end.</p>
-<p>I also believe in taking the mystery out of things. Code can look like a closed world. It isn't, and an afternoon is enough to prove it.</p>
+<p>There is also value in taking the mystery out of things. Code can look like a closed world. It isn't, and an afternoon is enough to prove it.</p>
 <figure><img src="/assets/images/insights/aliw-2022-class.webp" alt="Lawyers at laptops during the coding class at the Lawyers Hub" loading="lazy"><figcaption>The coding class at the Lawyers Hub, Africa Legal Innovation Week 2022.</figcaption></figure>
 <h2>Building something you own</h2>
-<p>The first exercise was a page of headings and a paragraph in HTML. Then I asked the room two questions: what legal implications do you accept by claiming you wrote this, and what risks?</p>
-<p>That is where the class came alive, because it is the lawyers' home ground. We talked about the difference between proprietary, personal and open-source programs; that copyright in code is automatic from the moment the work is recorded in a tangible form, because the law protects the expression of an idea rather than the idea itself; that registering software with the Kenya Copyright Board isn't required but adds real protection; and what rights copyright gives a programmer, from reproducing and modifying the code to licensing and selling it.</p>
+<p>The first exercise was a page of headings and a paragraph in HTML. Then the room was asked two questions: what legal implications do you accept by claiming you wrote this, and what risks?</p>
+<p>That is where the class came alive, because it is the lawyers' home ground. The discussion covered the difference between proprietary, personal and open-source programs; that copyright in code is automatic from the moment the work is recorded in a tangible form, because the law protects the expression of an idea rather than the idea itself; that registering software with the Kenya Copyright Board isn't required but adds real protection; and what rights copyright gives a programmer, from reproducing and modifying the code to licensing and selling it.</p>
 <figure><img src="/assets/images/insights/aliw-2022-practical.webp" alt="A participant working through the HTML practical" loading="lazy"><figcaption>Working through the first practical.</figcaption></figure>
 <h2>A landing page for your firm</h2>
-<p>Then we built the real thing. Starting from a template, everyone worked through the structure of a web page, the head with its metadata, the header with the navigation and hero, the footer with contact details, and then applied the style sheets. The moment a plain page transforms as the styles load is the one I love most in any class: something you typed becomes something you can show.</p>
-<h2>What it taught me</h2>
+<p>Then the class built the real thing. Starting from a template, everyone worked through the structure of a web page, the head with its metadata, the header with the navigation and hero, the footer with contact details, and then applied the style sheets. The moment a plain page transforms as the styles load is the best moment in any class: something you typed becomes something you can show.</p>
+<h2>What it showed</h2>
 <ul>
 <li>People learn fastest when the lesson connects to what they already know. For lawyers, that was ownership and rights.</li>
 <li>A finished thing, however small, changes what someone believes they can do.</li>
-<li>Technology and law need translators. I want to keep being one.</li>
+<li>Technology and law need translators. OKJTechnologies intends to keep being one.</li>
 </ul>
 HTML,
             ],
             [
                 'slug' => 'what-a-small-survey-taught-me-about-digital-identity',
-                'title' => 'What a small survey taught me about digital identity',
+                'title' => 'What a small survey revealed about digital identity',
                 'category' => 'Research',
                 'published_at' => '2026-10-17 09:00:00',
                 'image' => '/assets/images/insights/digital-id-survey.webp',
-                'excerpt' => 'In 2023 I helped collect the responses for a survey sprint on digital identity and AI in Africa. The sample was small, but what people said about trust and inclusion still shapes how I build.',
+                'excerpt' => 'In 2023 a Lawyers Hub survey sprint asked about digital identity and AI in Africa. The sample was small, but what people said about trust and inclusion still shapes how OKJTechnologies builds.',
                 'content' => <<<'HTML'
-<p>In 2023, while at the Lawyers Hub, I helped facilitate the data collection for a survey sprint on <em>the State of Digital Identification and Artificial Intelligence in Africa</em>. It was a small survey, with around fifteen people answering most questions, so I won't pretend it speaks for a continent. But what those people said has stayed with me, and it shapes the systems I build today.</p>
+<p>In 2023 the Lawyers Hub ran a survey sprint on <em>the State of Digital Identification and Artificial Intelligence in Africa</em>, with OKJTechnologies' founder helping to facilitate the data collection. It was a small survey, with around fifteen people answering most questions, so it doesn't speak for a continent. But what those people said has lasted, and it shapes the systems OKJTechnologies builds today.</p>
 <h2>Belief in the idea is strong</h2>
 <p>Fourteen of the fifteen people who answered believed digital identity at a continental level could improve access to services and bring Africa closer together. Almost everyone (95%) saw regional initiatives like the African Continental Free Trade Area as very important to making it work, and every respondent said the bodies overseeing digital ID need their own money and independence.</p>
 <h2>Confidence in the frameworks is weak</h2>
@@ -218,7 +218,7 @@ HTML,
 <p>And the hope people did have was a human one: the most common benefit they saw was easier access for people with limited literacy or language barriers.</p>
 <h2>Inclusion first</h2>
 <p>When asked which law reforms matter most for digital ID, the most common answer wasn't security or cybercrime. It was inclusion and accessibility for marginalised people, followed by data protection and privacy.</p>
-<h2>What I took from it</h2>
+<h2>What it means for the work</h2>
 <ul>
 <li><strong>Trust is the real infrastructure.</strong> People want connected systems, but only ones that protect them. That is why Tibu shares a patient's records only with their consent.</li>
 <li><strong>Interoperability is a people problem first.</strong> Systems don't fail to connect because of code alone. They fail because nobody gave each side a reason to connect.</li>
