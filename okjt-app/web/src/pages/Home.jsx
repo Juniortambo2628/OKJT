@@ -59,7 +59,7 @@ function HeroPanel() {
         { to: '/services', icon: Building2, title: 'For Organisations', text: 'Platforms for clinics, law firms, builders, event companies and nonprofits, designed and built end to end.' },
         { to: '/projects/flagship', icon: Rocket, title: 'Flagship Products', text: 'Products OKJTechnologies designs, builds and runs itself, each around a whole ecosystem of people.' },
       ].map(({ to, icon: Icon, title, text }) => (
-        <Link key={to} to={to} className="glass group flex min-h-[14rem] flex-col justify-between rounded-3xl p-6 transition-colors hover:border-accent/40">
+        <Link key={to} to={to} className="okjt-hole group flex min-h-[14rem] flex-col justify-between rounded-3xl p-6">
           <div className="flex items-start justify-between">
             <h3 className="!font-display text-2xl !font-normal leading-tight !text-ink">{title}</h3>
             <ArrowUpRight className="h-5 w-5 text-accent transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden="true" />

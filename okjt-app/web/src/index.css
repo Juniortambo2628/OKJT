@@ -227,6 +227,24 @@ footer a:hover > img { filter: none; }
 }
 
 
+/* A hole in a cream card: the page's dark brown shows through, sunk in
+   with an inner shadow, and the words go back to the dark-page colours. */
+.okjt-hole {
+  --color-ink: #faf5e8;
+  --color-body: #dcc89a;
+  --color-soft: #bba67e;
+  --color-muted: #978561;
+  --color-accent: #ebc882;
+  --color-accent-soft: #c9a45c;
+  --color-line: #3a3221;
+  color: var(--color-body);
+  background: radial-gradient(circle at 80% 0%, rgb(235 200 130 / 0.07), transparent 60%), #0e0b07;
+  border: 1px solid rgb(0 0 0 / 0.55);
+  box-shadow: inset 0 10px 28px -6px rgb(0 0 0 / 0.95), inset 0 -1px 0 rgb(255 250 235 / 0.06), 0 1px 0 rgb(255 255 255 / 0.55);
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+.okjt-hole:hover { border-color: rgb(235 200 130 / 0.4); }
+
 /* A photo that can't load shows the brand's dark placeholder, not the
    kit's warm gradient (Photo's .okjt-photo). */
 .okjt-photo {
