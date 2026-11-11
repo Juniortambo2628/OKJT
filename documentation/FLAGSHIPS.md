@@ -199,11 +199,60 @@ game"; "Follow your team. Travel with your tribe."
 
 ---
 
+## Tena: guest WiFi that hands the guest relationship back to the host
+
+**Status:** live at tena.host. **Co-founded:** Glen (founder & CEO; a Nairobi
+host) and Kevin (co-founder & CTO). Confirm with Kevin how Glen wants to be
+named before using his full name. Public copy says "co-founded by
+OKJTechnologies' founder, who leads the technology".
+
+**Name:** Swahili for "again", for a platform built on repeat bookings.
+
+**The problem (from the July 2026 pitch deck):** booking platforms own the
+guest relationship. Hosts get limited guest data, nothing on the guests
+travelling with the booker, heavy commissions, low repeat bookings, weak
+brand loyalty and rising acquisition costs. Tena moves the host from
+"Host → OTA → Guest" to "Host → Tena → Guest".
+
+**Origin:** born inside Glen's own short-stay business in Nairobi. The deck
+has its track record; use those figures only in investor material Glen
+approves, never on the public site or in this repo.
+
+**How it works:** a TenaFi access point plugs into the host's router →
+guests connect through a branded splash page (name, email, phone captured) →
+branded homepage (guidebook, local experiences, property info, direct booking
+links and upsells) → automated email and SMS (welcome, review requests,
+campaigns, direct-booking offers) → guests book directly next time.
+
+**Model (deck, July 2026; pricing has since moved on):** installation fee,
+monthly subscription per property, and device financing over 12 months.
+By November 2026 the site sells TenaFi Lite, Pro and Outdoor devices with
+"buy the device / pay monthly", and "Book a demo" (call, video or visit)
+has replaced the free trial. Journeys exist for rentals, events and
+businesses (e.g. a café sending branded review-request emails).
+
+**Roadmap:** Tena Connect (guest data: WiFi, CRM, profiles, analytics) →
+Tena Engage (email/SMS, review requests, campaigns) → Tena Direct (direct
+reservations, lower commissions) → Tena Local (marketplace: restaurants,
+tours, transfers, local experiences, sponsored listings).
+
+**Expansion (deck):** East Africa first (Kenya, Uganda, Tanzania, Rwanda),
+then Southern, then West & North Africa. The deck's market sizing and
+revenue projections are investor material only.
+
+**Comparable:** StayFi (US guest-WiFi marketing) proved the model; Tena's
+edge is an Africa focus, SMS, a local marketplace and being founded by
+hospitality operators.
+
+**Sources:** the Tena pitch deck (July 2026) and Glen's PR emails on the
+Tena-host repo (Nov 2026), both in Kevin's Gmail.
+
+**Articles:** "Tena means 'again'".
+
+---
+
 ## Not yet written up
 
-- **Tena** (tena.host), listed as a flagship on the site: a guest
-  relationship platform for hospitality hosts (guest portal, in-stay orders
-  with M-Pesa, host dashboard, campaigns). Kevin is sharing the initial deck
-  and his conversations with Glen; write it up from those.
+
 - **OKJTechnologies studio platform**: the studio's own site (see "One person,
   one thread").
