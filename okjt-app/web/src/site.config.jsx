@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Cookie, FileText, Handshake, LifeBuoy, MapPin, ShieldCheck } from 'lucide-react';
 import { live, usePillars, useProjects, useServices, useSettings } from './lib/content';
-import { bySector, sectorPhoto } from './lib/sectors';
+import { bySector, sectorScreen } from './lib/sectors';
 import { mediaUrl } from './lib/media';
 import { getToken } from './lib/api';
 import ServicesMega from './components/ServicesMega';
@@ -59,7 +59,7 @@ export function useSiteConfig() {
       const key = `group-cat-${categorySlug(svc.category)}`;
       groupPhotos[key] ||= svc.image || setting(`bg_services_${categorySlug(svc.category).replace(/-/g, '_')}`) || null;
     }
-    for (const group of bySector(live(projects).filter((p) => p.type !== 'flagship'))) groupPhotos[`group-sector-${group.id}`] = sectorPhoto(group);
+    for (const group of bySector(live(projects).filter((p) => p.type !== 'flagship'))) groupPhotos[`group-sector-${group.id}`] = sectorScreen(group);
     const logo = mediaUrl(setting('logo_dark', LOGO));
     // The dark mark for the cream top bar; the light one over photos and the footer.
     const logoOnCream = mediaUrl(setting('logo_light', '/logos/OKJT-Logos/OKJTechLogo-Black_Transparent.png'));

@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import JourneyPage from '../components/Journey';
 import usePageMeta from '../components/usePageMeta';
-import { live, screenOf, useItem, usePillars, useProjects } from '../lib/content';
+import { live, useItem, usePillars, useProjects } from '../lib/content';
 import { principleFor, standoutProjects } from '../lib/principles';
 import { address, clip, listItems, sectionsOf, slugify } from '../lib/text';
 import NotFound from './NotFound';
@@ -34,7 +34,7 @@ export default function PillarDetail() {
       steps: principleFor(pillar).points,
       details: principleFor(pillar).receive,
       detailsLabel: 'What you receive',
-      media: (() => { const x = standoutProjects(principleFor(pillar), live(projects), 1)[0]; return x ? { src: screenOf(x), url: address(`/projects/${x.slug}`) } : undefined; })(),
+      media: (() => { const x = standoutProjects(principleFor(pillar), live(projects), 1)[0]; return x ? { src: x.bg_image || x.image, url: address(`/projects/${x.slug}`) } : undefined; })(),
     },
     pillar && principleFor(pillar) && {
       id: 'standout',

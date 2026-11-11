@@ -42,10 +42,17 @@ export function bySector(projects) {
 
 /** The picture for a group: its featured project's, else the first with one. */
 export const sectorPhoto = (group) => {
-  const withPhoto = group.projects.filter((p) => screenOf(p));
-  // A project with real screens beats one with only a logo.
-  const withScreens = withPhoto.filter((p) => (p.gallery ?? []).some(Boolean));
-  const pool = withScreens.length ? withScreens : withPhoto;
-  const pick = pool.find((p) => p.is_featured) || pool[0];
-  return pick ? screenOf(pick) : null;
+  const withPhoto = group.projects.filter((p) => p.bg_image || p.image);
+  const pick = withPhoto.find((p) => p.is_featured) || withPhoto[0];
+  return pick ? pick.bg_image || pick.image : null;
+};
+
+/**
+ * The big background behind a sector in "Work by Sector": a real screen of
+ * the work where a project has one (cards keep sectorPhoto's logo).
+ */
+export const sectorScreen = (group) => {
+  const withScreens = group.projects.filter((p) => (p.gallery ?? []).some(Boolean));
+  const pick = withScreens.find((p) => p.is_featured) || withScreens[0];
+  return pick ? screenOf(pick) : sectorPhoto(group);
 };
