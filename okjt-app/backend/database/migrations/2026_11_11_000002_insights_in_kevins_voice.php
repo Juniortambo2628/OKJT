@@ -239,25 +239,40 @@ HTML,
             ],
             [
                 'slug' => 'chairing-a-digital-trade-hackathon-at-altf-2023',
-                'title' => 'What chairing a digital-trade hackathon taught me about ideas',
+                'title' => 'Leading the AI and digital trade hackathon at ALTF 2023',
                 'category' => 'Events',
                 'published_at' => '2026-10-28 09:00:00',
-                'image' => $img('digital-trade-hackathon/01'),
-                'excerpt' => 'At the 2023 Africa Law Tech Festival, I chaired a hackathon on the AfCFTA and Africa\'s single digital market. Eleven innovations were shortlisted. Here is what I saw.',
+                'image' => '/assets/images/insights/altf-2023-hackathon.webp',
+                'excerpt' => 'At the 2023 Africa Law Tech Festival I ran a hackathon asking how AI could help Africa trade with itself. Eleven innovations were shortlisted. Here is how it worked, and what I learnt.',
                 'content' => <<<'HTML'
-<p>In July 2023 the Africa Law Tech Festival in Nairobi took on a big theme: <em>Digital Trade in Africa: The AfCFTA and the Single Digital Market</em>. On the justice innovation team, I had the privilege of chairing the hackathon, and of building the site that brought it together, with an interactive map of the continent to show where participants were coming from.</p>
+<p>In July 2023 the Africa Law Tech Festival in Nairobi took on a big theme: <em>Digital Trade in Africa: The AfCFTA and the Single Digital Market</em>. On the justice innovation team I was put in charge of the festival's <strong>AI &amp; Digital Trade Policy Hackathon</strong>, and I built the site that brought it together, with an interactive map of the continent showing where participants came from.</p>
 <p>Eleven innovations were shortlisted. I still think about the teams behind them.</p>
+<h2>The question we asked</h2>
+<p>How could artificial intelligence help Africa trade with itself under the African Continental Free Trade Area? We gave teams four themes to work on:</p>
+<ul>
+<li><strong>Trade facilitation.</strong> Faster customs, automated paperwork, smoother logistics and supply chains.</li>
+<li><strong>Market intelligence.</strong> Reading market trends and turning them into opportunities a business can act on.</li>
+<li><strong>Digital platforms.</strong> Connecting buyers and sellers across borders and making the transaction itself easier.</li>
+<li><strong>Policy and regulation.</strong> Using AI to monitor compliance, uphold standards and keep competition fair.</li>
+</ul>
+<h2>Two tracks, one table</h2>
+<p>We ran it as two hackathons side by side. The policy track worked on the data gap around digital trade in Africa, the shape of an AI governance framework for it, and what policymakers need to consider for a single digital market. The tech track worked on an AI-driven observatory: a living database of the challenges and opportunities in putting the AfCFTA into practice.</p>
+<p>That pairing mattered more than anything else we did. Lawyers, policy people, developers, designers and entrepreneurs were in the same rooms, building one answer instead of handing problems over a wall. The method we committed to was user-driven, deliberative, inclusive and participatory: co-creation, not a pitch contest.</p>
+<h2>How it ran</h2>
+<ul>
+<li><strong>Briefing, 7 July.</strong> A virtual session to share the objectives and documentation and form the teams.</li>
+<li><strong>Launch, 11 July.</strong> After the festival's opening addresses, teams broke into their own rooms and got to work.</li>
+<li><strong>Pitches and awards, 12 July.</strong> Submissions and pitch videos were due at noon. Pitches were pre-recorded so the main stage could play them without stealing time from the afternoon's speakers, and the judges deliberated before announcing three winners, with prizes of KSh 50,000, 30,000 and 20,000.</li>
+</ul>
 <h2>Courage is the first requirement</h2>
-<p>It takes real courage to stand in front of a room and offer an unfinished idea about something as large as trade across a continent. Every team that presented did that. Some ideas were rough. All of them were brave. A hackathon is one of the few places where we celebrate people for trying before they are sure, and I wish we did more of that everywhere else.</p>
+<p>It takes real courage to offer an unfinished idea about something as large as trade across a continent. Every team did that. Some ideas were rough. All of them were brave. A hackathon is one of the few places where we celebrate people for trying before they are sure, and I wish we did more of that everywhere else.</p>
 <h2>Policy problems are people problems</h2>
 <p>The strongest teams didn't start with the treaty. They started with a person: the small trader at a border, the young developer who wants to sell software to a neighbouring country, the woman whose goods sit waiting while paperwork moves. When you start there, the policy becomes something you can actually design for.</p>
-<h2>Where hackathons fall short</h2>
-<p>Forty-eight hours is enough to find a good idea, but rarely enough to know whether the people it is for want it. The ideas that had the best chance were the ones whose teams had already spoken to those people, and who left with a plan for the next conversation, not just the next feature.</p>
 <h2>What I carry from it</h2>
 <ul>
+<li>Put the people who write the rules and the people who build the tools at the same table, from the first hour.</li>
+<li>A day and a half is enough to find a good idea, but rarely enough to know whether the people it is for want it. Build in the support that comes after.</li>
 <li>Make room for unfinished ideas, and thank the people brave enough to share them.</li>
-<li>Start with the person, then the policy, then the product.</li>
-<li>The weekend is the beginning. Build in the support that comes after it.</li>
 </ul>
 <p>The event site is archived now, but the lesson isn't. Every workshop I run with a client is a little hackathon: a safe room to think out loud, with real people at the centre of it.</p>
 HTML,
@@ -292,12 +307,20 @@ HTML,
                 'title' => 'Privacy is a form of respect',
                 'category' => 'Data protection',
                 'published_at' => '2026-10-14 09:00:00',
-                'image' => $img('adpi-courses/03'),
+                'image' => '/assets/images/insights/data-protection-act.webp',
                 'excerpt' => 'Supporting the Africa Data Protection Course and CIPP/E training changed how I build. Here is how privacy shows up in small systems that hold people\'s lives.',
                 'content' => <<<'HTML'
 <p>At the Lawyers Hub I supported the delivery of the Africa Digital Policy Institute's Africa Data Protection Course and its Certified Information Privacy Professional (CIPP/E) training. I went in thinking of data protection as compliance: a checklist to satisfy. I came out seeing it as something closer to respect.</p>
 <h2>Every row is a person</h2>
 <p>A patient's history. A client's case file. A donor's card details. An alumnus's phone number. In a database they all look the same, a row with columns. But each one is a person who trusted someone with something, often at a vulnerable moment. Building a system that holds that information is a promise to look after it.</p>
+<h2>What the Act actually asks</h2>
+<p>I was trained on Kenya's Data Protection Act alongside the people I was helping to teach, and a few things in it changed how I think about every system I build:</p>
+<ul>
+<li><strong>Consent has to be real.</strong> The Act defines it as express, unequivocal, free, specific and informed. A pre-ticked box is none of those things.</li>
+<li><strong>Health data is sensitive data.</strong> So are details about family, ethnicity, beliefs and biometrics. Clinics, alumni networks and wedding guest lists all hold some of it.</li>
+<li><strong>Someone is accountable.</strong> Data controllers and processors register with the Data Commissioner, and the Commissioner can investigate complaints and issue fines. Every system needs a clear answer to who is responsible for what.</li>
+<li><strong>The point is people.</strong> The Act exists to give effect to the right to privacy in Kenya's Constitution, and to give people rights and remedies when their data is mishandled.</li>
+</ul>
 <h2>How it shows up in what I build</h2>
 <ul>
 <li><strong>Only what is needed.</strong> If the system doesn't need a piece of information to help someone, it doesn't ask for it.</li>

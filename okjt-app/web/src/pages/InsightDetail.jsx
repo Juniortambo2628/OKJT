@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom';
 import JourneyPage from '../components/Journey';
 import usePageMeta from '../components/usePageMeta';
 import { formatDate, live, readingTime, useInsights, useItem, useSettings } from '../lib/content';
+import { DEFAULT_HERO } from '../lib/defaults';
 import { address, clip, sectionsOf, slugify } from '../lib/text';
 import NotFound from './NotFound';
 
@@ -31,7 +32,9 @@ export default function InsightDetail() {
     <JourneyPage
       loading={isLoading}
       hero={{
-        media: insight?.image,
+        // The insights backdrop, not the cover: covers are often screens or slides with words on them,
+        // which fight the title. The cover leads the first chapter instead.
+        media: setting('hero_insights_media') || DEFAULT_HERO,
         eyebrow: insight?.category || 'Insight',
         title: insight?.title || '',
         text: clip(insight?.excerpt, 240),

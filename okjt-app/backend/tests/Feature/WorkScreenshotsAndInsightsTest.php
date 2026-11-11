@@ -58,6 +58,10 @@ class WorkScreenshotsAndInsightsTest extends TestCase
             foreach ($shots[1] as $shot) {
                 $this->assertFileExists(base_path("../web/public/assets/images/work/{$shot}.webp"), $shot);
             }
+            preg_match_all("#'(/assets/images/[a-z0-9/-]+\\.webp)'#", file_get_contents($file), $paths);
+            foreach ($paths[1] as $path) {
+                $this->assertFileExists(base_path("../web/public{$path}"), $path);
+            }
         }
     }
 
@@ -89,5 +93,9 @@ class WorkScreenshotsAndInsightsTest extends TestCase
         $this->assertSame(14, Insight::count());
         $this->assertTrue(Insight::where('slug', 'there-is-no-impossible-problem')->first()->is_published);
         $this->getJson('/api/insights')->assertOk()->assertJsonPath('0.slug', 'there-is-no-impossible-problem');
+
+        $this->runMigration('2026_11_11_000003_flagship_stories_and_lawyers_hub_work');
+        $this->assertSame(20, Insight::count());
+        $this->assertStringContainsString('Kakamega', Insight::where('slug', 'tibu-the-same-care-in-nairobi-and-kakamega')->value('content'));
     }
 }
