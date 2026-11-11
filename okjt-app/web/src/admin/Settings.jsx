@@ -69,7 +69,9 @@ export default function Settings() {
     >
       {query.isError ? <QueryError what="the settings" onRetry={query.refetch} error={query.error} /> : (
         <div className="grid gap-5 lg:grid-cols-[15rem_1fr]">
-          <nav aria-label="Settings groups" className="flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible">
+          {/* Stays in view through long groups, like the dashboard's side panels:
+              a column beside the form, a chip bar under the header on phones. */}
+          <nav aria-label="Settings groups" className="sticky top-16 z-20 -mx-4 flex gap-2 overflow-x-auto border-b border-accent/10 bg-paper/95 px-4 py-2 backdrop-blur sm:-mx-6 sm:px-6 lg:top-20 lg:z-auto lg:mx-0 lg:max-h-[calc(100dvh-6.5rem)] lg:flex-col lg:self-start lg:overflow-x-visible lg:overflow-y-auto lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
             {groups.map((g) => (
               <button key={g.id} type="button" onClick={() => { if (!dirty || window.confirm('Leave without saving your changes?')) setActive(g.id); }} aria-current={current?.id === g.id ? 'page' : undefined}
                 className={`shrink-0 rounded-xl px-4 py-2.5 text-left text-sm transition-colors ${current?.id === g.id ? 'bg-[#f3ead5] text-[#1d160d] shadow-sm' : 'text-tone-600 hover:bg-tone-100 hover:text-ink'}`}>
