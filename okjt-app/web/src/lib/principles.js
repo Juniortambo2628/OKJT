@@ -1,3 +1,4 @@
+import { screenOf } from './content';
 /**
  * What goes into each principle of the approach, for the Approach page and
  * each principle's own page. Matched to a pillar by its title. A pillar
@@ -102,7 +103,7 @@ export const principleFor = (pillar) => {
 export function standoutProjects(principle, projects, count = 3, avoid = new Set()) {
   const words = principle?.projects ?? [];
   const text = (p) => `${p.title} ${p.category} ${(p.focus_areas ?? []).join(' ')}`.toLowerCase();
-  const score = (p) => words.filter((w) => text(p).includes(w)).length * 2 + (p.bg_image || p.image ? 1 : 0) + (p.is_featured ? 1 : 0);
+  const score = (p) => words.filter((w) => text(p).includes(w)).length * 2 + (screenOf(p) ? 1 : 0) + (p.is_featured ? 1 : 0);
   return [...projects]
     .filter((p) => !avoid.has(p.id))
     .sort((a, b) => score(b) - score(a))
