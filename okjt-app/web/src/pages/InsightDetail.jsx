@@ -1,13 +1,17 @@
 import { useParams } from 'react-router-dom';
 import JourneyPage from '../components/Journey';
 import usePageMeta from '../components/usePageMeta';
-import { formatDate, live, readingTime, useInsights, useItem } from '../lib/content';
+import { formatDate, live, readingTime, useInsights, useItem, useSettings } from '../lib/content';
 import { address, clip, sectionsOf, slugify } from '../lib/text';
 import NotFound from './NotFound';
+
+/** The account that posted an article is often the site's admin login; the byline names the writer instead. */
+const byline = (name, writer) => (name && !/\badmin\b/i.test(name) ? name : writer);
 
 /** An article, its sections as chapters. */
 export default function InsightDetail() {
   const { slug } = useParams();
+  const { setting } = useSettings();
   const { data: insight, isLoading, error } = useItem(`/insights/${slug}`);
   const { data: all } = useInsights();
   usePageMeta(insight?.title, insight?.excerpt || insight?.content);
@@ -37,7 +41,7 @@ export default function InsightDetail() {
         [formatDate(insight.published_at || insight.created_at), 'published'],
         [`${readingTime(insight.content)} min`, 'to read'],
         [insight.category || 'Notes', 'topic'],
-        [insight.user?.name || 'OKJTech', 'written by'],
+        [byline(insight.user?.name, setting('insights_author', 'Kevin Tambo')), 'written by'],
       ] : []}
       label="The article"
       chapters={chapters}

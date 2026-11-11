@@ -20,7 +20,8 @@ export default function ProjectDetail() {
   if (error?.response?.status === 404) return <NotFound />;
 
   const gallery = (project?.gallery ?? []).filter(Boolean);
-  const pictures = [...new Set([project?.bg_image || project?.image, ...gallery, project?.image].filter(Boolean))];
+  // Screens of the system itself once there are any; a logo is only a stand-in until then.
+  const pictures = [...new Set((gallery.length ? gallery : [project?.bg_image || project?.image, project?.image]).filter(Boolean))];
   const frameUrl = project?.url?.replace(/^https?:\/\//, '') || address(`/projects/${slug}`);
   // Each picture once, in turn; sections past them get a card instead.
   const picture = (n) => (pictures[n] ? { src: pictures[n], url: frameUrl } : undefined);
@@ -98,7 +99,7 @@ export default function ProjectDetail() {
     <JourneyPage
       loading={isLoading}
       hero={{
-        media: project?.bg_image || project?.image,
+        media: project?.bg_image || gallery[0] || project?.image,
         eyebrow: project ? (project.type === 'flagship' ? 'Flagship product' : project.client_name || 'Client project') : '',
         title: project?.title || '',
         breadcrumbs: [{ to: '/', label: 'Home' }, { to: '/projects', label: 'Projects' }, { label: project?.title || '…' }],

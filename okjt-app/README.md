@@ -45,6 +45,8 @@ then open http://127.0.0.1:8000.
 | Public pages | `src/pages/` |
 | Dashboard | `src/admin/`: `dashboard.config.jsx` (sidebar), `resources.js` (every content list and its form), `Settings.jsx`, `Media.jsx`, `Overview.jsx` |
 | Words and pictures | the dashboard's Site settings (stored in the API's `site_settings`) |
+| Screens of each project's system | `public/assets/images/work/<project slug>/NN.webp` (galleries point at them; add more from the dashboard as usual) |
+| How the writing should sound | `../documentation/VOICE_AND_TONE.md` |
 
 To manage a new kind of content: add its API routes in `backend`, then one
 entry in `src/admin/resources.js` and one sidebar item in `dashboard.config.jsx`.
