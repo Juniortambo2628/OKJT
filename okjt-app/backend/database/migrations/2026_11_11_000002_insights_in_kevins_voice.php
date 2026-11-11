@@ -264,8 +264,8 @@ HTML,
 <p>Up to fifty participants took part, in at most ten teams of five. Teams were drawn at random from the registrations, on purpose, so that every team mixed backgrounds rather than friends. It ran in English and French, in person at the festival and online, with a shared whiteboard for each team.</p>
 <ul>
 <li><strong>Briefing, 7 July.</strong> A virtual session to share the objectives and documentation and form the teams.</li>
-<li><strong>Launch, 11 July.</strong> After the festival's opening addresses, teams broke into their own rooms and got to work.</li>
-<li><strong>Pitches and awards, 12 July.</strong> Submissions and pitch videos were due at noon. Pitches were pre-recorded so the main stage could play them without stealing time from the afternoon's speakers, and the judges deliberated before announcing three winners, with prizes of KSh 50,000, 30,000 and 20,000.</li>
+<li><strong>Launch, 12 July.</strong> After the festival's opening addresses, teams broke into their own rooms and got to work.</li>
+<li><strong>Pitches and awards, 13 July.</strong> Submissions and pitch videos were due at noon. Pitches were pre-recorded so the main stage could play them without stealing time from the afternoon's speakers, and the judges deliberated before announcing three winners, with prizes of KSh 50,000, 30,000 and 20,000.</li>
 </ul>
 <figure><img src="/assets/images/insights/altf-2023-winners.webp" alt="The SemaPDF team on stage at the Africa Law Tech Festival 2023" loading="lazy"><figcaption>SemaPDF, one of the three winning teams, alongside AfriSoko and AfriTrade.</figcaption></figure>
 <h2>Courage is the first requirement</h2>

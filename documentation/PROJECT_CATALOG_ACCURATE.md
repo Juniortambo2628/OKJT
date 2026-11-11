@@ -91,7 +91,7 @@ Both are live and easy to point CV readers at:
 
 ### 6.4 Africa Law Tech Festival — festival‑floor roles
 - **ALTF 2022 — *Africa‑Europe AI Policy Dialogue*** (Nairobi, Jun 2–18 2022). **Role: delegate & event support under the media team.**
-- **ALTF 2023 — *Digital Trade in Africa: The AfCFTA and the Single Digital Market*** (Nairobi, Jul 12–13 2023). **Role: chaired a hackathon under the justice innovation team**, which produced 11 shortlisted innovations.
+- **ALTF 2023 — *Digital Trade in Africa: The AfCFTA and the Single Digital Market*** (Nairobi, Jul 12–13 2023). **Role: led the AI & Digital Trade Policy Hackathon (12–13 July) under the justice innovation team**, which produced 11 shortlisted innovations.
 
 ### 6.5 Boda‑Boda Law Project — the wider engagement
 Beyond the website (§ project 6 below), I:

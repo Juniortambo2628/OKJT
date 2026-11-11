@@ -46,9 +46,9 @@ capacity building; sustainable AI businesses.
 AI governance framework, identify policy considerations for a single digital
 market; *tech*: an AI-enabled observatory (database) of AfCFTA challenges
 and opportunities.
-**Timeline:** briefing (virtual) Fri 7 July 2023; launch Tue 11 July after
+**Timeline:** briefing (virtual) Fri 7 July 2023; launch 12 July after
 the opening addresses; submissions and pre-recorded pitch videos (Sparkhire)
-by noon Wed 12 July, judging and awards that day.
+by noon on 13 July, judging and awards that day.
 **Prizes:** KSh 50,000 / 30,000 / 20,000.
 **Format:** up to 10 teams of 5 (50 participants), drawn at random from
 registrations so every team mixed backgrounds; English and French; in person
@@ -62,8 +62,8 @@ AfriSoko and AfriTrade** (prize order not recorded here).
 **Photos (in Kevin's files and on the site):** coordinating teams on the
 hackathon floor; the three winning teams on stage.
 
-> The catalog previously gave the festival dates as 12–13 July; the
-> hackathon brief puts its own days at 11–12 July.
+> The hackathon brief (written in advance) gives 11–12 July; Kevin confirms
+> the hackathon ran on the festival days, **12–13 July 2023**. Use 12–13.
 
 **Article:** "Leading the AI and digital trade hackathon at ALTF 2023".
 
@@ -133,11 +133,13 @@ appeal to the High Court).
 - **AI Ethics Symposium poll** (Lawyers Hub with the University of
   Cambridge, 26 June 2023: AI, data protection, privacy and surveillance):
   poll prepared; no responses were recorded.
-- **Gig economy:** survey questions for stakeholders on the gig economy and
-  the future of work in Africa, and a draft article *The Gig Economy in
-  Africa*. Kevin's authorship and their use are to be confirmed. Their
-  statistics need checking before any reuse (e.g. the "$455bn by 2023"
-  figure is a global estimate, not Africa's).
+- **Gig economy survey:** Kevin helped prepare the survey questions for
+  stakeholders on the gig economy and the future of work in Africa, and
+  facilitated the data collection. The article *The Gig Economy in Africa*
+  was written by someone else as a product of that survey; credit Kevin for
+  the questions and data collection only. Its statistics need checking
+  before any reuse (e.g. "$455bn by 2023" is a global estimate, not
+  Africa's).
 
 Respondent lists in these polls name individuals; publish aggregates only.
 
@@ -145,8 +147,12 @@ Respondent lists in these polls name individuals; publish aggregates only.
 Africa said"; "Everyday apps and the privacy policies nobody reads"; "What
 founders said at the ALTF 2023 startup roundtable".
 
-## Next: LinkedIn
+## Next: CV and LinkedIn
 
-All of the above (the Lawyers Hub record, the flagships and the client work)
-still needs to go onto Kevin's LinkedIn profile and the OKJTechnologies
-company page.
+**Raise this when the CV is next being worked on** (Kevin's request; no fixed
+date). Everything above, the flagships (`FLAGSHIPS.md`) and the client work
+still needs to go onto the CV, Kevin's LinkedIn profile and the
+OKJTechnologies company page. Advice already given: headline and Featured
+section, Lawyers Hub bullets with photos, a Projects entry per flagship, a
+complete company page, and posting each article from the personal profile
+(then resharing to the page), with chart carousels from the surveys.

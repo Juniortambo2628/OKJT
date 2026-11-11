@@ -48,9 +48,10 @@ all their records in any facility in the country.
 3. *The health sector*: a cohesive network for information sharing,
    collaboration, research and better service delivery.
 4. *NGOs and national organisations*: consolidated, anonymised countrywide
-   insights that can inform annual health statistics and reports. (Kevin's
-   note named UNHCR; WHO, UNICEF and national bodies are likelier audiences
-   for health statistics. Confirm before naming any organisation in a pitch.)
+   insights that can inform annual health statistics and reports. Describe
+   these as "NGOs and national organisations" (Kevin's note named UNHCR,
+   the refugee agency; he agreed the general wording is right). Name a
+   specific organisation only once it is confirmed.
 
 **Evidence used so far** (from the Tibu+ challenge essay, with sources):
 - About 2.6 doctors per 10,000 people in Kenya vs a WHO benchmark of ~10
@@ -138,7 +139,9 @@ traditions".
 ## Najenga: construction tracking that starts on WhatsApp
 
 **Status:** in development, staging live at najenga.okjtech.co.ke; in use on
-one real client build (a home in western Kenya) in WhatsApp test mode.
+one real client build (a home in western Kenya) in WhatsApp test mode. Kevin
+has approved mentioning that build publicly, **with no personal details**:
+no names, phone numbers, payment references, amounts or exact location.
 
 **Inspiration.** On the real build, every update arrived on WhatsApp: site
 photos and videos, bank debit and M-Pesa messages, supplier invoices, typed
@@ -198,8 +201,9 @@ game"; "Follow your team. Travel with your tribe."
 
 ## Not yet written up
 
-- **Tena** (tena.host), listed as a flagship on the site: a progressive-
-  disclosure onboarding platform with an analytics dashboard and passkey
-  sign-in. Its inspiration and audience haven't been captured; ask Kevin.
+- **Tena** (tena.host), listed as a flagship on the site: a guest
+  relationship platform for hospitality hosts (guest portal, in-stay orders
+  with M-Pesa, host dashboard, campaigns). Kevin is sharing the initial deck
+  and his conversations with Glen; write it up from those.
 - **OKJTechnologies studio platform**: the studio's own site (see "One person,
   one thread").
