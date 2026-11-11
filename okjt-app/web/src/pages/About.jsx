@@ -1,5 +1,5 @@
 import JourneyPage from '../components/Journey';
-import { live, screenOf, useClients, useProjects, useSettings, useStats, useTeam, useTestimonials } from '../lib/content';
+import { live, useClients, useProjects, useSettings, useStats, useTeam, useTestimonials } from '../lib/content';
 import { DEFAULT_HERO } from '../lib/defaults';
 import { bySector, sectorPhoto } from '../lib/sectors';
 import { address, clip } from '../lib/text';
@@ -20,8 +20,8 @@ export default function About() {
   const work = live(projects);
   const clientWork = work.filter((p) => p.type !== 'flagship');
   const sectors = bySector(clientWork);
-  const pictured = [...work.filter((p) => p.is_featured), ...work].filter((p) => screenOf(p));
-  const pic = (n) => (pictured[n] ? { src: screenOf(pictured[n]), url: address(`/projects/${pictured[n].slug}`) } : undefined);
+  const pictured = [...work.filter((p) => p.is_featured), ...work].filter((p) => p.bg_image || p.image);
+  const pic = (n) => (pictured[n] ? { src: pictured[n].bg_image || pictured[n].image, url: address(`/projects/${pictured[n].slug}`) } : undefined);
   const quote = live(testimonials).find((t) => t.is_featured) || live(testimonials)[0];
   const people = live(team);
   // Example clients for a sector, leaving out unnamed ones ("Private Client").
@@ -115,7 +115,7 @@ export default function About() {
         navLabel: 'The work',
         title: 'See what has been built',
         text: 'A few of the platforms in daily use. Each case study shows the problem, what was built and what changed.',
-        cards: pictured.slice(0, 4).map((p) => ({ to: `/projects/${p.slug}`, image: screenOf(p), tags: [p.type === 'flagship' ? 'Flagship' : p.client_name], title: p.title, text: p.tagline })),
+        cards: pictured.slice(0, 4).map((p) => ({ to: `/projects/${p.slug}`, image: p.bg_image || p.image, tags: [p.type === 'flagship' ? 'Flagship' : p.client_name], title: p.title, text: p.tagline })),
       }}
       onward={{ to: '/contact', tags: ['Next step'], title: 'Start with a short brief', text: 'A few lines about your project is enough. You’ll get a reply with next steps.' }}
     />

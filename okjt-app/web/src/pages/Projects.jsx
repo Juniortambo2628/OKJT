@@ -1,7 +1,7 @@
 import JourneyPage from '../components/Journey';
-import { live, screenOf, useProjects, useSettings } from '../lib/content';
+import { live, useProjects, useSettings } from '../lib/content';
 import { DEFAULT_HERO } from '../lib/defaults';
-import { bySector, sectorPhoto } from '../lib/sectors';
+import { bySector, sectorPhoto, sectorScreen } from '../lib/sectors';
 import { address, clip, strip } from '../lib/text';
 
 const shortSector = (p) => p.category?.split(/[,/]/)[0]?.trim();
@@ -26,7 +26,7 @@ export default function Projects({ flagship = false }) {
       when: shortSector(p) || 'Flagship',
       title: p.title,
       intro: p.tagline || clip(p.description, 220),
-      media: { src: screenOf(p), url: p.url?.replace(/^https?:\/\//, '') || address(`/projects/${p.slug}`) },
+      media: { src: p.bg_image || p.image, url: p.url?.replace(/^https?:\/\//, '') || address(`/projects/${p.slug}`) },
       steps: [
         p.problem && { title: 'The opportunity', text: clip(p.problem, 180) },
         p.methodology && { title: 'What was built', text: clip(p.methodology, 180) },
@@ -43,7 +43,7 @@ export default function Projects({ flagship = false }) {
       when: `${g.projects.length} ${g.projects.length === 1 ? 'platform' : 'platforms'}`,
       title: g.label,
       intro: g.line,
-      media: { src: sectorPhoto(g), url: address(`/projects?sector=${g.id}`) },
+      media: { src: sectorScreen(g), url: address(`/projects?sector=${g.id}`) },
       steps: g.projects.map((p) => ({
         title: p.client_name && !p.title.includes(p.client_name) ? `${p.title} · ${p.client_name}` : p.title,
         text: clip(p.tagline || p.description, 140),
@@ -52,8 +52,8 @@ export default function Projects({ flagship = false }) {
       stack: g.projects.flatMap((p) => p.technologies ?? []),
     }));
 
-  const lead = products.find((p) => screenOf(p));
-  const clientLead = clients.find((p) => p.is_featured && (screenOf(p))) || clients.find((p) => screenOf(p));
+  const lead = products.find((p) => p.bg_image || p.image);
+  const clientLead = clients.find((p) => p.is_featured && (p.bg_image || p.image)) || clients.find((p) => p.bg_image || p.image);
 
   return (
     <JourneyPage
@@ -93,11 +93,11 @@ export default function Projects({ flagship = false }) {
         navLabel: 'Flagship',
         title: 'Built and run by OKJTechnologies',
         text: 'Products of our own, each designed around a whole ecosystem of people.',
-        cards: products.slice(0, 4).map((p) => ({ to: `/projects/${p.slug}`, image: screenOf(p), tags: ['Flagship', shortSector(p)], title: p.title, text: p.tagline || clip(strip(p.description), 140) })),
+        cards: products.slice(0, 4).map((p) => ({ to: `/projects/${p.slug}`, image: p.bg_image || p.image, tags: ['Flagship', shortSector(p)], title: p.title, text: p.tagline || clip(strip(p.description), 140) })),
       }}
       onward={flagship
-        ? { to: '/client-impact', image: screenOf(clientLead), tags: ['Client Impact'], title: 'Work that clients rely on', text: 'Platforms in daily use, with clients’ own words where they have shared them.' }
-        : { to: '/projects/flagship', image: screenOf(lead), tags: ['Flagship'], title: 'How Flagship Products Are Built', text: 'Every product, its opportunity, what was built and what it changed.' }}
+        ? { to: '/client-impact', image: clientLead?.bg_image || clientLead?.image, tags: ['Client Impact'], title: 'Work that clients rely on', text: 'Platforms in daily use, with clients’ own words where they have shared them.' }
+        : { to: '/projects/flagship', image: lead?.bg_image || lead?.image, tags: ['Flagship'], title: 'How Flagship Products Are Built', text: 'Every product, its opportunity, what was built and what it changed.' }}
     />
   );
 }
