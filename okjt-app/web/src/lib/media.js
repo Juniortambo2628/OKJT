@@ -19,3 +19,20 @@ export function mediaUrl(path) {
 }
 
 export const isVideo = (path) => /\.(mp4|webm|mov)(\?.*)?$/i.test(path || '');
+
+/**
+ * Lighter copies of the large stock clips that ship with the app, in
+ * public/assets/videos/okjt-bg-videos: a 1080p encode (a fraction of the 4K
+ * file, and no visible difference at hero size) and its first frame as a
+ * poster, shown at once while the clip loads. Matched by the stock clip's
+ * number, so an upload of the same file under /storage is lightened too.
+ */
+const CLIPS = '/assets/videos/okjt-bg-videos/';
+const LIGHTER = new Set(['3129671', '3129977']);
+
+/** A clip's address to play and its poster: { src, poster }. */
+export function clipFor(path) {
+  const id = String(path || '').split('/').pop().match(/^(\d+)-uhd_/)?.[1];
+  if (id && LIGHTER.has(id)) return { src: `${CLIPS}${id}-1080p.mp4`, poster: `${CLIPS}${id}-poster.webp` };
+  return { src: mediaUrl(path), poster: null };
+}
