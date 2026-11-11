@@ -95,4 +95,20 @@ describe('NotificationsBell', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Mark all read' }))
     await waitFor(() => expect(api.post).toHaveBeenCalledWith('/notifications/mark-read'))
   })
+
+  it('reads another API through listPath, markAllPath and map', async () => {
+    const api = {
+      get: vi.fn(async () => ({ data: [{ id: 'd1', read_at: null, created_at: new Date().toISOString(), data: { title: 'Receipt read', message: 'Ksh 2,500', url: '/receipts/4' } }] })),
+      post: vi.fn(async () => ({})),
+    }
+    const map = (n) => ({ id: n.id, read_at: n.read_at, created_at: n.created_at, title: n.data.title, message: n.data.message, link: n.data.url })
+    render(<MemoryRouter><DashboardProvider dashboard={{ api }}><NotificationsBell listPath="/inbox" markAllPath="/inbox/read-all" map={map} /></DashboardProvider></MemoryRouter>)
+    fireEvent.click(await screen.findByRole('button', { name: 'Notifications, 1 unread' }))
+    expect(api.get).toHaveBeenCalledWith('/inbox')
+    expect(screen.getByText('Receipt read')).toBeInTheDocument()
+    expect(screen.getByText('Ksh 2,500')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Mark all read' }))
+    await waitFor(() => expect(api.post).toHaveBeenCalledWith('/inbox/read-all'))
+  })
 })
+

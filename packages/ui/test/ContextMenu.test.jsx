@@ -40,4 +40,31 @@ describe('ContextMenu', () => {
     fireEvent.keyDown(document, { key: 'Escape' })
     expect(onClose).toHaveBeenCalled()
   })
+
+  it('gives focus back to what opened it when it closes', () => {
+    const opener = document.createElement('button')
+    document.body.appendChild(opener)
+    opener.focus()
+    const items = [{ label: 'Copy', onSelect: vi.fn() }]
+    const { rerender } = render(<ContextMenu position={{ x: 10, y: 10 }} items={items} onClose={vi.fn()} />)
+    expect(screen.getByRole('menuitem', { name: /Copy/ })).toHaveFocus()
+    rerender(<ContextMenu position={null} items={items} onClose={vi.fn()} />)
+    expect(opener).toHaveFocus()
+    opener.remove()
+  })
+
+  it('leaves focus where an item put it (a dialog it opened, say)', () => {
+    const opener = document.createElement('button')
+    const field = document.createElement('input')
+    document.body.append(opener, field)
+    opener.focus()
+    const items = [{ label: 'Rename', onSelect: () => field.focus() }]
+    const { rerender } = render(<ContextMenu position={{ x: 10, y: 10 }} items={items} onClose={vi.fn()} />)
+    fireEvent.click(screen.getByRole('menuitem', { name: /Rename/ }))
+    rerender(<ContextMenu position={null} items={items} onClose={vi.fn()} />)
+    expect(field).toHaveFocus()
+    opener.remove()
+    field.remove()
+  })
 })
+
