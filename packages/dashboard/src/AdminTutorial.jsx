@@ -221,6 +221,10 @@ export default function AdminTutorial({ steps: allSteps, onComplete, isRestarted
       <motion.div
         layout
         ref={boxRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="okjt-tutorial-title"
+        aria-describedby="okjt-tutorial-body"
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         style={boxStyle}
@@ -266,11 +270,11 @@ export default function AdminTutorial({ steps: allSteps, onComplete, isRestarted
               exit={{ opacity: 0, y: -10 }}
               className="min-h-[100px]"
             >
-              <h3 className="text-xl font-semibold text-body mb-2 flex items-center gap-2">
+              <h3 id="okjt-tutorial-title" className="text-xl font-semibold text-body mb-2 flex items-center gap-2">
                 {step.title}
                 {currentStep === 0 && <Sparkles className="w-4 h-4 text-accent" />}
               </h3>
-              <p className="text-muted text-sm leading-relaxed">
+              <p id="okjt-tutorial-body" className="text-muted text-sm leading-relaxed">
                 {step.content}
               </p>
             </motion.div>

@@ -29,7 +29,7 @@ describe('AdminTutorial', () => {
     const { getByText, queryByText, rerender } = render(<AdminTutorial open={false} steps={steps} onComplete={onComplete} />)
     expect(queryByText('One')).toBeNull()
     rerender(<AdminTutorial open steps={steps} onComplete={onComplete} />)
-    expect(getByText('One')).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: 'One' })).toBeInTheDocument()
     act(() => { document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' })) })
     expect(screen.getByRole('button', { name: /Finish Tour/ })).toBeInTheDocument()
     act(() => { document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' })) })

@@ -40,7 +40,8 @@ Additions, with the defaults leaving every page as it was:
 - `AdminTutorial`: `open` (the app decides when it shows and remembers who
   has finished; nothing goes in localStorage), `skipMissing` (leaves out
   steps whose element isn't on screen), a step's `selector` instead of an
-  element id, and ←, → and Escape.
+  element id, and ←, → and Escape. Its card is a dialog named by the step's
+  title, for screen readers.
 
 ## 0.3.0 → 0.4.0 (dashboard 0.4.0, ui 0.2.1, laravel-kit 0.4.0, create-okjt-app 0.1.3)
 
