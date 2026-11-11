@@ -52,7 +52,7 @@ return new class extends Migration
                     'image' => $a['image'] ?? null,
                     'user_id' => $author,
                     'is_published' => true,
-                    'published_at' => $a['published_at'] ?? $now,
+                    'published_at' => $a['published_at'],
                     'created_at' => $now,
                 ]);
             }
@@ -113,6 +113,7 @@ HTML,
             ],
             [
                 'slug' => 'ecosystem-mapping-before-you-write-a-line-of-code',
+                'published_at' => '2026-09-15 09:00:00', // used only if the article is missing
                 'title' => 'Ecosystem mapping before you write a line of code',
                 'category' => 'Strategy',
                 'image' => $img('tibu/02'),
@@ -138,6 +139,7 @@ HTML,
             ],
             [
                 'slug' => 'two-years-inside-africas-legaltech-engine-room',
+                'published_at' => '2026-09-08 09:00:00', // used only if the article is missing
                 'title' => "Two years inside Africa's LegalTech engine room",
                 'category' => 'LegalTech',
                 'image' => $img('lawyers-hub-digital-policy/01'),
@@ -162,6 +164,7 @@ HTML,
             ],
             [
                 'slug' => 'solo-founder-stack-laravel-nextjs-ai-accelerated',
+                'published_at' => '2026-08-31 09:00:00', // used only if the article is missing
                 'title' => 'One person, one thread: how a solo studio ships like a team',
                 'category' => 'Engineering',
                 'image' => $img('okjtech-portfolio/01'),
@@ -188,6 +191,7 @@ HTML,
             ],
             [
                 'slug' => 'building-nyalife-hms-first-instance-of-tibu',
+                'published_at' => '2026-08-21 09:00:00', // used only if the article is missing
                 'title' => 'Building Nyalife HMS, the first instance of Tibu',
                 'category' => 'HealthTech',
                 'image' => $img('tibu/01'),
@@ -210,6 +214,7 @@ HTML,
             ],
             [
                 'slug' => 'najengas-spatial-annotation-architecture',
+                'published_at' => '2026-08-11 09:00:00', // used only if the article is missing
                 'title' => 'Najenga: building a home without losing sight of it',
                 'category' => 'PropTech',
                 'image' => $img('najenga/01'),

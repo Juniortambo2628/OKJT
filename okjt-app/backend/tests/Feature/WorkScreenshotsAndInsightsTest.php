@@ -25,7 +25,8 @@ class WorkScreenshotsAndInsightsTest extends TestCase
 
     private function project(string $slug, ?array $gallery): Project
     {
-        return Project::create(['type' => 'client', 'title' => ucfirst($slug), 'slug' => $slug, 'gallery' => $gallery, 'is_active' => true]);
+        // Earlier migrations may already hold these projects.
+        return Project::updateOrCreate(['slug' => $slug], ['type' => 'client', 'title' => ucfirst($slug), 'gallery' => $gallery, 'is_active' => true]);
     }
 
     public function test_screenshots_fill_galleries_and_keep_uploads(): void
@@ -62,8 +63,8 @@ class WorkScreenshotsAndInsightsTest extends TestCase
 
     public function test_only_empty_service_images_are_filled(): void
     {
-        $blank = Service::create(['title' => 'Custom', 'slug' => 'custom-web-applications', 'category' => 'Web', 'is_active' => true]);
-        $set = Service::create(['title' => 'Shops', 'slug' => 'ecommerce-platforms', 'category' => 'Web', 'image' => '/storage/uploads/shop.webp', 'is_active' => true]);
+        $blank = Service::updateOrCreate(['slug' => 'custom-web-applications'], ['title' => 'Custom', 'category' => 'Web', 'image' => null, 'is_active' => true]);
+        $set = Service::updateOrCreate(['slug' => 'ecommerce-platforms'], ['title' => 'Shops', 'category' => 'Web', 'image' => '/storage/uploads/shop.webp', 'is_active' => true]);
 
         $this->runMigration('2026_11_11_000001_add_work_screenshots');
 
@@ -74,6 +75,7 @@ class WorkScreenshotsAndInsightsTest extends TestCase
     public function test_articles_are_rewritten_in_place_and_new_ones_added(): void
     {
         $user = User::factory()->create();
+        Insight::query()->forceDelete();
         $old = Insight::create([
             'title' => 'Old', 'slug' => 'ecosystem-mapping-before-you-write-a-line-of-code', 'category' => 'Strategy',
             'content' => '<p>Old</p>', 'user_id' => $user->id, 'is_published' => true, 'published_at' => '2026-09-15 00:00:00',
