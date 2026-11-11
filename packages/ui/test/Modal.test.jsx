@@ -26,4 +26,37 @@ describe('Modal', () => {
     render(<Modal open={false} onClose={vi.fn()}>Body</Modal>)
     expect(screen.queryByText('Body')).toBeNull()
   })
+
+  it('moves focus in, keeps Tab inside, and gives it back on close', () => {
+    const opener = document.createElement('button')
+    document.body.appendChild(opener)
+    opener.focus()
+    const { rerender } = render(
+      <Modal open onClose={vi.fn()} showClose={false}><input aria-label="Name" /><button>Save</button></Modal>
+    )
+    const name = screen.getByRole('textbox', { name: 'Name' })
+    const save = screen.getByRole('button', { name: 'Save' })
+    expect(name).toHaveFocus()
+    save.focus()
+    fireEvent.keyDown(document, { key: 'Tab' })
+    expect(name).toHaveFocus()
+    fireEvent.keyDown(document, { key: 'Tab', shiftKey: true })
+    expect(save).toHaveFocus()
+    rerender(<Modal open={false} onClose={vi.fn()} showClose={false}><input aria-label="Name" /></Modal>)
+    return new Promise((resolve) => setTimeout(() => { expect(opener).toHaveFocus(); opener.remove(); resolve() }, 600))
+  })
+
+  it('leaves Tab alone inside a dialog opened on top of it', () => {
+    render(<Modal open onClose={vi.fn()} showClose={false}><button>Under</button></Modal>)
+    const top = document.createElement('div')
+    top.setAttribute('aria-modal', 'true')
+    const yes = document.createElement('button')
+    top.appendChild(yes)
+    document.body.appendChild(top)
+    yes.focus()
+    fireEvent.keyDown(document, { key: 'Tab' })
+    expect(yes).toHaveFocus()
+    top.remove()
+  })
 })
+

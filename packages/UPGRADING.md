@@ -28,7 +28,9 @@ Additions, with the defaults leaving every page as it was:
 
 - `Modal`: widths `6xl` and `7xl`; `showClose={false}` leaves out the
   floating close button (for content with its own); `className` for the
-  panel.
+  panel. Keyboard focus now moves into an open modal (its autofocus field,
+  else its first control), stays inside on Tab, and goes back to what had it
+  when it closes.
 - `ContextMenu`: when it closes, focus goes back to whatever opened it,
   unless an item moved it (to a dialog it opened, say).
 - `AdminInput`, `AdminSelect`, `AdminTextarea`: pass `ref` to the control;
