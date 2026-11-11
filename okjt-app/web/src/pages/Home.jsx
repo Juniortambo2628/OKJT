@@ -209,7 +209,9 @@ function Flagships() {
 }
 
 export default function Home() {
-  const { setting } = useSettings();
+  // Pending only on a first visit (later ones start from the browser's copy):
+  // the headline waits for the CMS's words rather than flashing the fallbacks.
+  const { setting, isPending } = useSettings();
   const insights = useInsights();
   const words = setting('hero_rotating_words').split(',').map((w) => w.trim()).filter(Boolean);
   const latest = live(insights.data).slice(0, 3);
@@ -218,6 +220,7 @@ export default function Home() {
     <SiteLayout overlay>
       <PageHero
         tall
+        ready={!isPending}
         media={setting('hero_home_video_1') || setting('hero_home_video_2') || DEFAULT_HERO}
         eyebrow={setting('hero_tagline', 'Design-led web engineering from Nairobi')}
         title={(
