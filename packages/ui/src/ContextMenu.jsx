@@ -125,10 +125,19 @@ function MenuList({ items, x, y, anchorWidth = 0, onClose, autoFocus = true, onR
   );
 }
 
+/** Focus the remembered opener, if focus has nowhere better to be (the menu that had it is gone). */
+function restoreFocus(openerRef) {
+  const opener = openerRef.current;
+  openerRef.current = null;
+  const active = document.activeElement;
+  const lost = !active || active === document.body;
+  if (lost && opener && document.contains(opener)) opener.focus({ preventScroll: true });
+}
+
 /**
  * ContextMenu — a right-click menu rendered at viewport coordinates, with
  * nested submenus (hover or →), arrow-key navigation, and Escape / outside
- * click to close.
+ * click to close. Focus returns to whatever had it when the menu opened.
  *
  * @param {{ x: number, y: number } | null} position - Where to open; null = closed
  * @param {Array} items - [{ label, icon, onSelect, disabled, danger, checked,
@@ -138,6 +147,18 @@ function MenuList({ items, x, y, anchorWidth = 0, onClose, autoFocus = true, onR
  */
 export default function ContextMenu({ position, items, onClose }) {
   const rootRef = useRef(null);
+  const openerRef = useRef(null);
+
+  // Remember what had focus when the menu opened (read while rendering: the
+  // menu focuses its first item before effects here run), and give it focus
+  // back when the menu closes, unless something else took it meanwhile (an
+  // item that opened a dialog, say).
+  if (position && !openerRef.current && typeof document !== 'undefined') openerRef.current = document.activeElement;
+  useEffect(() => {
+    if (!position) restoreFocus(openerRef);
+    return undefined;
+  }, [position]);
+  useEffect(() => () => restoreFocus(openerRef), []);
 
   useEffect(() => {
     if (!position) return undefined;

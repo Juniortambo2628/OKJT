@@ -39,19 +39,31 @@ function NotificationIcon({ icon }) {
  * the workspace's latest notifications from okjt/laravel-kit's
  * NotificationController (GET /notifications), refreshed every 30 seconds,
  * with "Mark all read". A notification with a `link` opens that page.
+ *
+ * An app with its own notifications API says where they are and how each
+ * one reads:
+ *
+ * @param {string} [listPath='/notifications']
+ * @param {string} [markAllPath='/notifications/mark-read'] - POSTed by "Mark all read"
+ * @param {(item) => { id, title, message, link, icon, read_at, created_at }} [map]
+ *   - Turns one of the API's items into what the bell shows
  */
-export default function NotificationsBell() {
+export default function NotificationsBell({ listPath = '/notifications', markAllPath = '/notifications/mark-read', map }) {
   const navigate = useNavigate();
   const { api } = useDashboard();
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const fetchedRef = useRef(false);
-  const fetchNotifications = async () => {
+  const latest = useRef({ listPath, map });
+  latest.current = { listPath, map };
+
+  const fetchNotifications = async (isCancelled = () => false) => {
     try {
-      const res = await api.get('/notifications');
+      const res = await api.get(latest.current.listPath);
+      if (isCancelled()) return;
       const payload = res.data;
-      const items = Array.isArray(payload) ? payload : (Array.isArray(payload?.data) ? payload.data : []);
+      const raw = Array.isArray(payload) ? payload : (Array.isArray(payload?.data) ? payload.data : []);
+      const items = latest.current.map ? raw.map(latest.current.map) : raw;
       setNotifications(items);
       setUnreadCount(items.filter(n => !n.read_at).length);
     } catch (e) {
@@ -61,29 +73,15 @@ export default function NotificationsBell() {
 
   useEffect(() => {
     let cancelled = false;
-    const init = async () => {
-      if (!fetchedRef.current) {
-        fetchedRef.current = true;
-        try {
-          const res = await api.get('/notifications');
-          if (cancelled) return;
-          const payload = res.data;
-          const items = Array.isArray(payload) ? payload : (Array.isArray(payload?.data) ? payload.data : []);
-          setNotifications(items);
-          setUnreadCount(items.filter(n => !n.read_at).length);
-        } catch (e) {
-          console.error("Failed to fetch notifications", e);
-        }
-      }
-    };
-    init();
-    const interval = setInterval(fetchNotifications, 30000);
+    fetchNotifications(() => cancelled);
+    const interval = setInterval(() => fetchNotifications(() => cancelled), 30000);
     return () => { cancelled = true; clearInterval(interval); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fetch on mount, then every 30 seconds
   }, []);
 
   const handleMarkAllRead = async () => {
     try {
-      await api.post('/notifications/mark-read');
+      await api.post(markAllPath);
       fetchNotifications();
     } catch (e) {
       console.error("Failed to mark read", e);

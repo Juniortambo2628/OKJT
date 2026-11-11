@@ -22,6 +22,29 @@ tokens (`paper`/`tint` dark, `ink`/`body` light), set `surface` to the card
 colour, `onInk` to a dark colour and `panel` to a dark one. OKJTech's own
 site (`okjt-app/web`) does this.
 
+### Also in ui 0.2.2 and dashboard 0.4.1 (nothing to change)
+
+Additions, with the defaults leaving every page as it was:
+
+- `Modal`: widths `6xl` and `7xl`; `showClose={false}` leaves out the
+  floating close button (for content with its own); `className` for the
+  panel. Keyboard focus now moves into an open modal (its autofocus field,
+  else its first control), stays inside on Tab, and goes back to what had it
+  when it closes.
+- `ContextMenu`: when it closes, focus goes back to whatever opened it,
+  unless an item moved it (to a dialog it opened, say).
+- `AdminInput`, `AdminSelect`, `AdminTextarea`: pass `ref` to the control;
+  the background is `--okjt-input-bg` (CSS, default white), for dark
+  dashboards.
+- `NotificationsBell`: `listPath`, `markAllPath` and `map` (turns one of
+  your API's items into `{ id, title, message, link, icon, read_at,
+  created_at }`), for an app with its own notifications API.
+- `AdminTutorial`: `open` (the app decides when it shows and remembers who
+  has finished; nothing goes in localStorage), `skipMissing` (leaves out
+  steps whose element isn't on screen), a step's `selector` instead of an
+  element id, and ←, → and Escape. Its card is a dialog named by the step's
+  title, for screen readers.
+
 ## 0.3.0 → 0.4.0 (dashboard 0.4.0, ui 0.2.1, laravel-kit 0.4.0, create-okjt-app 0.1.3)
 
 Upgrade both together: the server's two-step sign-in changed.

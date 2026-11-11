@@ -4,9 +4,40 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronLeft, X, Trophy, Sparkles } from 'lucide-react';
 import { Button } from '@okjt/ui';
 
-export default function AdminTutorial({ steps, onComplete, isRestarted = false }) {
+/** A step's element: `selector` (any CSS selector), else the element whose id is `target`. */
+function findTarget(step) {
+  if (!step || typeof document === 'undefined') return null;
+  if (step.selector) return document.querySelector(step.selector);
+  return step.target ? document.getElementById(step.target) : null;
+}
+
+/** Whether a step's element is on screen (a sidebar hidden off-canvas on phones isn't). */
+function onScreen(step) {
+  if (!step.selector && !step.target) return true;
+  const el = findTarget(step);
+  if (!el) return false;
+  const rect = el.getBoundingClientRect();
+  return rect.width > 0 && rect.height > 0 && rect.right > 0 && rect.left < window.innerWidth;
+}
+
+/**
+ * A guided tour: a card beside each step's element, with the rest of the page
+ * dimmed. Steps: [{ title, content, target (an element id) or selector,
+ * position: 'bottom' | 'right' }]. ← and → move between steps, Escape skips.
+ *
+ * By itself it opens once per browser (localStorage). With `open` the app
+ * decides (it remembers who has finished, and can restart it): the tour shows
+ * while `open` is true and calls `onComplete` when finished or skipped.
+ *
+ * @param {boolean} [open] - Controlled: show the tour now
+ * @param {boolean} [skipMissing=false] - Leave out steps whose element isn't on screen
+ */
+export default function AdminTutorial({ steps: allSteps, onComplete, isRestarted = false, open, skipMissing = false }) {
+  const controlled = open !== undefined;
+  const steps = skipMissing && allSteps ? allSteps.filter(onScreen) : allSteps;
   const [currentStep, setCurrentStep] = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
+  const [ownVisible, setIsVisible] = useState(false);
+  const isVisible = controlled ? !!open : ownVisible;
   const [coords, setCoords] = useState(null);
   const [boxHeight, setBoxHeight] = useState(360);
   const boxRef = useRef(null);
@@ -17,6 +48,8 @@ export default function AdminTutorial({ steps, onComplete, isRestarted = false }
   }, [currentStep, isVisible, coords]);
 
   useEffect(() => {
+    // Controlled: the app says when; nothing to remember here.
+    if (controlled) return undefined;
     // No tour configured: nothing to show.
     if (!steps?.length) return undefined;
     const isCompleted = localStorage.getItem('admin-tutorial-complete');
@@ -24,13 +57,18 @@ export default function AdminTutorial({ steps, onComplete, isRestarted = false }
       const timer = setTimeout(() => setIsVisible(true), 1000);
       return () => clearTimeout(timer);
     }
-  }, [isRestarted, steps?.length]);
+  }, [controlled, isRestarted, steps?.length]);
+
+  // Each time the app opens it, start from the first step.
+  useEffect(() => {
+    if (controlled && open) setCurrentStep(0);
+  }, [controlled, open]);
 
   useEffect(() => {
     if (isVisible) {
       // First, try to scroll the element into view instantly
       const step = steps[currentStep];
-      const el = document.getElementById(step.target);
+      const el = findTarget(step);
       if (el) {
           el.scrollIntoView({ behavior: 'auto', block: 'center' });
       }
@@ -51,7 +89,7 @@ export default function AdminTutorial({ steps, onComplete, isRestarted = false }
 
   const updateCoords = () => {
     const step = steps[currentStep];
-    const el = document.getElementById(step.target);
+    const el = findTarget(step);
     if (el) {
       const rect = el.getBoundingClientRect();
       // Only set coords if they are valid numbers
@@ -85,10 +123,26 @@ export default function AdminTutorial({ steps, onComplete, isRestarted = false }
   };
 
   const handleComplete = () => {
-    setIsVisible(false);
-    localStorage.setItem('admin-tutorial-complete', 'true');
+    if (!controlled) {
+      setIsVisible(false);
+      localStorage.setItem('admin-tutorial-complete', 'true');
+    }
     if (onComplete) onComplete();
   };
+
+  // Keys: → next, ← back, Escape skips.
+  const keys = useRef(null);
+  keys.current = { next: handleNext, back: handleBack, done: handleComplete };
+  useEffect(() => {
+    if (!isVisible) return undefined;
+    const onKey = (e) => {
+      if (e.key === 'Escape') keys.current.done();
+      else if (e.key === 'ArrowRight') keys.current.next();
+      else if (e.key === 'ArrowLeft') keys.current.back();
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [isVisible]);
 
   const getBoxStyle = () => {
     if (!coords) {
@@ -146,7 +200,7 @@ export default function AdminTutorial({ steps, onComplete, isRestarted = false }
 
   if (!isVisible || !steps?.length) return null;
 
-  const step = steps[currentStep];
+  const step = steps[Math.min(currentStep, steps.length - 1)];
 
   const { style: boxStyle, placement } = getBoxStyle();
 
@@ -167,6 +221,10 @@ export default function AdminTutorial({ steps, onComplete, isRestarted = false }
       <motion.div
         layout
         ref={boxRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="okjt-tutorial-title"
+        aria-describedby="okjt-tutorial-body"
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         style={boxStyle}
@@ -212,11 +270,11 @@ export default function AdminTutorial({ steps, onComplete, isRestarted = false }
               exit={{ opacity: 0, y: -10 }}
               className="min-h-[100px]"
             >
-              <h3 className="text-xl font-semibold text-body mb-2 flex items-center gap-2">
+              <h3 id="okjt-tutorial-title" className="text-xl font-semibold text-body mb-2 flex items-center gap-2">
                 {step.title}
                 {currentStep === 0 && <Sparkles className="w-4 h-4 text-accent" />}
               </h3>
-              <p className="text-muted text-sm leading-relaxed">
+              <p id="okjt-tutorial-body" className="text-muted text-sm leading-relaxed">
                 {step.content}
               </p>
             </motion.div>
