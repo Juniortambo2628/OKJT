@@ -44,8 +44,14 @@ class SpaController extends Controller
         // api.okjtech.co.ke is for the API: its pages live on the main domain.
         $frontend = config('app.frontend_url');
         $frontendHost = parse_url($frontend, PHP_URL_HOST);
-        if ($frontendHost && $request->getHost() !== $frontendHost && Str::startsWith($request->getHost(), 'api.')) {
+        // www.okjtech.co.ke is the same site: one address per page for search engines.
+        if ($frontendHost && $request->getHost() !== $frontendHost && Str::startsWith($request->getHost(), ['api.', 'www.'])) {
             return redirect()->away(rtrim($frontend, '/').$request->getRequestUri(), 301);
+        }
+
+        // The old site's portfolio addresses live on as the projects pages.
+        if (preg_match('#^portfolio(?:/([^/]+))?/?$#', $request->path(), $m)) {
+            return redirect('/projects'.(isset($m[1]) ? '/'.$m[1] : ''), 301);
         }
 
         $index = public_path('index.html');
@@ -55,7 +61,7 @@ class SpaController extends Controller
 
         $path = '/'.trim($request->path(), '/');
         [$meta, $status] = $this->metaFor($path);
-        $html = $this->inject(file_get_contents($index), $meta, rtrim($frontend ?: $request->root(), '/').($path === '/' ? '/' : $path));
+        $html = $this->inject(file_get_contents($index), $meta, rtrim($frontend ?: $request->root(), '/').($path === '/' ? '/' : $path), $this->structuredData($path));
 
         return response($html, $status)
             ->header('Content-Type', 'text/html; charset=UTF-8')
@@ -88,8 +94,6 @@ class SpaController extends Controller
         } elseif (preg_match('#^/our-approach/([^/]+)$#', $path, $m)) {
             $record = Pillar::where('slug', $m[1])->where('is_active', true)->first();
             $record = $record ? [$record->title, $record->overview, $record->image] : false;
-        } elseif ($path === '/portfolio') {
-            return [[self::PAGES['/projects'][0].' | '.self::SITE, self::PAGES['/projects'][1], null, true], 200];
         }
 
         if (is_array($record)) {
@@ -102,7 +106,51 @@ class SpaController extends Controller
         return [['Page not found | '.self::SITE, self::DEFAULT_DESCRIPTION, null, false], 404];
     }
 
-    private function inject(string $html, array $meta, string $canonical): string
+    /**
+     * schema.org data for an article or a case study, so search engines can
+     * show them as such (the studio itself is described in index.html).
+     */
+    private function structuredData(string $path): ?array
+    {
+        $origin = rtrim(config('app.frontend_url'), '/');
+        $publisher = ['@type' => 'Organization', 'name' => 'OKJTechnologies', 'url' => $origin.'/', 'logo' => ['@type' => 'ImageObject', 'url' => $origin.'/logos/OKJT-Logos/OKJTechLogo-Black_Transparent.png']];
+
+        if (preg_match('#^/insights/([^/]+)$#', $path, $m) && ($insight = Insight::where('slug', $m[1])->where('is_published', true)->first())) {
+            return array_filter([
+                '@context' => 'https://schema.org',
+                '@type' => 'Article',
+                'headline' => Str::limit($insight->title, 110, ''),
+                'description' => Str::limit(trim(strip_tags((string) ($insight->excerpt ?: $insight->content))), 300),
+                'image' => $insight->image ? [$this->absolute($insight->image)] : null,
+                'datePublished' => optional($insight->published_at ?: $insight->created_at)->toAtomString(),
+                'dateModified' => optional($insight->updated_at)->toAtomString(),
+                'author' => $publisher,
+                'publisher' => $publisher,
+                'articleSection' => $insight->category,
+                'mainEntityOfPage' => $origin.$path,
+            ]);
+        }
+
+        if (preg_match('#^/projects/([^/]+)$#', $path, $m) && ($project = Project::where('slug', $m[1])->where('is_active', true)->first())) {
+            $images = array_values(array_filter([$project->bg_image ?: $project->image, ...array_slice((array) $project->gallery, 0, 4)]));
+
+            return array_filter([
+                '@context' => 'https://schema.org',
+                '@type' => 'CreativeWork',
+                'name' => $project->title,
+                'description' => Str::limit(trim(strip_tags((string) ($project->tagline ?: $project->description))), 300),
+                'image' => $images ? array_map(fn ($i) => $this->absolute($i), $images) : null,
+                'url' => $project->url ?: null,
+                'creator' => $publisher,
+                'keywords' => $project->category,
+                'mainEntityOfPage' => $origin.$path,
+            ]);
+        }
+
+        return null;
+    }
+
+    private function inject(string $html, array $meta, string $canonical, ?array $data = null): string
     {
         [$title, $description, $image, $indexable] = $meta;
         $description = Str::limit(trim(preg_replace('/\s+/', ' ', strip_tags((string) $description))), 160);
@@ -114,7 +162,7 @@ class SpaController extends Controller
             '<meta name="description" content="'.$e($description).'" />',
             '<meta name="robots" content="'.($indexable ? 'index, follow' : 'noindex, nofollow').'" />',
             '<link rel="canonical" href="'.$e($canonical).'" />',
-            '<meta property="og:type" content="website" />',
+            '<meta property="og:type" content="'.($data && $data['@type'] === 'Article' ? 'article' : 'website').'" />',
             '<meta property="og:site_name" content="'.self::SITE.'" />',
             '<meta property="og:title" content="'.$e($title).'" />',
             '<meta property="og:description" content="'.$e($description).'" />',
@@ -125,6 +173,7 @@ class SpaController extends Controller
             '<meta name="twitter:title" content="'.$e($title).'" />',
             '<meta name="twitter:description" content="'.$e($description).'" />',
             '<meta name="twitter:image" content="'.$e($image).'" />',
+            ...($data ? ['<script type="application/ld+json">'.json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG).'</script>'] : []),
         ]);
 
         $replaced = preg_replace('#<!--okjt:seo-->.*?<!--/okjt:seo-->#s', $tags, $html, 1, $count);
