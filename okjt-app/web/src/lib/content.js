@@ -10,6 +10,39 @@ const STALE = 5 * 60 * 1000;
 
 const get = (path, params) => api.get(path, { params }).then((res) => unwrap(res.data));
 
+/**
+ * What the top of the home page needs (settings and projects) is also kept
+ * in the visitor's browser, so a returning visitor sees the real headline
+ * and logos at once instead of the fallbacks, while a fresh copy is fetched
+ * behind it. Storage may be unavailable (private windows): then it is skipped.
+ */
+const KEEP = 'okjt:cache:';
+const read = new Map();
+const kept = (key) => {
+  if (!read.has(key)) {
+    let value;
+    try {
+      const raw = localStorage.getItem(KEEP + key);
+      value = raw ? JSON.parse(raw) : undefined;
+    } catch { value = undefined; }
+    read.set(key, value);
+  }
+  return read.get(key);
+};
+const keep = (key, data) => {
+  try { localStorage.setItem(KEEP + key, JSON.stringify(data)); } catch { /* full or blocked */ }
+  return data;
+};
+/** Query options that start from the kept copy and save each fresh one. */
+const persisted = (key, queryFn) => {
+  const initialData = kept(key);
+  return {
+    queryFn: () => queryFn().then((data) => keep(key, data)),
+    // Shown at once, but counted as old so a fresh copy is fetched.
+    ...(initialData !== undefined && { initialData, initialDataUpdatedAt: 0 }),
+  };
+};
+
 export function useList(path, params) {
   return useQuery({ queryKey: [path, params ?? null], queryFn: () => get(path, params), staleTime: STALE });
 }
@@ -23,7 +56,11 @@ export const live = (items) => (Array.isArray(items) ? items.filter((item) => it
 
 export const useServices = () => useList('/services');
 export const usePillars = () => useList('/pillars');
-export const useProjects = (type) => useList('/projects', type ? { type } : undefined);
+export const useProjects = (type) => useQuery({
+  queryKey: ['/projects', type ? { type } : null],
+  staleTime: STALE,
+  ...(type ? { queryFn: () => get('/projects', { type }) } : persisted('projects', () => get('/projects'))),
+});
 export const useInsights = () => useList('/insights');
 export const useStats = () => useList('/stats');
 export const useTestimonials = () => useList('/testimonials');
@@ -36,7 +73,7 @@ export const useValues = () => useList('/values');
  * `setting(key, fallback)`, `enabled(key)`, and `json(key, fallback)`.
  */
 export function useSettings() {
-  const query = useQuery({ queryKey: ['/settings'], queryFn: () => api.get('/settings').then((res) => res.data), staleTime: STALE });
+  const query = useQuery({ queryKey: ['/settings'], staleTime: STALE, ...persisted('settings', () => api.get('/settings').then((res) => res.data)) });
   const map = useMemo(() => {
     const out = {};
     for (const group of Object.values(query.data ?? {})) {

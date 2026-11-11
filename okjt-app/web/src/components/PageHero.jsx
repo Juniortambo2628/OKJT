@@ -12,17 +12,19 @@ export const lines = (text) => String(text ?? '').split(/<br\s*\/?>|\n/i).map((l
 /**
  * The top of every public page: a full-bleed photo or clip from the CMS
  * under a large light headline, with breadcrumbs and buttons. `after`
- * overlaps the bottom edge.
+ * overlaps the bottom edge. Until `ready` (the CMS's words have arrived) the
+ * headline keeps its place but stays hidden, so the fallback words never
+ * flash before the real ones.
  */
-export default function PageHero({ media, eyebrow, title, text, breadcrumbs, children, after, tall = false }) {
+export default function PageHero({ media, eyebrow, title, text, breadcrumbs, children, after, tall = false, ready = true }) {
   return (
     <section className="relative" id="hero">
       <div className={`relative isolate flex flex-col justify-center overflow-hidden pt-32 text-white ${tall ? 'min-h-[100svh] pb-40' : 'min-h-[70svh] pb-20'} ${after ? 'pb-48 sm:pb-56' : ''}`}>
-        <MediaFill src={media} eager className="-z-20" />
+        {ready && <MediaFill src={media} eager className="-z-20" />}
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-ink-deep/80 via-ink-deep/50 to-paper" />
         <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_40%,color-mix(in_srgb,var(--color-accent)_14%,transparent),transparent_65%)]" />
         <Container>
-          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} className="mx-auto max-w-5xl text-center">
+          <motion.div initial={{ opacity: 0, y: 24 }} animate={ready ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }} aria-busy={!ready || undefined} className="mx-auto max-w-5xl text-center">
             {breadcrumbs && (
               <nav aria-label="Breadcrumb" className="mb-6 flex flex-wrap items-center justify-center gap-1 text-xs text-white/60">
                 {breadcrumbs.map((crumb, i) => (
