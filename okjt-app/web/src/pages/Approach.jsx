@@ -1,5 +1,5 @@
 import JourneyPage from '../components/Journey';
-import { live, usePillars, useProjects, useServices, useSettings } from '../lib/content';
+import { live, screenOf, usePillars, useProjects, useServices, useSettings } from '../lib/content';
 import { DEFAULT_HERO } from '../lib/defaults';
 import { address, clip, listItems, strip } from '../lib/text';
 import { principleFor, standoutProjects } from '../lib/principles';
@@ -11,7 +11,7 @@ export default function Approach() {
   const { data: services } = useServices();
   const { data: projects } = useProjects();
   const pillars = live(data);
-  const flagship = live(projects).find((p) => p.type === 'flagship' && (p.bg_image || p.image));
+  const flagship = live(projects).find((p) => p.type === 'flagship' && (screenOf(p)));
 
   const shown = new Set();
   const chapters = pillars.map((p, i) => {
@@ -19,7 +19,7 @@ export default function Approach() {
     const ownList = listItems(p.content);
     const picks = standoutProjects(principle, live(projects), 3, shown);
     picks.forEach((x) => shown.add(x.id));
-    const pictured = picks.find((x) => x.bg_image || x.image);
+    const pictured = picks.find((x) => screenOf(x));
     const services = live(p.services);
     return {
       id: p.slug,
@@ -27,11 +27,11 @@ export default function Approach() {
       when: `Principle ${i + 1} of ${pillars.length}`,
       title: p.title,
       intro: [clip(p.overview, 160), ownList.length ? '' : clip(strip(p.content), 260)].filter(Boolean).join(' '),
-      media: { src: p.image || pictured?.bg_image || pictured?.image, url: address(`/our-approach/${p.slug}`) },
+      media: { src: p.image || screenOf(pictured), url: address(`/our-approach/${p.slug}`) },
       steps: ownList.length ? ownList.map((item) => ({ title: item })) : (principle?.points ?? []),
       details: [...(principle?.receive ?? []), ...services.map((sv) => `Service: ${sv.title}`)],
       detailsLabel: 'What you receive',
-      showcase: picks.map((x) => ({ to: `/projects/${x.slug}`, image: x.bg_image || x.image, title: x.title, text: x.client_name || x.tagline })),
+      showcase: picks.map((x) => ({ to: `/projects/${x.slug}`, image: screenOf(x), title: x.title, text: x.client_name || x.tagline })),
     };
   });
 
@@ -61,7 +61,7 @@ export default function Approach() {
         text: 'Open one to read it in full, with the services that put it into practice.',
         cards: pillars.slice(0, 4).map((p) => ({ to: `/our-approach/${p.slug}`, image: p.image, tags: ['Principle'], title: p.title, text: clip(p.overview, 140) })),
       }}
-      onward={{ to: '/projects', image: flagship?.bg_image || flagship?.image, tags: ['The work'], title: 'See the principles at work', text: 'Platforms designed and built for clients across health, law, construction, events, commerce and nonprofits.' }}
+      onward={{ to: '/projects', image: screenOf(flagship), tags: ['The work'], title: 'See the principles at work', text: 'Platforms designed and built for clients across health, law, construction, events, commerce and nonprofits.' }}
     />
   );
 }

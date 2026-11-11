@@ -9,7 +9,7 @@ import LogoCarousel from '../components/LogoCarousel';
 import { CardGridSkeleton, Empty } from '../components/States';
 import { bySector } from '../lib/sectors';
 import { principleFor } from '../lib/principles';
-import { formatDate, live, useInsights, usePillars, useProjects, useSettings, useStats } from '../lib/content';
+import { formatDate, live, screenOf, useInsights, usePillars, useProjects, useSettings, useStats } from '../lib/content';
 import { DEFAULT_HERO } from '../lib/defaults';
 
 /** The bar of sections under the hero. */
@@ -71,10 +71,10 @@ function HeroPanel() {
         </Link>
       ))}
       {wide && (
-        <ImageCard image={wide.bg_image || wide.image} title={wide.title} text={wide.tagline} tags={[wide.type === 'flagship' ? 'Flagship' : wide.client_name].filter(Boolean)} to={`/projects/${wide.slug}`} className={`min-h-[18rem] ${narrow ? 'lg:col-span-3' : 'lg:col-span-4'}`} />
+        <ImageCard image={screenOf(wide)} title={wide.title} text={wide.tagline} tags={[wide.type === 'flagship' ? 'Flagship' : wide.client_name].filter(Boolean)} to={`/projects/${wide.slug}`} className={`min-h-[18rem] ${narrow ? 'lg:col-span-3' : 'lg:col-span-4'}`} />
       )}
       {narrow && (
-        <ImageCard image={narrow.bg_image || narrow.image} title={narrow.title} text={narrow.tagline} to={`/projects/${narrow.slug}`} className="min-h-[18rem]" />
+        <ImageCard image={screenOf(narrow)} title={narrow.title} text={narrow.tagline} to={`/projects/${narrow.slug}`} className="min-h-[18rem]" />
       )}
     </div>
   );
@@ -190,7 +190,7 @@ function Flagships() {
     <ImageCard
       key={p.id}
       to={`/projects/${p.slug}`}
-      image={p.bg_image || p.image}
+      image={screenOf(p)}
       tags={['Flagship', p.category?.split(/[,/]/)[0]?.trim()].filter(Boolean)}
       title={p.title}
       text={p.tagline}

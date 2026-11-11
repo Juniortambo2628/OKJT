@@ -6,7 +6,7 @@ import usePageMeta from '../components/usePageMeta';
 import Stack from '../components/Stack';
 import Gallery from '../components/Gallery';
 import SimilarWorkPrompt from '../components/SimilarWorkPrompt';
-import { live, useItem, useProjects } from '../lib/content';
+import { live, screenOf, useItem, useProjects } from '../lib/content';
 import { sectorOf } from '../lib/sectors';
 import { address, clip, listItems, strip } from '../lib/text';
 import NotFound from './NotFound';
@@ -122,7 +122,7 @@ export default function ProjectDetail() {
       toolkit={{
         eyebrow: 'More work',
         title: project?.type === 'flagship' ? 'Other flagship products' : `More in ${sector?.label?.toLowerCase() || 'this sector'}`,
-        cards: [...related, ...fill].slice(0, 4).map((p) => ({ to: `/projects/${p.slug}`, image: p.bg_image || p.image, tags: [p.type === 'flagship' ? 'Flagship' : p.client_name, sectorOf(p).label], title: p.title, text: clip(p.tagline || p.description, 140) })),
+        cards: [...related, ...fill].slice(0, 4).map((p) => ({ to: `/projects/${p.slug}`, image: screenOf(p), tags: [p.type === 'flagship' ? 'Flagship' : p.client_name, sectorOf(p).label], title: p.title, text: clip(p.tagline || p.description, 140) })),
       }}
       onward={{ to: '/contact', tags: ['Next step'], title: 'Something like this, for you?', text: 'Share a short brief. Every brief receives a reply with next steps within two business days.' }}
       faqs={false}

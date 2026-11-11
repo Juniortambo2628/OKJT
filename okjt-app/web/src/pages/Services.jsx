@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import JourneyPage from '../components/Journey';
 import { categorySlug } from '../site.config';
-import { live, usePillars, useProjects, useServices, useSettings } from '../lib/content';
+import { live, screenOf, usePillars, useProjects, useServices, useSettings } from '../lib/content';
 import { DEFAULT_HERO } from '../lib/defaults';
 import { address, clip } from '../lib/text';
 
@@ -38,7 +38,7 @@ export default function Services() {
       detailsLabel: 'Where it comes from',
     };
   });
-  const flagship = live(projects).find((p) => p.type === 'flagship' && (p.bg_image || p.image));
+  const flagship = live(projects).find((p) => p.type === 'flagship' && (screenOf(p)));
 
   return (
     <JourneyPage
@@ -66,7 +66,7 @@ export default function Services() {
         text: 'Every service is shaped by the same principles. Open one to see how.',
         cards: live(pillars).slice(0, 4).map((p) => ({ to: `/our-approach/${p.slug}`, image: p.image, tags: ['Principle'], title: p.title, text: clip(p.overview, 140) })),
       }}
-      onward={{ to: '/projects', image: flagship?.bg_image || flagship?.image, tags: ['The work'], title: 'The services, at work', text: 'Case studies of the platforms designed, built and run for clients and as flagship products.' }}
+      onward={{ to: '/projects', image: screenOf(flagship), tags: ['The work'], title: 'The services, at work', text: 'Case studies of the platforms designed, built and run for clients and as flagship products.' }}
     />
   );
 }

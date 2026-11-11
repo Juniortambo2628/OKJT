@@ -84,3 +84,9 @@ export function formatDate(value) {
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? '' : date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 }
+
+/**
+ * The picture that shows a project's work: the first screen in its gallery,
+ * else its hero image, else its card image (often just a logo).
+ */
+export const screenOf = (project) => (project?.gallery ?? []).find(Boolean) || project?.bg_image || project?.image || null;

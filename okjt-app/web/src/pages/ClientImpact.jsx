@@ -1,6 +1,6 @@
 import JourneyPage from '../components/Journey';
 import ClientLogos from '../components/ClientLogos';
-import { live, useClients, useProjects, useSettings, useStats, useTestimonials } from '../lib/content';
+import { live, screenOf, useClients, useProjects, useSettings, useStats, useTestimonials } from '../lib/content';
 import { DEFAULT_HERO } from '../lib/defaults';
 import { bySector, sectorOf, sectorPhoto } from '../lib/sectors';
 import { address, clip } from '../lib/text';
@@ -15,7 +15,7 @@ export default function ClientImpact() {
   const clientWork = live(projects).filter((p) => p.type !== 'flagship');
   const featured = clientWork.filter((p) => p.is_featured);
   const shown = (featured.length ? featured : clientWork).slice(0, 6);
-  const pictured = shown.find((p) => p.bg_image || p.image);
+  const pictured = shown.find((p) => screenOf(p));
   const quotes = live(testimonials);
   const orgs = live(clients);
 
@@ -25,7 +25,7 @@ export default function ClientImpact() {
       when: 'Every day',
       title: 'Platforms in daily use',
       intro: 'Clinics, law firms, workshops, event companies and nonprofits run on these.',
-      media: { src: pictured?.bg_image || pictured?.image, url: address('/client-impact') },
+      media: { src: screenOf(pictured), url: address('/client-impact') },
       steps: shown.map((p) => ({ title: p.client_name && !p.title.includes(p.client_name) ? `${p.title} · ${p.client_name}` : p.title, text: clip(p.tagline || p.description, 140), to: `/projects/${p.slug}` })),
       details: [...new Set(shown.map((p) => sectorOf(p).label))],
       detailsLabel: 'Sectors',
