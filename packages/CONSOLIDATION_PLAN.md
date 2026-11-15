@@ -286,7 +286,9 @@ the new PHP tests fail on the old code). Versions: `@okjt/ui` 0.3.0,
 - [ ] F6 card view on phones and details dialog in `AdminListPanel`
 - [ ] F12 contrast check in `okjt-theme`
 - [ ] G4, G8, G10 (G6 and G7 landed in R1)
-- [ ] `@okjt/ui/helpers` entry (no React, no toasts) and `Modal` `backdropClassName` (found in R1's consumer updates)
+- [x] `@okjt/ui/helpers` entry (no React, no toasts) and `Modal` `backdropClassName` (found in R1's consumer updates). Kit 0.6.
+- [x] Option B for Najenga (decided 2026-11-15: style options in the kit first, then Najenga switches with its screenshots unchanged). Kit 0.6: fields take a project's base classes (`componentDefaults.Field.classNames`, `baseClassName`); `Modal` takes `overlayClassName`, `backdropClassName`, `classNames.panel` / `body`, so Najenga's `Modal` becomes a wrapper drawing its own chrome on the kit's dialog. The defaults' class strings are asserted exactly in tests, so the markup of every existing dialog and field is unchanged.
+- [ ] Option B, second step: the bell and the tour. Najenga's `NotificationsDropdown` and `Tour` are their own interfaces; matching them needs render slots in `NotificationsBell` and `AdminTutorial`, not just classes.
 - [ ] Consumers: Naoa deletes `TwoPaneForm`, `TwoPaneDialog`, `useMobileToolbar` and its toolbar CSS. Najenga finishes 6d.4 and 6d.6.
 - [ ] Release **1.0**, so caret ranges pick up later fixes by themselves (G11)
 

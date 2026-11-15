@@ -1,5 +1,31 @@
 # Upgrading
 
+## 0.5 → 0.6 (ui 0.4.0, dashboard 0.6.0, create-okjt-app 0.1.5)
+
+Style options, so a project whose dialogs and fields look different from the
+kit's can use the kit's anyway (R2, option B). Nothing changes on screen
+unless you use them. Raise your ranges: `npm i @okjt/ui@^0.4.0
+@okjt/dashboard@^0.6.0`. `okjt/laravel-kit` has no changes (its v0.6.0 tag is
+the same code as v0.5.0).
+
+- **Fields' base classes**: `AdminInput`, `AdminSelect` and `AdminTextarea`
+  take your project's classes in place of the kit's, set once in
+  DashboardProvider:
+  ```js
+  componentDefaults: { Field: { classNames: { input: '…', select: '…', textarea: '…' } } }
+  ```
+  or per field with `baseClassName`. `className` and the error border still
+  apply after them.
+- **`Modal`**: `overlayClassName` (how the dialog sits on the page),
+  `backdropClassName`, and `classNames: { panel, body }`, each replacing the
+  kit's classes. For dialogs that draw their own header, close button and
+  footer as the content (`showClose={false}`), while the kit keeps the
+  backdrop, Escape, focus and scroll lock.
+- **`@okjt/ui/helpers`**: `installChunkReload` and its helpers, importable
+  without React or toasts (`import { installChunkReload } from
+  '@okjt/ui/helpers'`). For apps without `react-hot-toast`, such as Inertia
+  apps.
+
 ## 0.4 → 0.5 (ui 0.3.0, dashboard 0.5.0, laravel-kit 0.5.0, create-okjt-app 0.1.4)
 
 Release R1 of the consolidation plan (`CONSOLIDATION_PLAN.md`). Nothing
