@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronLeft, X, Trophy, Sparkles } from 'lucide-react';
 import { Button } from '@okjt/ui';
@@ -31,8 +32,17 @@ function onScreen(step) {
  *
  * @param {boolean} [open] - Controlled: show the tour now
  * @param {boolean} [skipMissing=false] - Leave out steps whose element isn't on screen
+ * @param {boolean} [scrollIntoView=true] - Scroll each step's element into view
+ * @param {(tour) => node} [render] - Draw the whole tour yourself (overlay,
+ *   spotlight, card), keeping the kit's behaviour (open state, skipping, the
+ *   step's element measured on screen, keys). tour: { step, index, count,
+ *   rect (the element's on-screen box, or null), next, back, finish }.
+ *   Rendered into document.body.
+ *
+ * Keys: → next (it stops at the last step; finishing is the card's own
+ * button), ← back, Escape skips.
  */
-export default function AdminTutorial({ steps: allSteps, onComplete, isRestarted = false, open, skipMissing = false }) {
+export default function AdminTutorial({ steps: allSteps, onComplete, isRestarted = false, open, skipMissing = false, scrollIntoView = true, render }) {
   const controlled = open !== undefined;
   const steps = skipMissing && allSteps ? allSteps.filter(onScreen) : allSteps;
   const [currentStep, setCurrentStep] = useState(0);
@@ -69,19 +79,20 @@ export default function AdminTutorial({ steps: allSteps, onComplete, isRestarted
       // First, try to scroll the element into view instantly
       const step = steps[currentStep];
       const el = findTarget(step);
-      if (el) {
+      if (el && scrollIntoView) {
           el.scrollIntoView({ behavior: 'auto', block: 'center' });
       }
 
-      // Then update coordinates after a small frame delay to ensure scroll finished (even if synchronous)
-      const timer = requestAnimationFrame(() => {
-        updateCoords();
-      });
+      // Then update coordinates: straight away when nothing scrolled, else
+      // after a frame so the scroll has finished.
+      let timer = null;
+      if (scrollIntoView) timer = requestAnimationFrame(() => { updateCoords(); });
+      else updateCoords();
       
       window.addEventListener('resize', updateCoords);
       return () => {
           window.removeEventListener('resize', updateCoords);
-          cancelAnimationFrame(timer);
+          if (timer !== null) cancelAnimationFrame(timer);
       };
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- recompute coords only when visibility or step changes
@@ -132,7 +143,8 @@ export default function AdminTutorial({ steps: allSteps, onComplete, isRestarted
 
   // Keys: → next, ← back, Escape skips.
   const keys = useRef(null);
-  keys.current = { next: handleNext, back: handleBack, done: handleComplete };
+  // → stops at the last step: finishing takes the card's own button.
+  keys.current = { next: () => { if (currentStep < steps.length - 1) setCurrentStep(currentStep + 1); }, back: handleBack, done: handleComplete };
   useEffect(() => {
     if (!isVisible) return undefined;
     const onKey = (e) => {
@@ -199,6 +211,15 @@ export default function AdminTutorial({ steps: allSteps, onComplete, isRestarted
   };
 
   if (!isVisible || !steps?.length) return null;
+
+  if (render) {
+    if (typeof document === 'undefined') return null;
+    const index = Math.min(currentStep, steps.length - 1);
+    return createPortal(
+      render({ step: steps[index], index, count: steps.length, rect: coords, next: handleNext, back: handleBack, finish: handleComplete }),
+      document.body,
+    );
+  }
 
   const step = steps[Math.min(currentStep, steps.length - 1)];
 
