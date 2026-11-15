@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { createRef } from 'react'
-import { AdminInput, AdminSelect, AdminTextarea } from '../dist/index.js'
+import { AdminInput, AdminSelect, AdminTextarea, DashboardProvider } from '../dist/index.js'
 
 describe('AdminInput', () => {
   it('renders input with label', () => {
@@ -47,5 +47,33 @@ describe('AdminInput', () => {
     render(<AdminTextarea label="Notes" error="Too long" />)
     const field = screen.getByRole('textbox')
     expect(field).toHaveAccessibleDescription('Too long')
+  })
+
+  it('keeps the kit\'s classes when nothing replaces them', () => {
+    render(<AdminInput label="Name" className="mt-1" />)
+    expect(screen.getByRole('textbox').className).toBe('w-full px-4 py-2 rounded-lg border border-tone-200 bg-[var(--okjt-field-bg,transparent)] text-[color:var(--okjt-field-text,inherit)] focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors  mt-1')
+  })
+
+  it('takes the project\'s base classes per control from componentDefaults', () => {
+    const classNames = { input: 'house-input', select: 'house-select', textarea: 'house-textarea' }
+    render(
+      <DashboardProvider dashboard={{ componentDefaults: { Field: { classNames } } }}>
+        <AdminInput bare aria-label="A" className="mt-1" />
+        <AdminSelect bare aria-label="B"><option>x</option></AdminSelect>
+        <AdminTextarea bare aria-label="C" error="Too long" />
+      </DashboardProvider>
+    )
+    expect(screen.getByRole('textbox', { name: 'A' }).className).toBe('house-input  mt-1')
+    expect(screen.getByRole('combobox').className).toBe('house-select  ')
+    expect(screen.getByRole('textbox', { name: 'C' }).className).toBe('house-textarea border-red-400 ')
+  })
+
+  it('lets one field replace its base classes with baseClassName', () => {
+    render(
+      <DashboardProvider dashboard={{ componentDefaults: { Field: { classNames: { input: 'house-input' } } } }}>
+        <AdminInput bare aria-label="A" baseClassName="special" />
+      </DashboardProvider>
+    )
+    expect(screen.getByRole('textbox').className).toBe('special  ')
   })
 })
