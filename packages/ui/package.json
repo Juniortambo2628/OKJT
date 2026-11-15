@@ -11,6 +11,7 @@
   },
   "exports": {
     ".": "./dist/index.js",
+    "./helpers": "./dist/helpers.js",
     "./theme": "./src/theme.js",
     "./tools/style-snapshot": "./tools/style-snapshot.mjs"
   },
