@@ -17,3 +17,4 @@ export { default as ConfirmHost } from './ConfirmHost.js';
 export {
   registerConfirmHost, confirmOptions, confirmAction, promptAction, notifyError, notifySuccess, notifyUndo,
 } from './feedback.js';
+export { installChunkReload, shouldReloadForChunks, isChunkLoadError } from './chunkReload.js';
