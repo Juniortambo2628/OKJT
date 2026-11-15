@@ -1,4 +1,5 @@
 import { forwardRef, useId } from 'react';
+import { useComponentDefaults } from './DashboardProvider.js';
 
 // Fields draw their own background and text colour so a forms plugin (which
 // paints inputs white) can't override them on a dark dashboard. Both come from
@@ -11,9 +12,17 @@ const baseInputClasses = "w-full px-4 py-2 rounded-lg border border-tone-200 bg-
  * One field: a label, the control and its error, or (with `bare`) the control
  * alone, for forms that place their label and error themselves. The control
  * takes a `ref` either way.
+ *
+ * A project whose fields look different sets their base classes once, in
+ * DashboardProvider (`componentDefaults: { Field: { classNames: { input,
+ * select, textarea } } }`), or per field with `baseClassName`. Either
+ * replaces the kit's classes for that control; `className` is still added
+ * after them, and an error still adds `border-red-400`.
  */
 function makeField(Tag, extraClasses, displayName) {
-  const Field = forwardRef(function Field({ label, error, bare = false, className = '', id, children, ...props }, ref) {
+  const Field = forwardRef(function Field({ label, error, bare = false, className = '', id, children, baseClassName, ...props }, ref) {
+    const { classNames } = useComponentDefaults('Field', {});
+    const base = baseClassName ?? classNames?.[Tag] ?? `${baseInputClasses}${extraClasses ? ` ${extraClasses}` : ''}`;
     const generatedId = useId();
     const inputId = id || generatedId;
     const errorId = `${inputId}-error`;
@@ -23,7 +32,7 @@ function makeField(Tag, extraClasses, displayName) {
         id={inputId}
         aria-invalid={error ? true : undefined}
         aria-describedby={error && !bare ? errorId : undefined}
-        className={`${baseInputClasses}${extraClasses ? ` ${extraClasses}` : ''} ${error ? 'border-red-400' : ''} ${className}`}
+        className={`${base} ${error ? 'border-red-400' : ''} ${className}`}
         {...props}
       >
         {children}

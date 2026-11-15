@@ -1,15 +1,43 @@
 # Upgrading
 
+## 0.5 → 0.6 (ui 0.4.0, dashboard 0.6.0, create-okjt-app 0.1.5)
+
+Style options, so a project whose dialogs and fields look different from the
+kit's can use the kit's anyway (R2, option B). Nothing changes on screen
+unless you use them. Raise your ranges: `npm i @okjt/ui@^0.4.0
+@okjt/dashboard@^0.6.0`. `okjt/laravel-kit` has no changes (its v0.6.0 tag is
+the same code as v0.5.0).
+
+- **Fields' base classes**: `AdminInput`, `AdminSelect` and `AdminTextarea`
+  take your project's classes in place of the kit's, set once in
+  DashboardProvider:
+  ```js
+  componentDefaults: { Field: { classNames: { input: '…', select: '…', textarea: '…' } } }
+  ```
+  or per field with `baseClassName`. `className` and the error border still
+  apply after them.
+- **`Modal`**: `overlayClassName` (how the dialog sits on the page),
+  `backdropClassName`, and `classNames: { panel, body }`, each replacing the
+  kit's classes. For dialogs that draw their own header, close button and
+  footer as the content (`showClose={false}`), while the kit keeps the
+  backdrop, Escape, focus and scroll lock.
+- **`@okjt/ui/helpers`**: `installChunkReload` and its helpers, importable
+  without React or toasts (`import { installChunkReload } from
+  '@okjt/ui/helpers'`). For apps without `react-hot-toast`, such as Inertia
+  apps.
+
 ## 0.4 → 0.5 (ui 0.3.0, dashboard 0.5.0, laravel-kit 0.5.0, create-okjt-app 0.1.4)
 
 Release R1 of the consolidation plan (`CONSOLIDATION_PLAN.md`). Nothing
 changes on screen or in a response unless you use the new options. You have to
 raise your version ranges yourself, because in 0.x `^0.4.0` does not install 0.5:
 
-1. `npm i @okjt/ui@^0.3.0 @okjt/dashboard@^0.5.0 @okjt/site@^0.2.0` and
-   `composer require okjt/laravel-kit:^0.5.0`. Projects still on
-   `@okjt/site ^0.1` also get 0.2's changes: see "site 0.1.0 → 0.2.0" below
-   (regenerate the theme).
+1. `npm i @okjt/ui@^0.3.0 @okjt/dashboard@^0.5.0` and
+   `composer require okjt/laravel-kit:^0.5.0`, then regenerate the theme
+   (`npx okjt-theme`): it gains four colours at their defaults, and nothing
+   on screen changes. **`@okjt/site` 0.2.0 isn't on npm yet** (it has no
+   Trusted Publisher); stay on `^0.1` until it is, then see "site 0.1.0 →
+   0.2.0" below.
 
 New, all optional:
 
