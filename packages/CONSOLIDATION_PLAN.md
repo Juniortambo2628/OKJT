@@ -260,7 +260,10 @@ the new PHP tests fail on the old code). Versions: `@okjt/ui` 0.3.0,
   left 0.1.0. Until it is set and the failed job re-run, `create-okjt-app`
   0.1.4 (which asks for `@okjt/site ^0.2.0`) can't install.
 * Consumer updates: Najenga#89 (versions, the kit's guard, ContextMenu
-  focus; screenshots identical to `main`), Naoa#37 (versions, the kit's
+  focus; screenshots identical to `main`), Najenga#90 (dialogs and fields on
+  kit 0.6), Najenga#91 / Naoa#38 / Tena-host#108 (`@okjt/site` 0.2, which
+  published once its Trusted Publisher was set), Tena-host#109
+  (`installChunkReload` from `@okjt/ui/helpers`), Naoa#37 (versions, the kit's
   `SecurityHeaders` with a test pinning the headers, `installChunkReload()`),
   Tena-host#107 (`@okjt/ui` 0.3). okjt-app links `packages/`, nothing to do.
 * Found during the consumer updates, for R2:
@@ -288,7 +291,7 @@ the new PHP tests fail on the old code). Versions: `@okjt/ui` 0.3.0,
 - [ ] G4, G8, G10 (G6 and G7 landed in R1)
 - [x] `@okjt/ui/helpers` entry (no React, no toasts) and `Modal` `backdropClassName` (found in R1's consumer updates). Kit 0.6.
 - [x] Option B for Najenga (decided 2026-11-15: style options in the kit first, then Najenga switches with its screenshots unchanged). Kit 0.6: fields take a project's base classes (`componentDefaults.Field.classNames`, `baseClassName`); `Modal` takes `overlayClassName`, `backdropClassName`, `classNames.panel` / `body`, so Najenga's `Modal` becomes a wrapper drawing its own chrome on the kit's dialog. The defaults' class strings are asserted exactly in tests, so the markup of every existing dialog and field is unchanged.
-- [ ] Option B, second step: the bell and the tour. Najenga's `NotificationsDropdown` and `Tour` are their own interfaces; matching them needs render slots in `NotificationsBell` and `AdminTutorial`, not just classes.
+- [x] Option B, second step: the bell and the tour. Kit 0.7: `useNotifications()` and `renderButton` / `renderPanel` / `markOnePath` on `NotificationsBell` (which also closes outside and on Escape now); `render` and `scrollIntoView` on `AdminTutorial` (→ stops at the last step). Najenga's `NotificationsDropdown` and `Tour` draw on them.
 - [ ] Consumers: Naoa deletes `TwoPaneForm`, `TwoPaneDialog`, `useMobileToolbar` and its toolbar CSS. Najenga finishes 6d.4 and 6d.6.
 - [ ] Release **1.0**, so caret ranges pick up later fixes by themselves (G11)
 
