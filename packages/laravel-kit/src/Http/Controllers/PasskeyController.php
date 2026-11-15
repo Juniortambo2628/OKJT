@@ -2,9 +2,13 @@
 
 namespace Okjt\Kit\Http\Controllers;
 
+use Closure;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use Laravel\Passkeys\Actions\DeletePasskey;
 use Laravel\Passkeys\Actions\GenerateRegistrationOptions;
 use Laravel\Passkeys\Actions\GenerateVerificationOptions;
@@ -17,6 +21,9 @@ use Laravel\Passkeys\Passkeys;
 use Laravel\Passkeys\Support\WebAuthn;
 use Okjt\Kit\Auth\SignsPeopleIn;
 use Okjt\Kit\Support\ApiResponse;
+use Okjt\Kit\Support\Messages;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Throwable;
 
 /**
  * Passkeys (needs laravel/passkeys) on the kit's bearer tokens; the package's
@@ -30,6 +37,11 @@ use Okjt\Kit\Support\ApiResponse;
  *   POST   /passkeys              (signed in)   { name, credential }
  *   GET    /passkeys              (signed in)   → your passkeys
  *   DELETE /passkeys/{id}         (signed in)
+ *
+ * A passkey that fails for a reason the package doesn't expect (a stored key
+ * that no longer decrypts after an APP_KEY change, a database error) answers
+ * 422 with okjt.messages.passkey_failed, and the real cause goes to the log.
+ * Without this it was a bare 500 with nothing logged and nothing to show.
  */
 class PasskeyController extends Controller
 {
@@ -44,6 +56,11 @@ class PasskeyController extends Controller
     }
 
     public function login(PasskeyVerificationRequest $request, VerifyPasskey $verify): JsonResponse
+    {
+        return $this->guarded('sign-in', fn () => $this->signInWith($request, $verify));
+    }
+
+    protected function signInWith(PasskeyVerificationRequest $request, VerifyPasskey $verify): JsonResponse
     {
         $passkey = $verify($request->credential(), $request->verificationOptions());
 
@@ -77,6 +94,11 @@ class PasskeyController extends Controller
     {
         $user = $request->user() ?? abort(401);
 
+        return $this->guarded('registration', fn () => $this->store($request, $store, $user));
+    }
+
+    protected function store(PasskeyRegistrationRequest $request, StorePasskey $store, $user): JsonResponse
+    {
         $passkey = $store(
             $user,
             $request->string('name')->toString() ?: 'Passkey',
@@ -107,5 +129,31 @@ class PasskeyController extends Controller
         $delete($user, $passkey);
 
         return $this->deletedResponse('Passkey removed');
+    }
+
+    /**
+     * Run a passkey step, turning an unexpected failure into a 422 the app can
+     * show. Validation (a wrong or unknown passkey), HTTP errors and missing
+     * sign-in pass through as they are.
+     */
+    protected function guarded(string $step, Closure $run): JsonResponse
+    {
+        try {
+            return $run();
+        } catch (ValidationException|HttpExceptionInterface|AuthenticationException $e) {
+            throw $e;
+        } catch (Throwable $e) {
+            Log::error("Passkey {$step} failed", [
+                'exception' => $e::class,
+                'message' => $e->getMessage(),
+                'file' => $e->getFile().':'.$e->getLine(),
+            ]);
+
+            // A project whose published config predates this message still gets words.
+            $message = Messages::get('passkey_failed')
+                ?: 'This passkey couldn’t be used. Sign in another way, then add the passkey again from your account.';
+
+            return $this->errorResponse($message, 422, ['credential' => [$message]]);
+        }
     }
 }

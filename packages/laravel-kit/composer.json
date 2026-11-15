@@ -16,7 +16,8 @@
         "phpunit/phpunit": "^11.5",
         "laravel/sanctum": "^4.0",
         "bacon/bacon-qr-code": "^3.0",
-        "laravel/socialite": "^5.0"
+        "laravel/socialite": "^5.0",
+        "laravel/passkeys": "^0.3"
     },
     "suggest": {
         "laravel/socialite": "Signing in with Google (SocialAuthController)",

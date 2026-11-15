@@ -102,6 +102,7 @@ return [
         'sign_in_expired' => 'That sign-in link expired — try again.',
         'account_not_found' => 'Account not found.',
         'bad_credentials' => 'The provided credentials are incorrect.',
+        'passkey_failed' => 'This passkey couldn’t be used. Sign in another way, then add the passkey again from your account.',
     ],
 
     /*
