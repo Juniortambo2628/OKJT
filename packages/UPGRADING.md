@@ -6,10 +6,12 @@ Release R1 of the consolidation plan (`CONSOLIDATION_PLAN.md`). Nothing
 changes on screen or in a response unless you use the new options. You have to
 raise your version ranges yourself, because in 0.x `^0.4.0` does not install 0.5:
 
-1. `npm i @okjt/ui@^0.3.0 @okjt/dashboard@^0.5.0 @okjt/site@^0.2.0` and
-   `composer require okjt/laravel-kit:^0.5.0`. Projects still on
-   `@okjt/site ^0.1` also get 0.2's changes: see "site 0.1.0 → 0.2.0" below
-   (regenerate the theme).
+1. `npm i @okjt/ui@^0.3.0 @okjt/dashboard@^0.5.0` and
+   `composer require okjt/laravel-kit:^0.5.0`, then regenerate the theme
+   (`npx okjt-theme`): it gains four colours at their defaults, and nothing
+   on screen changes. **`@okjt/site` 0.2.0 isn't on npm yet** (it has no
+   Trusted Publisher); stay on `^0.1` until it is, then see "site 0.1.0 →
+   0.2.0" below.
 
 New, all optional:
 

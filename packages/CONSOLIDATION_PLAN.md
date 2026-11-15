@@ -253,7 +253,30 @@ the new PHP tests fail on the old code). Versions: `@okjt/ui` 0.3.0,
   changed Naoa's fields. #44 brought the Modal's focus handling, the bell's
   `listPath` / `markAllPath` / `map` (G6) and the tour's controlled mode,
   skipping and keys (G7).
-* Waiting on: the release (merge to `main`; the workflow tags `v0.5.0`), then the consumer PRs.
+* **Released 2026-11-15**: `@okjt/ui` 0.3.0, `@okjt/dashboard` 0.5.0,
+  `create-okjt-app` 0.1.4 on npm; `okjt/laravel-kit` v0.5.0 on Packagist.
+  **`@okjt/site` 0.2.0 did not publish**: it has no Trusted Publisher on
+  npmjs.com (the token exchange answers "package not found"), so it has never
+  left 0.1.0. Until it is set and the failed job re-run, `create-okjt-app`
+  0.1.4 (which asks for `@okjt/site ^0.2.0`) can't install.
+* Consumer updates: Najenga#89 (versions, the kit's guard, ContextMenu
+  focus; screenshots identical to `main`), Naoa#37 (versions, the kit's
+  `SecurityHeaders` with a test pinning the headers, `installChunkReload()`),
+  Tena-host#107 (`@okjt/ui` 0.3). okjt-app links `packages/`, nothing to do.
+* Found during the consumer updates, for R2:
+  * **`@okjt/ui`'s main entry needs `react-hot-toast`** even for a helper that
+    doesn't use it (`feedback.js` is in the same entry). Tena-host has no
+    toasts, so `import { installChunkReload } from '@okjt/ui'` fails its build.
+    Add an entry for the helpers that need no React or toasts
+    (`@okjt/ui/helpers`: `installChunkReload`, format helpers).
+  * **`Modal` has no backdrop option.** Najenga's dialogs use a darker
+    backdrop (`bg-black/80`) than the kit's (`bg-black/60`); add
+    `backdropClassName`, passed to `Overlay`.
+  * **Moving Najenga's dialogs, fields, bell and tour onto the kit's changes
+    how they look.** The kit's own styles differ from Najenga's
+    (padding, borders, focus rings, the dark gradient on tabbed dialogs). It
+    needs either a decision to take the kit's look, or style options in the
+    kit first. Waiting on that decision (Najenga `docs/plan-kit-6d.md`).
 
 ### R2: phones and forms (kit 0.6, then 1.0): about 2 weeks
 
@@ -263,6 +286,7 @@ the new PHP tests fail on the old code). Versions: `@okjt/ui` 0.3.0,
 - [ ] F6 card view on phones and details dialog in `AdminListPanel`
 - [ ] F12 contrast check in `okjt-theme`
 - [ ] G4, G8, G10 (G6 and G7 landed in R1)
+- [ ] `@okjt/ui/helpers` entry (no React, no toasts) and `Modal` `backdropClassName` (found in R1's consumer updates)
 - [ ] Consumers: Naoa deletes `TwoPaneForm`, `TwoPaneDialog`, `useMobileToolbar` and its toolbar CSS. Najenga finishes 6d.4 and 6d.6.
 - [ ] Release **1.0**, so caret ranges pick up later fixes by themselves (G11)
 
