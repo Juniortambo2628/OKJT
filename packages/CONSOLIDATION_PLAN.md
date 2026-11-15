@@ -1,6 +1,7 @@
 # OKJT kit: consolidation plan (Phase 7)
 
-Status: **draft for review** (2026-11-15). Nothing here is built yet.
+Status: **approved** (2026-11-15), with the recommendations in section 7. R1's kit
+changes are built (kit 0.5); see R1 below.
 
 Since the kit reached v0.4 (2 November), the projects have kept moving: bugs
 fixed, pages reworked for phones, and whole features added (M-Pesa, privacy,
@@ -202,15 +203,44 @@ delete. A box is ticked when its kit PR and every consumer PR are merged.
 
 ### R1: fixes and gaps (kit 0.5): about 1 week
 
-- [ ] G1 Modal widths, `showClose`, title and footer slots (the full tabbed dialog comes in R2)
-- [ ] G2 inputs: their own background, `ref` forwarding, can be used without label and error
-- [ ] G3 unsaved-changes guard lifted from Najenga
-- [ ] G5 ContextMenu `onClick` accepted as another name, development warning, focus check
-- [ ] G9 passkey errors answered and logged
-- [ ] F1 `installChunkReload()`
-- [ ] S1 `SecurityHeaders` with CSP from config
+- [x] G1 Modal widths, `showClose`, title and footer slots (the full tabbed dialog comes in R2)
+- [x] G2 inputs: their own background, `ref` forwarding, can be used without label and error
+- [x] G3 unsaved-changes guard lifted from Najenga
+- [x] G5 ContextMenu `onClick` accepted as another name, development warning, focus check
+- [x] G9 passkey errors answered and logged
+- [x] F1 `installChunkReload()`
+- [x] S1 `SecurityHeaders` with CSP from config
 - [ ] Consumers: Naoa, Najenga, Tena-host move to `site ^0.2` and the R1 versions. Najenga finishes 6d.2 and 6d.3 and deletes `Modal`, `TextInput`, `SelectInput`, `TextArea` and its guard. Naoa and naoa-dt delete their chunk-reload code. Naoa deletes `SecurityHeaders`.
 - Done when: style comparison shows no differences on Naoa and Najenga except the agreed ones; every suite passes.
+
+**R1 result so far (2026-11-15).** The seven kit changes are on the branch, one
+commit each, with tests (ui 21 → 35, dashboard 112 → 124, laravel-kit 64 → 72;
+the new PHP tests fail on the old code). Versions: `@okjt/ui` 0.3.0,
+`@okjt/dashboard` 0.5.0, `okjt/laravel-kit` v0.5.0, `create-okjt-app` 0.1.4
+(which also stops asking for `@okjt/site ^0.1`). `UPGRADING.md` has the entry.
+
+* G3, as built: every consumer uses `<BrowserRouter>`, where react-router can't
+  hold a navigation (`useBlocker` needs a data router). So the guard became
+  a page-wide record plus `confirmLeave()` / `useGuardedNavigate()`, which
+  other routers' visits call. Najenga's Inertia-style shim will call it from its
+  `before` event (its consumer PR). The browser's Back button is still not caught.
+* G9, as built: the failing passkey is not switched off (TFE does that); a
+  clear 422 and the logged cause were enough, without deleting anyone's data.
+* Found on the way: Naoa's and Najenga's published `config/okjt.php` have their
+  own `messages`, and config merges only at the top level, so every message
+  the kit adds is missing for them. The passkey message falls back to the kit's
+  wording. Later messages should do the same, or `Messages::get` should fall
+  back to the kit's file (R2).
+* Proof that nothing changes on screen, at the scale of this change: the
+  components R1 touched (the four field types with and without an error, the
+  default `Modal`, a `ContextMenu` with a header, separator and danger item),
+  built with the kit before and after R1, under Tailwind 4 and Naoa's
+  generated theme. Every element's computed styles were captured with
+  `style-snapshot.mjs` at 1280 and 390 px. Result: **no differences**.
+  Calibration: setting `--okjt-field-bg` / `--okjt-field-text` on the "after"
+  build was reported on exactly the four fields. The full 41-route comparison
+  runs in each consumer PR, as before.
+* Waiting on: the release (merge, then tag `v0.5.0`), then the consumer PRs.
 
 ### R2: phones and forms (kit 0.6, then 1.0): about 2 weeks
 

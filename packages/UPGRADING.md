@@ -1,5 +1,54 @@
 # Upgrading
 
+## 0.4 → 0.5 (ui 0.3.0, dashboard 0.5.0, laravel-kit 0.5.0, create-okjt-app 0.1.4)
+
+Release R1 of the consolidation plan (`CONSOLIDATION_PLAN.md`). Nothing
+changes on screen or in a response unless you use the new options. You have to
+raise your version ranges yourself, because in 0.x `^0.4.0` does not install 0.5:
+
+1. `npm i @okjt/ui@^0.3.0 @okjt/dashboard@^0.5.0 @okjt/site@^0.2.0` and
+   `composer require okjt/laravel-kit:^0.5.0`. Projects still on
+   `@okjt/site ^0.1` also get 0.2's changes: see "site 0.1.0 → 0.2.0" below
+   (regenerate the theme).
+
+New, all optional:
+
+- **`installChunkReload()`** (`@okjt/ui`): call it once in `main.jsx`, before
+  rendering. A tab left open across a deploy then reloads once into the new
+  build instead of failing to open lazy pages. It replaces Naoa's
+  `vite:preloadError` handler and naoa-dt's `utils/chunkReload.js`.
+- **`Modal`**: `maxWidth` `6xl`, `7xl` and `full`; `showClose={false}` for
+  content with its own close button; `closeable={false}` for a step that must
+  be finished; `title`, `description` and `footer` make the panel a card (a
+  header with the close button, a body that scrolls, a footer that stays put).
+- **`ContextMenu`**: items may say `onClick` as well as `onSelect`. In
+  development an item with neither logs a warning. Focus goes back to whatever
+  opened the menu when it closes, so adapters that did this themselves (Najenga's)
+  can stop.
+- **`AdminInput`, `AdminSelect`, `AdminTextarea`**: take a `ref`; `bare`
+  renders the control alone; background and text colour come from
+  `--okjt-field-bg` and `--okjt-field-text` (default: transparent and
+  inherit). A dark dashboard using `@tailwindcss/forms` sets them, e.g.
+  `.admin-theme { --okjt-field-bg: #1c1c1c; --okjt-field-text: #f2f2f2; }`.
+- **Unsaved changes**: every `useUnsavedChangesGuard` reports to one page-wide
+  record. `<UnsavedChangesStatus />` without `dirty` shows its chip whenever
+  anything is unsaved (passing `dirty` works as before). For navigation the
+  guard can't see: `useGuardedNavigate()` (asks before a `navigate()` call)
+  and `confirmLeave()` (for another router's visits, e.g. an Inertia-style
+  router's `before` event). After saving, call `allowNextNavigation()` before
+  redirecting. Also exported: `useHasUnsavedChanges()`, `hasUnsavedChanges()`.
+  The browser's Back button is still not caught (react-router needs a data
+  router for that).
+- **`Okjt\Kit\Http\Middleware\SecurityHeaders`**: append it in
+  `bootstrap/app.php` and delete your own. The defaults are Naoa's headers
+  exactly. Add sources with `okjt.security_headers.csp_extra`
+  (naoa-dt: `['connect-src' => ['data:', 'blob:']]`).
+- **Passkeys**: an unexpected failure (a stored key that no longer decrypts,
+  a database error) now answers 422 with `okjt.messages.passkey_failed`, and
+  the cause is logged. If your published `config/okjt.php` has its own
+  `messages`, add `passkey_failed` to change the wording; otherwise the kit's
+  wording is used.
+
 ## site 0.1.0 → 0.2.0 (with @okjt/ui 0.2.2): dark public pages
 
 Also `@okjt/dashboard` 0.4.1 (nothing to change): presence isn't asked for
