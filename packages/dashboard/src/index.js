@@ -28,7 +28,15 @@ export { default as AdminTutorial } from './AdminTutorial.js';
 
 export { default as useAdminAction, useBulkAdminAction } from './useAdminAction.js';
 export { default as useCrudHandlers } from './useCrudHandlers.js';
-export { default as useUnsavedChangesGuard, useUnsavedChanges } from './useUnsavedChangesGuard.js';
+export {
+  default as useUnsavedChangesGuard,
+  useUnsavedChanges,
+  useHasUnsavedChanges,
+  hasUnsavedChanges,
+  confirmLeave,
+  useGuardedNavigate,
+  allowNextNavigation,
+} from './useUnsavedChangesGuard.js';
 export { default as useFilteredItems } from './useFilteredItems.js';
 export { default as useSavedViews } from './useSavedViews.js';
 

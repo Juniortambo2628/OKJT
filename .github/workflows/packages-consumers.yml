@@ -1,0 +1,167 @@
+name: Kit consumers
+
+# Would this kit change break or change a project that uses the kit?
+#
+# Builds the kit from the pull request and installs it into the current main
+# of Naoa and Najenga: the npm packages as packed tarballs (in place of the
+# versions on npm, without touching their lockfiles), laravel-kit from this
+# checkout through a Composer path repository. Then runs their own checks.
+# Naoa's Playwright visual suite (API mocked, no backend) is the screenshot
+# proof that nothing on screen changed.
+#
+# Private repositories: add a CONSUMERS_TOKEN secret, a fine-grained token
+# with Contents: read on Naoa and Najenga. Without it the default token is
+# used, which reads public repositories only.
+
+on:
+  pull_request:
+    paths: ['packages/**', '.github/workflows/packages-consumers.yml']
+  workflow_dispatch:
+
+concurrency:
+  group: kit-consumers-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  pack:
+    name: Pack the kit
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+      - run: npm run build
+      - name: Pack @okjt/ui, @okjt/site, @okjt/dashboard
+        run: |
+          mkdir -p "$RUNNER_TEMP/kit"
+          for p in ui site dashboard; do (cd "$p" && npm pack --pack-destination "$RUNNER_TEMP/kit"); done
+          ls -l "$RUNNER_TEMP/kit"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kit-tarballs
+          path: ${{ runner.temp }}/kit/*.tgz
+
+  frontend:
+    name: ${{ matrix.project }} app (tests, build${{ matrix.visual && ', visual' || '' }})
+    needs: pack
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - project: Naoa
+            repo: Juniortambo2628/Naoa
+            ref: main
+            dir: frontend
+            visual: true
+          - project: Najenga
+            repo: Juniortambo2628/Najenga
+            ref: main
+            dir: frontend
+            visual: false
+    defaults:
+      run:
+        working-directory: consumer/${{ matrix.dir }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ matrix.repo }}
+          ref: ${{ matrix.ref }}
+          path: consumer
+          token: ${{ secrets.CONSUMERS_TOKEN || github.token }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: kit-tarballs
+          path: ${{ runner.temp }}/kit
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      # Unpacked over the installed copies rather than `npm install`ed: a second
+      # install re-resolves the whole tree (and with legacy peer deps drops the
+      # peers npm ci added, e.g. Naoa's @testing-library/dom). Everything but
+      # the kit stays exactly as the project's lockfile put it.
+      - name: Install the kit from this pull request
+        run: |
+          for tgz in "$RUNNER_TEMP"/kit/*.tgz; do
+            name="$(tar -xzOf "$tgz" package/package.json | node -p 'JSON.parse(require("fs").readFileSync(0)).name')"
+            rm -rf "node_modules/$name"
+            mkdir -p "node_modules/$name"
+            tar -xzf "$tgz" -C "node_modules/$name" --strip-components=1
+            echo "$name $(node -p "require('./node_modules/$name/package.json').version")"
+          done
+          # Nested copies (a package's own older @okjt/ui) would shadow the new ones.
+          find node_modules/@okjt -mindepth 3 -maxdepth 3 -type d -path '*/node_modules/@okjt' -prune -exec rm -rf {} + || true
+      - name: Theme (if the project generates one)
+        run: npm run theme --if-present
+      - run: npm test
+      - run: npm run build
+      - name: Install Chromium
+        if: matrix.visual
+        run: npx playwright install --with-deps chromium
+      - name: Visual tests
+        if: matrix.visual
+        run: npm run test:visual
+      - name: Visual differences
+        if: failure() && matrix.visual
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.project }}-visual-diff
+          path: consumer/${{ matrix.dir }}/tests/visual/test-results
+          if-no-files-found: ignore
+
+  backend:
+    name: ${{ matrix.project }} API (PHP tests on this laravel-kit)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - project: Naoa
+            repo: Juniortambo2628/Naoa
+            ref: main
+            dir: backend
+          - project: Najenga
+            repo: Juniortambo2628/Najenga
+            ref: main
+            dir: .
+    defaults:
+      run:
+        working-directory: consumer/${{ matrix.dir }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: kit
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ matrix.repo }}
+          ref: ${{ matrix.ref }}
+          path: consumer
+          token: ${{ secrets.CONSUMERS_TOKEN || github.token }}
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, pdo, pdo_sqlite, sqlite3, bcmath, intl, gd, zip
+          coverage: none
+          tools: composer
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - name: Use laravel-kit from this pull request
+        run: |
+          version="$(tr -d '[:space:]' < "$GITHUB_WORKSPACE/kit/packages/VERSION")"
+          composer config repositories.okjt-kit "{\"type\": \"path\", \"url\": \"$GITHUB_WORKSPACE/kit/packages/laravel-kit\", \"options\": {\"symlink\": false, \"versions\": {\"okjt/laravel-kit\": \"$version\"}}}"
+          composer require "okjt/laravel-kit:$version" --no-interaction --no-progress -W
+      - name: Prepare
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+      - run: php artisan test
