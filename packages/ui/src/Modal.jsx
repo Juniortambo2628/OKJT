@@ -67,7 +67,7 @@ function CloseButton({ onClose, className }) {
 }
 
 /** The open dialog's panel; mounted only while open, so focus moves in and out with it. */
-function Panel({ widthClass, onClose, drawClose, carded, title, titleId, description, footer, className, children }) {
+function Panel({ widthClass, onClose, drawClose, carded, title, titleId, description, footer, className, classNames = {}, children }) {
   const ref = useRef(null);
   useDialogFocus(ref);
   return (
@@ -78,7 +78,7 @@ function Panel({ widthClass, onClose, drawClose, carded, title, titleId, descrip
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95, y: 20 }}
       transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-      className={`relative w-full ${widthClass} my-auto outline-none`}
+      className={classNames.panel ?? `relative w-full ${widthClass} my-auto outline-none`}
     >
       {carded ? (
         <div className={`flex max-h-[88vh] flex-col overflow-hidden rounded-2xl bg-surface shadow-xl ${className}`.trim()}>
@@ -111,7 +111,7 @@ function Panel({ widthClass, onClose, drawClose, carded, title, titleId, descrip
               className="absolute -top-3 -right-3 z-10 w-9 h-9 rounded-full bg-surface shadow-lg border border-tone-200 flex items-center justify-center text-tone-500 hover:text-tone-800 hover:bg-tone-50 transition-colors"
             />
           )}
-          <div className={`max-h-[88vh] overflow-y-auto rounded-2xl ${className}`.trim()}>
+          <div className={classNames.body ?? `max-h-[88vh] overflow-y-auto rounded-2xl ${className}`.trim()}>
             {children}
           </div>
         </>
@@ -148,6 +148,15 @@ function Panel({ widthClass, onClose, drawClose, carded, title, titleId, descrip
  * @param {boolean} [closeable]   Escape, the backdrop and the close button close it
  *                                (default true). False for a step that must be finished.
  * @param {string} [className]    Extra classes for the panel (its own background, a height).
+ *
+ * For a project whose dialogs have their own look (it draws its own header,
+ * close button and footer as the content, with showClose={false}):
+ * @param {string} [overlayClassName]   Replaces how the dialog sits on the page
+ *                                      (default: centred, scrolling, p-4).
+ * @param {string} [backdropClassName]  Replaces the backdrop (default bg-black/60 backdrop-blur-sm).
+ * @param {{ panel?: string, body?: string }} [classNames]
+ *   panel replaces the panel's classes, its width included; body replaces the
+ *   scrolling area's (without title or footer).
  */
 export default function Modal({
   open,
@@ -161,6 +170,9 @@ export default function Modal({
   showClose = true,
   closeable = true,
   className = '',
+  overlayClassName,
+  backdropClassName,
+  classNames,
 }) {
   const widthClass = MAX_WIDTHS[maxWidth] || MAX_WIDTHS.lg;
   const titleId = useId();
@@ -174,7 +186,8 @@ export default function Modal({
           onClose={closeable ? onClose : undefined}
           closeOnBackdrop={closeable}
           zIndex={9998}
-          className="flex items-start sm:items-center justify-center p-4 overflow-y-auto"
+          className={overlayClassName ?? 'flex items-start sm:items-center justify-center p-4 overflow-y-auto'}
+          {...(backdropClassName != null ? { backdropClassName } : {})}
           role="dialog"
           aria-modal="true"
           aria-label={named ? undefined : label}
@@ -190,6 +203,7 @@ export default function Modal({
             description={description}
             footer={footer}
             className={className}
+            classNames={classNames}
           >
             {children}
           </Panel>

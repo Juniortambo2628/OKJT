@@ -93,4 +93,29 @@ describe('Modal', () => {
     expect(yes).toHaveFocus()
     top.remove()
   })
+
+  it('takes a project\'s own overlay, backdrop, panel and body classes', () => {
+    render(
+      <Modal open onClose={vi.fn()} showClose={false} label="House"
+        overlayClassName="house-overlay" backdropClassName="house-backdrop"
+        classNames={{ panel: 'house-panel', body: 'house-body' }}>
+        <p>Body</p>
+      </Modal>
+    )
+    const overlay = screen.getByRole('dialog', { name: 'House' })
+    expect(overlay.className).toBe('fixed inset-0 house-backdrop house-overlay')
+    const body = screen.getByText('Body').parentElement
+    expect(body.className).toBe('house-body')
+    expect(body.parentElement.className).toBe('house-panel')
+  })
+
+  it('keeps its own classes when none are given', () => {
+    render(<Modal open onClose={vi.fn()} label="Plain" maxWidth="md"><p>Body</p></Modal>)
+    const overlay = screen.getByRole('dialog', { name: 'Plain' })
+    expect(overlay.className).toBe('fixed inset-0 bg-black/60 backdrop-blur-sm flex items-start sm:items-center justify-center p-4 overflow-y-auto')
+    const body = screen.getByText('Body').parentElement
+    expect(body.className).toBe('max-h-[88vh] overflow-y-auto rounded-2xl')
+    expect(body.parentElement.className).toBe('relative w-full max-w-md my-auto outline-none')
+  })
 })
+
