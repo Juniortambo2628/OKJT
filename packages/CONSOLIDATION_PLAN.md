@@ -210,6 +210,8 @@ delete. A box is ticked when its kit PR and every consumer PR are merged.
 - [x] G9 passkey errors answered and logged
 - [x] F1 `installChunkReload()`
 - [x] S1 `SecurityHeaders` with CSP from config
+- [x] G6 `NotificationsBell` reads another API (`listPath`, `markAllPath`, `map`; marking one notification at a time is still open, R2) and G7 `AdminTutorial` (`open`, `skipMissing`, selectors, arrow keys), from OKJT#44, brought forward from R2
+- [x] `Modal` keeps keyboard focus inside while open (from OKJT#44)
 - [ ] Consumers: Naoa, Najenga, Tena-host move to `site ^0.2` and the R1 versions. Najenga finishes 6d.2 and 6d.3 and deletes `Modal`, `TextInput`, `SelectInput`, `TextArea` and its guard. Naoa and naoa-dt delete their chunk-reload code. Naoa deletes `SecurityHeaders`.
 - Done when: style comparison shows no differences on Naoa and Najenga except the agreed ones; every suite passes.
 
@@ -240,7 +242,18 @@ the new PHP tests fail on the old code). Versions: `@okjt/ui` 0.3.0,
   Calibration: setting `--okjt-field-bg` / `--okjt-field-text` on the "after"
   build was reported on exactly the four fields. The full 41-route comparison
   runs in each consumer PR, as before.
-* Waiting on: the release (merge, then tag `v0.5.0`), then the consumer PRs.
+  After OKJT#44 was merged in, the comparison was run again. **One difference**,
+  intended: a Modal opened from the keyboard now moves focus to its first
+  control, so the browser draws its focus ring on the close button.
+  Opened with the mouse, nothing is drawn (checked: `:focus-visible` is false),
+  and on close focus goes back to the button that opened it.
+* OKJT#44, an earlier pull request for the same Najenga gaps, was merged into
+  this release. #45's version was kept where the two overlapped. The fields'
+  default background stays transparent, because #44's white would have
+  changed Naoa's fields. #44 brought the Modal's focus handling, the bell's
+  `listPath` / `markAllPath` / `map` (G6) and the tour's controlled mode,
+  skipping and keys (G7).
+* Waiting on: the release (merge to `main`; the workflow tags `v0.5.0`), then the consumer PRs.
 
 ### R2: phones and forms (kit 0.6, then 1.0): about 2 weeks
 
@@ -249,7 +262,7 @@ the new PHP tests fail on the old code). Versions: `@okjt/ui` 0.3.0,
 - [ ] F4 glass toolbar variant
 - [ ] F6 card view on phones and details dialog in `AdminListPanel`
 - [ ] F12 contrast check in `okjt-theme`
-- [ ] G4, G6, G7, G8, G10
+- [ ] G4, G8, G10 (G6 and G7 landed in R1)
 - [ ] Consumers: Naoa deletes `TwoPaneForm`, `TwoPaneDialog`, `useMobileToolbar` and its toolbar CSS. Najenga finishes 6d.4 and 6d.6.
 - [ ] Release **1.0**, so caret ranges pick up later fixes by themselves (G11)
 

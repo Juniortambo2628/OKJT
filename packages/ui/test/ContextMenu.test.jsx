@@ -82,4 +82,15 @@ describe('ContextMenu', () => {
     expect(dialogField).toHaveFocus()
     opener.remove(); dialogField.remove()
   })
+
+  it('gives focus back when it is removed from the page while open', () => {
+    const opener = document.createElement('button')
+    document.body.appendChild(opener)
+    opener.focus()
+    const { unmount } = render(<ContextMenu position={{ x: 0, y: 0 }} items={[{ label: 'Copy', onSelect: vi.fn() }]} onClose={vi.fn()} />)
+    expect(screen.getByRole('menuitem', { name: /Copy/ })).toHaveFocus()
+    unmount()
+    expect(opener).toHaveFocus()
+    opener.remove()
+  })
 })

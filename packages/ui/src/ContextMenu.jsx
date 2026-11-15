@@ -165,9 +165,8 @@ export default function ContextMenu({ position, items, onClose }) {
   }
   const open = !!position;
 
-  useEffect(() => {
-    if (open) { wasOpen.current = true; return; }
-    if (!wasOpen.current) return;
+  // Give focus back to the opener, if focus has nowhere better to be.
+  const restoreFocus = () => {
     wasOpen.current = false;
     const opener = openerRef.current;
     openerRef.current = null;
@@ -176,7 +175,15 @@ export default function ContextMenu({ position, items, onClose }) {
     if (focusLeftWithMenu && opener && opener !== document.body && document.contains(opener)) {
       opener.focus({ preventScroll: true });
     }
+  };
+
+  useEffect(() => {
+    if (open) { wasOpen.current = true; return; }
+    if (wasOpen.current) restoreFocus();
   }, [open]);
+
+  // Removed from the page while open (the page it was on went away): the same.
+  useEffect(() => () => { if (wasOpen.current) restoreFocus(); }, []);
 
   useEffect(() => {
     if (!position) return undefined;

@@ -20,7 +20,18 @@ New, all optional:
 - **`Modal`**: `maxWidth` `6xl`, `7xl` and `full`; `showClose={false}` for
   content with its own close button; `closeable={false}` for a step that must
   be finished; `title`, `description` and `footer` make the panel a card (a
-  header with the close button, a body that scrolls, a footer that stays put).
+  header with the close button, a body that scrolls, a footer that stays put);
+  `className` for the panel. Keyboard focus now moves into an open modal (its
+  autofocus field, else its first control), stays inside on Tab, and goes back
+  to what had it when it closes.
+- **`NotificationsBell`**: `listPath`, `markAllPath` and `map` (turns one of
+  your API's items into `{ id, title, message, link, icon, read_at,
+  created_at }`), for an app with its own notifications API, such as Laravel
+  database notifications.
+- **`AdminTutorial`**: `open` (the app decides when it shows and remembers who
+  has finished; nothing goes in localStorage), `skipMissing` (leaves out steps
+  whose element isn't on screen), a step's `selector` instead of an element
+  id, and ←, → and Escape. Its card is a dialog named by the step's title.
 - **`ContextMenu`**: items may say `onClick` as well as `onSelect`. In
   development an item with neither logs a warning. Focus goes back to whatever
   opened the menu when it closes, so adapters that did this themselves (Najenga's)

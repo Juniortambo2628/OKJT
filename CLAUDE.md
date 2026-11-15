@@ -23,6 +23,11 @@ into it now and in what order.
 A kit change reaches every project, so each one does all of this, without
 being asked:
 
+0. **Before starting, check open pull requests here** (and recent commits on
+   `main`) that touch the same packages. If one is already doing the work,
+   build on it or fold it in, and say so; don't start a second copy. (R1 was
+   started beside OKJT#44, which fixed the same gaps, and the two had to be
+   merged afterwards.)
 1. **One change per commit**, and the commit message says which project it
    came from and why.
 2. **Tests**, in the package's own suite. For a bug fix, check the new test
