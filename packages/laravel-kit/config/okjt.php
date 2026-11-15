@@ -244,6 +244,36 @@ return [
     ],
 
     /*
+     * Security headers (Http\Middleware\SecurityHeaders), on every response
+     * once the project appends the middleware. A header set to null is not
+     * sent. csp is the base policy, a directive set to null is left out;
+     * csp_extra adds sources to it, e.g.
+     *   'csp_extra' => ['connect-src' => ['data:', 'blob:']]
+     * so the project keeps getting the kit's base policy.
+     */
+    'security_headers' => [
+        'enabled' => true,
+        'headers' => [
+            'X-Frame-Options' => 'SAMEORIGIN',
+            'X-XSS-Protection' => '1; mode=block',
+            'X-Content-Type-Options' => 'nosniff',
+            'Referrer-Policy' => 'strict-origin-when-cross-origin',
+            'Strict-Transport-Security' => 'max-age=31536000; includeSubDomains',
+        ],
+        'csp' => [
+            'default-src' => ["'self'"],
+            'script-src' => ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://fonts.googleapis.com'],
+            'style-src' => ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+            'font-src' => ["'self'", 'https://fonts.gstatic.com'],
+            'img-src' => ["'self'", 'data:', 'https:', 'blob:'],
+            'connect-src' => ["'self'", 'https:', 'wss:'],
+        ],
+        'csp_extra' => [],
+        // Send the policy as Content-Security-Policy-Report-Only, to try a stricter one.
+        'csp_report_only' => false,
+    ],
+
+    /*
      * Version history (RecordsRevisions): rapid edits by one person to one
      * record merge into one version; versions older than keep_days are pruned
      * by model:prune.
