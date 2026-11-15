@@ -15,6 +15,20 @@ function placeWithin(x, y, size, anchorWidth = 0) {
   return { left, top };
 }
 
+const isDev = typeof process !== 'undefined' && process.env?.NODE_ENV !== 'production';
+const warned = new Set();
+
+/** What choosing an item runs: `onSelect`, or `onClick` as another name for it. */
+function handlerOf(item) {
+  const run = item.onSelect || item.onClick;
+  if (!run && !item.submenu && !item.disabled && isDev && !warned.has(item.label)) {
+    warned.add(item.label);
+    // eslint-disable-next-line no-console
+    console.warn(`[@okjt/ui] ContextMenu item "${item.label}" has no onSelect, so choosing it does nothing.`);
+  }
+  return run;
+}
+
 const focusables = (el) => [...(el?.querySelectorAll(':scope > [role="menuitem"], :scope > [role="menuitemcheckbox"], :scope > [role="menuitemradio"]') || [])]
   .filter((b) => !b.disabled);
 
@@ -88,7 +102,7 @@ function MenuList({ items, x, y, anchorWidth = 0, onClose, autoFocus = true, onR
               onMouseEnter={(e) => (item.submenu ? openSubmenu(index, e.currentTarget) : setOpenSub(null))}
               onClick={(e) => {
                 if (item.submenu) { openSubmenu(index, e.currentTarget); return; }
-                item.onSelect?.();
+                handlerOf(item)?.();
                 if (!item.keepOpen) onClose();
               }}
               className={`w-full flex items-center gap-2.5 px-3 py-2 text-left outline-none transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
@@ -131,13 +145,38 @@ function MenuList({ items, x, y, anchorWidth = 0, onClose, autoFocus = true, onR
  * click to close.
  *
  * @param {{ x: number, y: number } | null} position - Where to open; null = closed
- * @param {Array} items - [{ label, icon, onSelect, disabled, danger, checked,
+ * When the menu closes, focus goes back to whatever had it when the menu
+ * opened, unless the chosen item moved it somewhere else (a dialog it opened).
+ *
+ * @param {Array} items - [{ label, icon, onSelect (or onClick), disabled, danger, checked,
  *   shortcut, keepOpen, submenu: items[] } | { type: 'separator' }
  *   | { type: 'header', label } | { type: 'custom', render: () => node }]
  * @param {function} onClose
  */
 export default function ContextMenu({ position, items, onClose }) {
   const rootRef = useRef(null);
+  const openerRef = useRef(null);
+  const wasOpen = useRef(false);
+
+  // Read while rendering: the menu focuses its first item in an effect that
+  // runs before this component's own effects.
+  if (position && !wasOpen.current && typeof document !== 'undefined') {
+    openerRef.current = document.activeElement;
+  }
+  const open = !!position;
+
+  useEffect(() => {
+    if (open) { wasOpen.current = true; return; }
+    if (!wasOpen.current) return;
+    wasOpen.current = false;
+    const opener = openerRef.current;
+    openerRef.current = null;
+    const active = document.activeElement;
+    const focusLeftWithMenu = !active || active === document.body || !document.contains(active);
+    if (focusLeftWithMenu && opener && opener !== document.body && document.contains(opener)) {
+      opener.focus({ preventScroll: true });
+    }
+  }, [open]);
 
   useEffect(() => {
     if (!position) return undefined;
