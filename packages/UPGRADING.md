@@ -1,5 +1,32 @@
 # Upgrading
 
+## 0.6 → 0.7 (dashboard 0.7.0, create-okjt-app 0.1.6)
+
+Room in the bell and the tour for a project to draw its own (R2, option B,
+step two). Raise your range: `npm i @okjt/dashboard@^0.7.0`. `@okjt/ui`
+stays at 0.4; `okjt/laravel-kit`'s v0.7.0 tag is the same code as v0.5.0.
+
+Two small behaviour changes, no change in how anything looks:
+
+- **The bell closes on a click outside it and on Escape.** It never did.
+- **→ in the tour stops at the last step.** It used to finish the tour,
+  which a stray key press could do; finishing is the card's own button.
+
+New, all optional:
+
+- **`useNotifications({ listPath, markAllPath, markOnePath, map })`**: the
+  bell's behaviour on its own (fetched on mount and every 30 seconds;
+  `markRead(id)`, `markAllRead()`, `refresh()`, `notifications`,
+  `unreadCount`).
+- **`NotificationsBell`**: `markOnePath` (`'/notifications/:id/read'`, or a
+  function of the id), and `renderButton` / `renderPanel` to draw your own
+  bell on the kit's behaviour (`{ open, toggle, close, unreadCount,
+  notifications, markRead, markAllRead, refresh }`).
+- **`AdminTutorial`**: `render` draws the whole tour yourself (overlay,
+  spotlight, card) from `{ step, index, count, rect, next, back, finish }`,
+  rendered into `document.body`; `scrollIntoView={false}` leaves the page
+  where it is.
+
 ## 0.5 → 0.6 (ui 0.4.0, dashboard 0.6.0, create-okjt-app 0.1.5)
 
 Style options, so a project whose dialogs and fields look different from the

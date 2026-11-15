@@ -57,7 +57,7 @@ export { default as DashboardHeader } from './DashboardHeader.js';
 // Signing in
 export { AuthProvider, useAuth, default as AuthContext } from './AuthContext.js';
 export { default as GoogleButton } from './GoogleButton.js';
-export { default as NotificationsBell } from './NotificationsBell.js';
+export { default as NotificationsBell, useNotifications } from './NotificationsBell.js';
 export { loginWithPasskey, registerPasskey, passkeysSupported } from './passkeys.js';
 
 // Sign-in pages and the account menu

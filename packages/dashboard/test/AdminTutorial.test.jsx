@@ -54,5 +54,44 @@ describe('AdminTutorial', () => {
     expect(getByText('Search')).toBeInTheDocument()
     here.remove()
   })
+
+  it('render draws the whole tour on the kit\'s behaviour, without scrolling', async () => {
+    const here = document.createElement('div')
+    here.setAttribute('data-tour', 'bell')
+    here.getBoundingClientRect = () => ({ top: 10, left: 900, right: 940, bottom: 50, width: 40, height: 40 })
+    here.scrollIntoView = vi.fn()
+    document.body.appendChild(here)
+    const onComplete = vi.fn()
+    const steps = [{ title: 'Welcome', body: 'Hello' }, { title: 'Bell', body: 'News here', selector: '[data-tour="bell"]' }]
+    render(
+      <AdminTutorial open skipMissing scrollIntoView={false} steps={steps} onComplete={onComplete}
+        render={({ step, index, count, rect, next, back, finish }) => (
+          <div role="dialog" aria-label={step.title}>
+            <p>{index + 1} of {count}</p>
+            <p>{rect ? `at ${rect.left}` : 'centred'}</p>
+            <button type="button" onClick={back}>Back</button>
+            <button type="button" onClick={index === count - 1 ? finish : next}>{index === count - 1 ? 'Done' : 'Next'}</button>
+          </div>
+        )} />
+    )
+    expect(screen.getByRole('dialog', { name: 'Welcome' })).toHaveTextContent('1 of 2')
+    act(() => { screen.getByRole('button', { name: 'Next' }).click() })
+    expect(screen.getByRole('dialog', { name: 'Bell' })).toBeInTheDocument()
+    expect(await screen.findByText('at 900')).toBeInTheDocument()
+    expect(here.scrollIntoView).not.toHaveBeenCalled()
+    act(() => { screen.getByRole('button', { name: 'Done' }).click() })
+    expect(onComplete).toHaveBeenCalledTimes(1)
+    here.remove()
+  })
+
+  it('→ stops at the last step; finishing takes the card\'s button', async () => {
+    const onComplete = vi.fn()
+    const steps = [{ title: 'One', content: 'a' }, { title: 'Two', content: 'b' }]
+    render(<AdminTutorial open steps={steps} onComplete={onComplete} />)
+    act(() => { document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' })) })
+    act(() => { document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' })) })
+    expect(onComplete).not.toHaveBeenCalled()
+    expect(screen.getByRole('button', { name: /Finish Tour/ })).toBeInTheDocument()
+  })
 })
 

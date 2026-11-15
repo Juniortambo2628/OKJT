@@ -35,23 +35,20 @@ function NotificationIcon({ icon }) {
 }
 
 /**
- * The header's notifications bell (for DashboardProvider `shell.Notifications`):
- * the workspace's latest notifications from okjt/laravel-kit's
- * NotificationController (GET /notifications), refreshed every 30 seconds,
- * with "Mark all read". A notification with a `link` opens that page.
- *
- * An app with its own notifications API says where they are and how each
- * one reads:
+ * The notifications behind the bell, for a bell drawn by the project:
+ * fetched on mount and every 30 seconds, with marking one or all as read.
  *
  * @param {string} [listPath='/notifications']
- * @param {string} [markAllPath='/notifications/mark-read'] - POSTed by "Mark all read"
- * @param {(item) => { id, title, message, link, icon, read_at, created_at }} [map]
- *   - Turns one of the API's items into what the bell shows
+ * @param {string} [markAllPath='/notifications/mark-read'] - POSTed to mark all read
+ * @param {string | ((id) => string)} [markOnePath] - POSTed to mark one read;
+ *   a string with ':id' in it, or a function of the id
+ * @param {(item) => object} [map] - Turns one of the API's items into what the bell shows
+ * @returns {{ notifications, unreadCount, refresh, markRead(id), markAllRead() }}
+ *   markRead and markAllRead resolve when done and reject on failure, so the
+ *   caller can say so.
  */
-export default function NotificationsBell({ listPath = '/notifications', markAllPath = '/notifications/mark-read', map }) {
-  const navigate = useNavigate();
+export function useNotifications({ listPath = '/notifications', markAllPath = '/notifications/mark-read', markOnePath, map } = {}) {
   const { api } = useDashboard();
-  const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const latest = useRef({ listPath, map });
@@ -79,19 +76,90 @@ export default function NotificationsBell({ listPath = '/notifications', markAll
     // eslint-disable-next-line react-hooks/exhaustive-deps -- fetch on mount, then every 30 seconds
   }, []);
 
+  const markAllRead = async () => {
+    await api.post(markAllPath);
+    setNotifications((list) => list.map((n) => ({ ...n, read_at: n.read_at || new Date().toISOString() })));
+    setUnreadCount(0);
+    fetchNotifications();
+  };
+
+  const markRead = async (id) => {
+    if (!markOnePath) throw new Error('useNotifications: markOnePath is needed to mark one notification read');
+    const path = typeof markOnePath === 'function' ? markOnePath(id) : markOnePath.replace(':id', encodeURIComponent(id));
+    await api.post(path);
+    setNotifications((list) => list.map((n) => (n.id === id ? { ...n, read_at: n.read_at || new Date().toISOString() } : n)));
+    setUnreadCount((c) => Math.max(0, c - 1));
+    fetchNotifications();
+  };
+
+  return { notifications, unreadCount, refresh: fetchNotifications, markRead, markAllRead };
+}
+
+/**
+ * The header's notifications bell (for DashboardProvider `shell.Notifications`):
+ * the workspace's latest notifications from okjt/laravel-kit's
+ * NotificationController (GET /notifications), refreshed every 30 seconds,
+ * with "Mark all read". A notification with a `link` opens that page. It
+ * closes on a click outside it and on Escape.
+ *
+ * An app with its own notifications API says where they are and how each
+ * one reads:
+ *
+ * @param {string} [listPath='/notifications']
+ * @param {string} [markAllPath='/notifications/mark-read'] - POSTed by "Mark all read"
+ * @param {string | ((id) => string)} [markOnePath] - for marking one read (see useNotifications)
+ * @param {(item) => { id, title, message, link, icon, read_at, created_at }} [map]
+ *   - Turns one of the API's items into what the bell shows
+ *
+ * An app whose bell looks different draws it, keeping the kit's behaviour
+ * (fetching, polling, marking read, opening and closing):
+ * @param {(bell) => node} [renderButton] - bell: { open, toggle, unreadCount }
+ * @param {(bell) => node} [renderPanel]  - bell: { notifications, unreadCount,
+ *   markRead, markAllRead, close, refresh }; shown while open
+ */
+export default function NotificationsBell({ listPath = '/notifications', markAllPath = '/notifications/mark-read', markOnePath, map, renderButton, renderPanel }) {
+  const navigate = useNavigate();
+  const { notifications, unreadCount, refresh, markRead, markAllRead } = useNotifications({ listPath, markAllPath, markOnePath, map });
+  const [showNotifications, setShowNotifications] = useState(false);
+  const rootRef = useRef(null);
+  const toggle = () => setShowNotifications((v) => !v);
+  const close = () => setShowNotifications(false);
+
+  // Close on a click outside the bell, and on Escape.
+  useEffect(() => {
+    if (!showNotifications) return undefined;
+    const onPointerDown = (e) => { if (rootRef.current && !rootRef.current.contains(e.target)) setShowNotifications(false); };
+    const onKey = (e) => { if (e.key === 'Escape') setShowNotifications(false); };
+    document.addEventListener('mousedown', onPointerDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [showNotifications]);
+
   const handleMarkAllRead = async () => {
     try {
-      await api.post(markAllPath);
-      fetchNotifications();
+      await markAllRead();
     } catch (e) {
       console.error("Failed to mark read", e);
     }
   };
 
+  if (renderButton || renderPanel) {
+    const bell = { open: showNotifications, toggle, close, unreadCount, notifications, markRead, markAllRead, refresh };
+    return (
+      <div className="relative" ref={rootRef}>
+        {renderButton ? renderButton(bell) : null}
+        {showNotifications && renderPanel ? renderPanel(bell) : null}
+      </div>
+    );
+  }
+
   return (
-    <div className="relative">
+    <div className="relative" ref={rootRef}>
       <button
-        onClick={() => setShowNotifications(!showNotifications)}
+        onClick={toggle}
         aria-label={unreadCount > 0 ? `Notifications, ${unreadCount} unread` : 'Notifications'}
         aria-haspopup="true"
         aria-expanded={showNotifications}
