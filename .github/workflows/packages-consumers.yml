@@ -86,8 +86,21 @@ jobs:
         with:
           node-version: '20'
       - run: npm ci
+      # Unpacked over the installed copies rather than `npm install`ed: a second
+      # install re-resolves the whole tree (and with legacy peer deps drops the
+      # peers npm ci added, e.g. Naoa's @testing-library/dom). Everything but
+      # the kit stays exactly as the project's lockfile put it.
       - name: Install the kit from this pull request
-        run: npm install --no-save --legacy-peer-deps "$RUNNER_TEMP"/kit/*.tgz
+        run: |
+          for tgz in "$RUNNER_TEMP"/kit/*.tgz; do
+            name="$(tar -xzOf "$tgz" package/package.json | node -p 'JSON.parse(require("fs").readFileSync(0)).name')"
+            rm -rf "node_modules/$name"
+            mkdir -p "node_modules/$name"
+            tar -xzf "$tgz" -C "node_modules/$name" --strip-components=1
+            echo "$name $(node -p "require('./node_modules/$name/package.json').version")"
+          done
+          # Nested copies (a package's own older @okjt/ui) would shadow the new ones.
+          find node_modules/@okjt -mindepth 3 -maxdepth 3 -type d -path '*/node_modules/@okjt' -prune -exec rm -rf {} + || true
       - name: Theme (if the project generates one)
         run: npm run theme --if-present
       - run: npm test
