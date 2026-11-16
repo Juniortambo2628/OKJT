@@ -73,3 +73,4 @@ export { default as AcceptInvitePage } from './AcceptInvitePage.js';
 export { default as AccountMenu } from './AccountMenu.js';
 export { default as TwoPaneDialog } from './TwoPaneDialog.js';
 export { default as TwoPaneForm, FieldError } from './TwoPaneForm.js';
+export { default as useGlassToolbar } from './useGlassToolbar.js';

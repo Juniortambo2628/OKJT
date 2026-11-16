@@ -10,13 +10,16 @@
     "directory": "packages/dashboard"
   },
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./toolbar-glass.css": "./dist/toolbar-glass.css"
   },
   "files": [
     "dist",
     "README.md"
   ],
-  "sideEffects": false,
+  "sideEffects": [
+    "*.css"
+  ],
   "scripts": {
     "build": "node build.mjs",
     "prepack": "node build.mjs",
