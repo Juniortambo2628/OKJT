@@ -148,3 +148,18 @@ Each page takes `layout`: the project's own `AuthLayout` with its logo and panel
 `DashboardShell` (with `DashboardSidebar` and `DashboardHeader`) is the frame
 around every page, set up through `shell` in the dashboard settings.
 
+**A tab bar on phones** (`shell.tabBar`, off by default): a floating bar at
+the bottom below `lg`, its tabs picked from the sidebar by path so the two
+can't drift apart, plus a Menu tab that opens the sidebar.
+
+```js
+shell: {
+  nav,
+  tabBar: { tabs: ['/app', { path: '/app/plan', primary: true, label: 'Plan' }, '/app/inbox'] },
+}
+```
+
+`menu: false` drops the Menu tab, `label` names the bar for screen readers
+("Tabs"), `className` replaces its look. With the bar on, the floating
+toolbar sits above it and the page ends clear of it.
+

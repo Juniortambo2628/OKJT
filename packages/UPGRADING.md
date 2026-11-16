@@ -27,6 +27,17 @@ changes on screen unless you use the new options.
     width, with a handle; swipe the header down to close (a long pull or a
     quick flick). Not swipeable when `closeable={false}`. The footer clears
     the iPhone home bar.
+- **A tab bar on phones** (F5, from TFE's `TabBar`): `shell.tabBar = { tabs:
+  ['/app', { path: '/app/plan', primary: true, label: 'Plan' }, '/app/inbox'] }`
+  in `DashboardProvider`. Off by default. Below `lg` a floating bar at the
+  bottom shows those sidebar items (picked from `shell.nav` by path, so a
+  tab's label and icon come from the sidebar; a path not in the nav is left
+  out), the current one behind a lens, `primary` with an outline, a dot when
+  others changed that page, and a Menu tab that opens the sidebar (`menu:
+  false` to drop it). Labels fold away while scrolling down. The floating
+  toolbar (plain and bold) moves above it, and the page ends clear of it.
+  If your project has its own phone tab bar or bottom nav, delete it when
+  you turn this on.
 - **Projects with their own tabbed dialog**: TFE `TfeModal`, Tena-host
   `TabbedModal`, Naoa `TwoPaneDialog` (keeps its two panes; use `tabs` where
   it only switches sections), Najenga's own `Modal`. Each moves to `Modal`

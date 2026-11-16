@@ -283,7 +283,8 @@ the new PHP tests fail on the old code). Versions: `@okjt/ui` 0.3.0,
 
 ### R2: phones and forms (kit 0.6, then 1.0): about 2 weeks
 
-- [x] F2 `Modal` v2 (kit 0.11: `tabs`, a `footer` per tab, `fixedHeight`, `sheet`; lifted from TFE's `TfeModal` with its tests). F5, F7, F8, F9, F11 and R3 are still being done by the TFE session (TFE `docs/proposals/okjt-kit-migration.md`); don't start them here.
+- [x] F2 `Modal` v2 (kit 0.11: `tabs`, a `footer` per tab, `fixedHeight`, `sheet`; lifted from TFE's `TfeModal` with its tests). F7, F8, F9, F11 and R3 are still being done by the TFE session (TFE `docs/proposals/okjt-kit-migration.md`); don't start them here.
+- [x] F5 tab bar on phones (kit 0.11: `shell.tabBar`, lifted from TFE's `TabBar` + `lib/dashboardTabs.js` with its tests; brought forward from R6 because it came with F2)
 - [x] F3 `TwoPaneForm` (kit 0.8, with `TwoPaneDialog`, lifted unchanged)
 - [x] F4 glass toolbar (kit 0.8: `toolbar-glass.css` + `useGlassToolbar`; a stylesheet entry rather than a prop, because the look is media queries and `:has()` on the bar's wrapper)
 - [x] F6 card view on phones and details dialog (kit 0.10: `AdminDataTable`, `@okjt/dashboard/table`, lifted from Tena-host's `DataTable`; not `AdminListPanel` options, see below)
@@ -314,6 +315,16 @@ Notes from kit 0.11:
   colour token on the "after" build was reported on exactly the two dialogs
   with a title. `style-snapshot` records colours and fonts, not spacing, so
   the 390 px screenshots were also compared pixel by pixel: identical.
+* F5, as built: `shell.tabBar = { tabs, menu, label, className }`, tabs
+  picked from `shell.nav` by path (TFE picks by route name; the kit's nav has
+  none). The kit's tokens replace TFE's stylesheet (`public-tabbar.css`), so
+  the default look is a light glass pill in the theme's surface colour; a
+  dark dashboard passes `className`. Added on the way: the Menu tab (TFE's
+  role sidebars passed one by hand), the sidebar's new-changes dot on a tab,
+  and the floating toolbars (plain and bold) lifted above the bar. The
+  accessible name is "Tabs", since the header's shortcuts are already
+  "Quick links". Off by default: the shell with a floating toolbar, before
+  and after, compared at 1280 and 390 px (styles and pixels): no difference.
 * Consumers: TFE moves to it with the shell swap (it needs R3 first);
   Tena-host, Naoa and Najenga can move their tabbed dialogs in their 0.11
   updates.
@@ -387,7 +398,7 @@ Notes from kit 0.9:
 ### R6: new projects and the rest (create-okjt-app 0.2): about 1 week
 
 - [ ] create-app writes the new options (chunk reload, security headers, switches, error log, contrast and accessibility checks in CI)
-- [ ] F5, F7 to F11, S9, S10 as demand appears; each is P3 and can wait
+- [ ] F7 to F11, S9, S10 as demand appears; each is P3 and can wait (F5 landed in 0.11)
 - [ ] A short `packages/CLAUDE.md` ("kit rules"), copied into each project's CLAUDE.md, so Claude Code sessions in any project know a kit piece exists before writing its own
 
 ---
