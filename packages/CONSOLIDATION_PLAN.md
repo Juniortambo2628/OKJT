@@ -398,10 +398,32 @@ Notes from kit 0.9:
 
 ### R3: Inertia (`@okjt/inertia` 0.1, kit 1.1): about 1 week
 
-- [ ] `navigation` setting in both providers, with react-router as the default
-- [ ] `@okjt/inertia`, generalised from Tena-host's bridge, with tests
-- [ ] CI runs the kit's tests on React 18 as well
+- [x] ~~`navigation` setting in both providers~~: not needed, see below
+- [x] `@okjt/inertia` 0.1 (released with kit 0.11, not 1.1), generalised from Tena-host's bridge, with tests
+- [x] CI runs the kit's tests on React 18 as well (job "Packages (tests, React 18)")
 - [ ] Consumers: Tena-host deletes its bridge; it trials `Modal` v2 in place of `TabbedModal` on one screen
+
+Notes from R3 (shipped in kit 0.11):
+
+* **Changed from the plan**: no `navigation` setting in the providers.
+  Tena-host's bridge is a react-router `<Router>` with Inertia's page as its
+  location and a navigator that makes Inertia visits, so every kit
+  `Link`, `NavLink`, `useNavigate`, `useLocation` and `useSearchParams`
+  works as it is; threading a setting through the 23 modules that import
+  react-router would have been a bigger change for the same result. The
+  cost: an Inertia app installs `react-router-dom` (a peer of
+  `@okjt/inertia`). `useParams()` is empty (Inertia picks the page).
+* As in react-router, `<Link to="#x">` resolves against the path alone, so
+  on a page with a query string it is a visit to the page without it.
+  Pinned by a test and written in the README.
+* **Found by the React 18 run**: `AuthField` (dashboard) didn't forward its
+  ref. React 19 passes `ref` to a function component as a prop; 18 drops
+  it, so on 18 the sign-in page never registered its fields and Sign in did
+  nothing. Fixed with `forwardRef`; the seven SignInPage tests failed on 18
+  before it. No other kit component takes a ref that way.
+* **New npm package**: `@okjt/inertia` needs a Trusted Publisher on
+  npmjs.com before the release workflow can publish it (`@okjt/site`'s first
+  publish failed for want of one, see R1).
 
 ### R4: platform services (laravel-kit 0.5, dashboard 1.2): about 2 to 3 weeks
 

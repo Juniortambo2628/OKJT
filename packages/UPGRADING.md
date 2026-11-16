@@ -1,6 +1,6 @@
 # Upgrading
 
-## 0.10 → 0.11 (ui 0.6.0, dashboard 0.11.0, create-okjt-app 0.1.10)
+## 0.10 → 0.11 (ui 0.6.0, dashboard 0.11.0, inertia 0.1.0 (new), create-okjt-app 0.1.10)
 
 Raise your ranges together (dashboard 0.11 needs ui 0.6): `npm i
 @okjt/ui@^0.6.0 @okjt/dashboard@^0.11.0`. `@okjt/site` stays at 0.3, and
@@ -70,6 +70,18 @@ changes on screen unless you use the new options.
   The locale is pinned (en-US unless passed) so a number reads the same on
   every machine; the time zone stays the viewer's. From `@okjt/ui` or
   `@okjt/ui/helpers`. Replace bare `toLocaleString()` calls with them.
+- **The kit in an Inertia app: `@okjt/inertia`** (R3, new package,
+  generalised from Tena-host's bridge). `npm i @okjt/inertia
+  react-router-dom`, then wrap the kit in `<InertiaRouter>` inside your
+  Inertia layout: every kit `Link`, `NavLink` and `useNavigate` makes an
+  Inertia visit, a `#section` on the same page stays on the page, and links
+  to other sites stay plain links. See its README. **Tena-host**: replace the
+  `<Router location navigator>` in `V2Site.jsx` with `<InertiaRouter>` and
+  delete `useInertiaLocation` and `navigate` there (your `v2Link` stays).
+- **React 18: sign-in fields** (dashboard, a fix). `AuthField` didn't
+  forward its ref, so on React 18 the kit's `SignInPage` never registered
+  its email and password fields and Sign in did nothing. Nothing to do; the
+  kit's tests now run on React 18 as well as 19.
 - **Projects with their own tabbed dialog**: TFE `TfeModal`, Tena-host
   `TabbedModal`, Naoa `TwoPaneDialog` (keeps its two panes; use `tabs` where
   it only switches sections), Najenga's own `Modal`. Each moves to `Modal`
