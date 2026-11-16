@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { AnimatePresence, motion, MotionConfig } from 'framer-motion';
 import { ConfirmHost } from '@okjt/ui';
@@ -11,6 +11,7 @@ import VersionHistoryDrawer from './VersionHistoryDrawer.js';
 import DashboardSidebar from './DashboardSidebar.js';
 import DashboardHeader from './DashboardHeader.js';
 import DashboardTabBar from './DashboardTabBar.js';
+import PageSkeleton from './PageSkeleton.js';
 import { useDashboard } from './DashboardProvider.js';
 
 // Each page starts with an empty search so a query typed on one list never
@@ -48,8 +49,16 @@ const isWide = () => typeof window !== 'undefined' && window.matchMedia?.('(min-
 
 // Remounts the page after a version is restored, so pages that keep their
 // own copy of the data (not just React Query) reload it too.
+//
+// shell.pageSkeleton: the page sits in its own Suspense boundary, inside the
+// keyed wrapper so each page gets a fresh one, and a page that is still
+// loading (a lazy route) shows a skeleton shaped like it while the sidebar
+// and header stay put. Without it, the page suspends to whatever boundary
+// the project has above the shell, as before.
 function PageContent({ pathname, children }) {
   const { dataVersion } = useCollaboration();
+  const { shell } = useDashboard();
+  const skeleton = shell.pageSkeleton;
   return (
     <motion.div
       key={`${pathname}#${dataVersion}`}
@@ -57,7 +66,11 @@ function PageContent({ pathname, children }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      {children}
+      {skeleton ? (
+        <Suspense fallback={<PageSkeleton path={pathname} {...(skeleton === true ? {} : skeleton)} />}>
+          {children}
+        </Suspense>
+      ) : children}
     </motion.div>
   );
 }
@@ -67,6 +80,8 @@ function PageContent({ pathname, children }) {
  * confirm dialogs, the share and version-history panels, the project's banner
  * (`shell.Banner`), the guided tour (`tutorialSteps`) and the content area,
  * and, with `shell.tabBar`, a tab bar at the bottom on phones (DashboardTabBar).
+ * With `shell.pageSkeleton`, a page that is still loading shows a skeleton
+ * shaped like it (PageSkeleton) instead of taking the shell down with it.
  * Inside it: search, header slots and presence are provided.
  *
  * Sets `admin-theme` on <html> while mounted, for styles that apply to the
