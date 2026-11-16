@@ -13,6 +13,7 @@
     ".": "./dist/index.js",
     "./helpers": "./dist/helpers.js",
     "./theme": "./src/theme.js",
+    "./contrast": "./src/contrast.js",
     "./tools/style-snapshot": "./tools/style-snapshot.mjs"
   },
   "bin": {
@@ -21,6 +22,7 @@
   "files": [
     "src/theme.js",
     "src/ramps.js",
+    "src/contrast.js",
     "dist",
     "bin",
     "tools",
