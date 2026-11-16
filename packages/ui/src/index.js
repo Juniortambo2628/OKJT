@@ -8,6 +8,8 @@ export { buttonClass, BUTTON_BASE, BUTTON_VARIANTS, BUTTON_SIZES, BUTTON_FONTS }
 export { default as Overlay, PortalWhen } from './Overlay.js';
 export { default as Modal } from './Modal.js';
 export { default as SegmentedControl } from './SegmentedControl.js';
+export { default as StepFlow } from './StepFlow.js';
+export { normalizeSteps, stepsWithCursor, primaryStep, completionPct, hasProgress, STEP_STATES } from './stepProgress.js';
 export { Skeleton, CardSkeleton, TimelineSkeleton, MessageSkeleton } from './Skeleton.js';
 export { default as Loader } from './Loader.js';
 export { default as Spinner } from './Spinner.js';
