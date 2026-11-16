@@ -5,6 +5,7 @@
     "ui",
     "site",
     "dashboard",
+    "inertia",
     "create-app"
   ],
   "scripts": {
@@ -12,6 +13,7 @@
     "build": "npm run build --workspaces --if-present"
   },
   "devDependencies": {
+    "@inertiajs/react": "^2.3.13",
     "@tanstack/react-query": "^5.90.12",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^6.9.1",

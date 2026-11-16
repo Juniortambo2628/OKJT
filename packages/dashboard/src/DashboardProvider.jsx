@@ -28,6 +28,8 @@ const DEFAULTS = {
 const DEFAULT_SHELL = {
   logo: { src: '', alt: '', to: '/' },
   nav: [],
+  tabBar: false,
+  pageSkeleton: false,
   quickLinks: [],
   background: 'linear-gradient(180deg, var(--color-paper) 0%, var(--color-tint) 100%)',
   sidebarBackground: 'linear-gradient(180deg, var(--color-body) 0%, var(--color-ink) 100%)',
@@ -92,6 +94,12 @@ const DEFAULT_SHELL = {
  *   shell.logo        { src, alt, to } at the top of the sidebar
  *   shell.nav         sidebar groups: [{ title?, items: [{ path, icon, label, id }] }]
  *   shell.quickLinks  header shortcuts: [{ path, icon, label, id }]
+ *   shell.tabBar      a tab bar at the bottom on phones, tabs picked from shell.nav
+ *                     by path: { tabs: [path | { path, label?, primary? }], menu?,
+ *                     label?, className? } (off: false). See DashboardTabBar.
+ *   shell.pageSkeleton  while a page loads (a lazy route), a skeleton shaped like it
+ *                     inside the shell: true, or { patterns: [[regex, variant]],
+ *                     fallback?, grace? } (off: false). See PageSkeleton.
  *   shell.Banner, shell.Notifications, shell.AccountMenu   the project's own
  *                     components for the strip under the header, the bell,
  *                     and the account menu (it gets `compactLinks`)

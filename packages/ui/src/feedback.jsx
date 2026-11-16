@@ -1,5 +1,6 @@
 import { toast } from 'react-hot-toast';
 import Button from './Button.js';
+import { scheduleUndoable, UNDO_WINDOW_MS } from './undo.js';
 
 /*
  * App-wide user feedback, usable from any handler without hooks:
@@ -7,6 +8,7 @@ import Button from './Button.js';
  *   notifyError(err, 'Failed to save')                → toast with the API message if any
  *   notifySuccess('Saved')
  *   notifyUndo('Guest deleted', () => restore())      → toast with an Undo button
+ *   undoable('Goal deleted', () => api.delete(url))   → Undo first; the request goes when it can't be undone
  * <ConfirmHost/> (mounted once in AdminShell) renders the dialog.
  */
 
@@ -92,4 +94,50 @@ export function notifyUndo(message, onUndo, duration = 7000) {
       </Button>
     </span>
   ), { duration });
+}
+
+/**
+ * Undo instead of "are you sure?" (F7, from TFE): shows `message` with an
+ * Undo button and runs `commit` only when the window (5 s) closes, so Undo
+ * never has to reverse anything. Hide the item yourself straight away, and
+ * show it again in `onUndo` (and in `onError`, when `commit` fails).
+ *
+ *   hide(id);
+ *   undoable('Goal deleted', () => api.delete(`/goals/${id}`), { onUndo: () => show(id), onError: () => show(id) });
+ *
+ * For a list, useUndoableRemoval() does the hiding for you. Keep
+ * confirmAction() for what can't safely be taken back.
+ *
+ * @returns the job: { undo(), flush(), state }
+ */
+export function undoable(message, commit, { delay = UNDO_WINDOW_MS, onUndo, onError, undoLabel = 'Undo', errorMessage } = {}) {
+  let toastId;
+  const job = scheduleUndoable({
+    delay,
+    commit: () => {
+      toast.dismiss(toastId);
+      Promise.resolve()
+        .then(commit)
+        .catch((err) => {
+          onError?.(err);
+          notifyError(errorMessage || err, "That didn't go through, so it's back.");
+        });
+    },
+  });
+  toastId = toast((t) => (
+    <span className="flex items-center gap-3">
+      <span>{message}</span>
+      <Button
+        size="sm"
+        variant="secondary"
+        onClick={() => {
+          toast.dismiss(t.id);
+          if (job.undo()) onUndo?.();
+        }}
+      >
+        {undoLabel}
+      </Button>
+    </span>
+  ), { duration: delay });
+  return job;
 }

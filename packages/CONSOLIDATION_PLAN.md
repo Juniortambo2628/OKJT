@@ -283,7 +283,12 @@ the new PHP tests fail on the old code). Versions: `@okjt/ui` 0.3.0,
 
 ### R2: phones and forms (kit 0.6, then 1.0): about 2 weeks
 
-- [ ] F2 `Modal` v2 (tabs, footer that follows the open tab, fixed height, phone bottom sheet), lifted from `TfeModal`. **Being done by the TFE session** (TFE `docs/proposals/okjt-kit-migration.md`), with F5, F7, F8, F9, F11 and R3; don't start them here.
+- [x] F2 `Modal` v2 (kit 0.11: `tabs`, a `footer` per tab, `fixedHeight`, `sheet`; lifted from TFE's `TfeModal` with its tests). R3 is still being done by the TFE session (TFE `docs/proposals/okjt-kit-migration.md`); don't start them here.
+- [x] F5 tab bar on phones (kit 0.11: `shell.tabBar`, lifted from TFE's `TabBar` + `lib/dashboardTabs.js` with its tests; brought forward from R6 because it came with F2)
+- [x] F9 page skeleton (kit 0.11: `shell.pageSkeleton`, lifted from TFE's `PageTransition` / `PageSkeleton` / `lib/pageSkeleton.js` with its tests; brought forward from R6 with F2 and F5)
+- [x] F7 undo instead of "are you sure?" (kit 0.11: `undoable`, `useUndoableRemoval`, `scheduleUndoable`; lifted from TFE's `lib/undo.js` + `useUndoableRemoval` with tests)
+- [x] F8 `StepFlow` (kit 0.11, in `@okjt/ui`; lifted from TFE's `StepFlow` + `lib/stepFlow.js` with tests)
+- [x] F11 format helpers (kit 0.11: `formatNumber`, `formatDateTime`, `statusLabel`, `titleCase` in `@okjt/ui` and `@okjt/ui/helpers`; lifted from TFE's `lib/utils.js` with tests)
 - [x] F3 `TwoPaneForm` (kit 0.8, with `TwoPaneDialog`, lifted unchanged)
 - [x] F4 glass toolbar (kit 0.8: `toolbar-glass.css` + `useGlassToolbar`; a stylesheet entry rather than a prop, because the look is media queries and `:has()` on the bar's wrapper)
 - [x] F6 card view on phones and details dialog (kit 0.10: `AdminDataTable`, `@okjt/dashboard/table`, lifted from Tena-host's `DataTable`; not `AdminListPanel` options, see below)
@@ -296,6 +301,60 @@ the new PHP tests fail on the old code). Versions: `@okjt/ui` 0.3.0,
 - [x] Option B, second step: the bell and the tour. Kit 0.7: `useNotifications()` and `renderButton` / `renderPanel` / `markOnePath` on `NotificationsBell` (which also closes outside and on Escape now); `render` and `scrollIntoView` on `AdminTutorial` (→ stops at the last step). Najenga's `NotificationsDropdown` and `Tour` draw on them.
 - [x] Consumers: Naoa deletes `TwoPaneForm`, `TwoPaneDialog`, `useMobileToolbar` and its toolbar CSS (Naoa#39). Najenga finishes 6d.4 (Najenga#93) and 6d.6 (Najenga#92).
 - [ ] Consumers of 0.9: Najenga on the kit's `useAdminAction` with `refreshHistory: false` (6d.5); Tena-host sets `minText: '12px'` and deletes its 11px rule; each project adds `check:contrast`.
+
+Notes from kit 0.11:
+
+* F2, as built: options on the existing `Modal` rather than a second dialog,
+  so every dialog keeps its markup (the default class strings are asserted
+  exactly). Lifted from TFE: `modalTabs.js` and `sheetDrag.js` with their
+  node tests. Changed on the way: no `tabs` means no tab list (TFE always
+  drew one, made up from the title); tabs run along the top under the title
+  in the kit's look, not in TFE's side rail; icons are components or
+  elements with no default; the footer on a sheet clears the iPhone home bar.
+  Portalling was already done (`Overlay`).
+* Proof that nothing changes on screen: the default, card (title,
+  description, footer), not-closeable and 7xl dialogs, built with the kit
+  before and after under Tailwind 4 and okjt-app's theme. `style-snapshot`
+  at 1280 and 390 px: **no differences**. Calibration: changing the title's
+  colour token on the "after" build was reported on exactly the two dialogs
+  with a title. `style-snapshot` records colours and fonts, not spacing, so
+  the 390 px screenshots were also compared pixel by pixel: identical.
+* F5, as built: `shell.tabBar = { tabs, menu, label, className }`, tabs
+  picked from `shell.nav` by path (TFE picks by route name; the kit's nav has
+  none). The kit's tokens replace TFE's stylesheet (`public-tabbar.css`), so
+  the default look is a light glass pill in the theme's surface colour; a
+  dark dashboard passes `className`. Added on the way: the Menu tab (TFE's
+  role sidebars passed one by hand), the sidebar's new-changes dot on a tab,
+  and the floating toolbars (plain and bold) lifted above the bar. The
+  accessible name is "Tabs", since the header's shortcuts are already
+  "Quick links". Off by default: the shell with a floating toolbar, before
+  and after, compared at 1280 and 390 px (styles and pixels): no difference.
+* F9, as built: `shell.pageSkeleton`. In TFE the wait is an Inertia visit
+  (router events); in the kit's react-router projects it is a lazy route, so
+  the skeleton is the fallback of a Suspense boundary the shell puts inside
+  its keyed page wrapper (a fresh boundary per page, so it shows even when
+  the navigation runs in a transition). The cross-fade half was already in
+  the kit (`PageContent`). Found on the way: without a boundary inside the
+  shell, a lazy page suspends to the project's boundary above it and the
+  whole dashboard (sidebar and header) is replaced by its fallback. The pure
+  half is `skeletonShapes.js`: `pageSkeleton.js` beside `PageSkeleton.jsx`
+  compile to names that differ only in case, which esbuild refuses. Off by
+  default: same before/after comparison as F5, no difference.
+* F7, as built: `undoable()` beside `confirmAction()` in `feedback.jsx`,
+  on the kit's react-hot-toast (TFE's used sonner), and
+  `useUndoableRemoval()` with `commit` as any function (TFE's made an
+  Inertia visit). `notifyUndo` is unchanged: it suits an action that has
+  already happened and can be reversed.
+* F8, as built: in `@okjt/ui` rather than `@okjt/site`, since wizards are on
+  dashboards too. `Journey` stays: it is a public-page section, not a
+  progress indicator. Drawn with the kit's tokens and lucide icons; the pure
+  half is lifted unchanged as `stepProgress.js` (same case collision as F9).
+* F11, as built: an optional `locale` on each; TFE's `formatMoney` stays in
+  TFE (its USD default is TFE's own). Also in `@okjt/ui/helpers`, so an
+  Inertia app without toasts can use them.
+* Consumers: TFE moves to it with the shell swap (it needs R3 first);
+  Tena-host, Naoa and Najenga can move their tabbed dialogs in their 0.11
+  updates.
 
 Notes from kit 0.10:
 
@@ -339,10 +398,35 @@ Notes from kit 0.9:
 
 ### R3: Inertia (`@okjt/inertia` 0.1, kit 1.1): about 1 week
 
-- [ ] `navigation` setting in both providers, with react-router as the default
-- [ ] `@okjt/inertia`, generalised from Tena-host's bridge, with tests
-- [ ] CI runs the kit's tests on React 18 as well
+- [x] ~~`navigation` setting in both providers~~: not needed, see below
+- [x] `@okjt/inertia` 0.1 (released with kit 0.11, not 1.1), generalised from Tena-host's bridge, with tests
+- [x] CI runs the kit's tests on React 18 as well (job "Packages (tests, React 18)")
 - [ ] Consumers: Tena-host deletes its bridge; it trials `Modal` v2 in place of `TabbedModal` on one screen
+
+Notes from R3 (shipped in kit 0.11):
+
+* **Changed from the plan**: no `navigation` setting in the providers.
+  Tena-host's bridge is a react-router `<Router>` with Inertia's page as its
+  location and a navigator that makes Inertia visits, so every kit
+  `Link`, `NavLink`, `useNavigate`, `useLocation` and `useSearchParams`
+  works as it is; threading a setting through the 23 modules that import
+  react-router would have been a bigger change for the same result. The
+  cost: an Inertia app installs `react-router-dom` (a peer of
+  `@okjt/inertia`). `useParams()` is empty (Inertia picks the page).
+* As in react-router, `<Link to="#x">` resolves against the path alone, so
+  on a page with a query string it is a visit to the page without it.
+  Pinned by a test and written in the README.
+* **Found by the React 18 run**: `AuthField` (dashboard) didn't forward its
+  ref. React 19 passes `ref` to a function component as a prop; 18 drops
+  it, so on 18 the sign-in page never registered its fields and Sign in did
+  nothing. Fixed with `forwardRef`; the seven SignInPage tests failed on 18
+  before it. No other kit component takes a ref that way.
+* **New npm package**: npm can't give a package a Trusted Publisher until it
+  exists, so `@okjt/inertia` 0.1.0 is published once by hand (`npm publish
+  --access public` in `packages/inertia`), and its Trusted Publisher is set
+  after that, matching `@okjt/ui`'s. Until then the release workflow's npm
+  step fails on it (the other packages still stage); later versions release
+  through the workflow.
 
 ### R4: platform services (laravel-kit 0.5, dashboard 1.2): about 2 to 3 weeks
 
@@ -366,7 +450,7 @@ Notes from kit 0.9:
 ### R6: new projects and the rest (create-okjt-app 0.2): about 1 week
 
 - [ ] create-app writes the new options (chunk reload, security headers, switches, error log, contrast and accessibility checks in CI)
-- [ ] F5, F7 to F11, S9, S10 as demand appears; each is P3 and can wait
+- [ ] F10, S9, S10 as demand appears; each is P3 and can wait (F5, F7, F8, F9 and F11 landed in 0.11)
 - [ ] A short `packages/CLAUDE.md` ("kit rules"), copied into each project's CLAUDE.md, so Claude Code sessions in any project know a kit piece exists before writing its own
 
 ---

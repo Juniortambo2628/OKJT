@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { forwardRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { AlertCircle, ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -55,7 +55,10 @@ export default function AuthLayout({ title, subtitle, children, footer, brand, b
 const fieldClass = 'w-full h-12 px-5 rounded-full bg-surface border border-line text-sm text-ink placeholder:text-[var(--okjt-auth-placeholder,var(--color-faint))] shadow-[0_1px_2px_color-mix(in_srgb,var(--okjt-shadow,var(--color-body))_4%,transparent)] outline-none transition focus:border-[var(--okjt-auth-focus,var(--color-accent))] focus:ring-4 focus:ring-[var(--okjt-auth-focus,var(--color-accent))]/15 read-only:bg-tint read-only:text-muted';
 
 /** A labelled pill input; `type="password"` gets a show/hide toggle. */
-export function AuthField({ id, label, type = 'text', error, className = '', inputClassName = '', ...props }) {
+// forwardRef, not a plain function: React 18 drops a `ref` passed to a
+// function component, so react-hook-form's register() never reached the
+// input and Sign in did nothing (found by running the tests on React 18, R3).
+export const AuthField = forwardRef(function AuthField({ id, label, type = 'text', error, className = '', inputClassName = '', ...props }, ref) {
   const [visible, setVisible] = useState(false);
   const isPassword = type === 'password';
   return (
@@ -69,6 +72,7 @@ export function AuthField({ id, label, type = 'text', error, className = '', inp
           aria-describedby={error ? `${id}-error` : undefined}
           className={`${fieldClass} ${isPassword ? 'pr-12' : ''} ${error ? '!border-red-300' : ''} ${inputClassName}`}
           {...props}
+          ref={ref}
         />
         {isPassword && (
           <button
@@ -84,7 +88,7 @@ export function AuthField({ id, label, type = 'text', error, className = '', inp
       {error && <div id={`${id}-error`} className="mt-1.5 pl-5 text-xs text-red-600">{error}</div>}
     </div>
   );
-}
+});
 
 /** The copper gradient pill button of the sign-in pages. */
 export function AuthSubmit({ loading, children, ...props }) {

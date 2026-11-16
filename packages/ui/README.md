@@ -81,11 +81,14 @@ node node_modules/@okjt/ui/tools/style-snapshot.mjs compare before/ after/
 | Export | What it is |
 |---|---|
 | `Button`, `buttonClass` | The one button: `primary`, `secondary`, `danger`; `edit` or `action` hide it for viewers |
-| `Modal`, `Overlay`, `PortalWhen` | Dialogs and the layer under them |
+| `Modal`, `Overlay`, `PortalWhen` | Dialogs and the layer under them. `Modal` takes `tabs`, a `footer` per tab, `fixedHeight` and `sheet` (a bottom sheet on phones) |
 | `SegmentedControl` | A row of options, one chosen |
 | `ContextMenu`, `useDismiss` | A right-click or "more" menu; close on outside click or Escape |
 | `Skeleton`, `CardSkeleton`, `TimelineSkeleton`, `MessageSkeleton`, `Loader`, `Spinner` | Loading states |
 | `confirmAction`, `promptAction`, `notifySuccess`, `notifyError`, `notifyUndo`, `ConfirmHost` | Styled confirm and prompt dialogs (mount `ConfirmHost` once) and toasts |
+| `undoable`, `useUndoableRemoval`, `scheduleUndoable` | Undo instead of "are you sure?": the item goes at once and the request is sent only when the 5 s Undo window closes |
+| `StepFlow` | A numbered run of steps, `inline` in a wizard or `docked` at the bottom of a page; progress only when there is some |
+| `formatNumber`, `formatDateTime`, `statusLabel`, `titleCase` | Numbers, dates and status words written the same way everywhere (locale pinned, en-US by default); also in `@okjt/ui/helpers` |
 | `PermissionsProvider`, `usePermissions`, `useVisibleActions` | What the signed-in person may do: `{ role, isOwner, canEdit }`; everything allowed outside a provider |
 
 Peer dependencies for these (not for the theme command): `react`,

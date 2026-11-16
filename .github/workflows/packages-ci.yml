@@ -29,6 +29,26 @@ jobs:
       - run: npm ci
       - run: npm test
 
+  # The kit allows react >= 18 and Tena-host is on 18. React 19 lets a
+  # function component receive `ref` as a prop; 18 drops it, which broke
+  # the sign-in fields (found when this job was added, R3).
+  test-react-18:
+    name: Packages (tests, React 18)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - run: npm ci
+      - run: npm install --no-save react@18.3.1 react-dom@18.3.1
+      - run: npm test
+
   laravel-kit:
     name: laravel-kit (PHPUnit)
     runs-on: ubuntu-latest

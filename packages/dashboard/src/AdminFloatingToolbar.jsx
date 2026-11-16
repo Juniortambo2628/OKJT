@@ -7,7 +7,8 @@ import AdminToolbarFilters, { countActiveFilters } from './AdminToolbarFilters.j
 import { useSearch } from './SearchContext.js';
 import { Button, useVisibleActions } from '@okjt/ui';
 import BoldToolbar from './BoldToolbar.js';
-import { useComponentDefaults } from './DashboardProvider.js';
+import { useComponentDefaults, useDashboard } from './DashboardProvider.js';
+import { toolbarBottomClass } from './tabBar.js';
 
 /**
  * AdminFloatingToolbar — the shared, fixed bottom-center toolbar that every
@@ -58,6 +59,7 @@ function PlainToolbar({
   // Phones: a page's custom controls (e.g. the designer's tools) open on demand.
   const [toolsOpen, setToolsOpen] = useState(false);
   const { searchQuery } = useSearch();
+  const bottom = toolbarBottomClass(!!useDashboard().shell.tabBar);
 
   const visibleActions = useVisibleActions(actions).filter((a) => !a.hidden);
   const searchProps = !search ? null
@@ -86,7 +88,7 @@ function PlainToolbar({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 20, scale: 0.96 }}
           transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-          className={`fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] sm:bottom-6 left-1/2 lg:left-[calc(50%+var(--okjt-sidebar-w,280px)/2)] -translate-x-1/2 ${z} w-max max-w-[calc(100vw-1rem)] sm:max-w-[calc(100vw-1.5rem)] lg:max-w-[calc(100vw-var(--okjt-sidebar-w,280px)-1.5rem)] ${wrapperClassName}`}
+          className={`fixed ${bottom} left-1/2 lg:left-[calc(50%+var(--okjt-sidebar-w,280px)/2)] -translate-x-1/2 ${z} w-max max-w-[calc(100vw-1rem)] sm:max-w-[calc(100vw-1.5rem)] lg:max-w-[calc(100vw-var(--okjt-sidebar-w,280px)-1.5rem)] ${wrapperClassName}`}
         >
           <div
             // Phones: tighter spacing and smaller buttons (see .admin-floating-toolbar
@@ -194,7 +196,7 @@ function PlainToolbar({
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setVisible(true)}
-          className={`fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] sm:bottom-6 left-1/2 lg:left-[calc(50%+var(--okjt-sidebar-w,280px)/2)] -translate-x-1/2 ${z} p-2.5 rounded-full bg-surface/90 border border-tone-200 shadow-lg text-accent hover:bg-surface transition-colors ${wrapperClassName}`}
+          className={`fixed ${bottom} left-1/2 lg:left-[calc(50%+var(--okjt-sidebar-w,280px)/2)] -translate-x-1/2 ${z} p-2.5 rounded-full bg-surface/90 border border-tone-200 shadow-lg text-accent hover:bg-surface transition-colors ${wrapperClassName}`}
           title={narrowed ? 'Show toolbar (search or filters active)' : 'Show toolbar'}
         >
           <ChevronUp className="w-5 h-5" />

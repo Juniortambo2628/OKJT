@@ -8,6 +8,8 @@ export { buttonClass, BUTTON_BASE, BUTTON_VARIANTS, BUTTON_SIZES, BUTTON_FONTS }
 export { default as Overlay, PortalWhen } from './Overlay.js';
 export { default as Modal } from './Modal.js';
 export { default as SegmentedControl } from './SegmentedControl.js';
+export { default as StepFlow } from './StepFlow.js';
+export { normalizeSteps, stepsWithCursor, primaryStep, completionPct, hasProgress, STEP_STATES } from './stepProgress.js';
 export { Skeleton, CardSkeleton, TimelineSkeleton, MessageSkeleton } from './Skeleton.js';
 export { default as Loader } from './Loader.js';
 export { default as Spinner } from './Spinner.js';
@@ -15,6 +17,9 @@ export { default as ContextMenu } from './ContextMenu.js';
 export { default as useDismiss } from './useDismiss.js';
 export { default as ConfirmHost } from './ConfirmHost.js';
 export {
-  registerConfirmHost, confirmOptions, confirmAction, promptAction, notifyError, notifySuccess, notifyUndo,
+  registerConfirmHost, confirmOptions, confirmAction, promptAction, notifyError, notifySuccess, notifyUndo, undoable,
 } from './feedback.js';
+export { scheduleUndoable, UNDO_WINDOW_MS } from './undo.js';
+export { default as useUndoableRemoval } from './useUndoableRemoval.js';
 export { installChunkReload, shouldReloadForChunks, isChunkLoadError } from './chunkReload.js';
+export { formatNumber, formatDateTime, statusLabel, titleCase, DEFAULT_FORMAT_LOCALE } from './formats.js';

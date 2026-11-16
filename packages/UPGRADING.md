@@ -1,5 +1,92 @@
 # Upgrading
 
+## 0.10 → 0.11 (ui 0.6.0, dashboard 0.11.0, inertia 0.1.0 (new), create-okjt-app 0.1.10)
+
+Raise your ranges together (dashboard 0.11 needs ui 0.6): `npm i
+@okjt/ui@^0.6.0 @okjt/dashboard@^0.11.0`. `@okjt/site` stays at 0.3, and
+`okjt/laravel-kit`'s v0.11.0 tag is the same code as v0.10.0. Nothing
+changes on screen unless you use the new options.
+
+- **`Modal`: tabs, a footer per tab, a fixed height and a phone sheet**
+  (F2, from TFE's `TfeModal`). All off by default.
+  - `tabs={[{ id, label, icon?, badge?, disabled?, content? }]}` (or
+    `['Overview', 'Details']`) draws a row of tabs under the title and turns
+    on the card chrome. The body is the open tab's `content`, else
+    `children(activeId)` when children is a function. Arrow keys, Home and
+    End move between tabs. `defaultTab`, or `activeTab` + `onTabChange` to
+    control it. A tab list that changes while the dialog is open (a form
+    that adds a step) falls back to a tab that exists, never an empty body.
+    `icon` is a lucide component or an element.
+  - `footer={(activeId) => …}`: the actions follow the open tab. A Save
+    button for a form that isn't on screen does nothing, so show it only on
+    that form's tab, and point it at the form with `form="the-form-id"`.
+  - `fixedHeight`: the card keeps one height, `min(40rem, 88dvh)`, whatever
+    the open tab holds; only the body scrolls. Override with `className`
+    (`h-[32rem]`).
+  - `sheet`: below `sm` the card sits at the bottom of the screen, full
+    width, with a handle; swipe the header down to close (a long pull or a
+    quick flick). Not swipeable when `closeable={false}`. The footer clears
+    the iPhone home bar.
+- **A tab bar on phones** (F5, from TFE's `TabBar`): `shell.tabBar = { tabs:
+  ['/app', { path: '/app/plan', primary: true, label: 'Plan' }, '/app/inbox'] }`
+  in `DashboardProvider`. Off by default. Below `lg` a floating bar at the
+  bottom shows those sidebar items (picked from `shell.nav` by path, so a
+  tab's label and icon come from the sidebar; a path not in the nav is left
+  out), the current one behind a lens, `primary` with an outline, a dot when
+  others changed that page, and a Menu tab that opens the sidebar (`menu:
+  false` to drop it). Labels fold away while scrolling down. The floating
+  toolbar (plain and bold) moves above it, and the page ends clear of it.
+  If your project has its own phone tab bar or bottom nav, delete it when
+  you turn this on.
+- **A skeleton while a page loads** (F9, from TFE's `PageTransition`):
+  `shell.pageSkeleton: true` (or `{ patterns, fallback, grace }`). Off by
+  default. The page gets its own Suspense boundary inside the shell, so a
+  lazy route that is still loading shows a placeholder shaped like it after
+  220 ms while the sidebar and header stay, instead of falling through to
+  your app's own boundary above the shell (which replaces the whole
+  dashboard). Shapes: `dashboard`, `cards`, `table`, `split`, matched on the
+  path; add your pages' patterns in front of `DEFAULT_SKELETON_PATTERNS`.
+  If your routes have a `<Suspense>` around each page only to keep the
+  shell up, you can drop it.
+- **Undo instead of "are you sure?"** (F7, from TFE): `undoable(message,
+  commit, { onUndo, onError })` shows an Undo toast and runs `commit` only
+  when the 5 s window closes, so Undo never has to reverse anything.
+  `useUndoableRemoval()` does it for a list: `remove(id, { message, commit
+  })` hides the row at once, puts it back on Undo or on a failed commit, and
+  commits what is pending when the page is left. `notifyUndo` (runs first,
+  reverses on Undo) is unchanged. Keep `confirmAction()` for what can't
+  safely be taken back (something that tells someone else or moves money).
+- **`StepFlow`** (F8, from TFE): `<StepFlow variant="inline" steps={['Details',
+  'Party', 'Confirm']} cursor={2} />` in a wizard, or `variant="docked"` for
+  a "how it works" pill at the bottom of a page. Without `cursor` or per-step
+  `state` it explains a flow and marks nothing done. Below `sm` it shows the
+  current step and "Step 2 of 4". If your project has its own step indicator
+  or "Step X of Y" caption, it can switch. For sections a person may move
+  between freely, use `Modal`'s `tabs` instead.
+- **Format helpers** (F11, from TFE): `formatNumber(n, digits?, locale?)`
+  ("1,234,567"; junk reads "0"), `formatDateTime(value, intlOptions?,
+  locale?)` ("Jun 14, 2027, 7:00 PM"; '' when missing or invalid),
+  `statusLabel('pending_payment')` ("Pending payment"), `titleCase(slug)`.
+  The locale is pinned (en-US unless passed) so a number reads the same on
+  every machine; the time zone stays the viewer's. From `@okjt/ui` or
+  `@okjt/ui/helpers`. Replace bare `toLocaleString()` calls with them.
+- **The kit in an Inertia app: `@okjt/inertia`** (R3, new package,
+  generalised from Tena-host's bridge). `npm i @okjt/inertia
+  react-router-dom`, then wrap the kit in `<InertiaRouter>` inside your
+  Inertia layout: every kit `Link`, `NavLink` and `useNavigate` makes an
+  Inertia visit, a `#section` on the same page stays on the page, and links
+  to other sites stay plain links. See its README. **Tena-host**: replace the
+  `<Router location navigator>` in `V2Site.jsx` with `<InertiaRouter>` and
+  delete `useInertiaLocation` and `navigate` there (your `v2Link` stays).
+- **React 18: sign-in fields** (dashboard, a fix). `AuthField` didn't
+  forward its ref, so on React 18 the kit's `SignInPage` never registered
+  its email and password fields and Sign in did nothing. Nothing to do; the
+  kit's tests now run on React 18 as well as 19.
+- **Projects with their own tabbed dialog**: TFE `TfeModal`, Tena-host
+  `TabbedModal`, Naoa `TwoPaneDialog` (keeps its two panes; use `tabs` where
+  it only switches sections), Najenga's own `Modal`. Each moves to `Modal`
+  in its own consumer PR, with screenshots.
+
 ## 0.9 → 0.10 (dashboard 0.10.0, laravel-kit 0.10.0, create-okjt-app 0.1.9)
 
 Raise your ranges: `npm i @okjt/dashboard@^0.10.0` and `composer require
