@@ -5,6 +5,7 @@ namespace Okjt\Kit;
 use Illuminate\Database\Events\MigrationsEnded;
 use Illuminate\Database\Events\MigrationsStarted;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Okjt\Kit\Backups\BackupService;
 use Okjt\Kit\Console\CreateBackup;
@@ -32,10 +33,25 @@ class KitServiceProvider extends ServiceProvider
         // For new projects; a project that already has these tables skips them.
         $this->publishesMigrations([__DIR__.'/../database/migrations' => database_path('migrations')], 'okjt-migrations');
 
-        // The emailed reset link opens the app's reset page (PasswordResetController).
-        // A project that builds its own link calls createUrlUsing after this.
-        \Illuminate\Auth\Notifications\ResetPassword::createUrlUsing(fn ($user, string $token) => rtrim(config('app.frontend_url') ?: config('app.url'), '/')
-            .config('okjt.auth.password_reset.path', '/reset-password').'/'.$token.'?'.http_build_query(['email' => $user->getEmailForPasswordReset()]));
+        // Where the emailed reset link opens (okjt.auth.password_reset.link_to_app):
+        // true, the app's reset page ({app.frontend_url}{path}/{token}, for an app
+        // on another origin using PasswordResetController); false, Laravel's own
+        // link to the `password.reset` route; left out, the app's page only when
+        // the project has no `password.reset` route of its own. Laravel's
+        // frontend_url defaults to http://localhost:3000, so pointing an app that
+        // serves its own reset page there sent people to localhost. Decided when
+        // the link is made, after the routes are loaded. A project that builds
+        // its own link calls createUrlUsing after this.
+        \Illuminate\Auth\Notifications\ResetPassword::createUrlUsing(function ($user, string $token) {
+            $email = $user->getEmailForPasswordReset();
+            $toApp = config('okjt.auth.password_reset.link_to_app');
+            if ($toApp === false || ($toApp === null && Route::has('password.reset'))) {
+                return url(route('password.reset', ['token' => $token, 'email' => $email], false));
+            }
+
+            return rtrim(config('app.frontend_url') ?: config('app.url'), '/')
+                .config('okjt.auth.password_reset.path', '/reset-password').'/'.$token.'?'.http_build_query(['email' => $email]);
+        });
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'okjt');
 

@@ -1,5 +1,28 @@
 # Upgrading
 
+## 0.9 → 0.10 (dashboard 0.10.0, laravel-kit 0.10.0, create-okjt-app 0.1.9)
+
+Raise your ranges: `npm i @okjt/dashboard@^0.10.0` and `composer require
+okjt/laravel-kit:^0.10.0`. `@okjt/ui` and `@okjt/site` stay at 0.5 and 0.3.
+
+- **Reset links (laravel-kit), check this one.** The emailed reset link
+  used to go to `{app.frontend_url}{path}/{token}` always, and Laravel's
+  `frontend_url` defaults to `http://localhost:3000`. Now, by default, it
+  goes there only when your app has no `password.reset` route; with one,
+  Laravel's own link to it is used. Set
+  `okjt.auth.password_reset.link_to_app` to `true` to always link to the
+  app (an app on another origin), or `false` to always leave it to Laravel.
+  Naoa (no `password.reset` route): unchanged. Najenga (its own route at the
+  same path): the link now comes from its route on its own host instead of
+  `FRONTEND_URL`. TFE and Tena-host: links stop pointing at localhost.
+- **`AdminDataTable`** (`import AdminDataTable from '@okjt/dashboard/table'`,
+  needs `npm i @tanstack/react-table`), from Tena-host: a table from `lg`
+  and one card per row below it, with search, sorting, client or server
+  paging (`serverPagination` + `onPageChange`), selection (`selectedIds` to
+  control it), `rowActions` and "View details" (`detailTitle`; columns with
+  `meta.detailOnly` show only there; `meta.label` names a column on the
+  cards). `translate` passes labels through a project's own wording.
+
 ## 0.8 → 0.9 (ui 0.5.0, site 0.3.0, dashboard 0.9.0, create-okjt-app 0.1.8)
 
 More of R2. Nothing changes on screen unless you use the new options. Raise
