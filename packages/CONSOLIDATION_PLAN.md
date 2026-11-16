@@ -283,9 +283,12 @@ the new PHP tests fail on the old code). Versions: `@okjt/ui` 0.3.0,
 
 ### R2: phones and forms (kit 0.6, then 1.0): about 2 weeks
 
-- [x] F2 `Modal` v2 (kit 0.11: `tabs`, a `footer` per tab, `fixedHeight`, `sheet`; lifted from TFE's `TfeModal` with its tests). F7, F8, F11 and R3 are still being done by the TFE session (TFE `docs/proposals/okjt-kit-migration.md`); don't start them here.
+- [x] F2 `Modal` v2 (kit 0.11: `tabs`, a `footer` per tab, `fixedHeight`, `sheet`; lifted from TFE's `TfeModal` with its tests). R3 is still being done by the TFE session (TFE `docs/proposals/okjt-kit-migration.md`); don't start them here.
 - [x] F5 tab bar on phones (kit 0.11: `shell.tabBar`, lifted from TFE's `TabBar` + `lib/dashboardTabs.js` with its tests; brought forward from R6 because it came with F2)
 - [x] F9 page skeleton (kit 0.11: `shell.pageSkeleton`, lifted from TFE's `PageTransition` / `PageSkeleton` / `lib/pageSkeleton.js` with its tests; brought forward from R6 with F2 and F5)
+- [x] F7 undo instead of "are you sure?" (kit 0.11: `undoable`, `useUndoableRemoval`, `scheduleUndoable`; lifted from TFE's `lib/undo.js` + `useUndoableRemoval` with tests)
+- [x] F8 `StepFlow` (kit 0.11, in `@okjt/ui`; lifted from TFE's `StepFlow` + `lib/stepFlow.js` with tests)
+- [x] F11 format helpers (kit 0.11: `formatNumber`, `formatDateTime`, `statusLabel`, `titleCase` in `@okjt/ui` and `@okjt/ui/helpers`; lifted from TFE's `lib/utils.js` with tests)
 - [x] F3 `TwoPaneForm` (kit 0.8, with `TwoPaneDialog`, lifted unchanged)
 - [x] F4 glass toolbar (kit 0.8: `toolbar-glass.css` + `useGlassToolbar`; a stylesheet entry rather than a prop, because the look is media queries and `:has()` on the bar's wrapper)
 - [x] F6 card view on phones and details dialog (kit 0.10: `AdminDataTable`, `@okjt/dashboard/table`, lifted from Tena-host's `DataTable`; not `AdminListPanel` options, see below)
@@ -337,6 +340,18 @@ Notes from kit 0.11:
   half is `skeletonShapes.js`: `pageSkeleton.js` beside `PageSkeleton.jsx`
   compile to names that differ only in case, which esbuild refuses. Off by
   default: same before/after comparison as F5, no difference.
+* F7, as built: `undoable()` beside `confirmAction()` in `feedback.jsx`,
+  on the kit's react-hot-toast (TFE's used sonner), and
+  `useUndoableRemoval()` with `commit` as any function (TFE's made an
+  Inertia visit). `notifyUndo` is unchanged: it suits an action that has
+  already happened and can be reversed.
+* F8, as built: in `@okjt/ui` rather than `@okjt/site`, since wizards are on
+  dashboards too. `Journey` stays: it is a public-page section, not a
+  progress indicator. Drawn with the kit's tokens and lucide icons; the pure
+  half is lifted unchanged as `stepProgress.js` (same case collision as F9).
+* F11, as built: an optional `locale` on each; TFE's `formatMoney` stays in
+  TFE (its USD default is TFE's own). Also in `@okjt/ui/helpers`, so an
+  Inertia app without toasts can use them.
 * Consumers: TFE moves to it with the shell swap (it needs R3 first);
   Tena-host, Naoa and Najenga can move their tabbed dialogs in their 0.11
   updates.
@@ -410,7 +425,7 @@ Notes from kit 0.9:
 ### R6: new projects and the rest (create-okjt-app 0.2): about 1 week
 
 - [ ] create-app writes the new options (chunk reload, security headers, switches, error log, contrast and accessibility checks in CI)
-- [ ] F7, F8, F10, F11, S9, S10 as demand appears; each is P3 and can wait (F5 and F9 landed in 0.11)
+- [ ] F10, S9, S10 as demand appears; each is P3 and can wait (F5, F7, F8, F9 and F11 landed in 0.11)
 - [ ] A short `packages/CLAUDE.md` ("kit rules"), copied into each project's CLAUDE.md, so Claude Code sessions in any project know a kit piece exists before writing its own
 
 ---

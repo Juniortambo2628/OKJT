@@ -48,6 +48,28 @@ changes on screen unless you use the new options.
   path; add your pages' patterns in front of `DEFAULT_SKELETON_PATTERNS`.
   If your routes have a `<Suspense>` around each page only to keep the
   shell up, you can drop it.
+- **Undo instead of "are you sure?"** (F7, from TFE): `undoable(message,
+  commit, { onUndo, onError })` shows an Undo toast and runs `commit` only
+  when the 5 s window closes, so Undo never has to reverse anything.
+  `useUndoableRemoval()` does it for a list: `remove(id, { message, commit
+  })` hides the row at once, puts it back on Undo or on a failed commit, and
+  commits what is pending when the page is left. `notifyUndo` (runs first,
+  reverses on Undo) is unchanged. Keep `confirmAction()` for what can't
+  safely be taken back (something that tells someone else or moves money).
+- **`StepFlow`** (F8, from TFE): `<StepFlow variant="inline" steps={['Details',
+  'Party', 'Confirm']} cursor={2} />` in a wizard, or `variant="docked"` for
+  a "how it works" pill at the bottom of a page. Without `cursor` or per-step
+  `state` it explains a flow and marks nothing done. Below `sm` it shows the
+  current step and "Step 2 of 4". If your project has its own step indicator
+  or "Step X of Y" caption, it can switch. For sections a person may move
+  between freely, use `Modal`'s `tabs` instead.
+- **Format helpers** (F11, from TFE): `formatNumber(n, digits?, locale?)`
+  ("1,234,567"; junk reads "0"), `formatDateTime(value, intlOptions?,
+  locale?)` ("Jun 14, 2027, 7:00 PM"; '' when missing or invalid),
+  `statusLabel('pending_payment')` ("Pending payment"), `titleCase(slug)`.
+  The locale is pinned (en-US unless passed) so a number reads the same on
+  every machine; the time zone stays the viewer's. From `@okjt/ui` or
+  `@okjt/ui/helpers`. Replace bare `toLocaleString()` calls with them.
 - **Projects with their own tabbed dialog**: TFE `TfeModal`, Tena-host
   `TabbedModal`, Naoa `TwoPaneDialog` (keeps its two panes; use `tabs` where
   it only switches sections), Najenga's own `Modal`. Each moves to `Modal`
