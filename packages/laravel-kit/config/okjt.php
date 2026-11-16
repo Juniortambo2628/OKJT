@@ -134,7 +134,10 @@ return [
      * codes stored encrypted as Laravel Fortify stores them (for an app
      * moving from Fortify). login_codes: sign-in codes by email
      * (LoginCodeController). password_reset.path: where the emailed reset
-     * link opens ({app.frontend_url}{path}/{token}?email=…).
+     * link opens ({app.frontend_url}{path}/{token}?email=…). link_to_app:
+     * true always sends the link there (an app on another origin), false
+     * leaves it to Laravel (your own `password.reset` route), null (the
+     * default) sends it there only when there is no `password.reset` route.
      *
      * welcome is what a new sign-up is told. Signing in with Google
      * (SocialAuthController) sends the browser back to
@@ -152,7 +155,7 @@ return [
         'challenge_minutes' => 5,
         'two_factor' => ['secrets_encrypted' => false],
         'login_codes' => ['minutes' => 10, 'verify_attempts' => 6, 'verify_window' => 900],
-        'password_reset' => ['path' => '/reset-password'],
+        'password_reset' => ['path' => '/reset-password', 'link_to_app' => null],
         'welcome' => 'Welcome — check your inbox to verify your email.',
         'new_user_name' => 'New user',
         'social' => [
