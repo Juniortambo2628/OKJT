@@ -112,6 +112,11 @@ export async function createProject(p, { dir, install = true, checks = true, git
     log('\nChecking it works');
     run('php', ['artisan', 'test'], backend, log);
     run('npm', ['run', 'build'], frontend, log);
+    // A warning, not a stop: the colours are the owner's choice, and they can
+    // change them later (frontend/okjt.config.js). npm run check:contrast again.
+    log('  $ npm run check:contrast');
+    const contrast = spawnSync('npm', ['run', '--silent', 'check:contrast'], { cwd: frontend, stdio: 'inherit', shell: process.platform === 'win32' });
+    if (contrast.status !== 0) log('\nSome text in these colours is hard to read (above). Darken the brand colour in frontend/okjt.config.js, then run npm run check:contrast.');
   }
 
   if (git && !existsSync(join(dir, '.git')) && spawnSync('git', ['init', '-q', '-b', 'main'], { cwd: dir }).status === 0) {

@@ -101,3 +101,12 @@ test('.env values replace existing keys and add the rest', () => {
   assert.equal(example.GOOGLE_REDIRECT_URI, '"${APP_URL}/api/auth/google/callback"');
   assert.ok(envValues(project()).OKJT_ADMIN_PASSWORD.length >= 12);
 });
+
+test('the app can check its colours, and the default colours pass', async () => {
+  const pkg = JSON.parse(frontendFiles(project())['package.json']);
+  assert.equal(pkg.scripts['check:contrast'], 'okjt-theme --check-contrast');
+  // The kit's check, on the colours the installer offers by default.
+  const { checkContrast } = await import('../../ui/src/contrast.js');
+  const results = checkContrast({ theme: { colors: palette({ accent: '#2563EB', ink: '#1F2937' }) } });
+  assert.deepEqual(results.filter((r) => !r.ok).map((r) => r.what), []);
+});

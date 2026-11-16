@@ -47,6 +47,7 @@ function packageJson(p) {
     type: 'module',
     scripts: {
       theme: 'okjt-theme',
+      'check:contrast': 'okjt-theme --check-contrast',
       predev: 'okjt-theme',
       dev: 'vite',
       prebuild: 'okjt-theme',
