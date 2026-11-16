@@ -1,5 +1,30 @@
 # Upgrading
 
+## 0.7 → 0.8 (dashboard 0.8.0, laravel-kit 0.8.0, create-okjt-app 0.1.7)
+
+More of R2. Nothing changes on screen unless you use the new pieces. Raise
+your ranges: `npm i @okjt/dashboard@^0.8.0` and `composer require
+okjt/laravel-kit:^0.8.0`. `@okjt/ui` stays at 0.4.
+
+- **`useFilteredItems(items, { searchQuery, searchFields, where, sortFn, filterFn })`**:
+  search chosen fields, keep items whose fields equal values (`where:
+  { project_id }`, compared as text, empty values ignored), and sort. The
+  positional form `(items, searchQuery, filterFn)` works as before.
+- **`TwoPaneForm`** and **`TwoPaneDialog`** (and `FieldError`), from Naoa: long
+  forms in two panes, with a check as each field is left, a draft for new
+  entries and a final "Check details". Naoa: delete your copies and import
+  them from `@okjt/dashboard`; the markup is the same.
+- **The glass toolbar on phones**, from Naoa:
+  `import '@okjt/dashboard/toolbar-glass.css'` and call
+  `useGlassToolbar({ storageKey })` in the dashboard. Colours are
+  `--okjt-toolbar-glass-bg`, `--okjt-toolbar-solid-bg`,
+  `--okjt-toolbar-glass-border` and `--okjt-toolbar-glass-shadow` (defaults:
+  Naoa's warm white). Naoa: delete `useMobileToolbar` and the phone-toolbar
+  rules in `index.css`, and pass `storageKey: 'naoa-toolbar-solid'`.
+- **laravel-kit `Messages`**: a message missing from your published
+  `config/okjt.php` now falls back to the kit's wording, so new messages
+  reach projects with their own list. Yours still wins where you have one.
+
 ## 0.6 → 0.7 (dashboard 0.7.0, create-okjt-app 0.1.6)
 
 Room in the bell and the tour for a project to draw its own (R2, option B,

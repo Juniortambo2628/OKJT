@@ -284,11 +284,13 @@ the new PHP tests fail on the old code). Versions: `@okjt/ui` 0.3.0,
 ### R2: phones and forms (kit 0.6, then 1.0): about 2 weeks
 
 - [ ] F2 `Modal` v2 (tabs, footer that follows the open tab, fixed height, phone bottom sheet), lifted from `TfeModal`
-- [ ] F3 `TwoPaneForm`
-- [ ] F4 glass toolbar variant
+- [x] F3 `TwoPaneForm` (kit 0.8, with `TwoPaneDialog`, lifted unchanged)
+- [x] F4 glass toolbar (kit 0.8: `toolbar-glass.css` + `useGlassToolbar`; a stylesheet entry rather than a prop, because the look is media queries and `:has()` on the bar's wrapper)
 - [ ] F6 card view on phones and details dialog in `AdminListPanel`
 - [ ] F12 contrast check in `okjt-theme`
-- [ ] G4, G8, G10 (G6 and G7 landed in R1)
+- [x] G4 `useFilteredItems` options (kit 0.8)
+- [x] Messages fallback in laravel-kit (kit 0.8; found in R1)
+- [ ] G8, G10 (G6 and G7 landed in R1)
 - [x] `@okjt/ui/helpers` entry (no React, no toasts) and `Modal` `backdropClassName` (found in R1's consumer updates). Kit 0.6.
 - [x] Option B for Najenga (decided 2026-11-15: style options in the kit first, then Najenga switches with its screenshots unchanged). Kit 0.6: fields take a project's base classes (`componentDefaults.Field.classNames`, `baseClassName`); `Modal` takes `overlayClassName`, `backdropClassName`, `classNames.panel` / `body`, so Najenga's `Modal` becomes a wrapper drawing its own chrome on the kit's dialog. The defaults' class strings are asserted exactly in tests, so the markup of every existing dialog and field is unchanged.
 - [x] Option B, second step: the bell and the tour. Kit 0.7: `useNotifications()` and `renderButton` / `renderPanel` / `markOnePath` on `NotificationsBell` (which also closes outside and on Escape now); `render` and `scrollIntoView` on `AdminTutorial` (→ stops at the last step). Najenga's `NotificationsDropdown` and `Tour` draw on them.
