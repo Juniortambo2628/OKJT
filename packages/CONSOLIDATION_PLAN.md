@@ -421,9 +421,12 @@ Notes from R3 (shipped in kit 0.11):
   it, so on 18 the sign-in page never registered its fields and Sign in did
   nothing. Fixed with `forwardRef`; the seven SignInPage tests failed on 18
   before it. No other kit component takes a ref that way.
-* **New npm package**: `@okjt/inertia` needs a Trusted Publisher on
-  npmjs.com before the release workflow can publish it (`@okjt/site`'s first
-  publish failed for want of one, see R1).
+* **New npm package**: npm can't give a package a Trusted Publisher until it
+  exists, so `@okjt/inertia` 0.1.0 is published once by hand (`npm publish
+  --access public` in `packages/inertia`), and its Trusted Publisher is set
+  after that, matching `@okjt/ui`'s. Until then the release workflow's npm
+  step fails on it (the other packages still stage); later versions release
+  through the workflow.
 
 ### R4: platform services (laravel-kit 0.5, dashboard 1.2): about 2 to 3 weeks
 
