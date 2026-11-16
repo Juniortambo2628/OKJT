@@ -1,5 +1,37 @@
 # Upgrading
 
+## 0.10 → 0.11 (ui 0.6.0, dashboard 0.11.0, create-okjt-app 0.1.10)
+
+Raise your ranges together (dashboard 0.11 needs ui 0.6): `npm i
+@okjt/ui@^0.6.0 @okjt/dashboard@^0.11.0`. `@okjt/site` stays at 0.3, and
+`okjt/laravel-kit`'s v0.11.0 tag is the same code as v0.10.0. Nothing
+changes on screen unless you use the new options.
+
+- **`Modal`: tabs, a footer per tab, a fixed height and a phone sheet**
+  (F2, from TFE's `TfeModal`). All off by default.
+  - `tabs={[{ id, label, icon?, badge?, disabled?, content? }]}` (or
+    `['Overview', 'Details']`) draws a row of tabs under the title and turns
+    on the card chrome. The body is the open tab's `content`, else
+    `children(activeId)` when children is a function. Arrow keys, Home and
+    End move between tabs. `defaultTab`, or `activeTab` + `onTabChange` to
+    control it. A tab list that changes while the dialog is open (a form
+    that adds a step) falls back to a tab that exists, never an empty body.
+    `icon` is a lucide component or an element.
+  - `footer={(activeId) => …}`: the actions follow the open tab. A Save
+    button for a form that isn't on screen does nothing, so show it only on
+    that form's tab, and point it at the form with `form="the-form-id"`.
+  - `fixedHeight`: the card keeps one height, `min(40rem, 88dvh)`, whatever
+    the open tab holds; only the body scrolls. Override with `className`
+    (`h-[32rem]`).
+  - `sheet`: below `sm` the card sits at the bottom of the screen, full
+    width, with a handle; swipe the header down to close (a long pull or a
+    quick flick). Not swipeable when `closeable={false}`. The footer clears
+    the iPhone home bar.
+- **Projects with their own tabbed dialog**: TFE `TfeModal`, Tena-host
+  `TabbedModal`, Naoa `TwoPaneDialog` (keeps its two panes; use `tabs` where
+  it only switches sections), Najenga's own `Modal`. Each moves to `Modal`
+  in its own consumer PR, with screenshots.
+
 ## 0.9 → 0.10 (dashboard 0.10.0, laravel-kit 0.10.0, create-okjt-app 0.1.9)
 
 Raise your ranges: `npm i @okjt/dashboard@^0.10.0` and `composer require

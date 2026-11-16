@@ -81,7 +81,7 @@ node node_modules/@okjt/ui/tools/style-snapshot.mjs compare before/ after/
 | Export | What it is |
 |---|---|
 | `Button`, `buttonClass` | The one button: `primary`, `secondary`, `danger`; `edit` or `action` hide it for viewers |
-| `Modal`, `Overlay`, `PortalWhen` | Dialogs and the layer under them |
+| `Modal`, `Overlay`, `PortalWhen` | Dialogs and the layer under them. `Modal` takes `tabs`, a `footer` per tab, `fixedHeight` and `sheet` (a bottom sheet on phones) |
 | `SegmentedControl` | A row of options, one chosen |
 | `ContextMenu`, `useDismiss` | A right-click or "more" menu; close on outside click or Escape |
 | `Skeleton`, `CardSkeleton`, `TimelineSkeleton`, `MessageSkeleton`, `Loader`, `Spinner` | Loading states |

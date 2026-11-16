@@ -283,7 +283,7 @@ the new PHP tests fail on the old code). Versions: `@okjt/ui` 0.3.0,
 
 ### R2: phones and forms (kit 0.6, then 1.0): about 2 weeks
 
-- [ ] F2 `Modal` v2 (tabs, footer that follows the open tab, fixed height, phone bottom sheet), lifted from `TfeModal`. **Being done by the TFE session** (TFE `docs/proposals/okjt-kit-migration.md`), with F5, F7, F8, F9, F11 and R3; don't start them here.
+- [x] F2 `Modal` v2 (kit 0.11: `tabs`, a `footer` per tab, `fixedHeight`, `sheet`; lifted from TFE's `TfeModal` with its tests). F5, F7, F8, F9, F11 and R3 are still being done by the TFE session (TFE `docs/proposals/okjt-kit-migration.md`); don't start them here.
 - [x] F3 `TwoPaneForm` (kit 0.8, with `TwoPaneDialog`, lifted unchanged)
 - [x] F4 glass toolbar (kit 0.8: `toolbar-glass.css` + `useGlassToolbar`; a stylesheet entry rather than a prop, because the look is media queries and `:has()` on the bar's wrapper)
 - [x] F6 card view on phones and details dialog (kit 0.10: `AdminDataTable`, `@okjt/dashboard/table`, lifted from Tena-host's `DataTable`; not `AdminListPanel` options, see below)
@@ -296,6 +296,27 @@ the new PHP tests fail on the old code). Versions: `@okjt/ui` 0.3.0,
 - [x] Option B, second step: the bell and the tour. Kit 0.7: `useNotifications()` and `renderButton` / `renderPanel` / `markOnePath` on `NotificationsBell` (which also closes outside and on Escape now); `render` and `scrollIntoView` on `AdminTutorial` (→ stops at the last step). Najenga's `NotificationsDropdown` and `Tour` draw on them.
 - [x] Consumers: Naoa deletes `TwoPaneForm`, `TwoPaneDialog`, `useMobileToolbar` and its toolbar CSS (Naoa#39). Najenga finishes 6d.4 (Najenga#93) and 6d.6 (Najenga#92).
 - [ ] Consumers of 0.9: Najenga on the kit's `useAdminAction` with `refreshHistory: false` (6d.5); Tena-host sets `minText: '12px'` and deletes its 11px rule; each project adds `check:contrast`.
+
+Notes from kit 0.11:
+
+* F2, as built: options on the existing `Modal` rather than a second dialog,
+  so every dialog keeps its markup (the default class strings are asserted
+  exactly). Lifted from TFE: `modalTabs.js` and `sheetDrag.js` with their
+  node tests. Changed on the way: no `tabs` means no tab list (TFE always
+  drew one, made up from the title); tabs run along the top under the title
+  in the kit's look, not in TFE's side rail; icons are components or
+  elements with no default; the footer on a sheet clears the iPhone home bar.
+  Portalling was already done (`Overlay`).
+* Proof that nothing changes on screen: the default, card (title,
+  description, footer), not-closeable and 7xl dialogs, built with the kit
+  before and after under Tailwind 4 and okjt-app's theme. `style-snapshot`
+  at 1280 and 390 px: **no differences**. Calibration: changing the title's
+  colour token on the "after" build was reported on exactly the two dialogs
+  with a title. `style-snapshot` records colours and fonts, not spacing, so
+  the 390 px screenshots were also compared pixel by pixel: identical.
+* Consumers: TFE moves to it with the shell swap (it needs R3 first);
+  Tena-host, Naoa and Najenga can move their tabbed dialogs in their 0.11
+  updates.
 
 Notes from kit 0.10:
 
