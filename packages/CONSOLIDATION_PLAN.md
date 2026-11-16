@@ -283,10 +283,10 @@ the new PHP tests fail on the old code). Versions: `@okjt/ui` 0.3.0,
 
 ### R2: phones and forms (kit 0.6, then 1.0): about 2 weeks
 
-- [ ] F2 `Modal` v2 (tabs, footer that follows the open tab, fixed height, phone bottom sheet), lifted from `TfeModal`
+- [ ] F2 `Modal` v2 (tabs, footer that follows the open tab, fixed height, phone bottom sheet), lifted from `TfeModal`. **Being done by the TFE session** (TFE `docs/proposals/okjt-kit-migration.md`), with F5, F7, F8, F9, F11 and R3; don't start them here.
 - [x] F3 `TwoPaneForm` (kit 0.8, with `TwoPaneDialog`, lifted unchanged)
 - [x] F4 glass toolbar (kit 0.8: `toolbar-glass.css` + `useGlassToolbar`; a stylesheet entry rather than a prop, because the look is media queries and `:has()` on the bar's wrapper)
-- [ ] F6 card view on phones and details dialog in `AdminListPanel`
+- [x] F6 card view on phones and details dialog (kit 0.10: `AdminDataTable`, `@okjt/dashboard/table`, lifted from Tena-host's `DataTable`; not `AdminListPanel` options, see below)
 - [x] F12 contrast check (kit 0.9: `okjt-theme --check-contrast`, `@okjt/ui/contrast`; create-app adds a `check:contrast` script and warns at creation rather than failing CI, see below)
 - [x] G4 `useFilteredItems` options (kit 0.8)
 - [x] Messages fallback in laravel-kit (kit 0.8; found in R1)
@@ -296,6 +296,20 @@ the new PHP tests fail on the old code). Versions: `@okjt/ui` 0.3.0,
 - [x] Option B, second step: the bell and the tour. Kit 0.7: `useNotifications()` and `renderButton` / `renderPanel` / `markOnePath` on `NotificationsBell` (which also closes outside and on Escape now); `render` and `scrollIntoView` on `AdminTutorial` (→ stops at the last step). Najenga's `NotificationsDropdown` and `Tour` draw on them.
 - [x] Consumers: Naoa deletes `TwoPaneForm`, `TwoPaneDialog`, `useMobileToolbar` and its toolbar CSS (Naoa#39). Najenga finishes 6d.4 (Najenga#93) and 6d.6 (Najenga#92).
 - [ ] Consumers of 0.9: Najenga on the kit's `useAdminAction` with `refreshHistory: false` (6d.5); Tena-host sets `minText: '12px'` and deletes its 11px rule; each project adds `check:contrast`.
+
+Notes from kit 0.10:
+
+* F6, as built: `AdminListPanel` is only the panel around a page's own
+  markup and never sees the rows, so the card view is a table component,
+  `AdminDataTable`, in its own entry (`@okjt/dashboard/table`) because it
+  needs `@tanstack/react-table` (an optional peer). Lifted from Tena-host;
+  generalised: `translate` for `useTerms()`, the kit's `Modal` for
+  `GlassModal`, `onPageChange` for the Inertia visit, the kit's tokens for
+  the BEM stylesheet. Tena-host moves to it with R3 (Inertia).
+* Found by the TFE session: laravel-kit pointed every reset link at
+  `app.frontend_url` (Laravel's default: `http://localhost:3000`), breaking
+  apps with their own reset page. Now `okjt.auth.password_reset.link_to_app`
+  (true / false / null: only when there is no `password.reset` route).
 
 Notes from kit 0.9:
 
