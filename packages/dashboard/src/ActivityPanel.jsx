@@ -21,7 +21,7 @@ export default function ActivityPanel() {
   return (
     <div className="space-y-5">
       <section className="space-y-2">
-        <h3 className="text-[11px] font-bold uppercase tracking-wider text-tone-500">On this page</h3>
+        <h3 className="text-[length:max(11px,var(--okjt-min-text,0px))] font-bold uppercase tracking-wider text-tone-500">On this page</h3>
         {othersHere.length ? (
           <ul className="space-y-1.5">
             {othersHere.map((person) => (
@@ -37,7 +37,7 @@ export default function ActivityPanel() {
       </section>
 
       <section className="space-y-2">
-        <h3 className="text-[11px] font-bold uppercase tracking-wider text-tone-500">Recent changes</h3>
+        <h3 className="text-[length:max(11px,var(--okjt-min-text,0px))] font-bold uppercase tracking-wider text-tone-500">Recent changes</h3>
         {isLoading ? (
           <p className="text-xs text-tone-400">Loading…</p>
         ) : recent.length ? (
@@ -46,7 +46,7 @@ export default function ActivityPanel() {
               <li key={r.id} className="text-xs text-tone-600 leading-snug">
                 <span className="font-medium text-tone-800">{r.user?.name || anonymousName}</span>{' '}
                 {ACTION_WORDS[r.action] || r.action} <span className="font-medium text-tone-800">{r.subject_label}</span>
-                <span className="block text-[11px] text-tone-400">
+                <span className="block text-[length:max(11px,var(--okjt-min-text,0px))] text-tone-400">
                   {formatDistanceToNow(new Date(r.updated_at || r.created_at), { addSuffix: true })}
                 </span>
               </li>

@@ -90,7 +90,7 @@ export default function AdminToolbarFilters({ filters }) {
             <SlidersHorizontal className="w-4 h-4" />
             <span className="hidden sm:inline max-w-[10rem] truncate">{buttonLabel}</span>
             {activeCount > 0 && (
-              <span className="min-w-5 h-5 px-1 rounded-full bg-accent text-white text-[10px] font-bold flex items-center justify-center">
+              <span className="min-w-5 h-5 px-1 rounded-full bg-accent text-white text-[length:max(10px,var(--okjt-min-text,0px))] font-bold flex items-center justify-center">
                 {activeCount}
               </span>
             )}
@@ -109,7 +109,7 @@ export default function AdminToolbarFilters({ filters }) {
               >
                 {groups.map((group) => (
                   <div key={group.id}>
-                    <p className="text-[11px] font-semibold uppercase tracking-wider text-tone-500 mb-2">
+                    <p className="text-[length:max(11px,var(--okjt-min-text,0px))] font-semibold uppercase tracking-wider text-tone-500 mb-2">
                       {group.label || 'Show'}
                     </p>
                     <SegmentedControl
@@ -139,7 +139,7 @@ export default function AdminToolbarFilters({ filters }) {
 
                 {sort && (
                   <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-wider text-tone-500 mb-2">
+                    <p className="text-[length:max(11px,var(--okjt-min-text,0px))] font-semibold uppercase tracking-wider text-tone-500 mb-2">
                       {sort.label || 'Sort by'}
                     </p>
                     <select
@@ -159,7 +159,7 @@ export default function AdminToolbarFilters({ filters }) {
 
                 {views && (
                   <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-wider text-tone-500 mb-2">Saved views</p>
+                    <p className="text-[length:max(11px,var(--okjt-min-text,0px))] font-semibold uppercase tracking-wider text-tone-500 mb-2">Saved views</p>
                     <div className="flex flex-wrap gap-1.5">
                       {views.items.map((view) => (
                         <span key={view.id} className="inline-flex items-center rounded-lg bg-tone-50 text-sm text-tone-700">

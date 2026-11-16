@@ -50,7 +50,7 @@ export default function SiteNav({ overlay = false }) {
 
   const light = overlay && !scrolled && !open && !mega;
   const closeAll = () => { setMega(false); setOpen(false); };
-  const pillLink = ({ isActive }) => `rounded-full px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors ${
+  const pillLink = ({ isActive }) => `rounded-full px-4 py-2 text-[length:max(11px,var(--okjt-min-text,0px))] font-semibold uppercase tracking-[0.12em] transition-colors ${
     isActive
       ? 'bg-surface text-ink shadow-sm'
       : light ? 'text-white/85 hover:text-white' : 'text-soft hover:text-ink'

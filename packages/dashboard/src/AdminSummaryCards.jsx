@@ -143,7 +143,7 @@ export function BoldStatCard({ icon, label, value, trend, hint, onClick, active 
               <DashboardIcon
                 icon={up ? 'trend-up' : down ? 'trend-down' : 'trend-flat'}
                 fallback={up ? TrendingUp : down ? TrendingDown : Minus}
-                className={`${trendColor} text-[10px]`}
+                className={`${trendColor} text-[length:max(10px,var(--okjt-min-text,0px))]`}
               />
               <span className={`text-xs font-medium ${trendColor}`}>{Math.abs(trend)}%</span>
               <span className="text-xs text-contrast/35">vs. last month</span>

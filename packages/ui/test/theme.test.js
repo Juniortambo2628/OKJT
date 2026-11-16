@@ -69,3 +69,9 @@ test('theme.dashboard overrides colours on the dashboard only', () => {
   assert.doesNotMatch(dashboard, /--color-ink:/, 'tokens it leaves out stay as they are');
   assert.throws(() => defineConfig({ theme: { colors, dashboard: { colors: { brand: '#000' } } } }), /theme.dashboard.colors has unknown brand/);
 });
+
+test('type.minText sets the smallest text the kit draws; left out, nothing is written', () => {
+  assert.doesNotMatch(compileTheme({ theme: { colors } }), /--okjt-min-text/);
+  assert.match(compileTheme({ theme: { colors, type: { minText: '12px' } } }), /:root \{\n  --okjt-min-text: 12px;\n\}/);
+  assert.throws(() => compileTheme({ theme: { colors, type: { minText: 'big' } } }), /minText/);
+});

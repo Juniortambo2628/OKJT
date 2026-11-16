@@ -1,8 +1,8 @@
 import { collaboratorColor, initials, useModules } from './modules.js';
 
 const SIZES = {
-  xs: 'w-5 h-5 text-[9px]',
-  sm: 'w-7 h-7 text-[11px]',
+  xs: 'w-5 h-5 text-[length:max(9px,var(--okjt-min-text,0px))]',
+  sm: 'w-7 h-7 text-[length:max(11px,var(--okjt-min-text,0px))]',
   md: 'w-9 h-9 text-xs',
 };
 

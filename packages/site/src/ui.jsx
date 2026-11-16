@@ -42,7 +42,7 @@ export function PillLink({ to, variant = 'dark', size = 'md', arrow = false, cla
 /** Small uppercase label above a heading. */
 export function Eyebrow({ light = false, className = '', children }) {
   return (
-    <div className={`text-[11px] font-semibold uppercase tracking-[0.22em] ${light ? 'text-white/75' : 'text-accent'} ${className}`}>
+    <div className={`text-[length:max(11px,var(--okjt-min-text,0px))] font-semibold uppercase tracking-[0.22em] ${light ? 'text-white/75' : 'text-accent'} ${className}`}>
       {children}
     </div>
   );
@@ -51,7 +51,7 @@ export function Eyebrow({ light = false, className = '', children }) {
 /** Rounded tag chip, as on photo cards ("Article", "Design"). */
 export function Chip({ light = true, children }) {
   return (
-    <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-semibold ${light ? 'bg-surface text-ink' : 'bg-ink/5 text-body'}`}>
+    <span className={`inline-flex rounded-full px-3 py-1 text-[length:max(11px,var(--okjt-min-text,0px))] font-semibold ${light ? 'bg-surface text-ink' : 'bg-ink/5 text-body'}`}>
       {children}
     </span>
   );

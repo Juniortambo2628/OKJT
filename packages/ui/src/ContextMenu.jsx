@@ -79,7 +79,7 @@ function MenuList({ items, x, y, anchorWidth = 0, onClose, autoFocus = true, onR
           if (item.type === 'separator') return <div key={`sep-${index}`} role="separator" className="my-1 border-t border-tone-100" />;
           if (item.type === 'header') {
             return (
-              <div key={`h-${index}`} className="px-3 pt-1.5 pb-1 text-[10px] font-bold uppercase tracking-wider text-tone-400 truncate">
+              <div key={`h-${index}`} className="px-3 pt-1.5 pb-1 text-[length:max(10px,var(--okjt-min-text,0px))] font-bold uppercase tracking-wider text-tone-400 truncate">
                 {item.label}
               </div>
             );
@@ -113,7 +113,7 @@ function MenuList({ items, x, y, anchorWidth = 0, onClose, autoFocus = true, onR
                 {item.checked ? <Check className="w-4 h-4 text-accent" /> : Icon ? <Icon className={`w-4 h-4 ${item.danger ? '' : 'text-accent'}`} /> : null}
               </span>
               <span className="flex-1 truncate">{item.label}</span>
-              {item.shortcut && <span className="text-[11px] text-tone-400">{item.shortcut}</span>}
+              {item.shortcut && <span className="text-[length:max(11px,var(--okjt-min-text,0px))] text-tone-400">{item.shortcut}</span>}
               {item.submenu && <ChevronRight className="w-3.5 h-3.5 text-tone-400" />}
             </button>
           );

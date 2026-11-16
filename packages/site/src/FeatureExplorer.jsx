@@ -59,7 +59,7 @@ export default function FeatureExplorer({
             <div className="okjt-card max-w-sm rounded-3xl border border-surface/50 bg-surface/75 p-6 shadow-xl backdrop-blur-xl">
               <h3 className="!font-display text-2xl !font-normal tracking-tight !text-ink">{active.title}</h3>
               <div className="mt-3 text-sm leading-relaxed text-body">{active.summary}</div>
-              <Link to={href(active)} className="mt-5 inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-[0.15em] text-ink hover:text-accent">
+              <Link to={href(active)} className="mt-5 inline-flex items-center gap-1 text-[length:max(11px,var(--okjt-min-text,0px))] font-bold uppercase tracking-[0.15em] text-ink hover:text-accent">
                 {linkLabel} <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
               </Link>
             </div>

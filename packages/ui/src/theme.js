@@ -121,6 +121,15 @@ export function compileTheme(config) {
 
   lines.push('}', '');
 
+  // theme.type.minText: the smallest text the kit may draw. The kit's small
+  // labels (9–11px) are max(<size>, --okjt-min-text), so '12px' lifts them
+  // all to 12px; left out, every label keeps its size.
+  const minText = theme.type?.minText;
+  if (minText != null) {
+    if (!/^\d+(\.\d+)?(px|rem)$/.test(String(minText))) throw new Error(`okjt config: theme.type.minText must be a size in px or rem, like '12px' (got ${minText})`);
+    lines.push(':root {', `  --okjt-min-text: ${minText};`, '}', '');
+  }
+
   // The dashboard's own colours: DashboardShell puts `admin-theme` on <html>
   // while it is open, so its portalled menus and dialogs take them too.
   if (theme.dashboard) {

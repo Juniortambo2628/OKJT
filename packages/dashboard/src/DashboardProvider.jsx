@@ -46,7 +46,7 @@ const DEFAULT_SHELL = {
   logoBoxClass: 'p-4',
   logoClass: 'h-10 w-auto',
   railLogoClass: 'h-9 w-12 object-contain',
-  navTitleClass: 'px-3 mb-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white/50',
+  navTitleClass: 'px-3 mb-1 text-[length:max(10px,var(--okjt-min-text,0px))] font-bold uppercase tracking-[0.18em] text-white/50',
   navItemClass: 'px-3 py-2 rounded-lg',
   navActiveClass: 'text-accent-dark bg-white shadow-sm',
   navIdleClass: 'text-white/75 hover:text-accent-dark hover:bg-white',
