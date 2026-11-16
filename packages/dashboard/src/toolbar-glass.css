@@ -1,0 +1,68 @@
+/*
+ * @okjt/dashboard/toolbar-glass.css: on phones, the floating toolbar becomes
+ * a glass bar at the bottom, lifted from Naoa. Import it once to turn it on:
+ *
+ *   import '@okjt/dashboard/toolbar-glass.css';
+ *
+ * and call useGlassToolbar() in the dashboard, which tucks the bar away while
+ * the page scrolls down and switches it to solid on a device that drops
+ * frames with the blur on (html.toolbar-tucked, html.toolbar-solid). Solid
+ * too when the person asks for less transparency or the browser can't blur.
+ *
+ * Colours (defaults are Naoa's warm white; keep text contrast AA over your
+ * darkest content):
+ *   --okjt-toolbar-glass-bg     the glass                 rgba(255, 249, 245, 0.88)
+ *   --okjt-toolbar-solid-bg     the solid fallback        #FFF9F5
+ *   --okjt-toolbar-glass-border                           rgba(255, 255, 255, 0.6)
+ *   --okjt-toolbar-glass-shadow                           0 10px 30px rgba(31, 24, 19, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.7)
+ */
+
+/* Phones: the toolbar packs its controls tighter, so it covers less of the
+   page. Menus that open from it keep their normal sizes. */
+@media (max-width: 639.98px) {
+  .admin-floating-toolbar :is(button, select):not(:where([class*="absolute"] *)) {
+    padding: 0.5rem 0.6rem;
+    min-height: 2.25rem;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 639.98px) {
+  .admin-theme .admin-floating-toolbar {
+    background: var(--okjt-toolbar-glass-bg, rgba(255, 249, 245, 0.88)) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(170%);
+    backdrop-filter: blur(18px) saturate(170%);
+    border: 1px solid var(--okjt-toolbar-glass-border, rgba(255, 255, 255, 0.6));
+    box-shadow: var(--okjt-toolbar-glass-shadow, 0 10px 30px rgba(31, 24, 19, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.7)) !important;
+    border-radius: 1.5rem;
+  }
+  .admin-theme .admin-floating-toolbar :is(button, select) { min-height: 2.75rem; } /* 44px touch targets */
+  .admin-theme .admin-floating-toolbar [class*="bottom-full"] button { min-height: 2.75rem; font-size: 0.875rem; }
+  /* The wrapper the kit positions (its first child is the bar). `translate`,
+     not `transform`: framer-motion owns the wrapper's transform. */
+  .admin-theme div:has(> .admin-floating-toolbar) {
+    transition: translate 420ms cubic-bezier(0.34, 1.4, 0.64, 1), opacity 240ms ease;
+  }
+  html.toolbar-tucked div:has(> .admin-floating-toolbar) {
+    translate: -50% calc(100% + 1.5rem) !important;
+    opacity: 0 !important; /* framer-motion sets an inline opacity */
+    pointer-events: none;
+  }
+  html.toolbar-solid .admin-floating-toolbar {
+    background: var(--okjt-toolbar-solid-bg, #FFF9F5) !important;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+@media (max-width: 639.98px) and (prefers-reduced-transparency: reduce) {
+  .admin-theme .admin-floating-toolbar {
+    background: var(--okjt-toolbar-solid-bg, #FFF9F5) !important;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .admin-theme .admin-floating-toolbar { background: var(--okjt-toolbar-solid-bg, #FFF9F5) !important; }
+}
+/* Reduced motion: the kit's MotionConfig stops the springs; make the tuck
+   instant in your own reduced-motion rule if you have one. */

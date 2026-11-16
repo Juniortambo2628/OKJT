@@ -1,6 +1,6 @@
 {
   "name": "@okjt/dashboard",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Dashboard pages for OKJTech projects: page layout, hero, summary cards, floating toolbar with search and filters, side panel, lists, bulk actions, one way to save, and working together: presence, version history, sharing; the dashboard shell, sign-in pages and account menu",
   "type": "module",
   "license": "MIT",
@@ -10,13 +10,16 @@
     "directory": "packages/dashboard"
   },
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./toolbar-glass.css": "./dist/toolbar-glass.css"
   },
   "files": [
     "dist",
     "README.md"
   ],
-  "sideEffects": false,
+  "sideEffects": [
+    "*.css"
+  ],
   "scripts": {
     "build": "node build.mjs",
     "prepack": "node build.mjs",
