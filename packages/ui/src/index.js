@@ -15,7 +15,9 @@ export { default as ContextMenu } from './ContextMenu.js';
 export { default as useDismiss } from './useDismiss.js';
 export { default as ConfirmHost } from './ConfirmHost.js';
 export {
-  registerConfirmHost, confirmOptions, confirmAction, promptAction, notifyError, notifySuccess, notifyUndo,
+  registerConfirmHost, confirmOptions, confirmAction, promptAction, notifyError, notifySuccess, notifyUndo, undoable,
 } from './feedback.js';
+export { scheduleUndoable, UNDO_WINDOW_MS } from './undo.js';
+export { default as useUndoableRemoval } from './useUndoableRemoval.js';
 export { installChunkReload, shouldReloadForChunks, isChunkLoadError } from './chunkReload.js';
 export { formatNumber, formatDateTime, statusLabel, titleCase, DEFAULT_FORMAT_LOCALE } from './formats.js';
