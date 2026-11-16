@@ -71,3 +71,5 @@ export { default as ConfirmPasswordPage } from './ConfirmPasswordPage.js';
 export { default as TwoFactorForm } from './TwoFactorForm.js';
 export { default as AcceptInvitePage } from './AcceptInvitePage.js';
 export { default as AccountMenu } from './AccountMenu.js';
+export { default as TwoPaneDialog } from './TwoPaneDialog.js';
+export { default as TwoPaneForm, FieldError } from './TwoPaneForm.js';
