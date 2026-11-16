@@ -283,8 +283,9 @@ the new PHP tests fail on the old code). Versions: `@okjt/ui` 0.3.0,
 
 ### R2: phones and forms (kit 0.6, then 1.0): about 2 weeks
 
-- [x] F2 `Modal` v2 (kit 0.11: `tabs`, a `footer` per tab, `fixedHeight`, `sheet`; lifted from TFE's `TfeModal` with its tests). F7, F8, F9, F11 and R3 are still being done by the TFE session (TFE `docs/proposals/okjt-kit-migration.md`); don't start them here.
+- [x] F2 `Modal` v2 (kit 0.11: `tabs`, a `footer` per tab, `fixedHeight`, `sheet`; lifted from TFE's `TfeModal` with its tests). F7, F8, F11 and R3 are still being done by the TFE session (TFE `docs/proposals/okjt-kit-migration.md`); don't start them here.
 - [x] F5 tab bar on phones (kit 0.11: `shell.tabBar`, lifted from TFE's `TabBar` + `lib/dashboardTabs.js` with its tests; brought forward from R6 because it came with F2)
+- [x] F9 page skeleton (kit 0.11: `shell.pageSkeleton`, lifted from TFE's `PageTransition` / `PageSkeleton` / `lib/pageSkeleton.js` with its tests; brought forward from R6 with F2 and F5)
 - [x] F3 `TwoPaneForm` (kit 0.8, with `TwoPaneDialog`, lifted unchanged)
 - [x] F4 glass toolbar (kit 0.8: `toolbar-glass.css` + `useGlassToolbar`; a stylesheet entry rather than a prop, because the look is media queries and `:has()` on the bar's wrapper)
 - [x] F6 card view on phones and details dialog (kit 0.10: `AdminDataTable`, `@okjt/dashboard/table`, lifted from Tena-host's `DataTable`; not `AdminListPanel` options, see below)
@@ -325,6 +326,17 @@ Notes from kit 0.11:
   accessible name is "Tabs", since the header's shortcuts are already
   "Quick links". Off by default: the shell with a floating toolbar, before
   and after, compared at 1280 and 390 px (styles and pixels): no difference.
+* F9, as built: `shell.pageSkeleton`. In TFE the wait is an Inertia visit
+  (router events); in the kit's react-router projects it is a lazy route, so
+  the skeleton is the fallback of a Suspense boundary the shell puts inside
+  its keyed page wrapper (a fresh boundary per page, so it shows even when
+  the navigation runs in a transition). The cross-fade half was already in
+  the kit (`PageContent`). Found on the way: without a boundary inside the
+  shell, a lazy page suspends to the project's boundary above it and the
+  whole dashboard (sidebar and header) is replaced by its fallback. The pure
+  half is `skeletonShapes.js`: `pageSkeleton.js` beside `PageSkeleton.jsx`
+  compile to names that differ only in case, which esbuild refuses. Off by
+  default: same before/after comparison as F5, no difference.
 * Consumers: TFE moves to it with the shell swap (it needs R3 first);
   Tena-host, Naoa and Najenga can move their tabbed dialogs in their 0.11
   updates.
@@ -398,7 +410,7 @@ Notes from kit 0.9:
 ### R6: new projects and the rest (create-okjt-app 0.2): about 1 week
 
 - [ ] create-app writes the new options (chunk reload, security headers, switches, error log, contrast and accessibility checks in CI)
-- [ ] F7 to F11, S9, S10 as demand appears; each is P3 and can wait (F5 landed in 0.11)
+- [ ] F7, F8, F10, F11, S9, S10 as demand appears; each is P3 and can wait (F5 and F9 landed in 0.11)
 - [ ] A short `packages/CLAUDE.md` ("kit rules"), copied into each project's CLAUDE.md, so Claude Code sessions in any project know a kit piece exists before writing its own
 
 ---

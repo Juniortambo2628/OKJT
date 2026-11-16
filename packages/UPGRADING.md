@@ -38,6 +38,16 @@ changes on screen unless you use the new options.
   toolbar (plain and bold) moves above it, and the page ends clear of it.
   If your project has its own phone tab bar or bottom nav, delete it when
   you turn this on.
+- **A skeleton while a page loads** (F9, from TFE's `PageTransition`):
+  `shell.pageSkeleton: true` (or `{ patterns, fallback, grace }`). Off by
+  default. The page gets its own Suspense boundary inside the shell, so a
+  lazy route that is still loading shows a placeholder shaped like it after
+  220 ms while the sidebar and header stay, instead of falling through to
+  your app's own boundary above the shell (which replaces the whole
+  dashboard). Shapes: `dashboard`, `cards`, `table`, `split`, matched on the
+  path; add your pages' patterns in front of `DEFAULT_SKELETON_PATTERNS`.
+  If your routes have a `<Suspense>` around each page only to keep the
+  shell up, you can drop it.
 - **Projects with their own tabbed dialog**: TFE `TfeModal`, Tena-host
   `TabbedModal`, Naoa `TwoPaneDialog` (keeps its two panes; use `tabs` where
   it only switches sections), Najenga's own `Modal`. Each moves to `Modal`

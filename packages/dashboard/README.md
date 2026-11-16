@@ -163,3 +163,11 @@ shell: {
 ("Tabs"), `className` replaces its look. With the bar on, the floating
 toolbar sits above it and the page ends clear of it.
 
+**A skeleton while a page loads** (`shell.pageSkeleton`, off by default): the
+page gets its own Suspense boundary inside the shell, so a lazy route that is
+still loading shows a placeholder shaped like it (a dashboard, cards, a table,
+or a form beside a preview, chosen from the path) after 220 ms, and the
+sidebar and header stay. `true` uses the kit's patterns; or pass
+`{ patterns: [[/\/guests(\/|$)/, 'table'], ...DEFAULT_SKELETON_PATTERNS],
+fallback, grace }`. `PageSkeleton` and `skeletonVariantFor` are exported too.
+
