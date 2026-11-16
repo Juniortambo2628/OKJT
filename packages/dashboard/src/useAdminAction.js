@@ -1,8 +1,8 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { useCallback, useContext, useMemo, useRef, useState } from 'react';
+import { QueryClientContext } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
 import { usePermissions, confirmAction, notifyError, notifySuccess } from '@okjt/ui';
-import { useDashboard } from './DashboardProvider.js';
+import { useComponentDefaults, useDashboard } from './DashboardProvider.js';
 
 const resolve = (value, ...args) => (typeof value === 'function' ? value(...args) : value);
 
@@ -43,16 +43,24 @@ const deniedByRole = (err) => err?.response?.status === 403 && err.response.data
  * @param {(...args) => any} [options.key]  Per-item pending key (default: the first argument)
  * @param {boolean} [options.rethrow]  Re-throw errors to the caller (e.g. to keep a form open)
  * @param {'editor'|'owner'} [options.role='editor']  Who may run it: editors and owners, or owners only
+ * @param {boolean} [options.refreshHistory=true]  Refetch the kit's version history (['revisions'])
+ *   afterwards. False for a project whose history is its own; set it for every
+ *   action with DashboardProvider componentDefaults: { AdminAction: { refreshHistory: false } }.
+ *
+ * A TanStack Query client is optional: on a page (or in a test) without a
+ * QueryClientProvider the action runs as usual and nothing is refetched.
  */
 export default function useAdminAction(fn, options = {}) {
   const { canEdit, isOwner } = usePermissions();
   const allowed = options.role === 'owner' ? isOwner : canEdit;
-  const queryClient = useQueryClient();
+  // Read the context directly: useQueryClient() throws without a provider.
+  const queryClient = useContext(QueryClientContext);
+  const defaults = useComponentDefaults('AdminAction', {});
   const refreshCollaboration = useDashboard().useAfterChange();
   const [pendingKeys, setPendingKeys] = useState(() => new Set());
   // Latest fn/options without re-creating `run` (pages pass inline lambdas).
   const latest = useRef({ fn, options });
-  latest.current = { fn, options };
+  latest.current = { fn, options: { ...defaults, ...options } };
 
   const run = useCallback(async (...args) => {
     const { fn: write, options: opts } = latest.current;
@@ -70,10 +78,12 @@ export default function useAdminAction(fn, options = {}) {
       const result = await write(...args);
       const message = resolve(opts.success, result, ...args);
       if (message) notifySuccess(message);
-      await Promise.all([
-        ...(opts.invalidate || []).map((queryKey) => queryClient.invalidateQueries({ queryKey })),
-        queryClient.invalidateQueries({ queryKey: ['revisions'] }),
-      ]);
+      if (queryClient) {
+        await Promise.all([
+          ...(opts.invalidate || []).map((queryKey) => queryClient.invalidateQueries({ queryKey })),
+          ...(opts.refreshHistory === false ? [] : [queryClient.invalidateQueries({ queryKey: ['revisions'] })]),
+        ]);
+      }
       refreshCollaboration?.();
       opts.onSuccess?.(result, ...args);
       return result;
