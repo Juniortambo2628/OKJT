@@ -47,6 +47,7 @@ function packageJson(p) {
     type: 'module',
     scripts: {
       theme: 'okjt-theme',
+      'check:contrast': 'okjt-theme --check-contrast',
       predev: 'okjt-theme',
       dev: 'vite',
       prebuild: 'okjt-theme',
@@ -54,9 +55,9 @@ function packageJson(p) {
       preview: 'vite preview',
     },
     dependencies: {
-      '@okjt/dashboard': '^0.8.0',
-      '@okjt/site': '^0.2.0',
-      '@okjt/ui': '^0.4.0',
+      '@okjt/dashboard': '^0.9.0',
+      '@okjt/site': '^0.3.0',
+      '@okjt/ui': '^0.5.0',
       '@tanstack/react-query': '^5.90.12',
       axios: '^1.13.2',
       'date-fns': '^4.1.0',

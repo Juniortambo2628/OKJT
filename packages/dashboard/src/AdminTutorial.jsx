@@ -270,7 +270,7 @@ export default function AdminTutorial({ steps: allSteps, onComplete, isRestarted
                 )}
                 </div>
                 {currentStep === 0 && (
-                    <span className="bg-accent/10 text-accent text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded-md">New Feature</span>
+                    <span className="bg-accent/10 text-accent text-[length:max(10px,var(--okjt-min-text,0px))] uppercase tracking-wider font-bold px-2 py-1 rounded-md">New Feature</span>
                 )}
             </div>
             <button aria-label="Close tour" 

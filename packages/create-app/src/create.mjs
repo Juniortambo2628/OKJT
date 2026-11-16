@@ -94,7 +94,7 @@ export async function createProject(p, { dir, install = true, checks = true, git
   log('\nThe API: Laravel 12 with the OKJT kit');
   run('composer', ['create-project', 'laravel/laravel:^12.0', 'backend', '--no-interaction', '--prefer-dist', '--quiet'], dir, log);
   run('php', ['artisan', 'install:api', '--without-migration-prompt', '--no-interaction'], backend, log);
-  const packages = ['okjt/laravel-kit:^0.8.0', 'bacon/bacon-qr-code:^3.0'];
+  const packages = ['okjt/laravel-kit:^0.9.0', 'bacon/bacon-qr-code:^3.0'];
   if (p.features.google) packages.push('laravel/socialite:^5.0');
   if (p.features.passkeys) packages.push('laravel/passkeys:^0.2');
   run('composer', ['require', ...packages, '--no-interaction', '--quiet'], backend, log);
@@ -112,6 +112,11 @@ export async function createProject(p, { dir, install = true, checks = true, git
     log('\nChecking it works');
     run('php', ['artisan', 'test'], backend, log);
     run('npm', ['run', 'build'], frontend, log);
+    // A warning, not a stop: the colours are the owner's choice, and they can
+    // change them later (frontend/okjt.config.js). npm run check:contrast again.
+    log('  $ npm run check:contrast');
+    const contrast = spawnSync('npm', ['run', '--silent', 'check:contrast'], { cwd: frontend, stdio: 'inherit', shell: process.platform === 'win32' });
+    if (contrast.status !== 0) log('\nSome text in these colours is hard to read (above). Darken the brand colour in frontend/okjt.config.js, then run npm run check:contrast.');
   }
 
   if (git && !existsSync(join(dir, '.git')) && spawnSync('git', ['init', '-q', '-b', 'main'], { cwd: dir }).status === 0) {

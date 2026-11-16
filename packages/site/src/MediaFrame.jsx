@@ -60,7 +60,7 @@ export default function MediaFrame({ media, className = '', variant }) {
         <span className="h-2.5 w-2.5 rounded-full bg-[#E8C4B8]" />
         <span className="h-2.5 w-2.5 rounded-full bg-line" />
         <span className="h-2.5 w-2.5 rounded-full bg-[#C5D4B9]" />
-        <span className="ml-3 truncate rounded-full bg-surface px-3 py-0.5 text-[11px] text-muted">{item.url}</span>
+        <span className="ml-3 truncate rounded-full bg-surface px-3 py-0.5 text-[length:max(11px,var(--okjt-min-text,0px))] text-muted">{item.url}</span>
       </div>
       <div className="aspect-[16/10] bg-paper"><MediaFill media={item} /></div>
     </div>

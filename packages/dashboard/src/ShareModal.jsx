@@ -196,7 +196,7 @@ export default function ShareModal({ isOpen, onClose }) {
                       {ROLES.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
                     </select>
                   ) : (
-                    <span className="px-2 py-0.5 rounded-full bg-tone-100 text-[11px] font-medium text-tone-600">{roleLabel(person.role)}</span>
+                    <span className="px-2 py-0.5 rounded-full bg-tone-100 text-[length:max(11px,var(--okjt-min-text,0px))] font-medium text-tone-600">{roleLabel(person.role)}</span>
                   )}
                   {isOwner && person.pending && (
                     <Button size="icon-sm" icon={RefreshCw} aria-label={`Resend invitation to ${person.name}`} title="Resend invitation"

@@ -80,7 +80,7 @@ but only one project needs it now.
 | G5 | `ContextMenu` | Najenga #87 | Items must use `onSelect`. An item written with `onClick` silently does nothing, which is what broke Najenga's right-click menu. Accept `onClick` as another name for it, and warn in development about unknown keys. Also check that focus goes back to the button that opened the menu (Najenga's adapter still does this itself). | P1 |
 | G6 | `NotificationsBell` | Najenga 6d.6 | Expects `{title, message, link, icon}` at the top level of each notification and only offers "mark all read". Laravel's database notifications keep those under `data`, and need marking one at a time. Add a `normalize` option and per-item marking. | P2 |
 | G7 | `AdminTutorial` | Najenga 6d.6 | Finds steps only by id. Has no "open" state, doesn't skip steps whose element isn't on screen, and doesn't respond to arrow keys. | P2 |
-| G8 | Text size | Tena-host `V2Site.css` | Small labels are 9 to 11 px, set in 35 places in the kit. Tena-host overrides them to 12 px, and TFE's accessibility tests would fail them too. Add a theme minimum (`type.minLabel`, default unchanged) and use it everywhere. | P2 |
+| G8 | Text size | Tena-host `V2Site.css` | Small labels are 9 to 11 px, set in 35 places in the kit. Tena-host overrides them to 12 px, and TFE's accessibility tests would fail them too. Add a theme minimum (`type.minText`, default unchanged) and use it everywhere. | P2 |
 | G9 | `PasskeyController` (laravel-kit) | TFE Sprint 48 | Catches nothing. If a stored passkey can't be decrypted (for example after an `APP_KEY` change), the request fails with a bare 500 and nothing in the log. TFE turns this into a 422 with a clear message and switches off the bad passkey. Bring that behaviour across, with TFE's test. | P1 |
 | G10 | `useAdminAction` | Najenga 6d.5 | Every page test needs a TanStack Query client, and it always refreshes the history queries. Make both optional. | P3 |
 | G11 | Version ranges | all | Consumers ask for `^0.1` / `^0.2.1`, which in 0.x misses 0.2 releases. Release a `1.0` once R1 and R2 have landed, so that caret ranges pick up later fixes by themselves. | P1 |
@@ -287,14 +287,40 @@ the new PHP tests fail on the old code). Versions: `@okjt/ui` 0.3.0,
 - [x] F3 `TwoPaneForm` (kit 0.8, with `TwoPaneDialog`, lifted unchanged)
 - [x] F4 glass toolbar (kit 0.8: `toolbar-glass.css` + `useGlassToolbar`; a stylesheet entry rather than a prop, because the look is media queries and `:has()` on the bar's wrapper)
 - [ ] F6 card view on phones and details dialog in `AdminListPanel`
-- [ ] F12 contrast check in `okjt-theme`
+- [x] F12 contrast check (kit 0.9: `okjt-theme --check-contrast`, `@okjt/ui/contrast`; create-app adds a `check:contrast` script and warns at creation rather than failing CI, see below)
 - [x] G4 `useFilteredItems` options (kit 0.8)
 - [x] Messages fallback in laravel-kit (kit 0.8; found in R1)
-- [ ] G8, G10 (G6 and G7 landed in R1)
+- [x] G8, G10 (kit 0.9: `theme.type.minText`; `useAdminAction` without a Query client, `refreshHistory`) (G6 and G7 landed in R1)
 - [x] `@okjt/ui/helpers` entry (no React, no toasts) and `Modal` `backdropClassName` (found in R1's consumer updates). Kit 0.6.
 - [x] Option B for Najenga (decided 2026-11-15: style options in the kit first, then Najenga switches with its screenshots unchanged). Kit 0.6: fields take a project's base classes (`componentDefaults.Field.classNames`, `baseClassName`); `Modal` takes `overlayClassName`, `backdropClassName`, `classNames.panel` / `body`, so Najenga's `Modal` becomes a wrapper drawing its own chrome on the kit's dialog. The defaults' class strings are asserted exactly in tests, so the markup of every existing dialog and field is unchanged.
 - [x] Option B, second step: the bell and the tour. Kit 0.7: `useNotifications()` and `renderButton` / `renderPanel` / `markOnePath` on `NotificationsBell` (which also closes outside and on Escape now); `render` and `scrollIntoView` on `AdminTutorial` (→ stops at the last step). Najenga's `NotificationsDropdown` and `Tour` draw on them.
-- [ ] Consumers: Naoa deletes `TwoPaneForm`, `TwoPaneDialog`, `useMobileToolbar` and its toolbar CSS. Najenga finishes 6d.4 and 6d.6.
+- [x] Consumers: Naoa deletes `TwoPaneForm`, `TwoPaneDialog`, `useMobileToolbar` and its toolbar CSS (Naoa#39). Najenga finishes 6d.4 (Najenga#93) and 6d.6 (Najenga#92).
+- [ ] Consumers of 0.9: Najenga on the kit's `useAdminAction` with `refreshHistory: false` (6d.5); Tena-host sets `minText: '12px'` and deletes its 11px rule; each project adds `check:contrast`.
+
+Notes from kit 0.9:
+
+* G8, as built: the option is `theme.type.minText` (the plan said
+  `minLabel`; it applies to all of the kit's small text, not only labels).
+  The kit draws 9 to 11 px text in 36 places, not 35. Each is
+  `max(<size>, var(--okjt-min-text, 0px))`.
+* F12, as built: the pairs are the ones the kit's components draw, each
+  scoped to where it draws them (public pages, dashboard, or both), plus a
+  project's own. The plan said create-app would run it in CI; the generated
+  project's only workflow is the shared deploy, and failing an owner's deploy
+  over the brand colour they chose is too blunt, so the installer warns and
+  the project gets a script to add to its own CI.
+* **Found by F12**, each a design decision for its project, not fixed here:
+  - Naoa, public pages: the brand brown `#A67B5B` is 3.54 to 3.75:1 as link
+    text and under white button text (AA needs 4.5 for normal text). The
+    dashboard is fine (its accent is the ink).
+  - Najenga, dashboard: the red `#DC143C` as text on the dark panels is 3.7
+    to 3.92:1.
+  - okjt-app: white text on the gold accent `#EBC882` is 1.6:1 (the kit's
+    secondary button and active filter count).
+  Fixes would be a darker accent for text (or a separate `accentStrong` for
+  links), which changes how the brand looks; to be decided per project.
+* G10, as built: `useContext(QueryClientContext)` rather than
+  `useQueryClient()`, which throws without a provider.
 - [ ] Release **1.0**, so caret ranges pick up later fixes by themselves (G11)
 
 ### R3: Inertia (`@okjt/inertia` 0.1, kit 1.1): about 1 week

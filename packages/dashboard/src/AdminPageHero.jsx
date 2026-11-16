@@ -73,7 +73,7 @@ function PlainPageHero({ title, description, breadcrumb, icon }) {
       )}
       <div className="min-w-0 leading-tight">
         {parent && (
-          <p className="hidden sm:block text-[11px] text-tone-400 truncate">
+          <p className="hidden sm:block text-[length:max(11px,var(--okjt-min-text,0px))] text-tone-400 truncate">
             {parent.path ? <Link to={parent.path} className="hover:text-accent">{parent.label}</Link> : parent.label}
           </p>
         )}
@@ -192,7 +192,7 @@ function BoldPageHero({ title, subtitle, description, breadcrumbs = [], breadcru
         >
           <div className="min-w-0 leading-tight">
             {parent && (
-              <p className="hidden sm:block text-[11px] text-soft truncate">
+              <p className="hidden sm:block text-[length:max(11px,var(--okjt-min-text,0px))] text-soft truncate">
                 {parentTo ? <Link to={parentTo} className="hover:text-ink transition">{parent.label}</Link> : parent.label}
               </p>
             )}

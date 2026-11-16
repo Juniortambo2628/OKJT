@@ -123,7 +123,7 @@ function FiltersMenu({ filters, search, storageKey }) {
       >
         <Named name="filters" fallback={SlidersHorizontal} />
         <span className="hidden sm:inline">Filters</span>
-        {active > 0 && <span className="min-w-[1.25rem] h-5 px-1 rounded-full bg-accent text-[11px] leading-5 text-white text-center">{active}</span>}
+        {active > 0 && <span className="min-w-[1.25rem] h-5 px-1 rounded-full bg-accent text-[length:max(11px,var(--okjt-min-text,0px))] leading-5 text-white text-center">{active}</span>}
       </button>
       <AnimatePresence>
         {open && (
@@ -285,7 +285,7 @@ export default function BoldToolbar({ search, filters = [], view, actions = [], 
                       aria-label={search.placeholder || 'Search this page'}
                       className="w-40 sm:w-56 sm:focus:w-72 rounded-xl border border-contrast/10 bg-contrast/5 py-2 pl-9 pr-9 text-sm transition-all"
                     />
-                    <kbd className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 hidden sm:block rounded border border-contrast/15 px-1.5 text-[10px] text-soft">/</kbd>
+                    <kbd className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 hidden sm:block rounded border border-contrast/15 px-1.5 text-[length:max(10px,var(--okjt-min-text,0px))] text-soft">/</kbd>
                   </div>
                 )}
                 {filters.length > 0 && <FiltersMenu filters={filters} search={search} storageKey={storageKey} />}

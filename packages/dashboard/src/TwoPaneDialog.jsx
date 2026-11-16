@@ -63,7 +63,7 @@ export default function TwoPaneDialog({ open, title, subtitle, sections, active,
                       aria-current={on ? 'step' : undefined}
                       className={`flex w-full items-start gap-3 rounded-xl px-3 py-2 text-left transition-colors ${on ? 'bg-ink text-white' : 'text-body hover:bg-tint'}`}
                     >
-                      <span className={`mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full text-[11px] font-semibold ${on ? 'bg-white/20' : s.done ? 'bg-positive text-white' : 'bg-line text-soft'}`}>
+                      <span className={`mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full text-[length:max(11px,var(--okjt-min-text,0px))] font-semibold ${on ? 'bg-white/20' : s.done ? 'bg-positive text-white' : 'bg-line text-soft'}`}>
                         {s.done && !on ? '✓' : i + 1}
                       </span>
                       <span className="min-w-0">

@@ -40,14 +40,14 @@ function Entry({ revision, batchSize, showModule, onRestore, restoring, canResto
           <span className="font-medium text-tone-900">{who.name}</span> {ACTION_WORDS[revision.action] || revision.action}{' '}
           <span className="font-medium text-tone-900">{revision.subject_label || revision.subject_type}</span>
         </p>
-        <p className="text-[11px] text-tone-500 flex flex-wrap gap-x-2">
+        <p className="text-[length:max(11px,var(--okjt-min-text,0px))] text-tone-500 flex flex-wrap gap-x-2">
           <span title={format(when, 'PPpp')}>{formatDistanceToNow(when, { addSuffix: true })}</span>
           {showModule && <span className="px-1.5 rounded bg-tone-100 text-tone-600">{moduleLabel}</span>}
         </p>
         {revision.changes?.length > 0 && (
           <ul className="space-y-0.5 pt-0.5">
             {revision.changes.slice(0, 4).map((change) => <Change key={change.field} change={change} />)}
-            {revision.changes.length > 4 && <li className="text-[11px] text-tone-400">+{revision.changes.length - 4} more fields</li>}
+            {revision.changes.length > 4 && <li className="text-[length:max(11px,var(--okjt-min-text,0px))] text-tone-400">+{revision.changes.length - 4} more fields</li>}
           </ul>
         )}
         {canRestore && revision.restorable && (
@@ -170,7 +170,7 @@ export default function VersionHistoryDrawer({ module, onClose, onRestored }) {
                 lastDay = day;
                 return (
                   <li key={revision.id}>
-                    {header && <h3 className="sticky top-0 z-10 bg-surface/95 backdrop-blur pt-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-tone-500">{header}</h3>}
+                    {header && <h3 className="sticky top-0 z-10 bg-surface/95 backdrop-blur pt-3 pb-1 text-[length:max(11px,var(--okjt-min-text,0px))] font-bold uppercase tracking-wider text-tone-500">{header}</h3>}
                     <ul className="divide-y divide-tone-100">
                       <Entry
                         revision={revision}

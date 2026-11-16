@@ -67,7 +67,7 @@ function Badge({ item }) {
   if (useLook() === 'bold') return <BoldBadge item={item} />;
   if (item.badge > 0) {
     return (
-      <span className="ml-auto shrink-0 min-w-[1.25rem] h-5 px-1.5 rounded-full bg-accent/15 text-accent-dark text-[11px] font-semibold flex items-center justify-center">
+      <span className="ml-auto shrink-0 min-w-[1.25rem] h-5 px-1.5 rounded-full bg-accent/15 text-accent-dark text-[length:max(11px,var(--okjt-min-text,0px))] font-semibold flex items-center justify-center">
         {item.badge > 99 ? '99+' : item.badge}
       </span>
     );
@@ -84,7 +84,7 @@ function Badge({ item }) {
 function BoldBadge({ item }) {
   if (item.badge > 0) {
     return (
-      <span className="ml-auto flex h-5 min-w-[1.25rem] shrink-0 items-center justify-center rounded-full bg-accent/15 px-1.5 text-[11px] font-semibold text-accent-dark">
+      <span className="ml-auto flex h-5 min-w-[1.25rem] shrink-0 items-center justify-center rounded-full bg-accent/15 px-1.5 text-[length:max(11px,var(--okjt-min-text,0px))] font-semibold text-accent-dark">
         {item.badge > 99 ? '99+' : item.badge}
       </span>
     );
@@ -119,7 +119,7 @@ export function SidePanelNav({ panel, onPicked, selection, manage = {} }) {
               role="tab"
               aria-selected={active}
               onClick={() => pick(item.id)}
-              className={`relative flex flex-col items-center gap-1 py-2 px-0.5 rounded-xl text-[10px] font-semibold uppercase tracking-wide transition-colors border ${
+              className={`relative flex flex-col items-center gap-1 py-2 px-0.5 rounded-xl text-[length:max(10px,var(--okjt-min-text,0px))] font-semibold uppercase tracking-wide transition-colors border ${
                 active
                   ? 'bg-accent/10 border-accent/30 text-accent-dark'
                   : 'border-transparent text-tone-500 hover:bg-tone-50 hover:text-tone-700'
@@ -147,7 +147,7 @@ export function SidePanelNav({ panel, onPicked, selection, manage = {} }) {
   const row = ({ item, groupStart }, leading) => (
     <>
       {groupStart && (
-        <p className={`${look === 'bold' ? 'px-2.5 pb-1 text-xs font-semibold capitalize text-tone-400' : 'px-2 pb-1 text-[10px] font-bold uppercase tracking-[0.16em] text-tone-400'} ${groupStart === 'later' ? 'pt-3' : ''}`}>{item.group}</p>
+        <p className={`${look === 'bold' ? 'px-2.5 pb-1 text-xs font-semibold capitalize text-tone-400' : 'px-2 pb-1 text-[length:max(10px,var(--okjt-min-text,0px))] font-bold uppercase tracking-[0.16em] text-tone-400'} ${groupStart === 'later' ? 'pt-3' : ''}`}>{item.group}</p>
       )}
       <ItemRow
         item={item}

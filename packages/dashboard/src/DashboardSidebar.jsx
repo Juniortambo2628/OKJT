@@ -108,7 +108,7 @@ export default function DashboardSidebar({ isOpen, onClose, collapsed = false })
                             <span className="ml-auto flex items-center gap-1.5 shrink-0" aria-hidden="true">
                               <CollaboratorAvatars people={here} size="xs" max={2} />
                               {newCount > 0 && (
-                                <span className={`min-w-[1.25rem] h-5 px-1.5 rounded-full ${shell.badgeClass} text-[10px] font-bold flex items-center justify-center`}>
+                                <span className={`min-w-[1.25rem] h-5 px-1.5 rounded-full ${shell.badgeClass} text-[length:max(10px,var(--okjt-min-text,0px))] font-bold flex items-center justify-center`}>
                                   {newCount > 99 ? '99+' : newCount}
                                 </span>
                               )}

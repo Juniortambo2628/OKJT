@@ -1,7 +1,7 @@
 import { act, render, renderHook, screen, fireEvent, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Button, PermissionsProvider } from '@okjt/ui'
-import { useAdminAction, useBulkAdminAction } from '../dist/index.js'
+import { useAdminAction, useBulkAdminAction, DashboardProvider } from '../dist/index.js'
 
 const toast = vi.hoisted(() => Object.assign(vi.fn(), { error: vi.fn(), success: vi.fn() }))
 vi.mock('react-hot-toast', () => ({ toast, default: toast }))
@@ -97,6 +97,50 @@ describe('useAdminAction', () => {
     expect(result.current.isPending(6)).toBe(false)
     await act(async () => { finish(); await running })
     expect(result.current.pending).toBe(false)
+  })
+})
+
+describe('useAdminAction without a query client (Najenga 6d.5)', () => {
+  function bareWrapper({ children }) {
+    return <PermissionsProvider value={{ role: 'editor', isOwner: false, canEdit: true }}>{children}</PermissionsProvider>
+  }
+
+  it('runs on a page with no QueryClientProvider, and skips the refreshing', async () => {
+    const write = vi.fn().mockResolvedValue('ok')
+    const onSuccess = vi.fn()
+    const { result } = renderHook(
+      () => useAdminAction(write, { success: 'Saved', invalidate: [['faqs']], onSuccess }),
+      { wrapper: bareWrapper },
+    )
+    let returned
+    await act(async () => { returned = await result.current.run(1) })
+    expect(returned).toBe('ok')
+    expect(toast.success).toHaveBeenCalledWith('Saved')
+    expect(onSuccess).toHaveBeenCalledWith('ok', 1)
+  })
+
+  it('refreshHistory: false leaves the version history queries alone', async () => {
+    const queryClient = new QueryClient()
+    const invalidate = vi.spyOn(queryClient, 'invalidateQueries')
+    const { result } = renderHook(
+      () => useAdminAction(vi.fn().mockResolvedValue(1), { invalidate: [['faqs']], refreshHistory: false }),
+      { wrapper: wrapperFor('editor', queryClient) },
+    )
+    await act(async () => { await result.current.run() })
+    expect(invalidate).toHaveBeenCalledWith({ queryKey: ['faqs'] })
+    expect(invalidate).not.toHaveBeenCalledWith({ queryKey: ['revisions'] })
+  })
+
+  it('a project turns the history refresh off once, in DashboardProvider', async () => {
+    const queryClient = new QueryClient()
+    const invalidate = vi.spyOn(queryClient, 'invalidateQueries')
+    const Inner = wrapperFor('editor', queryClient)
+    const wrapper = ({ children }) => (
+      <DashboardProvider dashboard={{ componentDefaults: { AdminAction: { refreshHistory: false } } }}><Inner>{children}</Inner></DashboardProvider>
+    )
+    const { result } = renderHook(() => useAdminAction(vi.fn().mockResolvedValue(1)), { wrapper })
+    await act(async () => { await result.current.run() })
+    expect(invalidate).not.toHaveBeenCalledWith({ queryKey: ['revisions'] })
   })
 })
 

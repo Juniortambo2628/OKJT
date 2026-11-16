@@ -58,7 +58,7 @@ export default function AccountMenu({ compactLinks = [], links = [], roleText, e
             <div className="px-4 py-2 border-b border-tone-100 mb-1">
               <p className="text-sm font-semibold text-tone-800 truncate">{user?.name || fallbackName}</p>
               {user?.email && <p className="text-xs text-tone-500 truncate">{user.email}</p>}
-              {roleText && <p className="text-[11px] text-accent font-medium mt-0.5">{roleText}</p>}
+              {roleText && <p className="text-[length:max(11px,var(--okjt-min-text,0px))] text-accent font-medium mt-0.5">{roleText}</p>}
             </div>
 
             {extra?.({ itemClass, close })}

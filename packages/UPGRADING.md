@@ -1,5 +1,35 @@
 # Upgrading
 
+## 0.8 → 0.9 (ui 0.5.0, site 0.3.0, dashboard 0.9.0, create-okjt-app 0.1.8)
+
+More of R2. Nothing changes on screen unless you use the new options. Raise
+your ranges together (dashboard 0.9 needs ui 0.5; with ui left at 0.4 npm
+nests a second copy): `npm i @okjt/ui@^0.5.0 @okjt/site@^0.3.0
+@okjt/dashboard@^0.9.0`. `okjt/laravel-kit`'s v0.9.0 tag is the same code as
+v0.8.0.
+
+- **A floor for small text**: `theme: { type: { minText: '12px' } }` in
+  `okjt.config.js`, then `npm run theme`. The kit's 9 to 11 px labels (36 of
+  them, in all three packages) never draw smaller. Tena-host: set it to
+  `'12px'` and delete the `.v2-site .text-\[11px\]` rule in `V2Site.css`.
+- **A contrast check**: `okjt-theme --check-contrast` checks every
+  text/background pair the kit draws (body on the page, links on cards,
+  white on accent buttons, filled controls, ...) against WCAG AA, for the
+  public pages and, with `theme.dashboard`, the dashboard. It exits 1 if a
+  pair is too faint. Add your own pairs in `theme.contrastPairs` (and
+  `theme.dashboard.contrastPairs`): `[what, text, background, minimum]`,
+  where a colour is a token (`'body'`, `'tone-500'`), a token over the
+  background (`'accent/15'`) or a colour (`'#ffffff'`). In your own tests:
+  `import { checkContrast, contrastRatio } from '@okjt/ui/contrast'`.
+  Add `"check:contrast": "okjt-theme --check-contrast"` to your scripts
+  (new projects have it). Today it reports pairs below AA in Naoa (public
+  pages), Najenga (dashboard) and okjt-app; see the plan.
+- **`useAdminAction` without a Query client**: on a page or in a test with
+  no `QueryClientProvider`, the action runs and nothing is refetched.
+  `refreshHistory: false` skips refetching the kit's version history; set it
+  for every action with `componentDefaults: { AdminAction: { refreshHistory:
+  false } }` in `DashboardProvider` (Najenga, whose history is its own).
+
 ## 0.7 → 0.8 (dashboard 0.8.0, laravel-kit 0.8.0, create-okjt-app 0.1.7)
 
 More of R2. Nothing changes on screen unless you use the new pieces. Raise
