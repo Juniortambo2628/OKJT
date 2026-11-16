@@ -6,6 +6,8 @@ import { Bookmark, ChevronDown, ChevronUp, MoreHorizontal, Search, SlidersHorizo
 import { promptAction, useDismiss } from '@okjt/ui';
 import DashboardIcon from './DashboardIcon.js';
 import useSavedViews from './useSavedViews.js';
+import { useDashboard } from './DashboardProvider.js';
+import { toolbarBottomClass } from './tabBar.js';
 
 /**
  * AdminFloatingToolbar's 'bold' look (for dark dashboards): one glass bar
@@ -226,7 +228,7 @@ export default function BoldToolbar({ search, filters = [], view, actions = [], 
 
   // Centred over the content beside the sidebar; above the page's sticky
   // headers (z-10), below the header (z-30) and the phone sidebar.
-  const position = 'fixed z-[25] bottom-[max(0.75rem,env(safe-area-inset-bottom))] sm:bottom-6 left-1/2 lg:left-[calc(50%_+_var(--okjt-sidebar-w,16rem)_/_2)] transition-[left] duration-300';
+  const position = `fixed z-[25] ${toolbarBottomClass(!!useDashboard().shell.tabBar)} left-1/2 lg:left-[calc(50%_+_var(--okjt-sidebar-w,16rem)_/_2)] transition-[left] duration-300`;
   // Centred with framer-motion's x: its inline transform would wipe out a translate class.
   const centre = { x: '-50%' };
 

@@ -10,6 +10,7 @@ import ShareModal from './ShareModal.js';
 import VersionHistoryDrawer from './VersionHistoryDrawer.js';
 import DashboardSidebar from './DashboardSidebar.js';
 import DashboardHeader from './DashboardHeader.js';
+import DashboardTabBar from './DashboardTabBar.js';
 import { useDashboard } from './DashboardProvider.js';
 
 // Each page starts with an empty search so a query typed on one list never
@@ -64,7 +65,8 @@ function PageContent({ pathname, children }) {
 /**
  * DashboardShell — the frame of every dashboard page: sidebar, header,
  * confirm dialogs, the share and version-history panels, the project's banner
- * (`shell.Banner`), the guided tour (`tutorialSteps`) and the content area.
+ * (`shell.Banner`), the guided tour (`tutorialSteps`) and the content area,
+ * and, with `shell.tabBar`, a tab bar at the bottom on phones (DashboardTabBar).
  * Inside it: search, header slots and presence are provided.
  *
  * Sets `admin-theme` on <html> while mounted, for styles that apply to the
@@ -139,7 +141,10 @@ export default function DashboardShell({ children }) {
           <main id="main-content" tabIndex={-1} className={shell.mainClass}>
             <PageContent pathname={location.pathname}>{children}</PageContent>
           </main>
+          {/* shell.tabBar: the last of the page clears the bar on phones. */}
+          {shell.tabBar && <div aria-hidden="true" className="lg:hidden" style={{ height: 'var(--okjt-tabbar-h)' }} />}
         </div>
+        {shell.tabBar && <DashboardTabBar onMenu={() => setSidebarOpen(true)} menuOpen={sidebarOpen} />}
       </div>
     </CollaborationProvider>
     </AdminChromeProvider>
