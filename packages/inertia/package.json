@@ -1,0 +1,36 @@
+{
+  "name": "@okjt/inertia",
+  "version": "0.1.0",
+  "description": "Use the OKJT kit (@okjt/site, @okjt/dashboard) in an Inertia app: the kit's links and navigation make Inertia visits",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Juniortambo2628/OKJT.git",
+    "directory": "packages/inertia"
+  },
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "prepack": "node build.mjs",
+    "test": "node build.mjs && node --test test/*.test.js && vitest run"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "peerDependencies": {
+    "@inertiajs/react": ">=1",
+    "react": ">=18",
+    "react-router-dom": ">=6.4"
+  }
+}
