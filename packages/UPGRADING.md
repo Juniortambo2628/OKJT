@@ -1,5 +1,18 @@
 # Upgrading
 
+## 0.11.0 → 0.11.1 (dashboard 0.11.1)
+
+`npm i @okjt/dashboard@^0.11.1`; nothing to change. A fix, from TFE.
+
+- **The sidebar marks one current item.** With nested paths in `shell.nav`
+  (Tickets at `/app/tickets`, Sales at `/app/tickets/sales`), a nested page
+  marked both, because each item matched on its own prefix. Now the longest
+  match alone is current. Which items can match is unchanged (the page, or a
+  path it starts with; the home item only on its own page), so a sidebar
+  without nested paths is exactly as before; Naoa's and Najenga's have none.
+  The tab bar already did this (`activeNavItem`).
+- New export: `sidebarActivePath(nav, pathname, homePath)`, the rule above.
+
 ## 0.10 → 0.11 (ui 0.6.0, dashboard 0.11.0, inertia 0.1.0 (new), create-okjt-app 0.1.10)
 
 Raise your ranges together (dashboard 0.11 needs ui 0.6): `npm i

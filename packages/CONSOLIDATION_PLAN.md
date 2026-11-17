@@ -302,6 +302,16 @@ the new PHP tests fail on the old code). Versions: `@okjt/ui` 0.3.0,
 - [x] Consumers: Naoa deletes `TwoPaneForm`, `TwoPaneDialog`, `useMobileToolbar` and its toolbar CSS (Naoa#39). Najenga finishes 6d.4 (Najenga#93) and 6d.6 (Najenga#92).
 - [ ] Consumers of 0.9: Najenga on the kit's `useAdminAction` with `refreshHistory: false` (6d.5); Tena-host sets `minText: '12px'` and deletes its 11px rule; each project adds `check:contrast`.
 
+Notes from kit 0.11.1 (a fix, from TFE's partner dashboard):
+
+* The sidebar marked every item whose path the page starts with, so on a
+  ticketing partner's Sales page (`/partner/tickets/sales`) Tickets was
+  current too. Now only the longest match (`sidebarActivePath`), with the
+  same rule for which items can match, so a nav without nested paths is
+  unchanged: Naoa's and Najenga's navs have no nested pair (checked), and
+  the kit's own tests pass unchanged. The new test fails on 0.11.0 (both
+  items marked).
+
 Notes from kit 0.11:
 
 * F2, as built: options on the existing `Modal` rather than a second dialog,
