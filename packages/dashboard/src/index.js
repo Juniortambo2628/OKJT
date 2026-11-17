@@ -53,7 +53,7 @@ export { default as ShareModal } from './ShareModal.js';
 export { default as DashboardShell } from './DashboardShell.js';
 export { default as DashboardSidebar } from './DashboardSidebar.js';
 export { default as DashboardTabBar } from './DashboardTabBar.js';
-export { tabBarItems, activeNavItem } from './tabBar.js';
+export { tabBarItems, activeNavItem, sidebarActivePath } from './tabBar.js';
 export { default as PageSkeleton, PageSkeletonShape, SKELETON_GRACE_MS } from './PageSkeleton.js';
 export { skeletonVariantFor, DEFAULT_SKELETON_PATTERNS, SKELETON_VARIANTS } from './skeletonShapes.js';
 export { default as DashboardHeader } from './DashboardHeader.js';

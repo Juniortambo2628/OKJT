@@ -37,6 +37,18 @@ export function activeNavItem(nav = [], pathname = '') {
 }
 
 /**
+ * The sidebar's current item: the path of the longest item that matches,
+ * so a nested page marks one item (Sales, not Tickets and Sales). Which
+ * items can match is unchanged: the page itself, or a path it starts with;
+ * the home item only on its own page.
+ */
+export function sidebarActivePath(nav = [], pathname = '', homePath = '/') {
+  return navItems(nav)
+    .filter((it) => it.path && (pathname === it.path || (it.path !== homePath && pathname.startsWith(it.path))))
+    .sort((a, b) => b.path.length - a.path.length)[0]?.path ?? null;
+}
+
+/**
  * The tabs: `tabs` is a list of nav paths, or `{ path, label?, primary? }`,
  * in tab order. A path that isn't in this person's nav is left out rather
  * than drawn as a dead tab (a role without that page).

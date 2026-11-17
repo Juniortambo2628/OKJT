@@ -5,6 +5,7 @@ import { useCollaboration } from './CollaborationContext.js';
 import CollaboratorAvatars from './CollaboratorAvatars.js';
 import { useDashboard } from './DashboardProvider.js';
 import { useModules } from './modules.js';
+import { sidebarActivePath } from './tabBar.js';
 
 /**
  * The dashboard's sidebar: the logo, then the pages in groups
@@ -22,6 +23,9 @@ export default function DashboardSidebar({ isOpen, onClose, collapsed = false })
   const { badges, presence } = useCollaboration();
   // The rail only applies on wide screens: the phone menu always shows labels.
   const rail = collapsed && !isOpen;
+  // One current item: the longest match (a nested page marks Sales, not
+  // Tickets and Sales).
+  const activePath = sidebarActivePath(shell.nav, location.pathname, home.path);
 
   return (
     <>
@@ -75,8 +79,7 @@ export default function DashboardSidebar({ isOpen, onClose, collapsed = false })
                 {section.title && rail && <div aria-hidden="true" className="mx-3 mb-2 h-px bg-white/10" />}
                 <ul className="space-y-0.5" aria-label={section.title || undefined}>
                   {section.items.map((item) => {
-                    const isActive = location.pathname === item.path ||
-                      (item.path !== home.path && location.pathname.startsWith(item.path));
+                    const isActive = item.path === activePath;
                     const moduleKey = moduleForPath(item.path)?.key;
                     const newCount = isActive ? 0 : badges[moduleKey] || 0;
                     const here = presence.filter(p => p.current_module === moduleKey);
