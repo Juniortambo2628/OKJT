@@ -1,6 +1,8 @@
 User-agent: *
 Allow: /
 Disallow: /admin
-Disallow: /api/
+# Don't disallow /api/: every page loads its words from it, and search
+# engines that can't fetch it see empty pages. Its answers carry
+# "X-Robots-Tag: noindex" instead, so they are never listed.
 
 Sitemap: https://okjtech.co.ke/sitemap.xml

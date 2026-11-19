@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\AddCacheHeaders;
 use App\Http\Middleware\IsAdmin;
+use App\Http\Middleware\NoIndexApi;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -23,7 +24,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => IsAdmin::class,
         ]);
 
+        // NoIndexApi first, so the header is also on AddCacheHeaders' 304s.
         $middleware->api(prepend: [
+            NoIndexApi::class,
             HandleCors::class,
             AddCacheHeaders::class,
         ]);
