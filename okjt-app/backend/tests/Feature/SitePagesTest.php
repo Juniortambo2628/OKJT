@@ -42,7 +42,7 @@ class SitePagesTest extends TestCase
             ->assertSee('<link rel="canonical" href="https://okjtech.co.ke/about" />', false)
             ->assertSee('content="index, follow"', false)
             ->assertDontSee('<title>Default</title>', false)
-            ->assertSee('<div id="root"></div>', false);
+            ->assertSee('<div id="root"><div data-okjt-prerender>', false);
     }
 
     public function test_a_page_made_from_data_uses_the_record(): void
