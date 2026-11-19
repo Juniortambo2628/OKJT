@@ -6,13 +6,15 @@ use App\Models\Insight;
 use App\Models\Pillar;
 use App\Models\Project;
 use App\Models\Service;
+use App\Support\PageContent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 /**
  * Answers every page of the site (okjt-app/web, built into public/) with
  * its index.html, after writing that page's title, description and Open
- * Graph tags into it, so search engines and link previews read each page
+ * Graph tags into it, and the page's main words and links into #root
+ * (PageContent), so search engines and link previews read each page
  * without running its JavaScript. The API itself stays under /api.
  */
 class SpaController extends Controller
@@ -62,6 +64,7 @@ class SpaController extends Controller
         $path = '/'.trim($request->path(), '/');
         [$meta, $status] = $this->metaFor($path);
         $html = $this->inject(file_get_contents($index), $meta, rtrim($frontend ?: $request->root(), '/').($path === '/' ? '/' : $path), $this->structuredData($path));
+        $html = $this->prerender($html, $meta[3] ? (new PageContent)->for($path, self::PAGES[$path] ?? null) : null);
 
         return response($html, $status)
             ->header('Content-Type', 'text/html; charset=UTF-8')
@@ -179,6 +182,24 @@ class SpaController extends Controller
         $replaced = preg_replace('#<!--okjt:seo-->.*?<!--/okjt:seo-->#s', $tags, $html, 1, $count);
 
         return $count ? $replaced : str_replace('</head>', "    {$tags}\n  </head>", $html);
+    }
+
+    /**
+     * Writes the page's words into #root for readers that don't run
+     * JavaScript. While JavaScript runs they stay hidden (the class is set
+     * before the body is read), so visitors see the page as before, and
+     * React replaces them when the app starts.
+     */
+    private function prerender(string $html, ?string $content): string
+    {
+        if ($content === null || ! str_contains($html, '<div id="root"></div>')) {
+            return $html;
+        }
+        $head = '<script>document.documentElement.classList.add(\'okjt-js\')</script>'
+            .'<style>.okjt-js [data-okjt-prerender]{display:none}</style>';
+        $html = preg_replace('#</head>#', $head."\n  </head>", $html, 1);
+
+        return str_replace('<div id="root"></div>', '<div id="root"><div data-okjt-prerender>'.$content.'</div></div>', $html);
     }
 
     /** An absolute address for a stored image, for link previews. */
