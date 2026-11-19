@@ -15,6 +15,8 @@ class ConsultationRequest extends Model
         'last_name',
         'email',
         'subject',
+        'budget',
+        'timeline',
         'message',
         'status',
     ];

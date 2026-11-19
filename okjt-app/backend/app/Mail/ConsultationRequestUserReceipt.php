@@ -47,19 +47,34 @@ class ConsultationRequestUserReceipt extends Mailable
                 return new Content(
                     view: 'emails.dynamic',
                     with: [
-                        'dynamicContent' => Blade::render($customTemplate->value, ['requestData' => $this->requestData]),
+                        'dynamicContent' => Blade::render($customTemplate->value, $this->templateData()),
                     ]
                 );
             } else {
                 return new Content(
-                    htmlString: Blade::render($customTemplate->value, ['requestData' => $this->requestData])
+                    htmlString: Blade::render($customTemplate->value, $this->templateData())
                 );
             }
         }
 
         return new Content(
             view: 'emails.consultation-user-receipt',
+            with: $this->templateData(),
         );
+    }
+
+    /**
+     * What the templates can use: the brief, and the booking page's address
+     * (empty while none is set in Contact details).
+     *
+     * @return array{requestData: mixed, bookingUrl: string}
+     */
+    private function templateData(): array
+    {
+        return [
+            'requestData' => $this->requestData,
+            'bookingUrl' => (string) SiteSetting::where('key', 'booking_url')->value('value'),
+        ];
     }
 
     /**

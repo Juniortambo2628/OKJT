@@ -15,6 +15,8 @@ class ConsultationRequestResource extends JsonResource
             'last_name' => $this->last_name,
             'email' => $this->email,
             'subject' => $this->subject,
+            'budget' => $this->budget,
+            'timeline' => $this->timeline,
             'message' => $this->message,
             'status' => $this->status,
             'created_at' => $this->created_at,

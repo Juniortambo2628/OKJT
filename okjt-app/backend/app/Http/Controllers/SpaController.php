@@ -36,6 +36,7 @@ class SpaController extends Controller
         '/client-impact' => ['Client impact', 'Platforms in daily use by clinics, law firms, workshops, event companies and nonprofits.'],
         '/insights' => ['Insights', 'Notes on building web platforms that people rely on.'],
         '/contact' => ['Contact', 'Describe the platform, the people it should serve and the timeline.'],
+        '/book' => ['Book a call', 'Pick a time for a short video call about your project, in your own time zone.'],
         '/privacy' => ['Privacy policy', self::DEFAULT_DESCRIPTION],
         '/terms' => ['Terms of service', self::DEFAULT_DESCRIPTION],
         '/cookies' => ['Cookie policy', self::DEFAULT_DESCRIPTION],
