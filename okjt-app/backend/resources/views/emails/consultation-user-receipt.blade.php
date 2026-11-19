@@ -12,6 +12,12 @@
         <p style="font-style: italic; margin: 0; color: #475569;">&ldquo;{{ $requestData->message }}&rdquo;</p>
     </div>
 
+    @if (! empty($bookingUrl))
+    <p>Prefer to talk it through? Pick a time for a short call. The booking page shows times in your own time zone.</p>
+
+    <a href="{{ $bookingUrl }}" class="button">Book a Call</a>
+    @endif
+
     <p>In the meantime, feel free to explore our latest market intelligence and insights:</p>
     
     <a href="{{ config('app.frontend_url') }}/insights" class="button">View Latest Insights</a>

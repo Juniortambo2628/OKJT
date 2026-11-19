@@ -8,6 +8,10 @@ import api, { errorMessage } from '../lib/api';
 import { live, useContact, useServices, useSettings } from '../lib/content';
 import { DEFAULT_HERO } from '../lib/defaults';
 
+/** Budget ranges in US dollars and timelines the brief offers; the first of each is "not said". */
+const BUDGETS = ['Under $5,000', '$5,000 – $15,000', '$15,000 – $40,000', 'Over $40,000'];
+const TIMELINES = ['As soon as possible', 'Within 3 months', 'In 3 to 6 months', 'Just exploring'];
+
 const field = 'w-full rounded-2xl border border-line bg-paper px-4 py-3 text-sm text-ink placeholder:text-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30';
 
 function Field({ label, error, children }) {
@@ -73,6 +77,20 @@ function ContactForm() {
                     <option value="Something else">Something else</option>
                   </select>
                 </Field>
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <Field label="Budget">
+                    <select className={field} defaultValue="" {...register('budget')}>
+                      <option value="">Not sure yet</option>
+                      {BUDGETS.map((b) => <option key={b} value={b}>{b}</option>)}
+                    </select>
+                  </Field>
+                  <Field label="Timeline">
+                    <select className={field} defaultValue="" {...register('timeline')}>
+                      <option value="">Not decided</option>
+                      {TIMELINES.map((t) => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                  </Field>
+                </div>
                 <Field label="Your brief" error={errors.message?.message}>
                   <textarea rows={6} className={field} placeholder="Who will use it, what it should do, and when you need it." {...register('message', { required: 'A few lines about the project.' })} />
                 </Field>
@@ -97,6 +115,7 @@ export default function Contact() {
         title: 'Share what <br />needs building.',
         text: 'Describe the platform, the people it should serve and the timeline. Every brief receives a reply with next steps.',
         breadcrumbs: [{ to: '/', label: 'Home' }, { label: 'Contact' }],
+        secondary: contact.booking ? { to: '/book', label: 'Book a Call' } : undefined,
       }}
       glance={[
         [contact.email, 'email'],
@@ -117,6 +136,7 @@ export default function Contact() {
             { title: 'Email', text: contact.email },
             { title: 'Phone', text: contact.phone },
             { title: 'Studio', text: contact.address },
+            ...(contact.booking ? [{ title: 'Book a call', text: 'Twenty minutes on video, at a time that suits you.', to: '/book' }] : []),
           ],
           tip: 'Prefer email? Write to ' + contact.email + ' and the brief is read the same day.',
         },

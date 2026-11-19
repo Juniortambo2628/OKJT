@@ -156,6 +156,7 @@ export function useSiteConfig() {
           '/client-impact': page('Client Impact', 'Platforms in daily use by clinics, law firms, workshops, event companies and nonprofits.'),
           '/insights': page('Insights', 'Notes on building web platforms that people rely on.'),
           '/contact': page('Contact', 'Describe the platform, the people it should serve and the timeline.'),
+          '/book': page('Book a call', 'Pick a time for a short video call about your project, in your own time zone.'),
           '/privacy': page('Privacy Policy'),
           '/terms': page('Terms of Service'),
           '/cookies': page('Cookie Policy'),

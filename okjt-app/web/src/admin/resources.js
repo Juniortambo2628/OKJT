@@ -152,7 +152,7 @@ export const RESOURCES = {
   requests: {
     endpoint: '/consultation-requests', noun: 'enquiry', title: 'Enquiries', description: 'Briefs sent from the Contact page.',
     readOnlyCreate: true,
-    row: (r) => ({ title: `${r.first_name} ${r.last_name}`, subtitle: [r.email, r.subject].filter(Boolean).join(' · '), badge: r.status, date: r.created_at }),
+    row: (r) => ({ title: `${r.first_name} ${r.last_name}`, subtitle: [r.email, r.subject, r.budget, r.timeline].filter(Boolean).join(' · '), badge: r.status, date: r.created_at }),
     groups: { field: 'status', label: 'Status', options: [{ id: 'pending', label: 'New' }, { id: 'contacted', label: 'Contacted' }, { id: 'resolved', label: 'Resolved' }, { id: 'archived', label: 'Archived' }] },
     initial: { status: 'pending' },
     fields: [
@@ -160,6 +160,8 @@ export const RESOURCES = {
       { key: 'last_name', label: 'Last name', type: 'text', required: true },
       { key: 'email', label: 'Email', type: 'email', required: true },
       { key: 'subject', label: 'Subject', type: 'text' },
+      { key: 'budget', label: 'Budget', type: 'text' },
+      { key: 'timeline', label: 'Timeline', type: 'text' },
       { key: 'message', label: 'Message', type: 'textarea', wide: true, rows: 8 },
       { key: 'status', label: 'Status', type: 'select', options: [{ value: 'pending', label: 'New' }, { value: 'contacted', label: 'Contacted' }, { value: 'resolved', label: 'Resolved' }, { value: 'archived', label: 'Archived' }] },
     ],

@@ -101,6 +101,8 @@ export function useContact() {
     email: setting('contact_email', 'hello@okjtech.co.ke'),
     phone: setting('contact_phone', '+254 700 000 000'),
     address: setting('contact_address', 'Nairobi, Kenya'),
+    // The booking page's address (e.g. a Cal.com link); empty hides booking.
+    booking: setting('booking_url', ''),
     socials: {
       linkedin: setting('social_linkedin'),
       twitter: setting('social_twitter'),

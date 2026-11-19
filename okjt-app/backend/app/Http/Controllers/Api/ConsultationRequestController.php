@@ -28,6 +28,8 @@ class ConsultationRequestController extends Controller
             'last_name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'subject' => 'nullable|string|max:255',
+            'budget' => 'nullable|string|max:60',
+            'timeline' => 'nullable|string|max:60',
             'message' => 'required|string',
         ];
     }
@@ -39,6 +41,8 @@ class ConsultationRequestController extends Controller
             'last_name' => 'nullable|string|max:255',
             'email' => 'nullable|email|max:255',
             'subject' => 'nullable|string|max:255',
+            'budget' => 'nullable|string|max:60',
+            'timeline' => 'nullable|string|max:60',
             'message' => 'nullable|string',
             'status' => 'required|string|in:pending,contacted,resolved,archived',
         ];

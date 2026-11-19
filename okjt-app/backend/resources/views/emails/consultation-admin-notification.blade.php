@@ -20,6 +20,18 @@
                 <td style="padding: 8px 0; color: #64748b;">Subject:</td>
                 <td style="padding: 8px 0; color: #ffffff;">{{ $requestData->subject ?? 'N/A' }}</td>
             </tr>
+            @if (! empty($requestData->budget))
+            <tr>
+                <td style="padding: 8px 0; color: #64748b;">Budget:</td>
+                <td style="padding: 8px 0; color: #ffffff;">{{ $requestData->budget }}</td>
+            </tr>
+            @endif
+            @if (! empty($requestData->timeline))
+            <tr>
+                <td style="padding: 8px 0; color: #64748b;">Timeline:</td>
+                <td style="padding: 8px 0; color: #ffffff;">{{ $requestData->timeline }}</td>
+            </tr>
+            @endif
             <tr>
                 <td style="padding: 8px 0; color: #64748b; vertical-align: top;">Message:</td>
                 <td style="padding: 8px 0; color: #cbd5e1; line-height: 1.5;">{{ $requestData->message }}</td>

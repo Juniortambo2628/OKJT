@@ -19,6 +19,7 @@ const Approach = lazy(() => import('./pages/Approach'));
 const PillarDetail = lazy(() => import('./pages/PillarDetail'));
 const ClientImpact = lazy(() => import('./pages/ClientImpact'));
 const Contact = lazy(() => import('./pages/Contact'));
+const Book = lazy(() => import('./pages/Book'));
 const Legal = lazy(() => import('./pages/Legal'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 // The dashboard is its own bundle: visitors never download it.
@@ -49,6 +50,7 @@ function PublicSite() {
           <Route path="/our-approach/:slug" element={<PillarDetail />} />
           <Route path="/client-impact" element={<ClientImpact />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/book" element={<Book />} />
           <Route path="/privacy" element={<Legal key="privacy" title="Privacy policy" settingKey="privacy_policy" />} />
           <Route path="/terms" element={<Legal key="terms" title="Terms of service" settingKey="terms_of_service" />} />
           <Route path="/cookies" element={<Legal key="cookies" title="Cookie policy" settingKey="cookie_policy" />} />
