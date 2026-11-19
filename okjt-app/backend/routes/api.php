@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\RsvpController;
 use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\ServiceController;
+use App\Http\Controllers\Api\SiteCheckController;
 use App\Http\Controllers\Api\SiteSettingController;
 use App\Http\Controllers\Api\StatController;
 use App\Http\Controllers\Api\SubscriberController;
@@ -59,6 +60,12 @@ Route::post('/subscribe', [SubscriberController::class, 'store']);
 Route::post('/unsubscribe', [SubscriberController::class, 'unsubscribe']);
 Route::post('/consultation-requests', [ConsultationRequestController::class, 'store']);
 Route::post('/rsvps', [RsvpController::class, 'store']);
+
+// The website health check (/tools/site-check): each run fetches another site, so it is rate-limited.
+Route::post('/tools/site-check', [SiteCheckController::class, 'store'])->middleware('throttle:5,1');
+Route::get('/tools/site-check/{id}', [SiteCheckController::class, 'show']);
+Route::post('/tools/site-check/{id}/speed', [SiteCheckController::class, 'speed'])->middleware('throttle:10,1');
+Route::post('/tools/site-check/{id}/email', [SiteCheckController::class, 'email'])->middleware('throttle:3,10');
 Route::get('/storage/{path}', [UploadController::class, 'serve'])->where('path', '.*');
 
 // Auth routes

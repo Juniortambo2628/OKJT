@@ -36,6 +36,8 @@ const DETAIL = [
   [/^\/insights\/[^/]+$/, 'Insight'],
   [/^\/projects\/(?!flagship$)[^/]+$/, 'Project'],
   [/^\/our-approach\/[^/]+$/, 'Approach'],
+  // A site check report is shared by link but kept out of search results.
+  [/^\/tools\/site-check\/[^/]+$/, 'Site check report', { indexable: false }],
 ];
 
 /**
@@ -99,6 +101,7 @@ export function useSiteConfig() {
             { to: '/our-approach', label: 'Our Approach' },
             { to: '/client-impact', label: 'Client Impact' },
             { to: '/insights', label: 'Insights' },
+            { to: '/tools/site-check', label: 'Free Site Check' },
             { to: '/contact', label: 'Contact' },
           ] },
           { title: 'Legal', links: [
@@ -156,6 +159,7 @@ export function useSiteConfig() {
           '/client-impact': page('Client Impact', 'Platforms in daily use by clinics, law firms, workshops, event companies and nonprofits.'),
           '/insights': page('Insights', 'Notes on building web platforms that people rely on.'),
           '/contact': page('Contact', 'Describe the platform, the people it should serve and the timeline.'),
+          '/tools/site-check': page('Website health check', 'Free check of any web page: whether Google can crawl and index it, its tags, link previews and speed.'),
           '/book': page('Book a call', 'Pick a time for a short video call about your project, in your own time zone.'),
           '/privacy': page('Privacy Policy'),
           '/terms': page('Terms of Service'),
@@ -163,7 +167,7 @@ export function useSiteConfig() {
         },
         resolve: (path) => {
           const match = DETAIL.find(([pattern]) => pattern.test(path));
-          return match ? page(match[1]) : undefined;
+          return match ? { ...page(match[1]), ...match[2] } : undefined;
         },
       },
     };
