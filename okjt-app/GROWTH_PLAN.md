@@ -28,25 +28,32 @@ startups entering East Africa.
   comes from the kit (`@okjt/site` SiteNav), so it needs a kit option and a
   kit release.
 
-## 2. The website health check tool (`/tools/site-check`)
+## 2. The website health check tool (`/tools/site-check`): done
 
-The tool people come back to, and proof of the work.
-
-- A visitor enters a web address. The server fetches it and checks:
-  robots.txt (and whether it blocks what the pages need), sitemap, canonical
-  tags, noindex, redirects (www, http, trailing slash), titles and
-  descriptions, Open Graph tags, and HTTPS. Speed scores come from Google's
-  PageSpeed Insights API (free, with a free API key kept on the server).
-- A results page with a plain-language fix for each problem; a shareable
-  link to the report (`/tools/site-check/<id>`), kept for 30 days.
-- Ends with "Want these fixed? Book a call" and an optional "Email me this
-  report", which adds the visitor to Subscribers (source `site-check`).
-- Rate-limited per visitor, and only public web addresses can be checked
-  (no private or internal addresses), so it can't be abused to reach other
-  servers.
-- An insight post: "How okjtech.co.ke went from 80 to N indexed pages", with
-  the Search Console numbers from November.
-- **You:** create a free Google Cloud API key for PageSpeed Insights.
+- [x] A visitor enters a web address; the server checks HTTPS, the status,
+      redirects, robots.txt (the page, and the files and data it loads),
+      the sitemap, www vs non-www, noindex, canonical, title, description,
+      one h1, how many words arrive before JavaScript, lang, viewport, link
+      previews and structured data, each with a plain fix.
+- [x] Speed scores from Google PageSpeed Insights, asked for by the
+      visitor's browser and kept with the report.
+- [x] Shareable report at `/tools/site-check/<id>` for 30 days (pruned
+      daily), kept out of search results.
+- [x] "Book a call" / "Send a brief", and "Email me this report" with an
+      optional subscription (Subscribers, source `site-check`).
+- [x] Safe to run on the open web: public addresses only, ports 80 and 443,
+      every redirect checked, the connection pinned to the checked address,
+      2 MB cap, 5 checks a minute per visitor.
+- [x] Linked from the footer ("Free Site Check") and in the sitemap.
+- [x] Draft insight "One line in robots.txt, and the pages Google couldn’t
+      see" (not published).
+- **You:** create a free PageSpeed Insights API key in Google Cloud
+  (APIs & Services → Credentials → API key, restricted to the PageSpeed
+  Insights API and to okjtech.co.ke as the website), and paste it into
+  Settings → Widgets → Pagespeed api key. Without it Google's shared
+  allowance is usually used up and the report links to PageSpeed Insights
+  instead. Then read, edit and publish the draft insight once Search
+  Console shows the after-numbers.
 
 ## 3. Positioning copy and trust signals
 

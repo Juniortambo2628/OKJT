@@ -36,6 +36,7 @@ class SpaController extends Controller
         '/client-impact' => ['Client impact', 'Platforms in daily use by clinics, law firms, workshops, event companies and nonprofits.'],
         '/insights' => ['Insights', 'Notes on building web platforms that people rely on.'],
         '/contact' => ['Contact', 'Describe the platform, the people it should serve and the timeline.'],
+        '/tools/site-check' => ['Website health check', 'Free check of any web page: whether Google can crawl and index it, its tags, link previews and speed, with a plain fix for each problem.'],
         '/book' => ['Book a call', 'Pick a time for a short video call about your project, in your own time zone.'],
         '/privacy' => ['Privacy policy', self::DEFAULT_DESCRIPTION],
         '/terms' => ['Terms of service', self::DEFAULT_DESCRIPTION],
@@ -79,6 +80,11 @@ class SpaController extends Controller
             [$title, $description] = self::PAGES[$path];
 
             return [[$path === '/' ? $title : $title.' | '.self::SITE, $description, null, true], 200];
+        }
+
+        // A site check report: anyone with the link can read it, but it isn't for search results.
+        if (preg_match('#^/tools/site-check/[0-9A-Za-z]{26}$#', $path)) {
+            return [['Site check report | '.self::SITE, self::PAGES['/tools/site-check'][1], null, false], 200];
         }
 
         if (Str::startsWith($path, '/admin')) {
