@@ -77,11 +77,36 @@ class SeoTest extends TestCase
             ->assertSee('"headline":"Tena means again"', false);
     }
 
+    public function test_the_home_page_on_www_and_api_redirects_to_the_main_domain(): void
+    {
+        $this->get('https://www.okjtech.co.ke/')->assertStatus(301)->assertRedirect('https://okjtech.co.ke/');
+        $this->get('https://api.okjtech.co.ke/')->assertStatus(301)->assertRedirect('https://okjtech.co.ke/');
+    }
+
+    public function test_apache_sends_the_home_page_to_laravel_not_to_index_html(): void
+    {
+        // Without this, Apache answers "/" with public/index.html as a plain
+        // file, so the redirects above never run and www. and api. serve a
+        // second copy of the home page.
+        $htaccess = file_get_contents(public_path('.htaccess'));
+        $this->assertMatchesRegularExpression('/^DirectoryIndex index\.php$/m', $htaccess);
+    }
+
     public function test_robots_txt_points_to_the_sitemap_and_keeps_out_of_the_dashboard(): void
     {
         $robots = file_get_contents(public_path('robots.txt'));
         $this->assertStringContainsString('Sitemap: https://okjtech.co.ke/sitemap.xml', $robots);
         $this->assertStringContainsString('Disallow: /admin', $robots);
-        $this->assertStringContainsString('Disallow: /api/', $robots);
+    }
+
+    public function test_robots_txt_lets_search_engines_fetch_the_api_the_pages_render_from(): void
+    {
+        $robots = file_get_contents(public_path('robots.txt'));
+        $this->assertDoesNotMatchRegularExpression('#^\s*Disallow:\s*/api#mi', $robots);
+    }
+
+    public function test_api_answers_are_never_listed_in_search_results(): void
+    {
+        $this->getJson('/api/projects')->assertOk()->assertHeader('X-Robots-Tag', 'noindex');
     }
 }
