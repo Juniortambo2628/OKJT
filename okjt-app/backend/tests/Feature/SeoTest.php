@@ -109,4 +109,18 @@ class SeoTest extends TestCase
     {
         $this->getJson('/api/projects')->assertOk()->assertHeader('X-Robots-Tag', 'noindex');
     }
+
+    public function test_the_misspelt_case_study_address_moves_to_the_right_one(): void
+    {
+        // As before the move: the misspelt address only.
+        Project::withTrashed()->where('slug', 'dickson-gitonga-advocates')->forceDelete();
+        Project::updateOrCreate(['slug' => 'dickson-gongona-advocates'], ['type' => 'client', 'title' => 'Dickson, Gitonga Advocates LLP', 'is_active' => true]);
+        (require database_path('migrations/2026_11_20_000004_dickson_gitonga_slug.php'))->up();
+
+        $this->assertTrue(Project::where('slug', 'dickson-gitonga-advocates')->exists());
+        $this->assertFalse(Project::where('slug', 'dickson-gongona-advocates')->exists());
+        $this->get('/projects/dickson-gongona-advocates')->assertStatus(301)->assertRedirect('/projects/dickson-gitonga-advocates');
+        $this->get('/projects/dickson-gitonga-advocates')->assertOk()->assertSee('<link rel="canonical" href="https://okjtech.co.ke/projects/dickson-gitonga-advocates" />', false);
+        $this->get('/sitemap.xml')->assertSee('/projects/dickson-gitonga-advocates</loc>', false)->assertDontSee('gongona');
+    }
 }
