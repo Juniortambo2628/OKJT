@@ -56,7 +56,7 @@ export default function Services() {
         [String(services.length), 'services'],
         [String(groups.length), groups.length === 1 ? 'area of work' : 'areas of work'],
         [String(live(pillars).length), 'principles behind them'],
-        ['1', 'team from brief to launch'],
+        setting('starting_price') ? [setting('starting_price'), 'projects start from'] : ['1', 'team from brief to launch'],
       ]}
       label="The services"
       chapters={chapters}

@@ -147,7 +147,7 @@ export default function Contact() {
           when: 'After you send it',
           title: 'What happens next',
           intro: 'The same short path for every project, from brief to proposal.',
-          steps: HOW_IT_STARTS,
+          steps: [...HOW_IT_STARTS, { title: 'The full process', text: 'Payment milestones, paying from abroad, and support after launch.', to: '/how-we-work' }],
           details: ['A technical and financial proposal within two business days', 'Clear stages and a realistic path to launch', 'One point of contact from start to finish'],
           detailsLabel: 'What you receive',
         },

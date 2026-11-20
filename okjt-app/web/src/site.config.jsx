@@ -99,6 +99,7 @@ export function useSiteConfig() {
           { title: 'Services', links: serviceLinks.length ? serviceLinks : [{ to: '/services', label: 'All Services' }] },
           { title: 'Studio', links: [
             { to: '/about', label: 'About' },
+            { to: '/how-we-work', label: 'How We Work' },
             { to: '/projects', label: 'Projects' },
             { to: '/our-approach', label: 'Our Approach' },
             { to: '/client-impact', label: 'Client Impact' },
@@ -162,6 +163,7 @@ export function useSiteConfig() {
           '/insights': page('Insights', 'Notes on building web platforms that people rely on.'),
           '/contact': page('Contact', 'Describe the platform, the people it should serve and the timeline.'),
           '/tools/site-check': page('Website health check', 'Free check of any web page: whether Google can crawl and index it, its tags, link previews and speed.'),
+          '/how-we-work': page('How we work', 'Clear stages, one fixed price in US dollars, four payment milestones by Wise or PayPal, and support after launch.'),
           '/book': page('Book a call', 'Pick a time for a short video call about your project, in your own time zone.'),
           '/privacy': page('Privacy Policy'),
           '/terms': page('Terms of Service'),

@@ -23,6 +23,7 @@ const PillarDetail = lazyPage(() => import('./pages/PillarDetail'));
 const ClientImpact = lazyPage(() => import('./pages/ClientImpact'));
 const Contact = lazyPage(() => import('./pages/Contact'));
 const Book = lazyPage(() => import('./pages/Book'));
+const HowWeWork = lazyPage(() => import('./pages/HowWeWork'));
 const SiteCheckTool = lazyPage(() => import('./pages/SiteCheck').then((m) => ({ default: m.SiteCheckTool })));
 const SiteCheckReport = lazyPage(() => import('./pages/SiteCheck').then((m) => ({ default: m.SiteCheckReport })));
 const Legal = lazyPage(() => import('./pages/Legal'));
@@ -56,6 +57,7 @@ function PublicSite() {
           <Route path="/client-impact" element={<ClientImpact />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/book" element={<Book />} />
+          <Route path="/how-we-work" element={<HowWeWork />} />
           <Route path="/tools/site-check" element={<SiteCheckTool />} />
           <Route path="/tools/site-check/:id" element={<SiteCheckReport />} />
           <Route path="/privacy" element={<Legal key="privacy" title="Privacy policy" settingKey="privacy_policy" />} />
