@@ -37,6 +37,7 @@ class SpaController extends Controller
         '/insights' => ['Insights', 'Notes on building web platforms that people rely on.'],
         '/contact' => ['Contact', 'Describe the platform, the people it should serve and the timeline.'],
         '/tools/site-check' => ['Website health check', 'Free check of any web page: whether Google can crawl and index it, its tags, link previews and speed, with a plain fix for each problem.'],
+        '/how-we-work' => ['How we work', 'Clear stages, one fixed price in US dollars, four payment milestones by Wise or PayPal, and support after launch.'],
         '/book' => ['Book a call', 'Pick a time for a short video call about your project, in your own time zone.'],
         '/privacy' => ['Privacy policy', self::DEFAULT_DESCRIPTION],
         '/terms' => ['Terms of service', self::DEFAULT_DESCRIPTION],
