@@ -75,6 +75,8 @@ export function useSiteConfig() {
         { to: '/our-approach', label: 'Approach' },
         { to: '/client-impact', label: 'Impact' },
         { to: '/about', label: 'About' },
+        // Booking a call, on every page, once a booking link is set (Settings > Contact details).
+        ...(setting('booking_url') ? [{ to: '/book', label: 'Book a Call' }] : []),
       ],
 
       // The "account" corner of the bar: Insights and the call to action for
