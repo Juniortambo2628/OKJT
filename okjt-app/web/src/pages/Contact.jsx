@@ -7,6 +7,7 @@ import { HOW_IT_STARTS } from '../lib/faqs';
 import api, { errorMessage } from '../lib/api';
 import { live, useContact, useServices, useSettings } from '../lib/content';
 import { DEFAULT_HERO } from '../lib/defaults';
+import { Busy } from '../components/States';
 
 /** Budget ranges in US dollars and timelines the brief offers; the first of each is "not said". */
 const BUDGETS = ['Under $2,500', '$2,500 – $7,500', '$7,500 – $10,000', '$10,000 – $15,000', 'Over $15,000'];
@@ -96,7 +97,7 @@ function ContactForm() {
                 </Field>
                 {failure && <p role="alert" className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">{failure}</p>}
                 <button type="submit" disabled={isSubmitting} className="inline-flex w-full items-center justify-center rounded-full bg-fill px-7 py-3.5 text-sm font-semibold uppercase tracking-[0.08em] text-on-ink transition-colors hover:bg-fill-hover disabled:opacity-60 sm:w-auto">
-                  {isSubmitting ? 'Sending…' : 'Send the Brief'}
+                  {isSubmitting ? <Busy>Sending…</Busy> : 'Send the Brief'}
                 </button>
               </form>
             )}

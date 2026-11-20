@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { Suspense } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
@@ -6,26 +6,29 @@ import { SiteProvider } from '@okjt/site';
 import { useSiteConfig } from './site.config';
 import { Assistant, CookieConsent, MaintenancePage, PageViews, WhatsAppButton, useMaintenance } from './components/Visitor';
 import { getToken } from './lib/api';
+import { PageLoading } from './components/States';
+import RouteProgress from './components/RouteProgress';
+import { lazyPage } from './lib/pageLoading';
 import Home from './pages/Home';
 
-const About = lazy(() => import('./pages/About'));
-const Services = lazy(() => import('./pages/Services'));
-const ServiceDetail = lazy(() => import('./pages/ServiceDetail'));
-const Insights = lazy(() => import('./pages/Insights'));
-const InsightDetail = lazy(() => import('./pages/InsightDetail'));
-const Projects = lazy(() => import('./pages/Projects'));
-const ProjectDetail = lazy(() => import('./pages/ProjectDetail'));
-const Approach = lazy(() => import('./pages/Approach'));
-const PillarDetail = lazy(() => import('./pages/PillarDetail'));
-const ClientImpact = lazy(() => import('./pages/ClientImpact'));
-const Contact = lazy(() => import('./pages/Contact'));
-const Book = lazy(() => import('./pages/Book'));
-const SiteCheckTool = lazy(() => import('./pages/SiteCheck').then((m) => ({ default: m.SiteCheckTool })));
-const SiteCheckReport = lazy(() => import('./pages/SiteCheck').then((m) => ({ default: m.SiteCheckReport })));
-const Legal = lazy(() => import('./pages/Legal'));
-const NotFound = lazy(() => import('./pages/NotFound'));
+const About = lazyPage(() => import('./pages/About'));
+const Services = lazyPage(() => import('./pages/Services'));
+const ServiceDetail = lazyPage(() => import('./pages/ServiceDetail'));
+const Insights = lazyPage(() => import('./pages/Insights'));
+const InsightDetail = lazyPage(() => import('./pages/InsightDetail'));
+const Projects = lazyPage(() => import('./pages/Projects'));
+const ProjectDetail = lazyPage(() => import('./pages/ProjectDetail'));
+const Approach = lazyPage(() => import('./pages/Approach'));
+const PillarDetail = lazyPage(() => import('./pages/PillarDetail'));
+const ClientImpact = lazyPage(() => import('./pages/ClientImpact'));
+const Contact = lazyPage(() => import('./pages/Contact'));
+const Book = lazyPage(() => import('./pages/Book'));
+const SiteCheckTool = lazyPage(() => import('./pages/SiteCheck').then((m) => ({ default: m.SiteCheckTool })));
+const SiteCheckReport = lazyPage(() => import('./pages/SiteCheck').then((m) => ({ default: m.SiteCheckReport })));
+const Legal = lazyPage(() => import('./pages/Legal'));
+const NotFound = lazyPage(() => import('./pages/NotFound'));
 // The dashboard is its own bundle: visitors never download it.
-const Admin = lazy(() => import('./admin/AdminApp'));
+const Admin = lazyPage(() => import('./admin/AdminApp'));
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } } });
 
@@ -36,7 +39,7 @@ function PublicSite() {
   if (maintenance.data?.isActive && !getToken()) return <MaintenancePage {...maintenance.data} />;
   return (
     <SiteProvider site={site}>
-      <Suspense fallback={<div className="min-h-dvh bg-paper" />}>
+      <Suspense fallback={<PageLoading />}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
@@ -78,9 +81,10 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
+        <RouteProgress />
         <Toaster position="top-right" toastOptions={{ style: { background: '#211c12', color: '#faf5e8', border: '1px solid #3a3221' } }} />
         <Routes>
-          <Route path="/admin/*" element={<Suspense fallback={<div className="min-h-dvh bg-paper" />}><Admin /></Suspense>} />
+          <Route path="/admin/*" element={<Suspense fallback={<PageLoading />}><Admin /></Suspense>} />
           <Route path="/*" element={<PublicSite />} />
         </Routes>
       </BrowserRouter>

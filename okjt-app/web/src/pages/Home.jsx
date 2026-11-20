@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowUpRight, Building2, Rocket } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { ArrowUpRight, Building2, Gauge, Rocket } from 'lucide-react';
 import {
   Container, Eyebrow, FeatureExplorer, ImageCard, PillLink, RollingWord, SECTION_OFFSET, SectionHeading, SectionNav, SiteLayout, useRolling,
 } from '@okjt/site';
@@ -17,6 +18,7 @@ const SECTIONS = [
   { id: 'approach', label: 'The Approach' },
   { id: 'work', label: 'Work by Sector' },
   { id: 'flagship', label: 'Flagship Products' },
+  { id: 'site-check', label: 'Free Site Check' },
   { id: 'insights', label: 'Insights' },
 ];
 
@@ -208,6 +210,37 @@ function Flagships() {
   );
 }
 
+const field = 'w-full rounded-2xl border border-line bg-paper px-4 py-3 text-sm text-ink placeholder:text-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30';
+
+/** The free site check, offered on the home page: the address goes to /tools/site-check, which runs it. */
+function SiteCheckOffer() {
+  const navigate = useNavigate();
+  const { register, handleSubmit, formState: { errors } } = useForm();
+  const submit = handleSubmit(({ url }) => navigate(`/tools/site-check?url=${encodeURIComponent(url.trim())}`));
+  return (
+    <div className="glass-strong grid gap-8 rounded-[2rem] p-6 sm:p-10 lg:grid-cols-2 lg:items-center">
+      <div>
+        <Eyebrow>Free Tool</Eyebrow>
+        <h2 className="mt-3 !font-display text-3xl !font-light leading-tight tracking-tight !text-ink sm:text-4xl">Can Google read your site?</h2>
+        <p className="mt-4 max-w-md text-soft">A free check of any web page: whether search engines can crawl and index it, how it looks when shared, and how fast it loads on a phone, with a plain fix for each problem.</p>
+      </div>
+      <form onSubmit={submit} noValidate className="space-y-4">
+        <label className="block">
+          <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.15em] text-soft">Web address</span>
+          <input type="text" inputMode="url" autoComplete="url" placeholder="example.com" className={field} {...register('url', { required: 'The address of the page to check.' })} />
+          {errors.url && <span role="alert" className="mt-1 block text-xs text-red-400">{errors.url.message}</span>}
+        </label>
+        <div className="flex flex-wrap items-center gap-4">
+          <button type="submit" className="inline-flex items-center justify-center gap-2 rounded-full bg-fill px-7 py-3.5 text-sm font-semibold uppercase tracking-[0.08em] text-on-ink transition-colors hover:bg-fill-hover">
+            <Gauge className="h-4 w-4" aria-hidden="true" /> Check the Site
+          </button>
+          <Link to="/tools/site-check" className="text-sm font-semibold text-accent hover:text-accent-strong">What it checks</Link>
+        </div>
+      </form>
+    </div>
+  );
+}
+
 export default function Home() {
   // Pending only on a first visit (later ones start from the browser's copy):
   // the headline waits for the CMS's words rather than flashing the fallbacks.
@@ -274,6 +307,12 @@ export default function Home() {
             </div>
           </div>
           <Flagships />
+        </Container>
+      </section>
+
+      <section id="site-check" className={`${SECTION_OFFSET} pt-24`}>
+        <Container>
+          <SiteCheckOffer />
         </Container>
       </section>
 

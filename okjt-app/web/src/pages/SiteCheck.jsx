@@ -1,11 +1,12 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { AlertTriangle, CheckCircle2, Info, XCircle } from 'lucide-react';
 import { Container, Eyebrow, PillLink, SectionHeading } from '@okjt/site';
+import { Spinner } from '@okjt/ui';
 import JourneyPage from '../components/Journey';
-import { LoadError } from '../components/States';
+import { Busy, LoadError, useElapsed } from '../components/States';
 import api, { errorMessage } from '../lib/api';
 import { useContact, useSettings } from '../lib/content';
 import { DEFAULT_HERO } from '../lib/defaults';
@@ -33,8 +34,11 @@ const TOOL_FAQS = [
 /** The form: a web address in, a report out. */
 function CheckForm() {
   const navigate = useNavigate();
+  const [params, setParams] = useSearchParams();
   const [failure, setFailure] = useState('');
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({ defaultValues: { url: params.get('url') || '' } });
+  const seconds = useElapsed(isSubmitting);
+  const started = useRef(false);
 
   const submit = handleSubmit(async ({ url }) => {
     setFailure('');
@@ -46,17 +50,39 @@ function CheckForm() {
     }
   });
 
+  // Sent here from the home page's form (/tools/site-check?url=…): run the check straight away, once.
+  useEffect(() => {
+    if (!params.get('url') || started.current) return;
+    started.current = true;
+    setParams({}, { replace: true });
+    submit();
+    document.getElementById('check-form')?.scrollIntoView({ block: 'center' });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div id="check-form" className="glass-strong rounded-[2rem] p-6 sm:p-10">
       <form onSubmit={submit} noValidate className="space-y-5">
         <label className="block">
           <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.15em] text-soft">Web address</span>
-          <input type="text" inputMode="url" autoComplete="url" placeholder="example.com" className={field} {...register('url', { required: 'The address of the page to check.' })} />
+          <input type="text" inputMode="url" autoComplete="url" placeholder="example.com" readOnly={isSubmitting} className={`${field} read-only:opacity-70`} {...register('url', { required: 'The address of the page to check.' })} />
           {errors.url && <span role="alert" className="mt-1 block text-xs text-red-400">{errors.url.message}</span>}
         </label>
         {failure && <p role="alert" className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">{failure}</p>}
-        <button type="submit" disabled={isSubmitting} className={submitClass}>{isSubmitting ? 'Checking…' : 'Check the Site'}</button>
-        <p className="text-sm text-soft">It takes about fifteen seconds. Any public page works: a home page, a product, an article.</p>
+        <button type="submit" disabled={isSubmitting} className={submitClass}>{isSubmitting ? <Busy>Checking…</Busy> : 'Check the Site'}</button>
+        {isSubmitting ? (
+          <div role="status" aria-live="polite" className="space-y-2">
+            <div className="h-1.5 overflow-hidden rounded-full bg-line" aria-hidden="true">
+              <div className="h-full rounded-full bg-accent transition-[width] duration-1000 ease-out motion-reduce:transition-none" style={{ width: `${Math.min(92, Math.round((1 - Math.exp(-seconds / 9)) * 100))}%` }} />
+            </div>
+            <p className="text-sm text-soft">
+              {seconds < 4 ? 'Fetching the page…' : seconds < 9 ? 'Reading robots.txt and the sitemap…' : seconds < 14 ? 'Checking redirects, tags and content…' : 'Almost there…'}
+              <span className="tabular-nums text-muted"> {seconds} s, usually about 15</span>
+            </p>
+          </div>
+        ) : (
+          <p className="text-sm text-soft">It takes about fifteen seconds. Any public page works: a home page, a product, an article.</p>
+        )}
       </form>
     </div>
   );
@@ -150,6 +176,8 @@ function useSpeed(check) {
 
 function SpeedScores({ check, state }) {
   const speed = check.speed;
+  const waiting = !speed && state !== 'failed';
+  const seconds = useElapsed(waiting);
   const rows = speed ? [['Performance', speed.performance], ['Accessibility', speed.accessibility], ['Best practices', speed.best_practices], ['SEO', speed.seo]] : [];
   return (
     <div className="glass mt-6 rounded-3xl p-5 sm:p-6">
@@ -166,11 +194,24 @@ function SpeedScores({ check, state }) {
           </dl>
           {speed.lcp_ms != null && <p className="mt-4 text-sm text-soft">The main content appears after {(speed.lcp_ms / 1000).toFixed(1)} s on a mid-range phone (under 2.5 s is good).</p>}
         </>
+      ) : waiting ? (
+        <div role="status" aria-live="polite">
+          <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4" aria-hidden="true">
+            {['Performance', 'Accessibility', 'Best practices', 'SEO'].map((label) => (
+              <div key={label}>
+                <div className="text-xs font-semibold uppercase tracking-[0.15em] text-soft">{label}</div>
+                <div className="mt-2 h-10 w-16 animate-pulse rounded-xl bg-line-strong/50 motion-reduce:animate-none" />
+              </div>
+            ))}
+          </div>
+          <p className="mt-4 flex items-start gap-2 text-sm text-soft">
+            <Spinner size="sm" className="mt-0.5 shrink-0 motion-reduce:animate-none" />
+            <span>Google is loading the page on a test phone. <span className="tabular-nums text-muted">{seconds} s, can take up to 40</span></span>
+          </p>
+        </div>
       ) : (
         <p className="mt-3 text-sm text-soft" role="status">
-          {state === 'failed'
-            ? <>Google’s speed test isn’t answering right now. <a href={`https://pagespeed.web.dev/analysis?url=${encodeURIComponent(check.url)}`} target="_blank" rel="noopener noreferrer" className="font-semibold text-accent hover:text-accent-strong">Run it on PageSpeed Insights</a>.</>
-            : 'Asking Google for the speed scores. This can take up to half a minute…'}
+          <>Google’s speed test isn’t answering right now. <a href={`https://pagespeed.web.dev/analysis?url=${encodeURIComponent(check.url)}`} target="_blank" rel="noopener noreferrer" className="font-semibold text-accent hover:text-accent-strong">Run it on PageSpeed Insights</a>.</>
         </p>
       )}
     </div>
@@ -203,7 +244,7 @@ function EmailReport({ id }) {
         <span>Also send me OKJTech’s occasional notes on building web platforms. Unsubscribe any time.</span>
       </label>
       {failure && <p role="alert" className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">{failure}</p>}
-      <button type="submit" disabled={isSubmitting} className={submitClass}>{isSubmitting ? 'Sending…' : 'Send the Report'}</button>
+      <button type="submit" disabled={isSubmitting} className={submitClass}>{isSubmitting ? <Busy>Sending…</Busy> : 'Send the Report'}</button>
     </form>
   );
 }
@@ -240,7 +281,7 @@ export function SiteCheckReport() {
         cta: contact.booking ? { to: '/book', label: 'Book a Call' } : { to: '/contact', label: 'Start a Project' },
         secondary: { to: '/tools/site-check', label: 'Check Another Site' },
       }}
-      glance={check ? [[String(summary.pass ?? 0), 'checks passed'], [String(summary.warn ?? 0), 'to look at'], [String(summary.fail ?? 0), 'failed'], [check.speed?.performance != null ? String(check.speed.performance) : '…', 'speed on a phone']] : undefined}
+      glance={check ? [[String(summary.pass ?? 0), 'checks passed'], [String(summary.warn ?? 0), 'to look at'], [String(summary.fail ?? 0), 'failed'], [check.speed?.performance != null ? String(check.speed.performance) : speedState === 'failed' ? '–' : <Spinner key="speed" size="lg" className="mt-1 motion-reduce:animate-none" />, 'speed on a phone']] : undefined}
       faqs={TOOL_FAQS}
     >
       {check && (
