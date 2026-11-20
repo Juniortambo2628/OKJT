@@ -55,19 +55,24 @@ startups entering East Africa.
   instead. Then read, edit and publish the draft insight once Search
   Console shows the after-numbers.
 
-## 3. Positioning copy and trust signals
+## 3. Positioning copy and trust signals: done (except quotes)
 
-- Home page headline and About page lead with the African-markets line
-  (copy in Settings, proposed in the PR for you to edit).
-- Services: "Projects typically start from $X" (a setting; you choose X).
-- Contact and /book: "Nairobi, UTC+3: the whole European working day,
-  mornings on the US East Coast" (already on /book).
-- A "How we work" page (`/how-we-work`): discovery call → fixed-price
-  proposal → milestones → contract and NDA → payment by bank transfer or
-  Wise → support after launch. Linked from the footer, Contact and /book.
-- Case studies: a "Results" line with numbers where the project has them
-  (users, transactions, time saved). Needs the numbers from you.
-- "Replies within one business day" where the site promises a reply.
+- [x] Home headline: "Product engineering for African markets" /
+      "Engineering [Health Systems, Marketplaces, Fintech, Legal Tech, Event
+      Platforms] Built for Africa" (Settings > Home page; editable).
+- [x] Starting price: "$2,000" (Settings > Services > Starting price), on
+      the Services page and How we work.
+- [x] How we work (`/how-we-work`): first call, fixed-price proposal in two
+      business days, contract and NDA; 40% to start, 20% at first
+      deployment, 20% at scope completion, 20% at handover; US dollars by
+      Wise or PayPal; staging link, updates, changes agreed in writing;
+      handover and support. Linked from the footer and Contact.
+- [x] Case study figures: Naoa "300 guests, KSh 300,000+ in gifts"; Nyalife
+      HMS "200+ patients, 7 staff roles"; Dickson Gitonga Advocates "5 hours
+      a week saved" (from the November 2026 CV).
+- [ ] Named client quotes: to come from Kevin.
+- [ ] "Replies within one business day": not promised yet (the site says
+      two business days to a proposal); Kevin to decide.
 
 ## 4. Cost estimator and African-market launch checklist
 
