@@ -25,6 +25,11 @@ class SpaController extends Controller
 
     private const DEFAULT_DESCRIPTION = 'Web applications for health, legal, construction, events, commerce and nonprofit organisations, designed and built end to end in Nairobi, Kenya.';
 
+    /** Pages that moved: old path => new path (a misspelt address, kept for old links and Google). */
+    private const MOVED = [
+        '/projects/dickson-gongona-advocates' => '/projects/dickson-gitonga-advocates',
+    ];
+
     /** Pages with fixed words: path => [title, description]. */
     private const PAGES = [
         '/' => [self::DEFAULT_TITLE, self::DEFAULT_DESCRIPTION],
@@ -52,6 +57,11 @@ class SpaController extends Controller
         // www.okjtech.co.ke is the same site: one address per page for search engines.
         if ($frontendHost && $request->getHost() !== $frontendHost && Str::startsWith($request->getHost(), ['api.', 'www.'])) {
             return redirect()->away(rtrim($frontend, '/').$request->getRequestUri(), 301);
+        }
+
+        $moved = self::MOVED['/'.trim($request->path(), '/')] ?? null;
+        if ($moved) {
+            return redirect($moved.($request->getQueryString() ? '?'.$request->getQueryString() : ''), 301);
         }
 
         // The old site's portfolio addresses live on as the projects pages.
