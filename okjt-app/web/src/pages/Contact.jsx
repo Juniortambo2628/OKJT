@@ -8,10 +8,7 @@ import api, { errorMessage } from '../lib/api';
 import { live, useContact, useServices, useSettings } from '../lib/content';
 import { DEFAULT_HERO } from '../lib/defaults';
 import { Busy } from '../components/States';
-
-/** Budget ranges in US dollars and timelines the brief offers; the first of each is "not said". */
-const BUDGETS = ['Under $2,500', '$2,500 – $7,500', '$7,500 – $10,000', '$10,000 – $15,000', 'Over $15,000'];
-const TIMELINES = ['As soon as possible', 'Within 3 months', 'In 3 to 6 months', 'Just exploring'];
+import { BUDGETS, TIMELINES } from '../lib/brief';
 
 const field = 'w-full rounded-2xl border border-line bg-paper px-4 py-3 text-sm text-ink placeholder:text-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30';
 
@@ -33,9 +30,16 @@ function ContactForm() {
   const [failure, setFailure] = useState('');
   const [params] = useSearchParams();
   const similar = params.get('project');
-  // From a case study's "Request Similar Work": the brief starts from that project.
+  // From a case study's "Request Similar Work" the brief starts from that project;
+  // from the cost estimator it arrives filled in (budget, timeline and the answers).
+  const pick = (list, value) => (list.includes(value) ? value : '');
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm({
-    defaultValues: similar ? { subject: '', message: `I'd like something similar to ${similar}. ` } : {},
+    defaultValues: {
+      subject: '',
+      budget: pick(BUDGETS, params.get('budget')),
+      timeline: pick(TIMELINES, params.get('timeline')),
+      message: params.get('message')?.slice(0, 2000) || (similar ? `I'd like something similar to ${similar}. ` : ''),
+    },
   });
 
   const submit = handleSubmit(async (values) => {
@@ -72,7 +76,7 @@ function ContactForm() {
                   <input type="email" className={field} autoComplete="email" {...register('email', { required: 'An email address to reply to.', pattern: { value: /^\S+@\S+\.\S+$/, message: 'That email address doesn’t look right.' } })} />
                 </Field>
                 <Field label="What is it about?">
-                  <select className={field} defaultValue="" {...register('subject')}>
+                  <select className={field} {...register('subject')}>
                     <option value="">A new platform</option>
                     {live(services).map((s) => <option key={s.id} value={s.title}>{s.title}</option>)}
                     <option value="Something else">Something else</option>
@@ -80,13 +84,13 @@ function ContactForm() {
                 </Field>
                 <div className="grid gap-5 sm:grid-cols-2">
                   <Field label="Budget">
-                    <select className={field} defaultValue="" {...register('budget')}>
+                    <select className={field} {...register('budget')}>
                       <option value="">Not sure yet</option>
                       {BUDGETS.map((b) => <option key={b} value={b}>{b}</option>)}
                     </select>
                   </Field>
                   <Field label="Timeline">
-                    <select className={field} defaultValue="" {...register('timeline')}>
+                    <select className={field} {...register('timeline')}>
                       <option value="">Not decided</option>
                       {TIMELINES.map((t) => <option key={t} value={t}>{t}</option>)}
                     </select>
