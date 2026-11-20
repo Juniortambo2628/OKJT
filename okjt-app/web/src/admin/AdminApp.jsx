@@ -9,6 +9,7 @@ import { ForgotPassword, ResetPassword, SignIn } from './SignIn';
 import ResourcePage from './ResourcePage';
 import Overview from './Overview';
 import Settings from './Settings';
+import Estimator from './Estimator';
 import Media from './Media';
 
 const ALLOWED = { role: 'owner', isOwner: true, canEdit: true };
@@ -36,6 +37,7 @@ function Protected() {
         <Route path="media" element={<Media />} />
         <Route path="gallery" element={<Navigate to="/admin/media" replace />} />
         <Route path="settings" element={<Settings />} />
+        <Route path="estimator" element={<Estimator />} />
         {['content', 'legal', 'widgets', 'email'].map((old) => <Route key={old} path={old} element={<Navigate to="/admin/settings" replace />} />)}
         <Route path="dashboard" element={<Navigate to="/admin" replace />} />
         <Route path="*" element={<Navigate to="/admin" replace />} />
