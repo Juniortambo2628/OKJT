@@ -10,7 +10,7 @@ const GROUPS = {
   homepage: ['Home page', 'The home page’s headline, rotating words and section titles.'],
   about: ['About page', 'The story, approach and studio sections of the About page.'],
   contact: ['Contact details', 'Email, phone, address and social links shown across the site.'],
-  services: ['Services', 'Titles and pictures of the Services page.'],
+  services: ['Services', 'Titles and pictures of the Services page, and the starting price. The cost estimator’s prices have their own page: Setup › Cost estimator.'],
   'hero-media': ['Pictures and clips', 'The photo or clip behind each page’s hero and sections.'],
   branding: ['Logo and icon', 'The logos and favicon.'],
   widgets: ['Widgets', 'The WhatsApp button and the FAQ assistant.'],
@@ -19,6 +19,9 @@ const GROUPS = {
   maintenance: ['Maintenance mode', 'Show a maintenance page to visitors (you still see the site while signed in).'],
   general: ['General', 'Everything else.'],
 };
+
+/** Settings with a page of their own. */
+const HIDDEN = ['estimator_config'];
 
 const humanise = (key) => key.replace(/_/g, ' ').replace(/^\w/, (c) => c.toUpperCase());
 
@@ -40,7 +43,8 @@ const asBool = (v) => ['1', 'true', 'on'].includes(String(v).toLowerCase());
 export default function Settings() {
   const query = useQuery({ queryKey: ['/settings'], queryFn: () => api.get('/settings').then((res) => res.data) });
   const groups = useMemo(() => {
-    const byGroup = Object.entries(query.data ?? {}).map(([id, items]) => ({ id, items: unwrap(items) ?? [] }));
+    // The estimator's prices are edited on their own page (Estimator.jsx), not as raw JSON here.
+    const byGroup = Object.entries(query.data ?? {}).map(([id, items]) => ({ id, items: (unwrap(items) ?? []).filter((s) => !HIDDEN.includes(s.key)) }));
     const order = Object.keys(GROUPS);
     return byGroup.sort((a, b) => (order.indexOf(a.id) + 1 || 99) - (order.indexOf(b.id) + 1 || 99));
   }, [query.data]);

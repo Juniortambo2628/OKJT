@@ -1,5 +1,5 @@
 import {
-  BarChart3, BookOpen, Briefcase, CalendarCheck, Compass, FolderOpen, Gem, Image, Inbox, LayoutDashboard,
+  BarChart3, BookOpen, Calculator, Briefcase, CalendarCheck, Compass, FolderOpen, Gem, Image, Inbox, LayoutDashboard,
   Mail, MessageSquareQuote, Settings, Sparkles, UserCog, Users, UsersRound,
 } from 'lucide-react';
 import AccountMenu from './AccountMenu';
@@ -34,6 +34,7 @@ export const NAV = [
     items: [
       { id: 'media', path: '/admin/media', label: 'Media library', icon: Image },
       { id: 'settings', path: '/admin/settings', label: 'Site settings', icon: Settings },
+      { id: 'estimator', path: '/admin/estimator', label: 'Cost estimator', icon: Calculator },
       { id: 'users', path: '/admin/users', label: 'People', icon: UserCog },
     ],
   },
