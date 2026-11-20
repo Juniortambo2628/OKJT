@@ -9,7 +9,7 @@ import { live, useContact, useServices, useSettings } from '../lib/content';
 import { DEFAULT_HERO } from '../lib/defaults';
 
 /** Budget ranges in US dollars and timelines the brief offers; the first of each is "not said". */
-const BUDGETS = ['Under $5,000', '$5,000 – $15,000', '$15,000 – $40,000', 'Over $40,000'];
+const BUDGETS = ['Under $2,500', '$2,500 – $7,500', '$7,500 – $10,000', '$10,000 – $15,000', 'Over $15,000'];
 const TIMELINES = ['As soon as possible', 'Within 3 months', 'In 3 to 6 months', 'Just exploring'];
 
 const field = 'w-full rounded-2xl border border-line bg-paper px-4 py-3 text-sm text-ink placeholder:text-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30';
