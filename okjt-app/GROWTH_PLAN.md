@@ -67,7 +67,7 @@ startups entering East Africa.
       deployment, 20% at scope completion, 20% at handover; US dollars by
       Wise or PayPal; staging link, updates, changes agreed in writing;
       handover and support. Linked from the footer and Contact.
-- [x] Case study figures: Naoa "300 guests, KSh 300,000+ in gifts"; Nyalife
+- [x] Case study figures: Naoa "250 guests, KSh 300,000+ in gifts"; Nyalife
       HMS "200+ patients, 7 staff roles"; Dickson Gitonga Advocates "5 hours
       a week saved" (from the November 2026 CV).
 - [ ] Named client quotes: to come from Kevin.

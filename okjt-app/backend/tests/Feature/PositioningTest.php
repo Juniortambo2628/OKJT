@@ -45,7 +45,7 @@ class PositioningTest extends TestCase
 
         $this->runMigration();
 
-        $this->assertSame('300 guests, KSh 300,000+ in gifts', Project::where('slug', 'naoa')->value('significant_figure'));
+        $this->assertSame('250 guests, KSh 300,000+ in gifts', Project::where('slug', 'naoa')->value('significant_figure'));
         $this->assertSame('Set by hand', Project::where('slug', 'nyalife-hms')->value('significant_figure'));
     }
 

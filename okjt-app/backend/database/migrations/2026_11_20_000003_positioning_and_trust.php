@@ -25,7 +25,7 @@ return new class extends Migration
 
     /** slug => figure */
     public const FIGURES = [
-        'naoa' => '300 guests, KSh 300,000+ in gifts',
+        'naoa' => '250 guests, KSh 300,000+ in gifts',
         'nyalife-hms' => '200+ patients, 7 staff roles',
         'dickson-gongona-advocates' => '5 hours a week saved',
     ];
