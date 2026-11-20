@@ -15,6 +15,17 @@ import Stack from './Stack';
  * photo cards with a wide card onward, and questions.
  */
 
+/**
+ * A glance value's size: short numbers large, longer words smaller, and an
+ * address or email (one long word) smaller still, allowed to wrap as a last
+ * resort so it never runs into its neighbour.
+ */
+function glanceSize(value) {
+  const length = String(value).length;
+  if (length > 20) return 'min-w-0 text-base sm:text-xl [overflow-wrap:anywhere]';
+  return `[overflow-wrap:normal] ${length > 10 ? 'text-lg sm:text-2xl' : 'text-2xl sm:text-4xl'}`;
+}
+
 /** The page's numbers at a glance, overlapping the hero: [[value, label]]. */
 export function JourneyGlance({ glance }) {
   return (
@@ -23,7 +34,7 @@ export function JourneyGlance({ glance }) {
         {glance.map(([value, label]) => (
           <div key={label} className="flex min-w-0 items-baseline justify-between gap-4 rounded-2xl bg-paper/50 px-4 py-3 sm:flex-col-reverse sm:items-stretch sm:justify-end sm:gap-0 sm:p-5">
             <dt className="shrink-0 text-sm text-soft sm:mt-1">{label}</dt>
-            <dd className={`hyphens-none text-right font-display font-light leading-tight tracking-tight text-ink [overflow-wrap:normal] sm:text-left ${String(value).length > 10 ? 'text-lg sm:text-2xl' : 'text-2xl sm:text-4xl'}`}>{value}</dd>
+            <dd className={`hyphens-none text-right font-display font-light leading-tight tracking-tight text-ink sm:text-left ${glanceSize(value)}`}>{value}</dd>
           </div>
         ))}
       </dl>
