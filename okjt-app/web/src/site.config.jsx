@@ -105,6 +105,8 @@ export function useSiteConfig() {
             { to: '/client-impact', label: 'Client Impact' },
             { to: '/insights', label: 'Insights' },
             { to: '/tools/site-check', label: 'Free Site Check' },
+            { to: '/tools/estimate', label: 'Cost Estimator' },
+            { to: '/tools/launch-checklist', label: 'Launch Checklist' },
             { to: '/contact', label: 'Contact' },
           ] },
           { title: 'Legal', links: [
@@ -162,6 +164,8 @@ export function useSiteConfig() {
           '/client-impact': page('Client Impact', 'Platforms in daily use by clinics, law firms, workshops, event companies and nonprofits.'),
           '/insights': page('Insights', 'Notes on building web platforms that people rely on.'),
           '/contact': page('Contact', 'Describe the platform, the people it should serve and the timeline.'),
+          '/tools/estimate': page('Project cost estimator', 'A price range, a timeline and a scope outline for your web platform in two minutes, in US dollars.'),
+          '/tools/launch-checklist': page('Launch checklist for African markets', 'Data protection, M-Pesa and card payments, slow phones and networks, WhatsApp and going live: a practical checklist before you launch.'),
           '/tools/site-check': page('Website health check', 'Free check of any web page: whether Google can crawl and index it, its tags, link previews and speed.'),
           '/how-we-work': page('How we work', 'Clear stages, one fixed price in US dollars, four payment milestones by Wise or PayPal, and support after launch.'),
           '/book': page('Book a call', 'Pick a time for a short video call about your project, in your own time zone.'),

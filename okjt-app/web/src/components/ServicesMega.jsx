@@ -4,6 +4,13 @@ import { ArrowUpRight, ChevronDown, Gauge } from 'lucide-react';
 import { Container } from '@okjt/site';
 import { live, useServices } from '../lib/content';
 
+/** The free tools, offered at the foot of the menu. */
+const TOOLS = [
+  { to: '/tools/site-check', label: 'Site check' },
+  { to: '/tools/estimate', label: 'Cost estimator' },
+  { to: '/tools/launch-checklist', label: 'Launch checklist' },
+];
+
 /** Services grouped under the approach pillar they belong to (or their category). */
 function useGroups() {
   const { data } = useServices();
@@ -45,10 +52,10 @@ export default function ServicesMega({ id, onNavigate }) {
             ))}
           </div>
           <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5 text-sm">
-            <Link to="/tools/site-check" onClick={onNavigate} className="group inline-flex items-center gap-2 text-body hover:text-ink">
-              <Gauge className="h-4 w-4 text-accent" aria-hidden="true" />
-              <span><span className="font-semibold">Free site check:</span> see what Google sees on any page</span>
-            </Link>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+              <span className="inline-flex items-center gap-2 font-semibold text-body"><Gauge className="h-4 w-4 text-accent" aria-hidden="true" /> Free tools:</span>
+              {TOOLS.map((tool) => <Link key={tool.to} to={tool.to} onClick={onNavigate} className="text-body underline-offset-4 hover:text-ink hover:underline">{tool.label}</Link>)}
+            </div>
             <Link to="/services" onClick={onNavigate} className="inline-flex items-center gap-1 font-semibold text-accent hover:text-accent-strong">All services <ArrowUpRight className="h-4 w-4" aria-hidden="true" /></Link>
           </div>
         </div>
@@ -75,7 +82,8 @@ function MobileList({ onNavigate }) {
             </div>
           ))}
           <Link to="/services" onClick={onNavigate} className="block text-sm font-semibold text-accent">All Services</Link>
-          <Link to="/tools/site-check" onClick={onNavigate} className="flex items-center gap-2 text-sm font-semibold text-accent"><Gauge className="h-4 w-4" aria-hidden="true" /> Free Site Check</Link>
+          <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-accent">Free tools</div>
+          {TOOLS.map((tool) => <Link key={tool.to} to={tool.to} onClick={onNavigate} className="flex items-center gap-2 py-1.5 text-sm text-soft hover:text-ink"><Gauge className="h-4 w-4 text-accent" aria-hidden="true" /> {tool.label}</Link>)}
         </div>
       )}
     </div>

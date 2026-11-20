@@ -26,6 +26,8 @@ const Book = lazyPage(() => import('./pages/Book'));
 const HowWeWork = lazyPage(() => import('./pages/HowWeWork'));
 const SiteCheckTool = lazyPage(() => import('./pages/SiteCheck').then((m) => ({ default: m.SiteCheckTool })));
 const SiteCheckReport = lazyPage(() => import('./pages/SiteCheck').then((m) => ({ default: m.SiteCheckReport })));
+const Estimate = lazyPage(() => import('./pages/Estimate'));
+const LaunchChecklist = lazyPage(() => import('./pages/LaunchChecklist'));
 const Legal = lazyPage(() => import('./pages/Legal'));
 const NotFound = lazyPage(() => import('./pages/NotFound'));
 // The dashboard is its own bundle: visitors never download it.
@@ -60,6 +62,8 @@ function PublicSite() {
           <Route path="/how-we-work" element={<HowWeWork />} />
           <Route path="/tools/site-check" element={<SiteCheckTool />} />
           <Route path="/tools/site-check/:id" element={<SiteCheckReport />} />
+          <Route path="/tools/estimate" element={<Estimate />} />
+          <Route path="/tools/launch-checklist" element={<LaunchChecklist />} />
           <Route path="/privacy" element={<Legal key="privacy" title="Privacy policy" settingKey="privacy_policy" />} />
           <Route path="/terms" element={<Legal key="terms" title="Terms of service" settingKey="terms_of_service" />} />
           <Route path="/cookies" element={<Legal key="cookies" title="Cookie policy" settingKey="cookie_policy" />} />

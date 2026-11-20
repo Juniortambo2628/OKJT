@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\ConsultationRequestController;
 use App\Http\Controllers\Api\InsightController;
+use App\Http\Controllers\Api\LaunchChecklistController;
 use App\Http\Controllers\Api\PageViewController;
 use App\Http\Controllers\Api\PillarController;
 use App\Http\Controllers\Api\ProjectController;
@@ -66,6 +67,8 @@ Route::post('/tools/site-check', [SiteCheckController::class, 'store'])->middlew
 Route::get('/tools/site-check/{id}', [SiteCheckController::class, 'show']);
 Route::post('/tools/site-check/{id}/speed', [SiteCheckController::class, 'speed'])->middleware('throttle:10,1');
 Route::post('/tools/site-check/{id}/email', [SiteCheckController::class, 'email'])->middleware('throttle:3,10');
+Route::get('/tools/launch-checklist', [LaunchChecklistController::class, 'show']);
+Route::post('/tools/launch-checklist/email', [LaunchChecklistController::class, 'email'])->middleware('throttle:3,10');
 Route::get('/storage/{path}', [UploadController::class, 'serve'])->where('path', '.*');
 
 // Auth routes

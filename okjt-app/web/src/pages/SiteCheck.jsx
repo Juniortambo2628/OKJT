@@ -240,7 +240,7 @@ function EmailReport({ id }) {
         {errors.email && <span role="alert" className="mt-1 block text-xs text-red-400">{errors.email.message}</span>}
       </label>
       <label className="flex items-start gap-3 text-sm text-soft">
-        <input type="checkbox" className="mt-1 h-4 w-4 accent-[var(--color-accent)]" {...register('subscribe')} />
+        <input type="checkbox" className="mt-1 h-4 w-4 accent-[var(--color-accent)] [color-scheme:light]" {...register('subscribe')} />
         <span>Also send me OKJTech’s occasional notes on building web platforms. Unsubscribe any time.</span>
       </label>
       {failure && <p role="alert" className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">{failure}</p>}

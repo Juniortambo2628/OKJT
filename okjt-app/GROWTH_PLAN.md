@@ -74,17 +74,24 @@ startups entering East Africa.
 - [ ] "Replies within one business day": not promised yet (the site says
       two business days to a proposal); Kevin to decide.
 
-## 4. Cost estimator and African-market launch checklist
+## 4. Cost estimator and African-market launch checklist: done
 
-- **Estimator** (`/tools/estimate`): about eight questions (type of
-  platform, sign-in, payments, admin dashboard, integrations, languages,
-  design state, deadline) → a USD range and timeline, and a scope outline.
-  Ends with "Send this as a brief" (fills the Contact form, budget and
-  timeline included) or "Book a call". The ranges are settings you control.
-- **Launch checklist** (`/tools/launch-checklist`): Kenya Data Protection
-  Act registration and obligations, M-Pesa and card payments, slow phones
-  and networks, WhatsApp, GDPR overlap. Readable on the page; the PDF version
-  for an email address (Subscribers, source `checklist`).
+- [x] Estimator (`/tools/estimate`): eight questions (type, sign-in, payments,
+      dashboard, integrations, languages, design, deadline) give a USD range,
+      weeks and a scope outline, live as the visitor answers. "Send This as a
+      Brief" opens Contact with the budget, timeline and answers filled in.
+      The prices are starting figures (a website starts at $2,000 – $3,000);
+      **Kevin to review them.** They can be replaced without a deploy by
+      pasting JSON of the same shape (`okjt-app/web/src/lib/estimator.js`)
+      into Settings > Services > Estimator config.
+- [x] Launch checklist (`/tools/launch-checklist`): 23 checks in five areas
+      (data protection under Kenya's Data Protection Act, payments, phones and
+      networks, reaching people, going live); ticks kept in the visitor's
+      browser; "Email me the checklist" with an optional subscription
+      (source `checklist`). One source of content on the server
+      (`App\Support\LaunchChecklist`), also written into the page's HTML.
+- [x] Both linked from the Services menu ("Free tools"), the footer, and
+      each other; in the sitemap.
 
 ## 5. Newsletter and reach
 
