@@ -21,6 +21,7 @@ import Stack from './Stack';
  * resort so it never runs into its neighbour.
  */
 function glanceSize(value) {
+  if (typeof value !== 'string' && typeof value !== 'number') return 'text-2xl sm:text-4xl';
   const length = String(value).length;
   if (length > 20) return 'min-w-0 text-base sm:text-xl [overflow-wrap:anywhere]';
   return `[overflow-wrap:normal] ${length > 10 ? 'text-lg sm:text-2xl' : 'text-2xl sm:text-4xl'}`;

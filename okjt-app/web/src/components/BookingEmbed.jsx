@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight } from 'lucide-react';
+import { Spinner } from '@okjt/ui';
 
 const CAL_SCRIPT = 'https://app.cal.com/embed/embed.js';
 
@@ -37,22 +38,48 @@ function loadCal() {
  * The booking calendar. A Cal.com address shows its calendar here, on the
  * site's cream card; any other booking page (Calendly, Google) opens in a new
  * tab. The plain link stays below the calendar in case it can't load.
+ * Until the calendar is ready a spinner says so; after 15 s it points to the
+ * plain link.
  */
 export default function BookingEmbed({ url }) {
   const target = useRef(null);
   const link = calLink(url);
+  const [state, setState] = useState('loading'); // loading → slow → ready
 
   useEffect(() => {
-    if (!link || !target.current) return;
+    if (!link || !target.current) return undefined;
+    setState('loading');
+    const ready = () => setState('ready');
     const Cal = loadCal();
     target.current.innerHTML = '';
     Cal('inline', { elementOrSelector: target.current, calLink: link, layout: 'month_view' });
     Cal('ui', { theme: 'light', hideEventTypeDetails: false, layout: 'month_view' });
+    Cal('on', { action: 'linkReady', callback: ready });
+    // In case that event never comes: the calendar's frame having loaded is enough.
+    const observer = new MutationObserver(() => {
+      const frame = target.current?.querySelector('iframe');
+      if (frame) { frame.addEventListener('load', () => setTimeout(ready, 600), { once: true }); observer.disconnect(); }
+    });
+    observer.observe(target.current, { childList: true, subtree: true });
+    const slow = setTimeout(() => setState((s) => (s === 'loading' ? 'slow' : s)), 15000);
+    return () => { observer.disconnect(); clearTimeout(slow); };
   }, [link]);
 
   return (
     <div id="booking" className="glass-strong rounded-[2rem] p-3 sm:p-5">
-      {link && <div ref={target} className="min-h-[34rem] w-full overflow-hidden rounded-[1.5rem]" />}
+      {link && (
+        <div className="relative">
+          <div ref={target} className="min-h-[34rem] w-full overflow-hidden rounded-[1.5rem]" />
+          {state !== 'ready' && (
+            <div role="status" aria-live="polite" className="absolute inset-0 grid place-items-center rounded-[1.5rem] bg-paper">
+              <div className="flex flex-col items-center gap-3 px-6 text-center text-sm text-soft">
+                <Spinner size="lg" className="motion-reduce:animate-none" />
+                {state === 'slow' ? 'The calendar is taking a while. You can also open the booking page below.' : 'Loading the calendar…'}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
       <div className={link ? 'px-3 pb-2 pt-4 text-center' : 'py-12 text-center'}>
         {!link && <p className="mx-auto mb-6 max-w-md text-soft">Pick a time that suits you on the booking page. It shows times in your own time zone.</p>}
         <a
