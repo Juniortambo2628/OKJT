@@ -41,6 +41,8 @@ class SpaController extends Controller
         '/client-impact' => ['Client impact', 'Platforms in daily use by clinics, law firms, workshops, event companies and nonprofits.'],
         '/insights' => ['Insights', 'Notes on building web platforms that people rely on.'],
         '/contact' => ['Contact', 'Describe the platform, the people it should serve and the timeline.'],
+        '/tools/estimate' => ['Project cost estimator', 'A price range, a timeline and a scope outline for your web platform in two minutes, in US dollars.'],
+        '/tools/launch-checklist' => ['Launch checklist for African markets', 'Kenya’s Data Protection Act, M-Pesa and card payments, slow phones and networks, WhatsApp and going live: a practical checklist before you launch.'],
         '/tools/site-check' => ['Website health check', 'Free check of any web page: whether Google can crawl and index it, its tags, link previews and speed, with a plain fix for each problem.'],
         '/how-we-work' => ['How we work', 'Clear stages, one fixed price in US dollars, four payment milestones by Wise or PayPal, and support after launch.'],
         '/book' => ['Book a call', 'Pick a time for a short video call about your project, in your own time zone.'],

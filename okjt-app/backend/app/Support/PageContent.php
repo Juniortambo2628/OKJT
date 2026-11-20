@@ -82,6 +82,7 @@ class PageContent
             '/projects/flagship' => $this->projectList(Project::where('is_active', true)->where('type', 'flagship')),
             '/services' => $this->links(Service::where('is_active', true)->orderBy('id')->get(), '/services/', 'description'),
             '/our-approach' => $this->links(Pillar::where('is_active', true)->orderBy('id')->get(), '/our-approach/', 'overview'),
+            '/tools/launch-checklist' => $this->checklist(),
             '/insights' => $this->insightList(Insight::where('is_published', true)->orderByDesc('published_at')->get()),
             default => '',
         };
@@ -92,6 +93,20 @@ class PageContent
         return '<h2>Flagship projects</h2>'.$this->projectList(Project::where('is_active', true)->where('type', 'flagship'))
             .'<h2>Services</h2>'.$this->links(Service::where('is_active', true)->orderBy('id')->get(), '/services/', 'description')
             .'<h2>Latest insights</h2>'.$this->insightList(Insight::where('is_published', true)->orderByDesc('published_at')->limit(3)->get());
+    }
+
+    private function checklist(): string
+    {
+        $html = '';
+        foreach (LaunchChecklist::sections() as $section) {
+            $html .= '<h2>'.$this->e($section['title']).'</h2><p>'.$this->e($section['intro']).'</p><ul>';
+            foreach ($section['items'] as $item) {
+                $html .= '<li><strong>'.$this->e($item['title']).'.</strong> '.$this->e($item['text']).'</li>';
+            }
+            $html .= '</ul>';
+        }
+
+        return $html;
     }
 
     private function project(Project $project): string

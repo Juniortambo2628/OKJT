@@ -28,6 +28,8 @@ class SitemapController extends Controller
         '/contact' => 0.6,
         '/how-we-work' => 0.6,
         '/tools/site-check' => 0.7,
+        '/tools/estimate' => 0.7,
+        '/tools/launch-checklist' => 0.7,
         '/privacy' => 0.2,
         '/terms' => 0.2,
         '/cookies' => 0.2,
