@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowUpRight, ChevronDown } from 'lucide-react';
+import { ArrowUpRight, ChevronDown, Gauge } from 'lucide-react';
 import { Container } from '@okjt/site';
 import { live, useServices } from '../lib/content';
 
@@ -44,8 +44,11 @@ export default function ServicesMega({ id, onNavigate }) {
               </div>
             ))}
           </div>
-          <div className="mt-8 flex items-center justify-between border-t border-line pt-5 text-sm">
-            <span className="text-muted">Every service, designed and built end to end.</span>
+          <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5 text-sm">
+            <Link to="/tools/site-check" onClick={onNavigate} className="group inline-flex items-center gap-2 text-body hover:text-ink">
+              <Gauge className="h-4 w-4 text-accent" aria-hidden="true" />
+              <span><span className="font-semibold">Free site check:</span> see what Google sees on any page</span>
+            </Link>
             <Link to="/services" onClick={onNavigate} className="inline-flex items-center gap-1 font-semibold text-accent hover:text-accent-strong">All services <ArrowUpRight className="h-4 w-4" aria-hidden="true" /></Link>
           </div>
         </div>
@@ -72,6 +75,7 @@ function MobileList({ onNavigate }) {
             </div>
           ))}
           <Link to="/services" onClick={onNavigate} className="block text-sm font-semibold text-accent">All Services</Link>
+          <Link to="/tools/site-check" onClick={onNavigate} className="flex items-center gap-2 text-sm font-semibold text-accent"><Gauge className="h-4 w-4" aria-hidden="true" /> Free Site Check</Link>
         </div>
       )}
     </div>

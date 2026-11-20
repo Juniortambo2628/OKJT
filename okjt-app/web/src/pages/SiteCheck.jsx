@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { AlertTriangle, CheckCircle2, Info, XCircle } from 'lucide-react';
@@ -34,9 +34,11 @@ const TOOL_FAQS = [
 /** The form: a web address in, a report out. */
 function CheckForm() {
   const navigate = useNavigate();
+  const [params, setParams] = useSearchParams();
   const [failure, setFailure] = useState('');
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({ defaultValues: { url: params.get('url') || '' } });
   const seconds = useElapsed(isSubmitting);
+  const started = useRef(false);
 
   const submit = handleSubmit(async ({ url }) => {
     setFailure('');
@@ -47,6 +49,16 @@ function CheckForm() {
       setFailure(errorMessage(error, 'The check could not run. Please try again in a minute.'));
     }
   });
+
+  // Sent here from the home page's form (/tools/site-check?url=…): run the check straight away, once.
+  useEffect(() => {
+    if (!params.get('url') || started.current) return;
+    started.current = true;
+    setParams({}, { replace: true });
+    submit();
+    document.getElementById('check-form')?.scrollIntoView({ block: 'center' });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div id="check-form" className="glass-strong rounded-[2rem] p-6 sm:p-10">
