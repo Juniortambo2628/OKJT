@@ -27,6 +27,15 @@ html {
   background: var(--color-paper);
 }
 
+/* The public pages on desktop, at the density of the browser's 80% zoom:
+   text, spacing and widths are in rem, so a smaller root size scales the
+   whole page. Breakpoints are in rem of the browser's own size and don't
+   move. Only pages in the site layout (.okjt-site): phones, tablets, the
+   dashboard and its sign-in page are unchanged. */
+@media (min-width: 80rem) {
+  html:has(.okjt-site) { font-size: 80%; }
+}
+
 body {
   background: var(--color-paper);
   color: var(--color-body);

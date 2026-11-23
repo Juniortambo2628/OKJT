@@ -298,22 +298,22 @@ class PortfolioContentSeeder extends Seeder
         Client::query()->forceDelete();
 
         $clients = [
-            ['name' => 'Lawyers Hub', 'logo' => null, 'website' => 'https://www.lawyershub.org', 'category' => 'LegalTech', 'is_active' => true, 'order' => 1],
-            ['name' => 'Nyalife Women\'s Clinic', 'logo' => null, 'website' => 'https://nyalifewomensclinic.net', 'category' => 'HealthTech', 'is_active' => true, 'order' => 2],
-            ['name' => 'South Ring Autos', 'logo' => null, 'website' => 'https://southringautos.com', 'category' => 'Automotive', 'is_active' => true, 'order' => 3],
-            ['name' => 'Dickson, Gitonga Advocates LLP', 'logo' => null, 'website' => 'https://dglegal.co.ke', 'category' => 'LegalTech', 'is_active' => true, 'order' => 4],
+            ['name' => 'Lawyers Hub', 'logo' => '/assets/images/clients/lawyers-hub.webp', 'website' => 'https://www.lawyershub.org', 'category' => 'LegalTech', 'is_active' => true, 'order' => 1],
+            ['name' => 'Nyalife Women\'s Clinic', 'logo' => '/assets/images/clients/nyalife-womens-clinic.webp', 'website' => 'https://nyalifewomensclinic.net', 'category' => 'HealthTech', 'is_active' => true, 'order' => 2],
+            ['name' => 'South Ring Autos', 'logo' => '/assets/images/clients/south-ring-autos.webp', 'website' => 'https://southringautos.com', 'category' => 'Automotive', 'is_active' => true, 'order' => 3],
+            ['name' => 'Dickson, Gitonga Advocates LLP', 'logo' => '/assets/images/clients/dickson-gitonga-advocates.webp', 'website' => 'https://dglegal.co.ke', 'category' => 'LegalTech', 'is_active' => true, 'order' => 4],
             ['name' => 'Global Harmony Initiative', 'logo' => null, 'website' => 'https://globalharmonyinitiative.com', 'category' => 'Nonprofit, Education, Healthcare', 'is_active' => true, 'order' => 5],
-            ['name' => 'Wisdom Capital', 'logo' => null, 'website' => 'https://wisdomcapital.co.ke', 'category' => 'Agritech, E-Commerce', 'is_active' => true, 'order' => 6],
-            ['name' => 'TAMCON Consulting Engineers', 'logo' => null, 'website' => 'https://tamconsonsult.com', 'category' => 'Engineering, Construction, Infrastructure', 'is_active' => true, 'order' => 7],
-            ['name' => 'Tena', 'logo' => null, 'website' => 'https://tena.host', 'category' => 'PropTech, Vacation Rentals, SaaS', 'is_active' => true, 'order' => 8],
-            ['name' => 'OmniSpace 3D Events Ltd', 'logo' => null, 'website' => 'https://omnispace3d.com', 'category' => 'Events, Exhibition Services', 'is_active' => true, 'order' => 9],
-            ['name' => 'Silversky Events', 'logo' => null, 'website' => 'https://shop.silversky.co.ke', 'category' => 'Events, Catering, AV Services', 'is_active' => true, 'order' => 10],
-            ['name' => 'HUCAA', 'logo' => null, 'website' => 'https://alumni.hekima.ac.ke', 'category' => 'Alumni Networks, Education, Community', 'is_active' => true, 'order' => 11],
-            ['name' => 'Nissi Insights', 'logo' => null, 'website' => 'https://nissi-insights.com', 'category' => 'Energy Advisory, FinTech, Diplomacy', 'is_active' => true, 'order' => 12],
-            ['name' => 'GM Coaching', 'logo' => null, 'website' => 'https://gm-coaching.com', 'category' => 'EdTech, MBA Admissions, Consulting', 'is_active' => true, 'order' => 13],
-            ['name' => 'Terik Tours', 'logo' => null, 'website' => null, 'category' => 'Travel', 'is_active' => true, 'order' => 14],
-            ['name' => 'Reytati Communications', 'logo' => null, 'website' => 'http://reytaticomms.com', 'category' => 'Marketing', 'is_active' => true, 'order' => 15],
-            ['name' => 'Mizizi Sugarcane Juice', 'logo' => null, 'website' => 'https://mizizi.okjtech.co.ke', 'category' => 'E-commerce', 'is_active' => true, 'order' => 16],
+            ['name' => 'Wisdom Capital', 'logo' => '/assets/images/clients/wisdom-capital.webp', 'website' => 'https://wisdomcapital.co.ke', 'category' => 'Agritech, E-Commerce', 'is_active' => true, 'order' => 6],
+            ['name' => 'TAMCON Consulting Engineers', 'logo' => '/assets/images/clients/tamcon-consulting-engineers.webp', 'website' => 'https://tamconsonsult.com', 'category' => 'Engineering, Construction, Infrastructure', 'is_active' => true, 'order' => 7],
+            ['name' => 'Tena', 'logo' => '/assets/images/clients/tena.webp', 'website' => 'https://tena.host', 'category' => 'PropTech, Vacation Rentals, SaaS', 'is_active' => true, 'order' => 8],
+            ['name' => 'OmniSpace 3D Events Ltd', 'logo' => '/assets/images/clients/omnispace-3d.svg', 'website' => 'https://omnispace3d.com', 'category' => 'Events, Exhibition Services', 'is_active' => true, 'order' => 9],
+            ['name' => 'Silversky Events', 'logo' => '/assets/images/clients/silversky-events.svg', 'website' => 'https://shop.silversky.co.ke', 'category' => 'Events, Catering, AV Services', 'is_active' => true, 'order' => 10],
+            ['name' => 'HUCAA', 'logo' => '/assets/images/clients/hucaa.webp', 'website' => 'https://alumni.hekima.ac.ke', 'category' => 'Alumni Networks, Education, Community', 'is_active' => true, 'order' => 11],
+            ['name' => 'Nissi Insights', 'logo' => '/assets/images/clients/nissi-insights.webp', 'website' => 'https://nissi-insights.com', 'category' => 'Energy Advisory, FinTech, Diplomacy', 'is_active' => true, 'order' => 12],
+            ['name' => 'GM Coaching', 'logo' => '/assets/images/clients/gm-coaching.webp', 'website' => 'https://gm-coaching.com', 'category' => 'EdTech, MBA Admissions, Consulting', 'is_active' => true, 'order' => 13],
+            ['name' => 'Terik Tours', 'logo' => '/assets/images/clients/terik-tours.webp', 'website' => null, 'category' => 'Travel', 'is_active' => true, 'order' => 14],
+            ['name' => 'Reytati Communications', 'logo' => '/assets/images/clients/reytati-communications.webp', 'website' => 'http://reytaticomms.com', 'category' => 'Marketing', 'is_active' => true, 'order' => 15],
+            ['name' => 'Mizizi Sugarcane Juice', 'logo' => '/assets/images/clients/mizizi.webp', 'website' => 'https://mizizi.okjtech.co.ke', 'category' => 'E-commerce', 'is_active' => true, 'order' => 16],
         ];
 
         foreach ($clients as $client) {
