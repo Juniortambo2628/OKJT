@@ -28,6 +28,19 @@ class KitServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // The browser error log's channel (ClientErrorController): a file, not a
+        // table, that rotates itself and holds no more than a week of other
+        // people's stack traces. A project's own definition wins.
+        if (! config()->has('logging.channels.okjt_client')) {
+            config()->set('logging.channels.okjt_client', [
+                'driver' => 'daily',
+                'path' => storage_path('logs/client-errors.log'),
+                'level' => 'debug',
+                'days' => 7,
+                'replace_placeholders' => true,
+            ]);
+        }
+
         $this->publishes([__DIR__.'/../config/okjt.php' => config_path('okjt.php')], 'okjt-config');
 
         // For new projects; a project that already has these tables skips them.
