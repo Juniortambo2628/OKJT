@@ -213,6 +213,22 @@ return [
     ],
 
     /*
+     * On/off switches (Okjt\Kit\Switches\Switches): features shipped switched
+     * off and turned on from the admin when ready. Declare each one; only
+     * declared switches can be flipped (SwitchController, superadmins only,
+     * written to the console audit log). Read one with Switches::on('key');
+     * guard a feature's routes with RequireSwitch::class.':key' (404 while
+     * off). `public` => true lets signed-out pages ask (publicIndex).
+     *
+     *   'mpesa_extras' => [
+     *       'label' => 'Sell extras with M-Pesa',
+     *       'description' => 'Guests can pay for extras on the splash page.',
+     *       'default' => env('OKJT_SWITCH_MPESA_EXTRAS', false),
+     *   ],
+     */
+    'switches' => [],
+
+    /*
      * The console (ConsoleController), for platform staff: the statuses a
      * workspace can be given, and the model of the audit log of what staff
      * did there (Okjt\Kit\Console\AuditLog or a subclass).
