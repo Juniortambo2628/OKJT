@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Support\RetiredSettings;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Schema;
 
@@ -45,5 +46,8 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Schema::enableForeignKeyConstraints();
+
+        // The seeders still write some settings the site no longer reads.
+        RetiredSettings::remove();
     }
 }

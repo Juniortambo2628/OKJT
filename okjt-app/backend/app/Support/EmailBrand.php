@@ -20,7 +20,7 @@ class EmailBrand
     /** @return array<string, string> */
     public static function data(): array
     {
-        $contact = SiteSetting::whereIn('key', ['contact_email', 'contact_phone', 'site_name'])->pluck('value', 'key');
+        $contact = SiteSetting::whereIn('key', ['contact_email', 'contact_phone'])->pluck('value', 'key');
 
         return [
             'name' => self::NAME,
