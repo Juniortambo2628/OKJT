@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\InsightResource;
+use App\Models\Insight;
+use App\Support\CrossPost;
 use App\Traits\HandlesStandardCrud;
 use App\Traits\HasUniqueSlug;
 use Illuminate\Database\Eloquent\Builder;
@@ -89,5 +91,11 @@ class InsightController extends Controller
         }
 
         return $validated;
+    }
+
+    /** The dashboard's Cross-post panel: the article for DEV, Hashnode and LinkedIn, each crediting okjtech.co.ke. */
+    public function crosspost(Insight $insight)
+    {
+        return response()->json(['data' => (new CrossPost($insight))->toArray() + ['published' => (bool) $insight->is_published]]);
     }
 }

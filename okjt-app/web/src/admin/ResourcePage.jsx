@@ -76,11 +76,13 @@ function Editor({ resource, record, onClose, onSaved }) {
 /**
  * One list the dashboard manages (see resources.js), on the kit's page:
  * hero, summary cards that filter, the list, and the toolbar's search and
- * "add". Rows open the editor; the bin deletes after asking.
+ * "add". Rows open the editor; the bin deletes after asking. A resource's
+ * `rowAction` ({ label, icon, Panel }) adds a button per row opening Panel.
  */
 export default function ResourcePage({ resource }) {
   const { searchQuery } = useSearch();
   const [editing, setEditing] = useState(null);
+  const [acting, setActing] = useState(null); // the record a rowAction's panel is open for
   const [status, setStatus] = useState('all');
   const [group, setGroup] = useState('all');
   const [page, setPage] = useState(1);
@@ -159,6 +161,9 @@ export default function ResourcePage({ resource }) {
                     )}
                     <div className="flex shrink-0 items-center gap-1">
                       {row.link && <a href={row.link} target="_blank" rel="noopener noreferrer" aria-label="Open on the website" className="rounded-lg p-2 text-tone-400 hover:bg-tone-100 hover:text-accent"><ExternalLink className="h-4 w-4" /></a>}
+                      {resource.rowAction && (
+                        <button type="button" onClick={() => setActing(item)} aria-label={`${resource.rowAction.label} ${row.title}`} title={resource.rowAction.label} className="rounded-lg p-2 text-tone-400 hover:bg-tone-100 hover:text-accent"><resource.rowAction.icon className="h-4 w-4" /></button>
+                      )}
                       <button type="button" onClick={() => setEditing(item)} aria-label={`Edit ${row.title}`} className="rounded-lg p-2 text-tone-400 hover:bg-tone-100 hover:text-accent"><Pencil className="h-4 w-4" /></button>
                       <DeleteButton onClick={() => remove.run(item.id)} processing={remove.isPending?.(item.id)} title={`Delete ${row.title}`} />
                     </div>
@@ -169,6 +174,7 @@ export default function ResourcePage({ resource }) {
           )}
         </AdminListPanel>
       )}
+      {acting && resource.rowAction && <resource.rowAction.Panel record={acting} onClose={() => setActing(null)} />}
       {editing && <Editor resource={resource} record={editing} onClose={() => setEditing(null)} onSaved={() => setEditing(null)} />}
     </AdminPageLayout>
   );

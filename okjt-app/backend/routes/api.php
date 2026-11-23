@@ -97,6 +97,7 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::delete('/services/{service}', [ServiceController::class, 'destroy']);
 
     // Insights CRUD
+    Route::get('/insights/{insight}/crosspost', [InsightController::class, 'crosspost']);
     Route::post('/insights', [InsightController::class, 'store']);
     Route::put('/insights/{insight}', [InsightController::class, 'update']);
     Route::delete('/insights/{insight}', [InsightController::class, 'destroy']);

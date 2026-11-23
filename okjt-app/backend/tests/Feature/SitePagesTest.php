@@ -113,4 +113,9 @@ class SitePagesTest extends TestCase
         $listed = collect($this->getJson('/api/projects?type=flagship')->assertOk()->json())->firstWhere('id', $id);
         $this->assertSame('/storage/uploads/logo.png', $listed['logo']);
     }
+
+    public function test_every_page_points_feed_readers_to_the_insights_feed(): void
+    {
+        $this->get('/insights')->assertOk()->assertSee('<link rel="alternate" type="application/rss+xml" title="OKJTech Insights" href="https://okjtech.co.ke/feed.xml" />', false);
+    }
 }

@@ -5,6 +5,9 @@
  * Field types: text, email, url, number, textarea, rich (formatted text),
  * select, switch, image, list (comma-separated → array), password, pillar.
  */
+import { Share2 } from 'lucide-react';
+import CrossPost from './CrossPost';
+
 const strip = (html) => String(html ?? '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 
 export const RESOURCES = {
@@ -71,6 +74,8 @@ export const RESOURCES = {
   },
   insights: {
     endpoint: '/insights', noun: 'insight', title: 'Insights', description: 'Articles and notes from the work.',
+    // A panel per row: the article ready for DEV, Hashnode and LinkedIn with okjtech.co.ke as the original.
+    rowAction: { label: 'Cross-post', icon: Share2, Panel: CrossPost },
     status: { field: 'is_published', on: 'Published', off: 'Draft' },
     row: (i) => ({ title: i.title, subtitle: [i.category, i.published_at && new Date(i.published_at).toLocaleDateString('en-GB')].filter(Boolean).join(' · '), image: i.image, link: `/insights/${i.slug}` }),
     initial: { title: '', is_published: false },
