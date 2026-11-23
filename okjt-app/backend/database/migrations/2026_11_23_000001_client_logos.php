@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Schema;
  * A client gets its logo only where none is set, so an upload from the
  * dashboard is kept. Clients are matched by name, case-insensitively, in the
  * spellings both seeders use. Not covered yet (no logo to hand): Global
- * Harmony Initiative, TAMCON Consulting Engineers, Terik Tours.
+ * Harmony Initiative.
  */
 return new class extends Migration
 {
@@ -30,12 +30,14 @@ return new class extends Migration
         'south-ring-autos.webp' => ['South Ring Autos', 'SouthRing Autos'],
         'dickson-gitonga-advocates.webp' => ['Dickson, Gitonga Advocates LLP', 'Dickson Gitonga Advocates'],
         'wisdom-capital.webp' => ['Wisdom Capital'],
+        'tamcon-consulting-engineers.webp' => ['TAMCON Consulting Engineers', 'TAMCON Consulting'],
         'tena.webp' => ['Tena', 'Tena Platform'],
         'omnispace-3d.svg' => ['OmniSpace 3D Events Ltd', 'OmniSpace 3D'],
         'silversky-events.svg' => ['Silversky Events'],
         'hucaa.webp' => ['HUCAA'],
         'nissi-insights.webp' => ['Nissi Insights'],
         'gm-coaching.webp' => ['GM Coaching'],
+        'terik-tours.webp' => ['Terik Tours'],
         'reytati-communications.webp' => ['Reytati Communications'],
         'mizizi.webp' => ['Mizizi Sugarcane Juice', 'Mizizi Juices'],
     ];

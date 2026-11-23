@@ -24,7 +24,7 @@ class ClientLogosTest extends TestCase
         $gm = Client::create(['name' => 'GM Coaching', 'logo' => null, 'is_active' => true]);
         $nyalife = Client::create(['name' => 'nyalife clinic', 'logo' => '', 'is_active' => true]);
         $uploaded = Client::create(['name' => 'Tena', 'logo' => '/storage/uploads/tena.png', 'is_active' => true]);
-        $unknown = Client::create(['name' => 'Terik Tours', 'logo' => null, 'is_active' => true]);
+        $unknown = Client::create(['name' => 'Global Harmony Initiative', 'logo' => null, 'is_active' => true]);
 
         $this->migration()->up();
 
