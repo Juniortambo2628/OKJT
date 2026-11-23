@@ -1,5 +1,31 @@
 # Upgrading
 
+## 0.14 → 0.15 (dashboard 0.15.0, laravel-kit 0.15.0, create-okjt-app 0.1.14)
+
+Site settings (S6, step 1), from okjt-app. Nothing changes until you use
+them. `npm i @okjt/dashboard@^0.15.0` and `composer require
+okjt/laravel-kit:^0.15.0`, then `php artisan vendor:publish
+--tag=okjt-migrations` and `php artisan migrate` (a `site_settings` table,
+skipped if you have one; okjt-app's and TFE's are already this shape).
+`@okjt/ui` stays at 0.8.
+
+- **Server**: `Okjt\Kit\Content\SiteSettings::get('contact_email',
+  $default)`, `::bool()`, `::group('contact')`, `::put([...])`. Routes:
+  `GET /admin/site-settings` → `SiteSettingController@index` and
+  `PUT /admin/site-settings` → `@update` (`settings: [{ key, value, type?,
+  group? }]`) behind your admin middleware; each save goes in the console
+  audit log with its keys. `GET /site-settings` → `@publicIndex` gives
+  signed-out pages the groups in `okjt.site_settings.public_groups` only.
+- **Screen**: `<AdminSiteSettings catalogue={CATALOGUE} />`, where the
+  catalogue lists groups → sections → fields (`{ key, store, label, hint,
+  type }`); see the component's comment. Settings the catalogue doesn't
+  list show under "Other". `SettingField` is the single field editor, with
+  `type: 'custom'` and `render` for your own.
+- okjt-app: point the admin Settings page at the kit (its catalogue moves
+  over as it is; rich text and FAQ fields become `custom`), and narrow its
+  public `GET /settings`, which returns every group to anyone, to the kit's
+  `publicIndex`. TFE: its `SiteSetting` rows are already in this table.
+
 ## 0.13 → 0.14 (ui 0.8.0, dashboard 0.14.0, laravel-kit 0.14.0, create-okjt-app 0.1.13)
 
 The media library (S5), from TFE. Nothing changes until you use it. Raise

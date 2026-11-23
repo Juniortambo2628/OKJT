@@ -213,6 +213,18 @@ return [
     ],
 
     /*
+     * Site settings (Okjt\Kit\Content\SiteSettings + SiteSettingController,
+     * from okjt-app): the words, pictures and switches the pages read, edited
+     * in the admin. `table`: where they live (okjt-app and TFE already have
+     * site_settings in this shape). `public_groups`: the groups signed-out
+     * pages may read (publicIndex); nothing else is public.
+     */
+    'site_settings' => [
+        'table' => 'site_settings',
+        'public_groups' => [],
+    ],
+
+    /*
      * The media library (Okjt\Kit\Media\MediaLibrary + MediaController, from
      * TFE): uploads are scaled down to max_edge px and re-encoded at quality,
      * stored on `disk` under `folder`, and recorded in `table`, so a photo can
