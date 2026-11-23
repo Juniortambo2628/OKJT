@@ -7,7 +7,6 @@ use App\Mail\ConsultationRequestUserReceipt;
 use App\Mail\CustomPasswordResetMail;
 use App\Mail\LaunchChecklistMail;
 use App\Mail\NewsletterWelcome;
-use App\Mail\RsvpConfirmation;
 use App\Models\ConsultationRequest;
 use App\Models\Rsvp;
 use App\Models\SiteSetting;
@@ -45,7 +44,6 @@ class EmailTemplatesTest extends TestCase
             'reply' => new ConsultationRequestUserReceipt($this->brief()),
             'notification' => new ConsultationRequestAdminNotification($this->brief()),
             'password reset' => new CustomPasswordResetMail('https://okjtech.co.ke/admin/password-reset?token=x', 60),
-            'rsvp' => new RsvpConfirmation(Rsvp::create(['name' => 'Ada', 'email' => 'ada@example.com', 'type' => 'rsvp', 'attendance' => 'accepted'])),
             'checklist' => new LaunchChecklistMail,
             'newsletter' => new NewsletterWelcome(Subscriber::create(['email' => 'ada@example.com', 'is_active' => true])),
         ];
@@ -101,6 +99,12 @@ class EmailTemplatesTest extends TestCase
         $html = $mail->render();
         $this->assertStringContainsString('https://okjtech.co.ke/admin/requests', $html);
         $this->assertStringContainsString('$7,500 – $10,000', $html);
+    }
+
+    public function test_rsvps_can_no_longer_be_sent_from_outside(): void
+    {
+        $this->postJson('/api/rsvps', ['name' => 'Ada', 'email' => 'ada@example.com'])->assertStatus(405);
+        $this->assertSame(0, Rsvp::count());
     }
 
     public function test_the_migration_swaps_the_code_templates_for_plain_words(): void
