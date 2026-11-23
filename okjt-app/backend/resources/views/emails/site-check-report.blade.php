@@ -19,5 +19,5 @@
     <p>The report stays at that address for 30 days. Run the check again any time after you make changes.</p>
     <p>Want these fixed for you? <a href="{{ $bookUrl }}">Book a short call</a> or reply to this email.</p>
 
-    <p style="margin-top: 30px; font-size: 14px;">OKJTechnologies, Nairobi</p>
+    <p style="margin-top: 28px; margin-bottom: 0;">OKJTechnologies</p>
 @endsection

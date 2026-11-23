@@ -15,8 +15,6 @@ class BookingAndBriefTest extends TestCase
 {
     use RefreshDatabase;
 
-    private const MIGRATION = '2026_11_19_000002_brief_budget_timeline_and_booking';
-
     private function brief(array $extra = []): array
     {
         return $extra + ['first_name' => 'Ada', 'last_name' => 'Lovelace', 'email' => 'ada@example.com', 'message' => 'A clinic platform.'];
@@ -52,7 +50,6 @@ class BookingAndBriefTest extends TestCase
 
     public function test_the_reply_offers_the_booking_link_only_when_one_is_set(): void
     {
-        SiteSetting::where('key', 'email_template_user')->delete();
         $brief = ConsultationRequest::create($this->brief());
 
         $this->assertStringNotContainsString('Book a Call', (new ConsultationRequestUserReceipt($brief))->render());
@@ -63,35 +60,12 @@ class BookingAndBriefTest extends TestCase
 
     public function test_the_studio_copy_shows_budget_and_timeline(): void
     {
-        SiteSetting::where('key', 'email_template_admin')->delete();
         $brief = ConsultationRequest::create($this->brief(['budget' => 'Over $40,000', 'timeline' => 'Just exploring']));
 
         $html = (new ConsultationRequestAdminNotification($brief))->render();
 
         $this->assertStringContainsString('Over $40,000', $html);
         $this->assertStringContainsString('Just exploring', $html);
-    }
-
-    public function test_the_migration_teaches_the_stored_templates_and_spares_rewritten_ones(): void
-    {
-        $migration = require database_path('migrations/'.self::MIGRATION.'.php');
-        $this->setting('email_template_user', "<p>Hello.</p>\n".$migration::USER_ANCHOR."\n<p>Bye.</p>", 'email');
-        $this->setting('email_template_admin', '<p>Rewritten by hand.</p>', 'email');
-
-        $method = new \ReflectionMethod($migration, 'addBeside');
-        $method->invoke($migration, 'email_template_user', $migration::USER_ANCHOR, $migration::USER_BOOKING, '$bookingUrl');
-        $method->invoke($migration, 'email_template_user', $migration::USER_ANCHOR, $migration::USER_BOOKING, '$bookingUrl');
-        $method->invoke($migration, 'email_template_admin', $migration::ADMIN_ANCHOR, $migration::ADMIN_ROWS, '->budget');
-
-        $user = SiteSetting::where('key', 'email_template_user')->value('value');
-        $this->assertSame(1, substr_count($user, 'Book a Call'), 'added once, before the anchor');
-        $this->assertLessThan(strpos($user, $migration::USER_ANCHOR), strpos($user, 'Book a Call'));
-        $this->assertSame('<p>Rewritten by hand.</p>', SiteSetting::where('key', 'email_template_admin')->value('value'));
-
-        // The stored template, with the booking link set, renders the button.
-        $this->setting('booking_url', 'https://cal.com/okjtech/intro');
-        $brief = ConsultationRequest::create($this->brief());
-        $this->assertStringContainsString('href="https://cal.com/okjtech/intro"', (new ConsultationRequestUserReceipt($brief))->render());
     }
 
     public function test_the_book_page_is_a_page(): void

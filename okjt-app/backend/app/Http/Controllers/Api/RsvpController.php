@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\RsvpResource;
-use App\Mail\RsvpConfirmation;
 use App\Traits\HandlesStandardCrud;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 
+/**
+ * RSVPs and early-access sign-ups from the 2026 launch, kept for the
+ * dashboard to read, correct or delete. The public form and its endpoint
+ * are gone, so nothing new arrives.
+ */
 class RsvpController extends Controller
 {
     use HandlesStandardCrud;
@@ -18,22 +21,6 @@ class RsvpController extends Controller
     protected $orderByDirection = 'desc';
 
     protected $resourceClass = RsvpResource::class;
-
-    protected function storeRules(Request $request): array
-    {
-        return [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:rsvps,email',
-            'company' => 'nullable|string|max:255',
-            'job_title' => 'nullable|string|max:255',
-            'sector' => 'nullable|string|max:255',
-            'interest' => 'nullable|string|max:255',
-            'consent' => 'boolean',
-            'newsletter' => 'boolean',
-            'attendance' => 'nullable|string|in:accepted,declined',
-            'type' => 'nullable|string|in:rsvp,early_access',
-        ];
-    }
 
     protected function updateRules(Request $request, $record): array
     {
@@ -49,17 +36,5 @@ class RsvpController extends Controller
             'attendance' => 'nullable|string|in:accepted,declined',
             'type' => 'nullable|string|in:rsvp,early_access',
         ];
-    }
-
-    protected function afterStore($record, $validated, $request)
-    {
-        try {
-            // Sent straight away: the site runs no queue worker.
-            Mail::to($record->email)->send(new RsvpConfirmation($record));
-        } catch (\Exception $e) {
-            logger()->error('Failed to send RSVP confirmation mail: '.$e->getMessage());
-        }
-
-        return $record;
     }
 }

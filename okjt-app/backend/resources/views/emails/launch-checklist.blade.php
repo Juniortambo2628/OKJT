@@ -7,7 +7,7 @@
 
     @foreach ($sections as $section)
         <h3>{{ $section['title'] }}</h3>
-        <p style="color: #64748b;">{{ $section['intro'] }}</p>
+        <p class="fine">{{ $section['intro'] }}</p>
         <ul>
             @foreach ($section['items'] as $item)
                 <li><strong>{{ $item['title'] }}.</strong> {{ $item['text'] }}</li>
@@ -18,5 +18,5 @@
     <a href="{{ $pageUrl }}" class="button">Open the Checklist Online</a>
 
     <p>Want a hand with any of it? <a href="{{ $bookUrl }}">Book a short call</a> or reply to this email.</p>
-    <p style="margin-top: 30px; font-size: 14px;">OKJTechnologies, Nairobi</p>
+    <p style="margin-top: 28px; margin-bottom: 0;">OKJTechnologies</p>
 @endsection

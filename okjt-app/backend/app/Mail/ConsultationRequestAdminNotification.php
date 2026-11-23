@@ -2,14 +2,14 @@
 
 namespace App\Mail;
 
-use App\Models\SiteSetting;
+use App\Support\SiteUrl;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Blade;
 
 class ConsultationRequestAdminNotification extends Mailable
 {
@@ -31,7 +31,9 @@ class ConsultationRequestAdminNotification extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'New Consultation Request: '.($this->requestData->subject ?? 'General Inquiry'),
+            // Replying answers the visitor, not the site's own address.
+            replyTo: [new Address($this->requestData->email, trim($this->requestData->first_name.' '.$this->requestData->last_name))],
+            subject: 'New brief from '.trim($this->requestData->first_name.' '.$this->requestData->last_name).($this->requestData->subject ? ': '.$this->requestData->subject : ''),
         );
     }
 
@@ -40,43 +42,18 @@ class ConsultationRequestAdminNotification extends Mailable
      */
     public function content(): Content
     {
-        $customTemplate = SiteSetting::where('key', 'email_template_admin')->first();
-
-        if ($customTemplate && ! empty($customTemplate->value)) {
-            // Check if it already has layout stuff, if not we use dynamic view
-            if (! str_contains($customTemplate->value, '@extends')) {
-                return new Content(
-                    view: 'emails.dynamic',
-                    with: [
-                        'dynamicContent' => Blade::render($customTemplate->value, $this->templateData()),
-                    ]
-                );
-            } else {
-                // If it has extends, we still need a way to render it as a view
-                // For simplicity, we'll assume most won't add extends in the simple editor
-                return new Content(
-                    htmlString: Blade::render($customTemplate->value, $this->templateData())
-                );
-            }
-        }
-
         return new Content(
             view: 'emails.consultation-admin-notification',
             with: $this->templateData(),
         );
     }
 
-    /**
-     * What the templates can use: the brief, and the booking page's address
-     * (empty while none is set in Contact details).
-     *
-     * @return array{requestData: mixed, bookingUrl: string}
-     */
+    /** What the email shows: the brief, and where to find it in the dashboard. */
     private function templateData(): array
     {
         return [
             'requestData' => $this->requestData,
-            'bookingUrl' => (string) SiteSetting::where('key', 'booking_url')->value('value'),
+            'dashboardUrl' => SiteUrl::page('/admin/requests'),
         ];
     }
 

@@ -4,50 +4,44 @@ import { Save } from 'lucide-react';
 import { AdminCard, AdminPageHero, AdminPageLayout, QueryError, useAdminAction, useUnsavedChangesGuard } from '@okjt/dashboard';
 import api, { unwrap } from '../lib/api';
 import { Field } from './fields';
-
-/** What each settings group is called and what it is for, in the order shown. */
-const GROUPS = {
-  homepage: ['Home page', 'The home page’s headline, rotating words and section titles.'],
-  about: ['About page', 'The story, approach and studio sections of the About page.'],
-  contact: ['Contact details', 'Email, phone, address and social links shown across the site.'],
-  services: ['Services', 'Titles and pictures of the Services page, and the starting price. The cost estimator’s prices have their own page: Setup › Cost estimator.'],
-  'hero-media': ['Pictures and clips', 'The photo or clip behind each page’s hero and sections.'],
-  branding: ['Logo and icon', 'The logos and favicon.'],
-  widgets: ['Widgets', 'The WhatsApp button and the FAQ assistant.'],
-  legal: ['Legal documents', 'Privacy policy, terms of service and cookie policy. Headings become the document’s sections.'],
-  email: ['Email templates', 'The emails the site sends.'],
-  maintenance: ['Maintenance mode', 'Show a maintenance page to visitors (you still see the site while signed in).'],
-  general: ['General', 'Everything else.'],
-};
-
-/** Settings with a page of their own. */
-const HIDDEN = ['estimator_config'];
+import { CATALOGUE, FIELDS, OWN_PAGE } from './settingsCatalogue';
 
 const humanise = (key) => key.replace(/_/g, ' ').replace(/^\w/, (c) => c.toUpperCase());
+const asBool = (v) => ['1', 'true', 'on'].includes(String(v).toLowerCase());
+const WIDE = ['rich', 'textarea', 'media', 'image', 'lines', 'faq'];
 
-/** The editor for a setting, from its type and what it holds. */
-function fieldFor(setting, group) {
+/** How a setting is stored when it doesn't exist yet. */
+const storedType = (field) => ({ switch: 'boolean', image: 'image', media: 'media', rich: 'rich', textarea: 'textarea', lines: 'textarea', faq: 'textarea' }[field.type] ?? 'text');
+
+/** A field for a setting the catalogue doesn't know (added later by a migration): best guess from what it holds. */
+function guessField(setting) {
   const label = humanise(setting.key);
   const value = setting.value ?? '';
   if (setting.type === 'boolean') return { key: setting.key, label, type: 'switch' };
   if (setting.type === 'image') return { key: setting.key, label, type: 'image' };
   if (setting.type === 'media' || setting.type === 'video') return { key: setting.key, label, type: 'media' };
-  if (group === 'legal' || group === 'email' || setting.type === 'html' || setting.type === 'rich') return { key: setting.key, label, type: 'rich', tall: group === 'legal' };
-  if (/^\s*[[{]/.test(value)) return { key: setting.key, label, type: 'textarea', rows: 10, hint: 'Structured data (JSON). Keep the brackets and quotes as they are.' };
+  if (['html', 'rich', 'rich-text'].includes(setting.type)) return { key: setting.key, label, type: 'rich' };
   if (setting.type === 'textarea' || value.length > 90) return { key: setting.key, label, type: 'textarea', rows: 4 };
   return { key: setting.key, label, type: 'text' };
 }
 
-const asBool = (v) => ['1', 'true', 'on'].includes(String(v).toLowerCase());
-
+/**
+ * /admin/settings: the words, pictures and switches the website reads, in
+ * groups by where they appear (settingsCatalogue.js), each with a plain
+ * label and a hint, and lists edited row by row rather than as code.
+ */
 export default function Settings() {
   const query = useQuery({ queryKey: ['/settings'], queryFn: () => api.get('/settings').then((res) => res.data) });
+  // Every stored setting by key, whatever group the API keeps it in.
+  const stored = useMemo(() => Object.fromEntries(Object.values(query.data ?? {}).flatMap((items) => (unwrap(items) ?? []).map((s) => [s.key, s]))), [query.data]);
   const groups = useMemo(() => {
-    // The estimator's prices are edited on their own page (Estimator.jsx), not as raw JSON here.
-    const byGroup = Object.entries(query.data ?? {}).map(([id, items]) => ({ id, items: (unwrap(items) ?? []).filter((s) => !HIDDEN.includes(s.key)) }));
-    const order = Object.keys(GROUPS);
-    return byGroup.sort((a, b) => (order.indexOf(a.id) + 1 || 99) - (order.indexOf(b.id) + 1 || 99));
-  }, [query.data]);
+    const other = Object.values(stored).filter((s) => !FIELDS[s.key] && !OWN_PAGE.includes(s.key)).map(guessField);
+    return [
+      ...CATALOGUE,
+      ...(other.length ? [{ id: 'other', title: 'Other', description: 'Settings without a place above yet.', sections: [{ fields: other }] }] : []),
+    ];
+  }, [stored]);
+
   const [active, setActive] = useState(null);
   const current = groups.find((g) => g.id === active) ?? groups[0];
   const [draft, setDraft] = useState({});
@@ -58,14 +52,20 @@ export default function Settings() {
   const save = useAdminAction(
     () => api.put('/settings/batch', {
       settings: Object.entries(draft).map(([key, value]) => {
-        const original = current.items.find((s) => s.key === key);
-        return { key, value: typeof value === 'boolean' ? (value ? '1' : '0') : String(value ?? ''), type: original?.type, group: current.id };
+        const field = FIELDS[key] ?? {};
+        const original = stored[key];
+        return { key, value: typeof value === 'boolean' ? (value ? '1' : '0') : String(value ?? ''), type: original?.type ?? storedType(field), group: original?.group ?? field.store ?? 'general' };
       }),
     }),
     { success: 'Settings saved. The website shows them now.', invalidate: [['/settings'], ['/site-settings/maintenance']], onSuccess: () => setDraft({}) },
   );
 
-  const [title, description] = GROUPS[current?.id] ?? [humanise(current?.id || 'Settings'), ''];
+  const count = (g) => g.sections.reduce((n, s) => n + s.fields.length, 0);
+  const valueOf = (field) => {
+    const raw = field.key in draft ? draft[field.key] : stored[field.key]?.value ?? '';
+    return field.type === 'switch' ? (typeof raw === 'boolean' ? raw : asBool(raw)) : raw;
+  };
+
   return (
     <AdminPageLayout
       hero={<AdminPageHero title="Site settings" breadcrumb="Site settings" description="The words, pictures and switches the website reads." />}
@@ -79,27 +79,28 @@ export default function Settings() {
             {groups.map((g) => (
               <button key={g.id} type="button" onClick={() => { if (!dirty || window.confirm('Leave without saving your changes?')) setActive(g.id); }} aria-current={current?.id === g.id ? 'page' : undefined}
                 className={`shrink-0 rounded-xl px-4 py-2.5 text-left text-sm transition-colors ${current?.id === g.id ? 'bg-[#f3ead5] text-[#1d160d] shadow-sm' : 'text-tone-600 hover:bg-tone-100 hover:text-ink'}`}>
-                {GROUPS[g.id]?.[0] ?? humanise(g.id)} <span className="opacity-60">· {g.items.length}</span>
+                {g.title} <span className="opacity-60">· {count(g)}</span>
               </button>
             ))}
           </nav>
           <AdminCard>
             {query.isLoading ? <div className="h-64 animate-pulse rounded-xl bg-tone-50" /> : current && (
               <>
-                <h2 className="text-lg font-medium text-ink">{title}</h2>
-                {description && <p className="mt-1 text-sm text-tone-500">{description}</p>}
-                <div className="mt-6 grid gap-5 md:grid-cols-2">
-                  {current.items.map((s) => {
-                    const field = fieldFor(s, current.id);
-                    const raw = s.key in draft ? draft[s.key] : s.value;
-                    const value = field.type === 'switch' ? (typeof raw === 'boolean' ? raw : asBool(raw)) : raw;
-                    return (
-                      <div key={s.key} className={['rich', 'textarea', 'media', 'image'].includes(field.type) ? 'md:col-span-2' : ''}>
-                        <Field field={field} value={value} onChange={(v) => setDraft((d) => ({ ...d, [s.key]: v }))} />
-                      </div>
-                    );
-                  })}
-                </div>
+                <h2 className="text-lg font-medium text-ink">{current.title}</h2>
+                {current.description && <p className="mt-1 text-sm text-tone-500">{current.description}</p>}
+                {current.sections.map((section, i) => (
+                  <section key={section.title ?? i} className={i ? 'mt-8 border-t border-tone-100 pt-6' : 'mt-6'}>
+                    {section.title && <h3 className="text-base font-medium text-ink">{section.title}</h3>}
+                    {section.description && <p className="mt-1 text-sm text-tone-500">{section.description}</p>}
+                    <div className={`grid gap-5 md:grid-cols-2 ${section.title || section.description ? 'mt-4' : ''}`}>
+                      {section.fields.map((field) => (
+                        <div key={field.key} className={WIDE.includes(field.type) ? 'md:col-span-2' : ''}>
+                          <Field field={field} value={valueOf(field)} onChange={(v) => setDraft((d) => ({ ...d, [field.key]: v }))} />
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                ))}
                 {dirty && <p className="mt-6 text-sm text-accent">You have unsaved changes. Use “Save changes” in the toolbar.</p>}
               </>
             )}
