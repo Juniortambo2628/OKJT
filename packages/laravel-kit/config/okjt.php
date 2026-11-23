@@ -213,6 +213,15 @@ return [
     ],
 
     /*
+     * Stale cookies (ForgetShadowedCookies, from TFE): when a cookie's name
+     * arrives twice (an old copy left under another domain, e.g. after
+     * SESSION_DOMAIN changed), the copies on other domains are expired so
+     * sign-in stops answering 419. `shadowed`: the cookies it watches; empty
+     * means the session cookie and XSRF-TOKEN.
+     */
+    'cookies' => ['shadowed' => []],
+
+    /*
      * On/off switches (Okjt\Kit\Switches\Switches): features shipped switched
      * off and turned on from the admin when ready. Declare each one; only
      * declared switches can be flipped (SwitchController, superadmins only,
