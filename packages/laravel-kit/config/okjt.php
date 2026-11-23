@@ -213,6 +213,16 @@ return [
     ],
 
     /*
+     * Browser errors (ClientErrorController, from TFE), sent by @okjt/ui's
+     * installErrorReporter. skip_paths: pages whose errors are never kept
+     * (paths without the leading slash, e.g. 'fan/bank-savings'). channel:
+     * the log channel; the kit adds 'okjt_client' (a daily file,
+     * storage/logs/client-errors.log, kept 7 days) when the project hasn't
+     * defined it.
+     */
+    'client_errors' => ['skip_paths' => [], 'channel' => 'okjt_client'],
+
+    /*
      * Stale cookies (ForgetShadowedCookies, from TFE): when a cookie's name
      * arrives twice (an old copy left under another domain, e.g. after
      * SESSION_DOMAIN changed), the copies on other domains are expired so

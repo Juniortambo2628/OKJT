@@ -10,9 +10,9 @@ test('@okjt/ui/helpers exports the chunk-reload helpers', () => {
 })
 
 test('@okjt/ui/helpers loads nothing that needs React or toasts', () => {
-  for (const file of ['dist/helpers.js', 'dist/chunkReload.js', 'dist/formats.js', 'dist/undo.js']) {
+  for (const file of ['dist/helpers.js', 'dist/chunkReload.js', 'dist/formats.js', 'dist/undo.js', 'dist/errorReporter.js']) {
     const src = readFileSync(new URL(`../${file}`, import.meta.url), 'utf8')
     assert.doesNotMatch(src, /from ["'](react|react-dom|react-hot-toast|framer-motion|lucide-react)/, file)
-    for (const [, dep] of src.matchAll(/from ["']\.\/([^"']+)["']/g)) assert.ok(['chunkReload.js', 'formats.js', 'undo.js'].includes(dep), `${file} imports ./${dep}`)
+    for (const [, dep] of src.matchAll(/from ["']\.\/([^"']+)["']/g)) assert.ok(['chunkReload.js', 'formats.js', 'undo.js', 'errorReporter.js'].includes(dep), `${file} imports ./${dep}`)
   }
 })

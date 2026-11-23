@@ -1,5 +1,30 @@
 # Upgrading
 
+## 0.12 → 0.13 (ui 0.7.0, dashboard 0.13.0, laravel-kit 0.13.0, create-okjt-app 0.1.12)
+
+The browser error log (S4), from TFE. Nothing changes until you use it.
+Raise ui and dashboard together (dashboard 0.13 needs ui 0.7; with ui alone
+npm nests a second copy): `npm i @okjt/ui@^0.7.0 @okjt/dashboard@^0.13.0`
+and `composer require okjt/laravel-kit:^0.13.0`.
+
+- **Browser half**: `import { installErrorReporter } from '@okjt/ui/helpers'`
+  and call it once at start-up. Options: `endpoint` (default
+  `/client-errors`), `skipPages` (RegExps on the path whose errors must
+  never leave the browser), `maxPerPage` (10).
+- **Server half**: `Route::post('/client-errors',
+  [Okjt\Kit\Http\Controllers\ClientErrorController::class, 'store'])
+  ->middleware('throttle:30,1');` outside any auth group (signed-out pages
+  report too). Pages and sources are kept as paths only, the user as an id.
+  `okjt.client_errors.skip_paths` lists pages whose reports are dropped
+  (`'fan/bank-savings'`); reports go to the `okjt_client` log channel, a
+  7-day daily file `storage/logs/client-errors.log` the kit adds unless you
+  define the channel yourself. Read that file before asking a tester for
+  their console.
+- TFE: delete `lib/errorReporter.js`, `ClientErrorController`, its
+  `client` log channel and their tests; call the kit's with
+  `skipPages: [/^\/fan\/bank-savings/, /^\/sandbox-bank/]` and set
+  `okjt.client_errors.skip_paths`.
+
 ## 0.11 → 0.12 (dashboard 0.12.0, laravel-kit 0.12.0, create-okjt-app 0.1.11)
 
 Start of R4 (platform services). Nothing changes until you use the new
