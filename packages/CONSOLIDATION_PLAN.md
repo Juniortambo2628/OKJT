@@ -456,7 +456,7 @@ Notes from kit 0.12:
 
 - [x] S2 on/off switches (kit 0.12: `okjt.switches`, `Switches::on()`, `RequireSwitch`, `SwitchController` + `AdminSwitches`)
 - [x] S3 clearing stale cookies (kit 0.12: `ForgetShadowedCookies`, lifted from TFE with its tests)
-- [ ] S4 front-end error log (server and `@okjt/ui` reporter)
+- [x] S4 front-end error log (kit 0.13: `installErrorReporter` in `@okjt/ui/helpers`, `ClientErrorController` + `okjt_client` log channel; lifted from TFE with its tests)
 - [ ] S5 + F13 image optimisation, media library and picker
 - [ ] S6 + F14 editable site content and settings page, in steps: settings → page copy → page photos → FAQs → contact form
 - [ ] S7 privacy: retention schedule and requests to delete data
