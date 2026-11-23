@@ -132,9 +132,17 @@ startups entering East Africa.
 - **Listings** (you): Clutch and GoodFirms profiles with 3 to 5 client
   reviews; a Contra profile; a Google Business Profile; Product Hunt launches
   for Naoa and Najenga.
-- **Insight topics for buyers**: what it costs to launch a fintech app in
-  Kenya; M-Pesa integration mistakes foreign teams make; is your app
-  compliant with Kenya's Data Protection Act; building for 3G.
+- [x] **Insight topics for buyers**: four drafts (not published) under the
+      topic "Building for African markets": what it really costs to launch a
+      fintech app in Kenya; six M-Pesa integration mistakes foreign teams
+      make; is your app compliant with Kenya's Data Protection Act; building
+      for 3G. No prices or statistics beyond what the site already states;
+      legal points follow the Act, its 2021 regulations and ODPC guidance,
+      with a "not legal advice" line.
+- **You:** read and edit each in Dashboard › Insights, add a cover picture,
+  and publish. Publish the data protection article no later than the
+  fintech one (the fintech article links to it). Then cross-post with the
+  Cross-post button.
 - **Measure**: Search Console (clicks, indexed pages), bookings per month,
   briefs per month by budget range (Enquiries now records it).
 
