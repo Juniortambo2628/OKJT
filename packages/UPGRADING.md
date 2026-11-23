@@ -1,5 +1,42 @@
 # Upgrading
 
+## 0.11 → 0.12 (dashboard 0.12.0, laravel-kit 0.12.0, create-okjt-app 0.1.11)
+
+Start of R4 (platform services). Nothing changes until you use the new
+pieces. `npm i @okjt/dashboard@^0.12.0` and `composer require
+okjt/laravel-kit:^0.12.0`; then `php artisan vendor:publish
+--tag=okjt-migrations` and `php artisan migrate` (a new `okjt_switches`
+table).
+
+- **On/off switches (S2).** Declare a project's switches in
+  `config/okjt.php`:
+  ```php
+  'switches' => [
+      'mpesa_extras' => [
+          'label' => 'Sell extras with M-Pesa',
+          'description' => 'Guests can pay for extras on the splash page.',
+          'default' => env('OKJT_SWITCH_MPESA_EXTRAS', false),
+          'public' => true,   // signed-out pages may ask (optional)
+      ],
+  ],
+  ```
+  Read one with `Okjt\Kit\Switches\Switches::on('mpesa_extras')`; guard a
+  feature's routes with `RequireSwitch::class.':mpesa_extras'` (404 while
+  off). Admin routes, superadmins only:
+  `GET /switches` → `SwitchController@index`, `PUT /switches/{key}` →
+  `@update` (each flip goes in the console audit log), and optionally a
+  signed-out `GET /public-switches` → `@publicIndex`. The screen is
+  `<AdminSwitches />` from `@okjt/dashboard` (`path`, `translate`,
+  `confirm` options). Only declared switches can be flipped; an undeclared
+  key reads as off.
+- **Stale cookies (S3), from TFE.** Add
+  `Okjt\Kit\Http\Middleware\ForgetShadowedCookies` to the `web` group
+  (`$middleware->web(append: [...])`). When a cookie's name arrives twice
+  (an old copy under another domain after `SESSION_DOMAIN` changed), the
+  stale copies are expired, so sign-in stops answering 419. It watches the
+  session cookie and `XSRF-TOKEN`; `okjt.cookies.shadowed` names others.
+  TFE: delete `App\Http\Middleware\ForgetShadowedCookies` and its test.
+
 ## 0.11.0 → 0.11.1 (dashboard 0.11.1)
 
 `npm i @okjt/dashboard@^0.11.1`; nothing to change. A fix, from TFE.

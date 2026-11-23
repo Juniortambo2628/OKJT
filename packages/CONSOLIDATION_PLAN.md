@@ -440,8 +440,22 @@ Notes from R3 (shipped in kit 0.11):
 
 ### R4: platform services (laravel-kit 0.5, dashboard 1.2): about 2 to 3 weeks
 
-- [ ] S2 on/off switches (server and an admin screen)
-- [ ] S3 clearing stale cookies
+Notes from kit 0.12:
+
+* S2, as built: switches are declared in config (label, description,
+  default, `public`), so the admin screen can only flip known ones and an
+  undeclared key reads as off. Flipped values live in `okjt_switches`;
+  platform-wide, so the admin routes sit behind `EnsureSuperadmin`, and
+  each flip goes in the console audit log. Tena-host's 100-odd
+  `Setting::getValue` keys are settings, not switches: only its `*_enabled`
+  keys move to `okjt.switches`. Naoa's `NAOA_STK_PUSH` becomes a declared
+  switch whose default reads that env, so nothing changes on its servers.
+* S3, as built: TFE's middleware unchanged apart from the cookie list
+  (`okjt.cookies.shadowed`).
+
+
+- [x] S2 on/off switches (kit 0.12: `okjt.switches`, `Switches::on()`, `RequireSwitch`, `SwitchController` + `AdminSwitches`)
+- [x] S3 clearing stale cookies (kit 0.12: `ForgetShadowedCookies`, lifted from TFE with its tests)
 - [ ] S4 front-end error log (server and `@okjt/ui` reporter)
 - [ ] S5 + F13 image optimisation, media library and picker
 - [ ] S6 + F14 editable site content and settings page, in steps: settings → page copy → page photos → FAQs → contact form
