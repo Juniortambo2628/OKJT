@@ -193,6 +193,7 @@ class SpaController extends Controller
             '<meta property="og:url" content="'.$e($canonical).'" />',
             '<meta property="og:image" content="'.$e($image).'" />',
             '<meta property="og:locale" content="en_KE" />',
+            '<link rel="alternate" type="application/rss+xml" title="OKJTech Insights" href="'.$e(SiteUrl::page('/feed.xml')).'" />',
             '<meta name="twitter:card" content="summary_large_image" />',
             '<meta name="twitter:title" content="'.$e($title).'" />',
             '<meta name="twitter:description" content="'.$e($description).'" />',
