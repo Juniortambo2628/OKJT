@@ -175,7 +175,7 @@ export const RESOURCES = {
     fields: [
       { key: 'email', label: 'Email', type: 'email', required: true },
       { key: 'name', label: 'Name', type: 'text' },
-      { key: 'source', label: 'Source', type: 'select', options: ['footer', 'form', 'admin', 'rsvp', 'site-check', 'checklist'].map((v) => ({ value: v, label: v })) },
+      { key: 'source', label: 'Source', type: 'select', options: ['footer', 'form', 'admin', 'rsvp', 'site-check', 'checklist', 'insights', 'insight', 'home'].map((v) => ({ value: v, label: v })) },
       { key: 'is_active', label: 'Subscribed', type: 'switch' },
     ],
   },

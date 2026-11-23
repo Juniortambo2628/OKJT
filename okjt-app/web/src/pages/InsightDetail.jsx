@@ -1,5 +1,7 @@
 import { useParams } from 'react-router-dom';
+import { Container, SECTION_OFFSET } from '@okjt/site';
 import JourneyPage from '../components/Journey';
+import NewsletterSignup from '../components/NewsletterSignup';
 import usePageMeta from '../components/usePageMeta';
 import { formatDate, live, readingTime, useInsights, useItem, useSettings } from '../lib/content';
 import { DEFAULT_HERO } from '../lib/defaults';
@@ -55,6 +57,8 @@ export default function InsightDetail() {
       }}
       onward={{ to: '/contact', tags: ['Next step'], title: 'Have a platform in mind?', text: 'Share a short brief. Every brief receives a reply with next steps.' }}
       faqs={false}
-    />
+    >
+      {insight && <section id="newsletter" className={`${SECTION_OFFSET} pb-8`}><Container><NewsletterSignup source="insight" title="Get the next one by email" /></Container></section>}
+    </JourneyPage>
   );
 }
