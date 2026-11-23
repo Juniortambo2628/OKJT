@@ -114,8 +114,21 @@ startups entering East Africa.
   (active only) to MailerLite's free plan (check its current subscriber
   limit) and send from there, with its own unsubscribe link. Anyone who
   unsubscribes in MailerLite should be marked inactive here too.
-- **Cross-posting**: each insight gets a "first published on okjtech.co.ke"
-  canonical when posted to LinkedIn, dev.to and Hashnode.
+- [x] **Cross-posting**: Dashboard › Insights › the share button on a row
+      opens "Cross-post": the article ready to paste on DEV (front matter
+      with `canonical_url`), Hashnode (Markdown; the canonical goes in its
+      settings) and LinkedIn (a short post linking back, since LinkedIn has
+      no canonical setting). Every copy ends "First published on
+      okjtech.co.ke", and images and links use full okjtech.co.ke addresses.
+- [x] RSS feed at `/feed.xml` (published insights in full), linked from
+      every page's head.
+- **You (once):** in DEV, Settings › Extensions, add
+  `https://okjtech.co.ke/feed.xml` as the RSS feed and tick the option to
+  mark the RSS source as the canonical URL. New insights then arrive in DEV
+  as drafts, already crediting okjtech.co.ke; review and publish them there.
+  For Hashnode and LinkedIn use the Cross-post panel. Wait a few days after
+  publishing on okjtech.co.ke before posting copies, so Google sees the
+  original first.
 - **Listings** (you): Clutch and GoodFirms profiles with 3 to 5 client
   reviews; a Contra profile; a Google Business Profile; Product Hunt launches
   for Naoa and Najenga.
