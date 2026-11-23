@@ -23,3 +23,5 @@ export { scheduleUndoable, UNDO_WINDOW_MS } from './undo.js';
 export { default as useUndoableRemoval } from './useUndoableRemoval.js';
 export { installChunkReload, shouldReloadForChunks, isChunkLoadError } from './chunkReload.js';
 export { formatNumber, formatDateTime, statusLabel, titleCase, DEFAULT_FORMAT_LOCALE } from './formats.js';
+export { IMAGE_MIMES, VIDEO_MIMES, MEDIA_ACCEPT } from './media.js';
+export { installErrorReporter } from './errorReporter.js';

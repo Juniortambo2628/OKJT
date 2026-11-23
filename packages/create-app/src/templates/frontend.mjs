@@ -55,9 +55,9 @@ function packageJson(p) {
       preview: 'vite preview',
     },
     dependencies: {
-      '@okjt/dashboard': '^0.13.0',
+      '@okjt/dashboard': '^0.14.0',
       '@okjt/site': '^0.3.0',
-      '@okjt/ui': '^0.7.0',
+      '@okjt/ui': '^0.8.0',
       '@tanstack/react-query': '^5.90.12',
       axios: '^1.13.2',
       'date-fns': '^4.1.0',

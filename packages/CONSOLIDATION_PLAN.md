@@ -457,7 +457,7 @@ Notes from kit 0.12:
 - [x] S2 on/off switches (kit 0.12: `okjt.switches`, `Switches::on()`, `RequireSwitch`, `SwitchController` + `AdminSwitches`)
 - [x] S3 clearing stale cookies (kit 0.12: `ForgetShadowedCookies`, lifted from TFE with its tests)
 - [x] S4 front-end error log (kit 0.13: `installErrorReporter` in `@okjt/ui/helpers`, `ClientErrorController` + `okjt_client` log channel; lifted from TFE with its tests)
-- [ ] S5 + F13 image optimisation, media library and picker
+- [x] S5 + F13 image optimisation, media library and picker (kit 0.14: `MediaLibrary`, `MediaAsset`, `MediaController`; `AdminMediaLibrary`, `MediaPicker`; `MEDIA_ACCEPT`; lifted from TFE with its tests)
 - [ ] S6 + F14 editable site content and settings page, in steps: settings → page copy → page photos → FAQs → contact form
 - [ ] S7 privacy: retention schedule and requests to delete data
 - [ ] Consumers: Naoa first (it has the most to delete), then okjt-app, Najenga, Tena-host (server pieces only, through Inertia), TFE (server pieces only)

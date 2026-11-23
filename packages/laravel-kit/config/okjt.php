@@ -213,6 +213,22 @@ return [
     ],
 
     /*
+     * The media library (Okjt\Kit\Media\MediaLibrary + MediaController, from
+     * TFE): uploads are scaled down to max_edge px and re-encoded at quality,
+     * stored on `disk` under `folder`, and recorded in `table`, so a photo can
+     * be picked again instead of uploaded twice. list_limit: how many the API
+     * lists. SVG is never accepted.
+     */
+    'media' => [
+        'disk' => 'public',
+        'folder' => 'assets/library',
+        'table' => 'media_assets',
+        'max_edge' => 1920,
+        'quality' => 82,
+        'list_limit' => 200,
+    ],
+
+    /*
      * Browser errors (ClientErrorController, from TFE), sent by @okjt/ui's
      * installErrorReporter. skip_paths: pages whose errors are never kept
      * (paths without the leading slash, e.g. 'fan/bank-savings'). channel:

@@ -1,5 +1,32 @@
 # Upgrading
 
+## 0.13 → 0.14 (ui 0.8.0, dashboard 0.14.0, laravel-kit 0.14.0, create-okjt-app 0.1.13)
+
+The media library (S5), from TFE. Nothing changes until you use it. Raise
+ui and dashboard together: `npm i @okjt/ui@^0.8.0 @okjt/dashboard@^0.14.0`
+and `composer require okjt/laravel-kit:^0.14.0` (which brings
+`intervention/image` ^3; the server needs PHP's GD extension). Then
+`php artisan vendor:publish --tag=okjt-migrations` and `php artisan
+migrate` (a `media_assets` table, skipped if you have one).
+
+- **Server**: `Okjt\Kit\Media\MediaLibrary::store($file)` scales an image
+  down to `okjt.media.max_edge` (1920) and re-encodes it at `quality` (82),
+  stores it on `disk` under `folder`, and records it as a `MediaAsset`.
+  Animated GIF and video are kept as they are; SVG is never accepted. Use
+  `MediaLibrary::imageRules()` / `mediaRules()` in your own uploaders
+  instead of a hand-written `mimes:` list. Routes, behind your admin
+  middleware: `GET /media` → `MediaController@index` (`?kind=image`),
+  `POST /media` → `@store` (`files[]`), `DELETE /media/{id}` → `@destroy`.
+- **Screens**: `<AdminMediaLibrary />` (upload, list, delete) and
+  `<MediaPicker open onClose onPick={(asset) => …} />` for any image field
+  (`kind="image"` by default, `null` for everything). Both take `path`.
+- **File inputs**: `MEDIA_ACCEPT.image` / `.media` (and `IMAGE_MIMES`,
+  `VIDEO_MIMES`) from `@okjt/ui` or `@okjt/ui/helpers`.
+- TFE: `MediaLibraryService` → `MediaLibrary`, `App\Models\MediaAsset` →
+  the kit's (same table), `lib/media.js` → `@okjt/ui/helpers`; delete
+  yours and their tests. Your Inertia `Admin/Media` page and `MediaPicker`
+  can stay until the admin moves to the kit shell.
+
 ## 0.12 → 0.13 (ui 0.7.0, dashboard 0.13.0, laravel-kit 0.13.0, create-okjt-app 0.1.12)
 
 The browser error log (S4), from TFE. Nothing changes until you use it.
