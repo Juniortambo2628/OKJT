@@ -57,8 +57,10 @@ Route::get('/pillars/{slug}', [PillarController::class, 'show']);
 // Public — search, tracking, newsletter
 Route::get('/search', [SearchController::class, 'index']);
 Route::post('/track', [AnalyticsController::class, 'track']);
-Route::post('/subscribe', [SubscriberController::class, 'store']);
-Route::post('/unsubscribe', [SubscriberController::class, 'unsubscribe']);
+// The newsletter: sign up, and leave (by the signed link in every email, or by address).
+Route::post('/subscribe', [SubscriberController::class, 'subscribe'])->middleware('throttle:5,10');
+Route::match(['get', 'post'], '/newsletter/unsubscribe/{subscriber}', [SubscriberController::class, 'unsubscribeLink'])->middleware('signed:relative')->name('newsletter.unsubscribe');
+Route::post('/unsubscribe', [SubscriberController::class, 'unsubscribe'])->middleware('throttle:5,10');
 Route::post('/consultation-requests', [ConsultationRequestController::class, 'store']);
 Route::post('/rsvps', [RsvpController::class, 'store']);
 
