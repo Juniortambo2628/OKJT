@@ -29,17 +29,11 @@ class RsvpConfirmation extends Mailable
      */
     public function envelope(): Envelope
     {
-        $subject = 'Receipt of Your Request - OKJTech';
-
-        if ($this->rsvp->type === 'early_access') {
-            $subject = 'Hold tight, your access is requested! - OKJTech';
-        } elseif ($this->rsvp->type === 'rsvp') {
-            if ($this->rsvp->attendance === 'accepted') {
-                $subject = 'Seat Reserved: See you at the OKJTech Launch! - OKJTech';
-            } else {
-                $subject = 'RSVP Received: We\'ll miss you - OKJTech';
-            }
-        }
+        $subject = match (true) {
+            $this->rsvp->type === 'early_access' => 'You’re on the OKJTechnologies early-access list',
+            $this->rsvp->attendance === 'declined' => 'Your RSVP is recorded',
+            default => 'Your place is confirmed',
+        };
 
         return new Envelope(
             subject: $subject,
@@ -52,11 +46,8 @@ class RsvpConfirmation extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.rsvp.confirmation',
-            with: [
-                'rsvp' => $this->rsvp,
-                'logoUrl' => config('app.frontend_url', 'http://localhost:3000').'/logos/OKJT-Logos/OKJTechLogo-Black_Transparent.png',
-            ],
+            view: 'emails.rsvp.confirmation',
+            with: ['rsvp' => $this->rsvp],
         );
     }
 

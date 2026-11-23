@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Support\EmailBrand;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -18,6 +20,9 @@ class AppServiceProvider extends ServiceProvider
     {
         JsonResource::withoutWrapping();
         Schema::defaultStringLength(191);
+
+        // Every email's frame: the logo, the studio's name and its real contact details.
+        View::composer('emails.layout', fn ($view) => $view->with('brand', EmailBrand::data()));
 
         // The emailed reset link opens the dashboard's own page.
         ResetPassword::createUrlUsing(function ($user, string $token) {
