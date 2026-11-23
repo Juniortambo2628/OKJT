@@ -34,6 +34,16 @@ class NewsletterTest extends TestCase
         $this->assertSame(0, Subscriber::count());
     }
 
+    /** Laravel 11's email rule let a quoted address with a line break through (fixed in Laravel 12.60). */
+    public function test_an_address_with_a_line_break_is_refused(): void
+    {
+        $this->postJson('/api/subscribe', ['email' => "\"a\r\nBcc: x@example.com\"@example.com", 'consent' => true])
+            ->assertStatus(422)->assertJsonValidationErrors('email');
+        $this->postJson('/api/consultation-requests', ['first_name' => 'A', 'last_name' => 'B', 'email' => "\"a\r\nBcc: x@example.com\"@example.com", 'message' => 'Hello there, a project.'])
+            ->assertStatus(422)->assertJsonValidationErrors('email');
+        $this->assertSame(0, Subscriber::count());
+    }
+
     /** Before: a second signup answered "The email has already been taken", which told anyone who is on the list. */
     public function test_an_address_already_on_the_list_gets_the_same_answer_and_no_second_welcome(): void
     {
