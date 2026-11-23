@@ -95,11 +95,25 @@ startups entering East Africa.
 
 ## 5. Newsletter and reach
 
-- **Signup**: the subscribe endpoint and Subscribers list already exist;
-  add the form to the insight pages and the footer area of okjt-app's pages,
-  with consent wording. Sending stays outside the site: export Subscribers
-  to MailerLite's free plan (check its current subscriber limit) once a
-  month.
+- [x] **Signup**: a newsletter card (email, a required consent tick linking
+      the privacy policy) on Insights, at the end of every article, and under
+      the home page's insights. Saved to Subscribers with its source
+      (`insights`, `insight`, `home`).
+- [x] A welcome email with a one-click unsubscribe link (signed, so only the
+      person it was sent to can use it; also the `List-Unsubscribe` header,
+      so mail apps show their own Unsubscribe button). The link returns to
+      Insights with a note.
+- [x] Fixed on the way: signing up with an address already on the list
+      answered "already taken", and unsubscribing an unknown address answered
+      "Email not found", so either revealed who is on the list; and anyone
+      could unsubscribe anyone by address. Both now answer the same either
+      way, and both are limited to 5 tries in 10 minutes.
+- Not in the footer: the footer comes from the kit (`@okjt/site`), so it
+  would need a kit option and a release.
+- **You:** sending stays outside the site. Once a month, export Subscribers
+  (active only) to MailerLite's free plan (check its current subscriber
+  limit) and send from there, with its own unsubscribe link. Anyone who
+  unsubscribes in MailerLite should be marked inactive here too.
 - **Cross-posting**: each insight gets a "first published on okjtech.co.ke"
   canonical when posted to LinkedIn, dev.to and Hashnode.
 - **Listings** (you): Clutch and GoodFirms profiles with 3 to 5 client

@@ -10,6 +10,7 @@ import LogoCarousel from '../components/LogoCarousel';
 import { CardGridSkeleton, Empty } from '../components/States';
 import { bySector } from '../lib/sectors';
 import { principleFor } from '../lib/principles';
+import NewsletterSignup from '../components/NewsletterSignup';
 import { formatDate, live, useInsights, usePillars, useProjects, useSettings, useStats } from '../lib/content';
 import { DEFAULT_HERO } from '../lib/defaults';
 
@@ -340,6 +341,7 @@ export default function Home() {
             ) : <Empty>New notes are on the way.</Empty>}
           </div>
           <div className="mt-10 text-center"><PillLink to="/insights" variant="outline" arrow>All Insights</PillLink></div>
+          <div className="mt-16"><NewsletterSignup source="home" /></div>
         </Container>
       </section>
     </SiteLayout>
