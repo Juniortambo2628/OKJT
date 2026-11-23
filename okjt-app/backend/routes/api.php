@@ -62,7 +62,6 @@ Route::post('/subscribe', [SubscriberController::class, 'subscribe'])->middlewar
 Route::match(['get', 'post'], '/newsletter/unsubscribe/{subscriber}', [SubscriberController::class, 'unsubscribeLink'])->middleware('signed:relative')->name('newsletter.unsubscribe');
 Route::post('/unsubscribe', [SubscriberController::class, 'unsubscribe'])->middleware('throttle:5,10');
 Route::post('/consultation-requests', [ConsultationRequestController::class, 'store']);
-Route::post('/rsvps', [RsvpController::class, 'store']);
 
 // The website health check (/tools/site-check): each run fetches another site, so it is rate-limited.
 Route::post('/tools/site-check', [SiteCheckController::class, 'store'])->middleware('throttle:5,1');

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Bold, ChevronLeft, ChevronRight, Heading2, Heading3, ImagePlus, Italic, Link2, List, ListOrdered, Loader2, Quote, Trash2, Upload, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, Bold, ChevronLeft, ChevronRight, Heading2, Heading3, ImagePlus, Italic, Link2, List, ListOrdered, Loader2, Plus, Quote, Trash2, Upload, X } from 'lucide-react';
 import { AdminInput, AdminSelect, AdminTextarea, ToggleButton } from '@okjt/dashboard';
 import api, { errorMessage, unwrap } from '../lib/api';
 import { mediaUrl, isVideo } from '../lib/media';
@@ -243,12 +243,146 @@ function ListInput({ label, value, onChange }) {
   );
 }
 
+/* ---------- Lists edited row by row, instead of typing JSON or commas ---------- */
+
+/** Read a stored list: a JSON array, or words separated by commas. */
+export function readList(value, format) {
+  if (Array.isArray(value)) return value;
+  const text = String(value ?? '').trim();
+  if (!text) return [];
+  if (format === 'json') {
+    try { const parsed = JSON.parse(text); return Array.isArray(parsed) ? parsed : []; } catch { return []; }
+  }
+  return text.split(',').map((v) => v.trim()).filter(Boolean);
+}
+
+/** Write a list back the way it is stored. */
+export function writeList(items, format) {
+  return format === 'json' ? JSON.stringify(items) : items.join(', ');
+}
+
+const move = (items, i, by) => {
+  const next = [...items];
+  const [item] = next.splice(i, 1);
+  next.splice(i + by, 0, item);
+  return next;
+};
+
+function RowButtons({ index, count, onMove, onRemove, what }) {
+  const btn = 'rounded-lg p-2 text-tone-400 hover:bg-tone-100 hover:text-ink disabled:opacity-30 disabled:hover:bg-transparent';
+  return (
+    <div className="flex shrink-0 items-center">
+      <button type="button" onClick={() => onMove(-1)} disabled={index === 0} aria-label={`Move ${what} up`} className={btn}><ArrowUp className="h-4 w-4" /></button>
+      <button type="button" onClick={() => onMove(1)} disabled={index === count - 1} aria-label={`Move ${what} down`} className={btn}><ArrowDown className="h-4 w-4" /></button>
+      <button type="button" onClick={onRemove} aria-label={`Remove ${what}`} className="rounded-lg p-2 text-tone-400 hover:bg-red-500/10 hover:text-red-500"><Trash2 className="h-4 w-4" /></button>
+    </div>
+  );
+}
+
+/** A list of short texts, one per row (rotating words, suggested questions). Blank rows aren't saved. */
+export function LinesField({ label, value, onChange, format = 'comma', item = 'item', hint }) {
+  const saved = writeList(readList(value, format).map(String), format);
+  const [rows, setRows] = useState(() => readList(value, format).map(String));
+  // Take outside changes (the settings reloaded), not the echo of our own edits.
+  useEffect(() => {
+    setRows((current) => (writeList(current.map((t) => t.trim()).filter(Boolean), format) === saved ? current : readList(saved, format).map(String)));
+  }, [saved, format]);
+  const set = (next) => {
+    setRows(next);
+    onChange(writeList(next.map((t) => t.trim()).filter(Boolean), format));
+  };
+  const clean = (text) => (format === 'comma' ? text.replace(/,/g, '') : text);
+  return (
+    <fieldset>
+      <legend className="mb-1.5 block text-sm font-medium text-tone-700">{label}</legend>
+      {hint && <p className="mb-2 text-xs text-tone-500">{hint}</p>}
+      <ul className="space-y-2">
+        {rows.map((text, i) => (
+          <li key={i} className="flex items-center gap-2">
+            <span className="w-6 shrink-0 text-right text-xs tabular-nums text-tone-400">{i + 1}</span>
+            <AdminInput bare aria-label={`${label}: ${item} ${i + 1}`} value={text} onChange={(e) => set(rows.map((t, n) => (n === i ? clean(e.target.value) : t)))} className={inputClass} />
+            <RowButtons index={i} count={rows.length} what={`${item} ${i + 1}`} onMove={(by) => set(move(rows, i, by))} onRemove={() => set(rows.filter((_, n) => n !== i))} />
+          </li>
+        ))}
+      </ul>
+      {!rows.length && <p className="rounded-lg border border-dashed border-tone-200 px-4 py-3 text-sm text-tone-500">None yet.</p>}
+      <button type="button" onClick={() => setRows([...rows, ''])} className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:text-accent-strong"><Plus className="h-4 w-4" /> Add a {item}</button>
+    </fieldset>
+  );
+}
+
+/** The FAQ assistant's answers: each one an answer and the words that bring it up. */
+export function FaqField({ label, value, onChange }) {
+  const entries = readList(value, 'json').map((e) => ({ answer: String(e?.answer ?? ''), keywords: Array.isArray(e?.keywords) ? e.keywords.map(String) : [] }));
+  const set = (next) => onChange(writeList(next, 'json'));
+  const update = (i, patch) => set(entries.map((e, n) => (n === i ? { ...e, ...patch } : e)));
+  return (
+    <fieldset>
+      <legend className="mb-1.5 block text-sm font-medium text-tone-700">{label}</legend>
+      <ol className="space-y-3">
+        {entries.map((entry, i) => (
+          <li key={i} className="rounded-xl border border-tone-100 p-3 sm:p-4">
+            <div className="flex items-start justify-between gap-3">
+              <span className="pt-2 text-xs font-semibold uppercase tracking-[0.12em] text-tone-500">Answer {i + 1}</span>
+              <RowButtons index={i} count={entries.length} what={`answer ${i + 1}`} onMove={(by) => set(move(entries, i, by))} onRemove={() => set(entries.filter((_, n) => n !== i))} />
+            </div>
+            <AdminTextarea label="What the assistant says" rows={3} value={entry.answer} onChange={(e) => update(i, { answer: e.target.value })} className={`${inputClass} !resize-y`} />
+            <div className="mt-3">
+              <KeywordsInput label="Words in a question that bring up this answer" value={entry.keywords} onChange={(keywords) => update(i, { keywords })} />
+            </div>
+          </li>
+        ))}
+      </ol>
+      {!entries.length && <p className="rounded-lg border border-dashed border-tone-200 px-4 py-3 text-sm text-tone-500">No answers yet; the assistant uses its built-in ones.</p>}
+      <button type="button" onClick={() => set([...entries, { answer: '', keywords: [] }])} className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:text-accent-strong"><Plus className="h-4 w-4" /> Add an answer</button>
+    </fieldset>
+  );
+}
+
+/** Words typed with commas between them, shown back as chips. */
+function KeywordsInput({ label, value, onChange }) {
+  const [draft, setDraft] = useState('');
+  const add = (text) => {
+    const words = text.split(',').map((w) => w.trim().toLowerCase()).filter(Boolean).filter((w) => !value.includes(w));
+    if (words.length) onChange([...value, ...words]);
+    setDraft('');
+  };
+  return (
+    <div>
+      <span className="mb-1.5 block text-sm font-medium text-tone-700">{label}</span>
+      <div className="flex flex-wrap items-center gap-1.5 rounded-lg border border-tone-200 bg-paper px-2 py-1.5 focus-within:border-accent focus-within:ring-2 focus-within:ring-accent/20">
+        {value.map((word) => (
+          <span key={word} className="inline-flex items-center gap-1 rounded-full bg-tone-100 py-0.5 pl-2.5 pr-1 text-xs text-tone-700">
+            {word}
+            <button type="button" onClick={() => onChange(value.filter((w) => w !== word))} aria-label={`Remove ${word}`} className="rounded-full p-0.5 text-tone-400 hover:bg-tone-200 hover:text-ink"><X className="h-3 w-3" /></button>
+          </span>
+        ))}
+        <input
+          value={draft}
+          onChange={(e) => (e.target.value.includes(',') ? add(e.target.value) : setDraft(e.target.value))}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') { e.preventDefault(); add(draft); }
+            if (e.key === 'Backspace' && !draft && value.length) onChange(value.slice(0, -1));
+          }}
+          onBlur={() => draft && add(draft)}
+          aria-label={label}
+          placeholder={value.length ? 'Add another…' : 'e.g. price, cost, budget'}
+          className="min-w-[8rem] flex-1 border-0 bg-transparent px-1 py-1 text-sm text-ink placeholder:text-tone-400 focus:outline-none focus:ring-0"
+        />
+      </div>
+      <p className="mt-1 text-xs text-tone-500">Press Enter or type a comma after each word.</p>
+    </div>
+  );
+}
+
 /* ---------- One field of a form, by type ---------- */
 
 export function Field({ field, value, onChange, pillars = [] }) {
   const { type, label, hint } = field;
   const name = field.required ? `${label} *` : label;
-  if (type === 'rich') return <RichField label={name} value={value} onChange={onChange} tall={field.tall} />;
+  if (type === 'rich') return <div><RichField label={name} value={value} onChange={onChange} tall={field.tall} />{hint && <p className="mt-1 text-xs text-tone-500">{hint}</p>}</div>;
+  if (type === 'lines') return <LinesField label={name} value={value} onChange={onChange} format={field.format} item={field.item} hint={hint} />;
+  if (type === 'faq') return <FaqField label={name} value={value} onChange={onChange} />;
   if (type === 'image') return <MediaField label={name} value={value} onChange={onChange} hint={hint} />;
   if (type === 'media') return <MediaField label={name} value={value} onChange={onChange} accept="media" hint={hint} />;
   if (type === 'gallery') return <GalleryField label={name} value={value} onChange={onChange} hint={hint} />;
@@ -261,7 +395,7 @@ export function Field({ field, value, onChange, pillars = [] }) {
     );
   }
   let control;
-  if (type === 'textarea') control = <AdminTextarea label={name} rows={field.rows || 4} value={value ?? ''} onChange={(e) => onChange(e.target.value)} className={`${inputClass} !resize-y`} required={field.required} />;
+  if (type === 'textarea') control = <AdminTextarea label={name} rows={field.rows || 4} value={value ?? ''} placeholder={field.placeholder} onChange={(e) => onChange(e.target.value)} className={`${inputClass} !resize-y`} required={field.required} />;
   else if (type === 'select') {
     control = (
       <AdminSelect label={name} value={value ?? ''} onChange={(e) => onChange(e.target.value)} className={inputClass}>
@@ -280,7 +414,7 @@ export function Field({ field, value, onChange, pillars = [] }) {
   } else if (type === 'number') {
     control = <AdminInput label={name} type="number" min={field.min} max={field.max} value={value ?? ''} onChange={(e) => onChange(e.target.value === '' ? null : Number(e.target.value))} className={inputClass} />;
   } else {
-    control = <AdminInput label={name} type={type === 'password' ? 'password' : type === 'email' ? 'email' : type === 'url' ? 'url' : 'text'} autoComplete={type === 'password' ? 'new-password' : undefined} value={value ?? ''} onChange={(e) => onChange(e.target.value)} className={inputClass} required={field.required} />;
+    control = <AdminInput label={name} type={type === 'password' ? 'password' : type === 'email' ? 'email' : type === 'url' ? 'url' : 'text'} autoComplete={type === 'password' ? 'new-password' : undefined} value={value ?? ''} placeholder={field.placeholder} onChange={(e) => onChange(e.target.value)} className={inputClass} required={field.required} />;
   }
   return <div>{control}{hint && <p className="mt-1 text-xs text-tone-500">{hint}</p>}</div>;
 }

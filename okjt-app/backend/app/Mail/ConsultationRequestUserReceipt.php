@@ -3,13 +3,14 @@
 namespace App\Mail;
 
 use App\Models\SiteSetting;
+use App\Support\EnquiryReply;
+use App\Support\SiteUrl;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Blade;
 
 class ConsultationRequestUserReceipt extends Mailable
 {
@@ -31,7 +32,7 @@ class ConsultationRequestUserReceipt extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'We Received Your Request: '.($this->requestData->subject ?? 'Consultation Inquiry'),
+            subject: EnquiryReply::subject($this->requestData),
         );
     }
 
@@ -40,23 +41,6 @@ class ConsultationRequestUserReceipt extends Mailable
      */
     public function content(): Content
     {
-        $customTemplate = SiteSetting::where('key', 'email_template_user')->first();
-
-        if ($customTemplate && ! empty($customTemplate->value)) {
-            if (! str_contains($customTemplate->value, '@extends')) {
-                return new Content(
-                    view: 'emails.dynamic',
-                    with: [
-                        'dynamicContent' => Blade::render($customTemplate->value, $this->templateData()),
-                    ]
-                );
-            } else {
-                return new Content(
-                    htmlString: Blade::render($customTemplate->value, $this->templateData())
-                );
-            }
-        }
-
         return new Content(
             view: 'emails.consultation-user-receipt',
             with: $this->templateData(),
@@ -64,16 +48,16 @@ class ConsultationRequestUserReceipt extends Mailable
     }
 
     /**
-     * What the templates can use: the brief, and the booking page's address
-     * (empty while none is set in Contact details).
-     *
-     * @return array{requestData: mixed, bookingUrl: string}
+     * What the email shows: the brief, the opening message from Settings ›
+     * Email templates, and the booking page (empty while none is set).
      */
     private function templateData(): array
     {
         return [
             'requestData' => $this->requestData,
+            'opening' => EnquiryReply::message($this->requestData),
             'bookingUrl' => (string) SiteSetting::where('key', 'booking_url')->value('value'),
+            'howWeWorkUrl' => SiteUrl::page('/how-we-work'),
         ];
     }
 

@@ -1,20 +1,17 @@
 @extends('emails.layout')
 
 @section('content')
-    <div class="badge" style="background-color: #ef4444; color: #ffffff;">Security Alert</div>
-    <h1>Password Reset Request</h1>
-    <p>You are receiving this email because we received a password reset request for your OKJTech account.</p>
-    
-    <div style="text-align: center; margin: 30px 0;">
-        <a href="{{ $resetUrl }}" class="button" style="background-color: #ef4444;">Reset Password</a>
-    </div>
+    <div class="badge">Dashboard sign-in</div>
+    <h1>Choose a new password</h1>
+    <p>Someone asked to reset the password for your OKJTechnologies dashboard account. If it was you, choose a new one here:</p>
 
-    <p style="font-size: 14px;">This password reset link will expire in {{ $expireCount }} minutes.</p>
+    <a href="{{ $resetUrl }}" class="button">Choose a New Password</a>
 
-    <p style="font-size: 14px; color: #64748b; margin-top: 20px;">If you did not request a password reset, no further action is required. Your account remains secure.</p>
+    <p>The link works for {{ $expireCount }} minutes.</p>
+    <p class="fine">Didn’t ask for this? Ignore this email; your password stays as it is.</p>
 
-    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #f1f5f9; font-size: 12px; color: #94a3b8;">
-        <p>If you're having trouble clicking the "Reset Password" button, copy and paste the URL below into your web browser:</p>
-        <p style="word-break: break-all; color: #3b82f6;">{{ $resetUrl }}</p>
+    <div class="panel">
+        <p class="fine" style="margin: 0 0 6px;">If the button doesn’t open, copy this address into your browser:</p>
+        <p class="fine" style="margin: 0; word-break: break-all;"><a href="{{ $resetUrl }}">{{ $resetUrl }}</a></p>
     </div>
 @endsection

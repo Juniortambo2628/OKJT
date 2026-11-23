@@ -9,6 +9,6 @@
 
     <p>Meanwhile, the <a href="{{ $toolsUrl }}">free website health check</a> looks over any site for search and speed problems in about a minute.</p>
 
-    <p style="margin-top: 30px; font-size: 14px;">OKJTechnologies, Nairobi</p>
-    <p style="font-size: 12px; color: #64748b;">Didn’t sign up, or changed your mind? <a href="{{ $unsubscribeUrl }}">Unsubscribe</a> in one click. See the <a href="{{ $privacyUrl }}">privacy policy</a>.</p>
+    <p style="margin-top: 28px; margin-bottom: 0;">OKJTechnologies</p>
+    <p class="fine">Didn’t sign up, or changed your mind? <a href="{{ $unsubscribeUrl }}">Unsubscribe</a> in one click. See the <a href="{{ $privacyUrl }}">privacy policy</a>.</p>
 @endsection

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\SiteSetting;
+use App\Support\EnquiryReply;
 use Illuminate\Database\Seeder;
 
 class AdvancedSettingsSeeder extends Seeder
@@ -290,56 +291,6 @@ HTML;
 HTML;
 
         // Default Email Templates (Blade source)
-        $emailTemplateAdmin = <<<'HTML'
-<div class="badge" style="background-color: #3b82f6; color: #ffffff;">New Action Required</div>
-<h1>New Consultation Request</h1>
-<p>A new consultation request has been submitted through the OKJTechnologies website.</p>
-
-<div style="background-color: #050a1b; padding: 25px; border-radius: 8px; border: 1px solid #1e293b; margin: 20px 0;">
-    <h3 style="color: #3b82f6; margin-top: 0;">Request Details:</h3>
-    <table style="width: 100%; font-size: 14px; border-collapse: collapse;">
-        <tr>
-            <td style="padding: 8px 0; color: #64748b; width: 120px;">Name:</td>
-            <td style="padding: 8px 0; font-weight: bold; color: #ffffff;">{{ $requestData->first_name }} {{ $requestData->last_name }}</td>
-        </tr>
-        <tr>
-            <td style="padding: 8px 0; color: #64748b;">Email:</td>
-            <td style="padding: 8px 0; font-weight: bold; color: #3b82f6;">{{ $requestData->email }}</td>
-        </tr>
-        <tr>
-            <td style="padding: 8px 0; color: #64748b;">Subject:</td>
-            <td style="padding: 8px 0; color: #ffffff;">{{ $requestData->subject ?? 'N/A' }}</td>
-        </tr>
-        <tr>
-            <td style="padding: 8px 0; color: #64748b; vertical-align: top;">Message:</td>
-            <td style="padding: 8px 0; color: #cbd5e1; line-height: 1.5;">{{ $requestData->message }}</td>
-        </tr>
-    </table>
-</div>
-
-<a href="{{ config('app.frontend_url') }}/admin/requests" class="button">View in Dashboard</a>
-
-<p style="margin-top: 30px; font-size: 12px; color: #64748b;">This is an automated notification from the OKJTechnologies CMS.</p>
-HTML;
-
-        $emailTemplateUser = <<<'HTML'
-<div class="badge">Request Received</div>
-<h1>Hello, {{ $requestData->first_name }}!</h1>
-<p>Thank you for reaching out to OKJTechnologies. We have successfully received your request for a consultation regarding <strong>&ldquo;{{ $requestData->subject ?? 'General Inquiry' }}&rdquo;</strong>.</p>
-
-<p>Our advisory team is currently reviewing your details and will get back to you within 24-48 business hours to discuss your requirements and schedule a session.</p>
-
-<div style="background-color: #050a1b; padding: 20px; border-radius: 8px; margin: 20px 0;">
-    <h3 style="margin-bottom: 10px; color: #3b82f6;">Your Message Summary:</h3>
-    <p style="font-style: italic; margin: 0;">&ldquo;{{ $requestData->message }}&rdquo;</p>
-</div>
-
-<p>In the meantime, feel free to explore our latest market intelligence and insights:</p>
-
-<a href="{{ config('app.frontend_url') }}/insights" class="button">View Latest Insights</a>
-
-<p style="margin-top: 30px; font-size: 14px;">Best regards,<br>The OKJTechnologies Team</p>
-HTML;
 
         $settings = [
             [
@@ -360,18 +311,8 @@ HTML;
                 'group' => 'legal',
                 'type' => 'rich-text',
             ],
-            [
-                'key' => 'email_template_admin',
-                'value' => $emailTemplateAdmin,
-                'group' => 'email',
-                'type' => 'code',
-            ],
-            [
-                'key' => 'email_template_user',
-                'value' => $emailTemplateUser,
-                'group' => 'email',
-                'type' => 'code',
-            ],
+            ['key' => 'enquiry_reply_subject', 'value' => EnquiryReply::DEFAULT_SUBJECT, 'group' => 'email', 'type' => 'text'],
+            ['key' => 'enquiry_reply_message', 'value' => EnquiryReply::DEFAULT_MESSAGE, 'group' => 'email', 'type' => 'rich'],
         ];
 
         foreach ($settings as $setting) {
