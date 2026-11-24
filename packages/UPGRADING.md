@@ -1,5 +1,32 @@
 # Upgrading
 
+## 0.15 → 0.16 (dashboard 0.16.0, laravel-kit 0.16.0, create-okjt-app 0.1.15)
+
+Page copy (S6, step 2), from TFE and Naoa. Nothing changes until you use it.
+`npm i @okjt/dashboard@^0.16.0` and `composer require
+okjt/laravel-kit:^0.16.0`, then publish and run the migrations (a new
+`okjt_page_copy` table). `@okjt/ui` stays at 0.8.
+
+- **Defaults stay in your code**: point `okjt.page_copy.config` at the
+  config file holding your pages' words (TFE: `'landing_v2'`), each
+  top-level key a section. `Okjt\Kit\Content\PageCopy::all()` /
+  `::section('hero')` give them back with the admin's edits applied and
+  hidden sections left out; render pages from that.
+- **Only wording can change**: values under `okjt.page_copy.structural`
+  keys (ids, icons, actions, links, images) are never editable, and an
+  empty edit means the default. Add your own wiring keys to that list.
+- **Routes**: `GET /page-copy` → `PageCopyController@publicIndex`; behind
+  your admin middleware `GET /admin/page-copy` → `@index`,
+  `PUT /admin/page-copy/{section}` → `@update` (`fields: { path: text }`,
+  `visible`), `DELETE /admin/page-copy/{section}` → `@reset`. Each save and
+  reset goes in the console audit log by section.
+- **Screen**: `<AdminPageCopy />` (`sectionLabel` for your own names).
+- **Per workspace**: `okjt.page_copy.per_workspace => true` gives each
+  workspace its own copy (Naoa's weddings, instead of `PageContent`).
+- TFE: `LandingContent` → `PageCopy` with `config => 'landing_v2'`. Its
+  overrides live in `site_settings` as `landing_v2_*` rows today; moving
+  them into `okjt_page_copy` is a one-off migration in TFE.
+
 ## 0.14 → 0.15 (dashboard 0.15.0, laravel-kit 0.15.0, create-okjt-app 0.1.14)
 
 Site settings (S6, step 1), from okjt-app. Nothing changes until you use
