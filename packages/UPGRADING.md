@@ -1,5 +1,31 @@
 # Upgrading
 
+## 0.16 → 0.17 (dashboard 0.17.0, laravel-kit 0.17.0, create-okjt-app 0.1.16)
+
+Page photos (S6, step 3), from Naoa. Nothing changes until you use them.
+`npm i @okjt/dashboard@^0.17.0` and `composer require
+okjt/laravel-kit:^0.17.0`, then publish and run the migrations (a new
+`okjt_page_photos` table). `@okjt/ui` stays at 0.8.
+
+- **How it works**: each place on your site ("homeHero") keeps its default
+  picture in your frontend. The admin swaps in others, several cross-fading
+  in order (at most `okjt.page_photos.max`, 8). A picture is a ref:
+  `media-{id}` from the media library, or a built-in photo key your
+  frontend knows.
+- **Routes**: `GET /page-photos` → `PagePhotoController@index` (public;
+  `{ placements: { key: [refs] }, media: { 'media-9': { url, … } } }`);
+  behind your admin middleware `PUT /admin/page-photos/{key}` → `@update`
+  (`images: [refs]`) and `DELETE /admin/page-photos/{key}` → `@reset`. Each
+  change goes in the console audit log, before and after.
+- **Screen**: `<AdminPagePhotos places={[{ key, label, hint, defaults }]}
+  builtIn={{ key: url }} />`.
+- **Media library**: deleting a file a place still shows is now refused,
+  naming the places.
+- Naoa: `SitePhotosController` / `SitePhotoPlacement` → the kit's, with
+  `per_workspace` off (Naoa's own site) and your built-in photo keys as
+  they are. Its uploads (`site_media`, refs `upload-{id}`) need a one-off
+  move into the media library and their refs rewritten to `media-{id}`.
+
 ## 0.15 → 0.16 (dashboard 0.16.0, laravel-kit 0.16.0, create-okjt-app 0.1.15)
 
 Page copy (S6, step 2), from TFE and Naoa. Nothing changes until you use it.
