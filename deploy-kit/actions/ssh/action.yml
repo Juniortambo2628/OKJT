@@ -1,0 +1,25 @@
+name: deploy-kit ssh
+description: Write the deploy key and pinned host keys; defines the `vps` ssh alias.
+inputs:
+  host: { required: true }
+  port: { required: false, default: "22" }
+  user: { required: true }
+  key: { required: true }
+  known_hosts: { required: true }
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        H: ${{ inputs.host }}
+        P: ${{ inputs.port }}
+        U: ${{ inputs.user }}
+        K: ${{ inputs.key }}
+        KH: ${{ inputs.known_hosts }}
+      run: |
+        install -d -m 700 ~/.ssh
+        printf '%s\n' "$K" > ~/.ssh/deploy_key && chmod 600 ~/.ssh/deploy_key
+        # Pinned host keys only — never trust-on-first-use from a runner.
+        printf '%s\n' "$KH" > ~/.ssh/known_hosts
+        printf 'Host vps\n  HostName %s\n  Port %s\n  User %s\n  IdentityFile ~/.ssh/deploy_key\n  IdentitiesOnly yes\n  StrictHostKeyChecking yes\n  ServerAliveInterval 30\n' \
+          "$H" "${P:-22}" "$U" > ~/.ssh/config

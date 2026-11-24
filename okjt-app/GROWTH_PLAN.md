@@ -1,0 +1,152 @@
+# okjtech.co.ke growth plan
+
+Goal: more work requests from international clients on larger budgets, and
+reasons for people to come back. No paid tools. Each step is one pull request
+in this repository (okjt-app only; the OKJT kit is not changed unless a step
+says so), tested, with desktop and 390 px screenshots, and nothing changes on
+screen until its setting is filled in.
+
+The positioning every step points back to: **a product studio for African
+markets**: M-Pesa and Paystack, phones and networks that are slow, Kenya's
+Data Protection Act, and WhatsApp-first users, shipped in Tibu, Najenga, Naoa
+and Tena. That makes OKJTech useful to foreign companies, NGOs and funded
+startups entering East Africa.
+
+## 1. Booking and a qualified brief: done in this PR
+
+- [x] `booking_url` in Settings → Contact details; nothing shows while empty.
+- [x] `/book`: the Cal.com calendar in place (other booking links open in a
+      new tab); linked from the Contact hero and the brief's steps.
+- [x] Contact form: optional Budget (USD) and Timeline; stored, shown in
+      Enquiries and in the studio's email.
+- [x] The reply to the visitor offers the booking link.
+- **You:** create a free Cal.com account (cal.com), add two meeting types
+  ("Intro call", 20 min; "Project scoping", 45 min) with Google Meet, add
+  booking questions (company, budget range, timeline), and paste the intro
+  call's link into Settings → Contact details → Booking url.
+- Later, if wanted: a "Book a Call" button in the site header. The header
+  comes from the kit (`@okjt/site` SiteNav), so it needs a kit option and a
+  kit release.
+
+## 2. The website health check tool (`/tools/site-check`): done
+
+- [x] A visitor enters a web address; the server checks HTTPS, the status,
+      redirects, robots.txt (the page, and the files and data it loads),
+      the sitemap, www vs non-www, noindex, canonical, title, description,
+      one h1, how many words arrive before JavaScript, lang, viewport, link
+      previews and structured data, each with a plain fix.
+- [x] Speed scores from Google PageSpeed Insights, asked for by the
+      visitor's browser and kept with the report.
+- [x] Shareable report at `/tools/site-check/<id>` for 30 days (pruned
+      daily), kept out of search results.
+- [x] "Book a call" / "Send a brief", and "Email me this report" with an
+      optional subscription (Subscribers, source `site-check`).
+- [x] Safe to run on the open web: public addresses only, ports 80 and 443,
+      every redirect checked, the connection pinned to the checked address,
+      2 MB cap, 5 checks a minute per visitor.
+- [x] Linked from the footer ("Free Site Check") and in the sitemap.
+- [x] Draft insight "One line in robots.txt, and the pages Google couldn’t
+      see" (not published).
+- **You:** create a free PageSpeed Insights API key in Google Cloud
+  (APIs & Services → Credentials → API key, restricted to the PageSpeed
+  Insights API and to okjtech.co.ke as the website), and paste it into
+  Settings → Widgets → Pagespeed api key. Without it Google's shared
+  allowance is usually used up and the report links to PageSpeed Insights
+  instead. Then read, edit and publish the draft insight once Search
+  Console shows the after-numbers.
+
+## 3. Positioning copy and trust signals: done (except quotes)
+
+- [x] Home headline: "Product engineering for African markets" /
+      "Engineering [Health Systems, Marketplaces, Fintech, Legal Tech, Event
+      Platforms] Built for Africa" (Settings > Home page; editable).
+- [x] Starting price: "$2,000" (Settings > Services > Starting price), on
+      the Services page and How we work.
+- [x] How we work (`/how-we-work`): first call, fixed-price proposal in two
+      business days, contract and NDA; 40% to start, 20% at first
+      deployment, 20% at scope completion, 20% at handover; US dollars by
+      Wise or PayPal; staging link, updates, changes agreed in writing;
+      handover and support. Linked from the footer and Contact.
+- [x] Case study figures: Naoa "250 guests, KSh 300,000+ in gifts"; Nyalife
+      HMS "200+ patients, 7 staff roles"; Dickson Gitonga Advocates "5 hours
+      a week saved" (from the November 2026 CV).
+- [ ] Named client quotes: to come from Kevin.
+- [ ] "Replies within one business day": not promised yet (the site says
+      two business days to a proposal); Kevin to decide.
+
+## 4. Cost estimator and African-market launch checklist: done
+
+- [x] Estimator (`/tools/estimate`): eight questions (type, sign-in, payments,
+      dashboard, integrations, languages, design, deadline) give a USD range,
+      weeks and a scope outline, live as the visitor answers. "Send This as a
+      Brief" opens Contact with the budget, timeline and answers filled in.
+      The prices are starting figures (a website starts at $2,000 – $3,000);
+      **Kevin to review them.** They can be replaced without a deploy by
+      pasting JSON of the same shape (`okjt-app/web/src/lib/estimator.js`)
+      into Settings > Services > Estimator config.
+- [x] Launch checklist (`/tools/launch-checklist`): 23 checks in five areas
+      (data protection under Kenya's Data Protection Act, payments, phones and
+      networks, reaching people, going live); ticks kept in the visitor's
+      browser; "Email me the checklist" with an optional subscription
+      (source `checklist`). One source of content on the server
+      (`App\Support\LaunchChecklist`), also written into the page's HTML.
+- [x] Both linked from the Services menu ("Free tools"), the footer, and
+      each other; in the sitemap.
+
+## 5. Newsletter and reach
+
+- [x] **Signup**: a newsletter card (email, a required consent tick linking
+      the privacy policy) on Insights, at the end of every article, and under
+      the home page's insights. Saved to Subscribers with its source
+      (`insights`, `insight`, `home`).
+- [x] A welcome email with a one-click unsubscribe link (signed, so only the
+      person it was sent to can use it; also the `List-Unsubscribe` header,
+      so mail apps show their own Unsubscribe button). The link returns to
+      Insights with a note.
+- [x] Fixed on the way: signing up with an address already on the list
+      answered "already taken", and unsubscribing an unknown address answered
+      "Email not found", so either revealed who is on the list; and anyone
+      could unsubscribe anyone by address. Both now answer the same either
+      way, and both are limited to 5 tries in 10 minutes.
+- Not in the footer: the footer comes from the kit (`@okjt/site`), so it
+  would need a kit option and a release.
+- **You:** sending stays outside the site. Once a month, export Subscribers
+  (active only) to MailerLite's free plan (check its current subscriber
+  limit) and send from there, with its own unsubscribe link. Anyone who
+  unsubscribes in MailerLite should be marked inactive here too.
+- [x] **Cross-posting**: Dashboard › Insights › the share button on a row
+      opens "Cross-post": the article ready to paste on DEV (front matter
+      with `canonical_url`), Hashnode (Markdown; the canonical goes in its
+      settings) and LinkedIn (a short post linking back, since LinkedIn has
+      no canonical setting). Every copy ends "First published on
+      okjtech.co.ke", and images and links use full okjtech.co.ke addresses.
+- [x] RSS feed at `/feed.xml` (published insights in full), linked from
+      every page's head.
+- **You (once):** in DEV, Settings › Extensions, add
+  `https://okjtech.co.ke/feed.xml` as the RSS feed and tick the option to
+  mark the RSS source as the canonical URL. New insights then arrive in DEV
+  as drafts, already crediting okjtech.co.ke; review and publish them there.
+  For Hashnode and LinkedIn use the Cross-post panel. Wait a few days after
+  publishing on okjtech.co.ke before posting copies, so Google sees the
+  original first.
+- **Listings** (you): Clutch and GoodFirms profiles with 3 to 5 client
+  reviews; a Contra profile; a Google Business Profile; Product Hunt launches
+  for Naoa and Najenga.
+- [x] **Insight topics for buyers**: four drafts (not published) under the
+      topic "Building for African markets": what it really costs to launch a
+      fintech app in Kenya; six M-Pesa integration mistakes foreign teams
+      make; is your app compliant with Kenya's Data Protection Act; building
+      for 3G. No prices or statistics beyond what the site already states;
+      legal points follow the Act, its 2021 regulations and ODPC guidance,
+      with a "not legal advice" line.
+- **You:** read and edit each in Dashboard › Insights, add a cover picture,
+  and publish. Publish the data protection article no later than the
+  fintech one (the fintech article links to it). Then cross-post with the
+  Cross-post button.
+- **Measure**: Search Console (clicks, indexed pages), bookings per month,
+  briefs per month by budget range (Enquiries now records it).
+
+## Order
+
+1 (this PR) → 2 → 3 → 4 → 5. Steps 3 and 5's listings can run alongside the
+others; they are mostly your writing and accounts.

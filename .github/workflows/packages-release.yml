@@ -1,0 +1,167 @@
+name: Packages release
+
+# To release: bump the package versions, set packages/VERSION, push to main.
+# To retry after a failure (say a missing trusted publisher): Re-run failed
+# jobs in the Actions tab, or push any change to this file.
+#
+# A release happens when packages/VERSION names a version that has no
+# release yet and that commit reaches main: this workflow creates the tag
+# v<VERSION> and its GitHub release, then does the two steps below. (Pushing
+# a tag such as v0.1.0 by hand still works too.) The steps:
+#   1. publish every npm package in packages/ whose version is not on npm yet;
+#   2. copy packages/laravel-kit to its own repository and tag it there, which
+#      is where Composer installs okjt/laravel-kit from.
+#
+# npm: trusted publishing with staged releases. Each package names this
+# workflow as its Trusted Publisher on npmjs.com (permission: npm stage
+# publish), so no token is needed. The workflow stages each new version; a
+# maintainer approves it on npmjs.com (Staged Packages, with two-factor) to
+# publish it. A version already staged but not approved can't be staged
+# again: approve or reject it first. A brand-new package can't have a trusted
+# publisher until it exists: publish its first version by hand, then set it.
+#
+# Composer: needs the empty repository Juniortambo2628/okjt-laravel-kit and the
+# SPLIT_TOKEN secret (a fine-grained GitHub token with Contents: read and
+# write on that repository only).
+#
+# To release the Composer package again for an existing tag (say the copy
+# failed), run this workflow from the Actions tab with that tag: npm skips
+# versions it already has.
+on:
+  push:
+    branches: [main]
+    # VERSION: a new release. This file: re-run the steps for the current
+    # VERSION (each skips what is already done), e.g. after fixing a failure.
+    paths: ['packages/VERSION', '.github/workflows/packages-release.yml']
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to release, e.g. v0.1.0'
+        required: true
+
+permissions:
+  contents: read
+  id-token: write # npm trusted publishing and provenance
+
+jobs:
+  # Which tag this run releases: the pushed tag, the one asked for, or (on
+  # main) v<packages/VERSION> if it has no release yet, made here.
+  release:
+    name: Tag and GitHub release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_TAG: ${{ inputs.tag }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = workflow_dispatch ]; then
+            echo "tag=$INPUT_TAG" >> "$GITHUB_OUTPUT"
+          elif [ "$GITHUB_REF_TYPE" = tag ]; then
+            echo "tag=$GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
+          else
+            tag="v$(tr -d '[:space:]' < packages/VERSION)"
+            if git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
+              echo "::notice::$tag is already released: checking npm and Composer have it."
+              echo "tag=$tag" >> "$GITHUB_OUTPUT"
+            else
+              # Made with this run's token, so it doesn't start this workflow again.
+              gh release create "$tag" --target "$GITHUB_SHA" --title "$tag" --generate-notes \
+                --notes "What changed and how to upgrade: [packages/UPGRADING.md](https://github.com/$GITHUB_REPOSITORY/blob/$tag/packages/UPGRADING.md)"
+              echo "::notice::Released $tag. Approve the staged npm versions on npmjs.com (Staged Packages)."
+              echo "tag=$tag" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
+  npm:
+    name: Publish to npm
+    needs: release
+    if: needs.release.outputs.tag != ''
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release.outputs.tag }}
+
+      # Node 24 ships npm 11, which trusted publishing needs (11.5.1 or later).
+      # No registry-url: that writes a placeholder token into .npmrc, which npm
+      # falls back to (failing with a misleading 404) when trusted publishing
+      # doesn't match. Without it, a mismatch fails as "not signed in".
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      # Trusted publishing needs npm 11.5.1 or later, whichever Node 24 this is.
+      - run: npm install -g npm@^11.5.1
+
+      - run: npm ci
+      - run: npm test
+
+      # Trusted publishing: npm signs in through this workflow's identity
+      # (the publisher set on each package at npmjs.com), with no token, and
+      # stages the new version. A maintainer then approves it with two-factor
+      # on npmjs.com (Staged Packages), which publishes it.
+      - name: Stage new versions
+        run: |
+          failed=0
+          for dir in $(node -p "require('./package.json').workspaces.join(' ')"); do
+            name=$(node -p "require('./$dir/package.json').name")
+            version=$(node -p "require('./$dir/package.json').version")
+            if npm view "$name@$version" version >/dev/null 2>&1; then
+              echo "$name@$version is already published"
+              continue
+            fi
+            # npm stage doesn't understand workspaces, so it runs in the package's folder.
+            # --loglevel verbose: npm's trusted-publishing (oidc) lines say why a sign-in failed.
+            if (cd "$dir" && npm stage publish --provenance --access public --loglevel verbose) > "/tmp/$dir.log" 2>&1; then
+              echo "::notice::$name@$version is staged: approve it on npmjs.com (Staged Packages) to publish it."
+            elif grep -q 'Cannot stage previously published version' "/tmp/$dir.log"; then
+              # Staged by an earlier run and not yet approved (or rejected).
+              echo "::notice::$name@$version is already staged: approve it on npmjs.com (Staged Packages)."
+            else
+              failed=1
+              cat "/tmp/$dir.log"
+              # The reason, where it shows without the log (annotations).
+              reason=$(grep -E 'npm (error|ERR!)|oidc|OIDC' "/tmp/$dir.log" | grep -v 'npm error A complete log' | tail -8 | tr '\n' ' ' | cut -c1-900)
+              echo "::error title=$name@$version was not staged::$reason"
+            fi
+          done
+          exit $failed
+
+  composer:
+    name: Release okjt/laravel-kit
+    needs: release
+    if: needs.release.outputs.tag != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release.outputs.tag }}
+          fetch-depth: 0
+          # Otherwise git keeps sending this run's own token, which may not
+          # write to another repository, instead of SPLIT_TOKEN.
+          persist-credentials: false
+
+      - name: Copy packages/laravel-kit to its own repository, and tag it
+        env:
+          SPLIT_TOKEN: ${{ secrets.SPLIT_TOKEN }}
+          TAG: ${{ needs.release.outputs.tag }}
+        run: |
+          if [ -z "$SPLIT_TOKEN" ]; then echo "::error::The SPLIT_TOKEN secret is not set"; exit 1; fi
+          git subtree split --prefix packages/laravel-kit -b laravel-kit-split
+          remote="https://x-access-token:${SPLIT_TOKEN}@github.com/Juniortambo2628/okjt-laravel-kit.git"
+          git push "$remote" laravel-kit-split:main --force
+          git push "$remote" "laravel-kit-split:refs/tags/${TAG}"

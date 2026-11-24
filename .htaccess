@@ -1,0 +1,21 @@
+# OKJTech Production Routing
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    
+    # FIX: Map storage requests to the backend storage folder
+    RewriteRule ^storage/(.*)$ api/public/storage/$1 [L]
+    
+    # FIX: Proxy API requests and preserve the 'api/' prefix Laravel expects
+    RewriteRule ^api/(.*)$ api/public/index.php [L,QSA]
+    
+    # Handle real files/directories (React assets)
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+    
+    # Handle frontend SPA routing
+    RewriteRule ^ index.html [L]
+</IfModule>
+
+Options -Indexes

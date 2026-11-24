@@ -1,0 +1,173 @@
+# @okjt/dashboard
+
+The pages of an OKJTech dashboard, as Naoa builds them: every page has the
+same shape — a hero with breadcrumbs, optional summary cards that double as
+filters, the page's content with a side panel beside it, and one floating
+toolbar for search, filters, views and actions. Lists fit the screen and only
+their rows scroll. Saving works one way everywhere (`useAdminAction`):
+confirm, pending state, toast, refresh, and hidden for people who may only
+view.
+
+Colours and fonts come from `@okjt/ui`'s theme.
+
+## Install
+
+```bash
+npm i @okjt/dashboard @okjt/ui
+```
+
+Peer dependencies: `react`, `react-dom`, `react-router-dom`,
+`@tanstack/react-query`, `framer-motion`, `lucide-react`, `react-hot-toast`.
+
+```css
+@import "tailwindcss";
+@import "./okjt-theme.css";
+@source "../node_modules/@okjt/ui/dist";
+@source "../node_modules/@okjt/dashboard/dist";
+```
+
+## Set it up
+
+```jsx
+import { PermissionsProvider, ConfirmHost } from '@okjt/ui';
+import { DashboardProvider, SearchProvider, AdminChromeProvider } from '@okjt/dashboard';
+
+const dashboard = {
+  home: { label: 'Dashboard', path: '/dashboard' },  // first breadcrumb on every page
+  useDefaultPanel: () => null,                       // side panel for pages without one
+  useAfterChange: () => undefined,                   // called after every successful save
+};
+
+function Providers({ children }) {
+  const permissions = useMyPermissions(); // { role, isOwner, canEdit }
+  return (
+    <PermissionsProvider value={permissions}>
+      <DashboardProvider dashboard={dashboard}>
+        <SearchProvider>
+          <AdminChromeProvider>
+            {children}
+            <ConfirmHost />
+          </AdminChromeProvider>
+        </SearchProvider>
+      </DashboardProvider>
+    </PermissionsProvider>
+  );
+}
+```
+
+Outside a `PermissionsProvider` everything is allowed; outside a
+`DashboardProvider` the defaults above apply.
+
+## A page
+
+```jsx
+import { Plus } from 'lucide-react';
+import { AdminPageLayout, AdminPageHero, AdminSummaryCards, AdminListPanel, useAdminAction, useFilteredItems, useSearch } from '@okjt/dashboard';
+
+export default function Expenses() {
+  const { data: expenses = [] } = useQuery({ queryKey: ['expenses'], queryFn: api.expenses });
+  const { searchQuery } = useSearch();
+  const shown = useFilteredItems(expenses, searchQuery);
+  const remove = useAdminAction((id) => api.deleteExpense(id), {
+    confirm: 'Delete this expense?', success: 'Expense deleted', invalidate: [['expenses']],
+  });
+
+  return (
+    <AdminPageLayout
+      fill
+      hero={<AdminPageHero title="Expenses" breadcrumb="Expenses" />}
+      summary={<AdminSummaryCards cards={[{ label: 'This month', value: total(expenses) }]} />}
+      search="Search expenses"
+      actions={[{ id: 'add', label: 'Add expense', icon: Plus, onClick: openForm }]}
+    >
+      <AdminListPanel>{shown.map((e) => <Row key={e.id} expense={e} onDelete={() => remove.run(e.id)} />)}</AdminListPanel>
+    </AdminPageLayout>
+  );
+}
+```
+
+## Building blocks
+
+| Export | What it is |
+|---|---|
+| `AdminPageLayout` | The page: `hero`, `summary`, content, `panel`, and the toolbar's `actions`, `search`, `filters`; `fill` fits the viewport |
+| `AdminPageHero` | Title, breadcrumbs, description; a compact copy appears in the header once it scrolls away |
+| `AdminSummaryCards`, `StatCard` | Summary numbers; a card can apply a filter |
+| `AdminFloatingToolbar`, `AdminToolbarSearch`, `AdminToolbarFilters`, `countActiveFilters` | The toolbar and its parts |
+| `SidePanelAside`, `SidePanelMobileBar`, `SidePanelNav` | The side panel: sections, tools, lists; chips and a sheet on phones |
+| `AdminListPanel`, `AdminPagination`, `pageWindow`, `AdminBulkActions` | Lists, paging, actions on a selection |
+| `AdminCard`, `AdminInput`, `AdminTextarea`, `AdminSelect`, `AdminModal` | Cards, fields, dialogs |
+| `EditableFieldset`, `DeleteButton`, `ToggleButton` | Controls that disable or hide themselves for viewers |
+| `EmptyState`, `QueryError` | Nothing to show; something failed to load |
+| `UnsavedChangesStatus`, `useUnsavedChangesGuard`, `useUnsavedChanges` | Warn before leaving with unsaved edits |
+| `AdminTutorial` | A guided tour; pass `steps` |
+| `useAdminAction`, `useBulkAdminAction`, `useCrudHandlers` | One way to save |
+| `useFilteredItems`, `useSavedViews` | Search across a list; remembered views |
+| `SearchProvider`/`useSearch`, `AdminChromeProvider`/`useAdminChrome`, `AdminHeaderStatus` | The shared search box and the header's slots |
+| `DashboardProvider`, `useDashboard` | The settings above |
+
+## Working together
+
+With `okjt/laravel-kit`'s collaboration routes on the server, add to the
+dashboard settings:
+
+```js
+const dashboard = {
+  // …
+  api,                                   // axios-like, sends the workspace header, resolves to the body
+  modules: [{ key: 'expenses', path: '/dashboard/expenses', label: 'Expenses' }],
+  roles: [{ value: 'owner', label: 'Owner', description: '…' }, /* editor, viewer */],
+  anonymousName: 'Someone',              // changes nobody signed in made
+  useDefaultPanel: useActivityPanel,      // who's here and what changed, on pages without a panel
+  useAfterChange: () => useCollaboration().refresh,
+};
+```
+
+and wrap the dashboard in `<CollaborationProvider>` (inside the router). Then
+`ShareModal`, `VersionHistoryDrawer`, `ActivityPanel` and
+`CollaboratorAvatars` work as in Naoa.
+
+## Signing in
+
+| Export | What it is |
+|---|---|
+| `AuthProvider`, `useAuth` | Who is signed in: `api`, plus `extend` for what the project adds |
+| `GoogleButton` | Sends the browser to the kit's Google route |
+| `loginWithPasskey`, `registerPasskey`, `passkeysSupported` | Passkeys against the kit's `PasskeyController`; `{ base }` if the routes aren't under `/api` |
+| `NotificationsBell` | The header's notifications |
+| `AuthLayout`, `AuthField`, `AuthSubmit`, `AuthError` | The sign-in pages' frame (`brand`, `backLabel`, and a desktop panel `aside`) and its fields |
+| `SignInPage` | Email and password, a passkey, `google`; then verifying the email or a two-step code. `onSignedIn(result)` decides where to go (return a message to show instead) |
+| `GoogleCallbackPage`, `VerifyEmailPage`, `AcceptInvitePage` | Where Google sign-in, the verification email and invitation links land |
+| `AccountMenu` | The header's avatar menu: who you are, the project's own entries (`extra`), account pages (`links`), log out |
+
+Each page takes `layout`: the project's own `AuthLayout` with its logo and panel.
+`SignInPage` needs `react-hook-form`.
+
+## The shell
+
+`DashboardShell` (with `DashboardSidebar` and `DashboardHeader`) is the frame
+around every page, set up through `shell` in the dashboard settings.
+
+**A tab bar on phones** (`shell.tabBar`, off by default): a floating bar at
+the bottom below `lg`, its tabs picked from the sidebar by path so the two
+can't drift apart, plus a Menu tab that opens the sidebar.
+
+```js
+shell: {
+  nav,
+  tabBar: { tabs: ['/app', { path: '/app/plan', primary: true, label: 'Plan' }, '/app/inbox'] },
+}
+```
+
+`menu: false` drops the Menu tab, `label` names the bar for screen readers
+("Tabs"), `className` replaces its look. With the bar on, the floating
+toolbar sits above it and the page ends clear of it.
+
+**A skeleton while a page loads** (`shell.pageSkeleton`, off by default): the
+page gets its own Suspense boundary inside the shell, so a lazy route that is
+still loading shows a placeholder shaped like it (a dashboard, cards, a table,
+or a form beside a preview, chosen from the path) after 220 ms, and the
+sidebar and header stay. `true` uses the kit's patterns; or pass
+`{ patterns: [[/\/guests(\/|$)/, 'table'], ...DEFAULT_SKELETON_PATTERNS],
+fallback, grace }`. `PageSkeleton` and `skeletonVariantFor` are exported too.
+

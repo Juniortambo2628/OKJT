@@ -1,0 +1,89 @@
+# Reusable: deploy a Next.js app (output: 'standalone') to the Hestia VPS,
+# run under PM2 on 127.0.0.1:<port>, proxied by nginx. See deploy-kit/README.md.
+name: deploy-next
+
+on:
+  workflow_call:
+    inputs:
+      domain:        { type: string, required: true }
+      app_name:      { type: string, required: true, description: "folder under private/ and PM2 process name" }
+      port:          { type: number, required: true }
+      app_dir:       { type: string, default: "." }
+      ref:           { type: string, default: "" }
+      node_version:  { type: string, default: "24" }
+      npm_flags:     { type: string, default: "" }
+      kit_repo:      { type: string, default: "Juniortambo2628/OKJT" }
+      kit_ref:       { type: string, default: "main" }
+    secrets:
+      VPS_HOST: { required: true }
+      VPS_PORT: { required: false }
+      VPS_USER: { required: true }
+      VPS_SSH_KEY: { required: true }
+      VPS_KNOWN_HOSTS: { required: true }
+      ENV_FILE: { required: false, description: "env for build (NEXT_PUBLIC_*) AND runtime; written to shared/.env" }
+      KIT_TOKEN: { required: false }
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    concurrency: { group: "deploy-${{ inputs.domain }}", cancel-in-progress: false }
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: "${{ inputs.ref || github.sha }}", path: app }
+      - uses: actions/checkout@v4
+        with: { repository: "${{ inputs.kit_repo }}", ref: "${{ inputs.kit_ref }}", path: kit, token: "${{ secrets.KIT_TOKEN || github.token }}", sparse-checkout: deploy-kit }
+      - uses: actions/setup-node@v4
+        with: { node-version: "${{ inputs.node_version }}" }
+
+      - name: Build (standalone)
+        working-directory: app/${{ inputs.app_dir }}
+        env: { ENV_FILE: "${{ secrets.ENV_FILE }}" }
+        run: |
+          [ -n "$ENV_FILE" ] && printf '%s\n' "$ENV_FILE" > .env.production
+          npm ci ${{ inputs.npm_flags }}
+          npm run build
+          SERVER="$(find .next/standalone -name server.js -not -path '*/node_modules/*' | head -1)"
+          [ -n "$SERVER" ] || { echo "no .next/standalone/server.js — add output: 'standalone' to next.config"; exit 1; }
+          ROOT="$(dirname "$SERVER")"
+          mkdir -p "$GITHUB_WORKSPACE/dist"
+          cp -a "$ROOT/." "$GITHUB_WORKSPACE/dist/"
+          mkdir -p "$GITHUB_WORKSPACE/dist/.next"
+          cp -a .next/static "$GITHUB_WORKSPACE/dist/.next/static"
+          [ -d public ] && cp -a public "$GITHUB_WORKSPACE/dist/public"
+          rm -f "$GITHUB_WORKSPACE"/dist/.env*   # runtime env comes from shared/.env
+
+      - uses: ./kit/deploy-kit/actions/ssh
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          port: ${{ secrets.VPS_PORT }}
+          user: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          known_hosts: ${{ secrets.VPS_KNOWN_HOSTS }}
+
+      - name: Upload release
+        run: |
+          SHA="$(git -C app rev-parse HEAD)"
+          echo "RELEASE=$(date -u +%Y%m%d%H%M%S)-${SHA::7}" >> "$GITHUB_ENV"
+          echo "APP_ROOT=$(ssh vps 'echo $HOME')/web/${{ inputs.domain }}/private/${{ inputs.app_name }}" >> "$GITHUB_ENV"
+          source "$GITHUB_ENV"
+          ssh vps "mkdir -p '$APP_ROOT/releases/$RELEASE' '$APP_ROOT/shared'"
+          LINK=""; ssh vps "test -d '$APP_ROOT/current/'" && LINK="--link-dest=$APP_ROOT/current/"
+          rsync -az --delete $LINK dist/ "vps:$APP_ROOT/releases/$RELEASE/"
+          rsync -az kit/deploy-kit/scripts/ "vps:$APP_ROOT/releases/$RELEASE/.deploy-kit/"
+
+      - name: Write .env from secret (if set)
+        env: { ENV_FILE: "${{ secrets.ENV_FILE }}" }
+        run: |
+          [ -z "$ENV_FILE" ] && { echo "ENV_FILE not set — keeping the server's .env"; exit 0; }
+          printf '%s\n' "$ENV_FILE" | ssh vps "umask 077 && cat > '$APP_ROOT/shared/.env.new' && mv -f '$APP_ROOT/shared/.env.new' '$APP_ROOT/shared/.env'"
+
+      - name: Activate release
+        run: ssh vps "APP_ROOT='$APP_ROOT' RELEASE='$RELEASE' APP_NAME='${{ inputs.app_name }}' PORT='${{ inputs.port }}' bash '$APP_ROOT/releases/$RELEASE/.deploy-kit/next-activate.sh'"
+
+      - name: Verify
+        run: ssh vps "APP_ROOT='$APP_ROOT' DOMAIN='${{ inputs.domain }}' APP_NAME='${{ inputs.app_name }}' PORT='${{ inputs.port }}' bash '$APP_ROOT/current/.deploy-kit/next-verify.sh'"
+
+      - name: Remove a release that never went live
+        if: failure() && env.RELEASE != ''
+        run: ssh vps "cd '$APP_ROOT' && [ \"\$(readlink -f current 2>/dev/null)\" != \"$APP_ROOT/releases/$RELEASE\" ] && rm -rf 'releases/$RELEASE' || true"

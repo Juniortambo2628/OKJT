@@ -1,0 +1,344 @@
+
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronRight, ChevronLeft, X, Trophy, Sparkles } from 'lucide-react';
+import { Button } from '@okjt/ui';
+
+/** A step's element: `selector` (any CSS selector), else the element whose id is `target`. */
+function findTarget(step) {
+  if (!step || typeof document === 'undefined') return null;
+  if (step.selector) return document.querySelector(step.selector);
+  return step.target ? document.getElementById(step.target) : null;
+}
+
+/** Whether a step's element is on screen (a sidebar hidden off-canvas on phones isn't). */
+function onScreen(step) {
+  if (!step.selector && !step.target) return true;
+  const el = findTarget(step);
+  if (!el) return false;
+  const rect = el.getBoundingClientRect();
+  return rect.width > 0 && rect.height > 0 && rect.right > 0 && rect.left < window.innerWidth;
+}
+
+/**
+ * A guided tour: a card beside each step's element, with the rest of the page
+ * dimmed. Steps: [{ title, content, target (an element id) or selector,
+ * position: 'bottom' | 'right' }]. ← and → move between steps, Escape skips.
+ *
+ * By itself it opens once per browser (localStorage). With `open` the app
+ * decides (it remembers who has finished, and can restart it): the tour shows
+ * while `open` is true and calls `onComplete` when finished or skipped.
+ *
+ * @param {boolean} [open] - Controlled: show the tour now
+ * @param {boolean} [skipMissing=false] - Leave out steps whose element isn't on screen
+ * @param {boolean} [scrollIntoView=true] - Scroll each step's element into view
+ * @param {(tour) => node} [render] - Draw the whole tour yourself (overlay,
+ *   spotlight, card), keeping the kit's behaviour (open state, skipping, the
+ *   step's element measured on screen, keys). tour: { step, index, count,
+ *   rect (the element's on-screen box, or null), next, back, finish }.
+ *   Rendered into document.body.
+ *
+ * Keys: → next (it stops at the last step; finishing is the card's own
+ * button), ← back, Escape skips.
+ */
+export default function AdminTutorial({ steps: allSteps, onComplete, isRestarted = false, open, skipMissing = false, scrollIntoView = true, render }) {
+  const controlled = open !== undefined;
+  const steps = skipMissing && allSteps ? allSteps.filter(onScreen) : allSteps;
+  const [currentStep, setCurrentStep] = useState(0);
+  const [ownVisible, setIsVisible] = useState(false);
+  const isVisible = controlled ? !!open : ownVisible;
+  const [coords, setCoords] = useState(null);
+  const [boxHeight, setBoxHeight] = useState(360);
+  const boxRef = useRef(null);
+
+  // Re-measure the card each step so vertical clamping uses its real height.
+  useLayoutEffect(() => {
+    if (boxRef.current) setBoxHeight(boxRef.current.offsetHeight);
+  }, [currentStep, isVisible, coords]);
+
+  useEffect(() => {
+    // Controlled: the app says when; nothing to remember here.
+    if (controlled) return undefined;
+    // No tour configured: nothing to show.
+    if (!steps?.length) return undefined;
+    const isCompleted = localStorage.getItem('admin-tutorial-complete');
+    if (!isCompleted || isRestarted) {
+      const timer = setTimeout(() => setIsVisible(true), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [controlled, isRestarted, steps?.length]);
+
+  // Each time the app opens it, start from the first step.
+  useEffect(() => {
+    if (controlled && open) setCurrentStep(0);
+  }, [controlled, open]);
+
+  useEffect(() => {
+    if (isVisible) {
+      // First, try to scroll the element into view instantly
+      const step = steps[currentStep];
+      const el = findTarget(step);
+      if (el && scrollIntoView) {
+          el.scrollIntoView({ behavior: 'auto', block: 'center' });
+      }
+
+      // Then update coordinates: straight away when nothing scrolled, else
+      // after a frame so the scroll has finished.
+      let timer = null;
+      if (scrollIntoView) timer = requestAnimationFrame(() => { updateCoords(); });
+      else updateCoords();
+      
+      window.addEventListener('resize', updateCoords);
+      return () => {
+          window.removeEventListener('resize', updateCoords);
+          if (timer !== null) cancelAnimationFrame(timer);
+      };
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- recompute coords only when visibility or step changes
+  }, [isVisible, currentStep]);
+
+  const updateCoords = () => {
+    const step = steps[currentStep];
+    const el = findTarget(step);
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      // Only set coords if they are valid numbers
+      if (!isNaN(rect.top) && !isNaN(rect.left)) {
+        setCoords({
+            top: rect.top,
+            left: rect.left,
+            bottom: rect.bottom,
+            right: rect.right,
+            width: rect.width,
+            height: rect.height
+        });
+      }
+    } else {
+      setCoords(null);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    } else {
+      handleComplete();
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const handleComplete = () => {
+    if (!controlled) {
+      setIsVisible(false);
+      localStorage.setItem('admin-tutorial-complete', 'true');
+    }
+    if (onComplete) onComplete();
+  };
+
+  // Keys: → next, ← back, Escape skips.
+  const keys = useRef(null);
+  // → stops at the last step: finishing takes the card's own button.
+  keys.current = { next: () => { if (currentStep < steps.length - 1) setCurrentStep(currentStep + 1); }, back: handleBack, done: handleComplete };
+  useEffect(() => {
+    if (!isVisible) return undefined;
+    const onKey = (e) => {
+      if (e.key === 'Escape') keys.current.done();
+      else if (e.key === 'ArrowRight') keys.current.next();
+      else if (e.key === 'ArrowLeft') keys.current.back();
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [isVisible]);
+
+  const getBoxStyle = () => {
+    if (!coords) {
+      return { style: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }, placement: null };
+    }
+
+    const margin = 16;
+    const gap = 24;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const boxW = Math.min(384, vw - margin * 2);
+    const boxH = boxHeight || 360;
+    const isMobile = vw < 768;
+
+    // On mobile the sidebar is often an overlay/drawer, so prefer a
+    // centred card near the target rather than off to the side.
+    const preferRight = step.position === 'right' && !isMobile;
+
+    let left;
+    let top;
+    let placement;
+
+    if (preferRight) {
+      left = coords.right + gap;
+      if (left + boxW > vw - margin) {
+        left = coords.left - gap - boxW;
+        placement = 'left';
+      } else {
+        placement = 'right';
+      }
+      top = coords.top + (coords.height / 2) - (boxH / 2);
+    } else {
+      left = coords.left + (coords.width / 2) - (boxW / 2);
+      top = coords.bottom + gap;
+      placement = 'bottom';
+      // If the card would overflow the bottom, place it above the target,
+      // or pin it inside the viewport as a last resort.
+      if (top + boxH > vh - margin) {
+        const above = coords.top - gap - boxH;
+        if (above >= margin) {
+          top = above;
+          placement = 'top';
+        } else {
+          top = Math.max(margin, vh - margin - boxH);
+        }
+      }
+    }
+
+    // Final clamps keep the card fully on screen on both axes.
+    left = Math.min(Math.max(margin, left), vw - margin - boxW);
+    top = Math.min(Math.max(margin, top), vh - margin - boxH);
+
+    return { style: { top, left, width: boxW }, placement };
+  };
+
+  if (!isVisible || !steps?.length) return null;
+
+  if (render) {
+    if (typeof document === 'undefined') return null;
+    const index = Math.min(currentStep, steps.length - 1);
+    return createPortal(
+      render({ step: steps[index], index, count: steps.length, rect: coords, next: handleNext, back: handleBack, finish: handleComplete }),
+      document.body,
+    );
+  }
+
+  const step = steps[Math.min(currentStep, steps.length - 1)];
+
+  const { style: boxStyle, placement } = getBoxStyle();
+
+  return (
+    <div className="fixed inset-0 z-[100] pointer-events-none">
+      {/* Backdrop with spotlight effect */}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="absolute inset-0 bg-black/60 backdrop-blur-[2px] pointer-events-auto"
+        onClick={handleComplete}
+        style={{
+            clipPath: coords ? `polygon(0% 0%, 0% 100%, ${coords.left - 4}px 100%, ${coords.left - 4}px ${coords.top - 4}px, ${coords.right + 4}px ${coords.top - 4}px, ${coords.right + 4}px ${coords.bottom + 4}px, ${coords.left - 4}px ${coords.bottom + 4}px, ${coords.left - 4}px 100%, 100% 100%, 100% 0%)` : 'none'
+        }}
+      />
+
+      <motion.div
+        layout
+        ref={boxRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="okjt-tutorial-title"
+        aria-describedby="okjt-tutorial-body"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        style={boxStyle}
+        className="absolute w-[calc(100%-48px)] max-w-sm max-h-[calc(100vh-32px)] flex flex-col bg-surface rounded-3xl shadow-2xl overflow-hidden pointer-events-auto border-2 border-accent/30"
+      >
+        <div className="h-1.5 w-full bg-tone-100">
+          <motion.div 
+            className="h-full bg-accent"
+            initial={{ width: 0 }}
+            animate={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+          />
+        </div>
+
+        <div className="p-6 pb-0">
+          <div className="flex justify-between items-start mb-4">
+            <div className="flex items-center gap-2">
+                <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
+                {currentStep === steps.length - 1 ? (
+                    <Trophy className="w-5 h-5 text-accent" />
+                ) : (
+                    <span className="text-accent font-bold text-base">{currentStep + 1}</span>
+                )}
+                </div>
+                {currentStep === 0 && (
+                    <span className="bg-accent/10 text-accent text-[length:max(10px,var(--okjt-min-text,0px))] uppercase tracking-wider font-bold px-2 py-1 rounded-md">New Feature</span>
+                )}
+            </div>
+            <button aria-label="Close tour" 
+              onClick={handleComplete}
+              className="p-1.5 hover:bg-tone-50 rounded-lg text-tone-300 hover:text-tone-500 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-6 pb-4">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentStep}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="min-h-[100px]"
+            >
+              <h3 id="okjt-tutorial-title" className="text-xl font-semibold text-body mb-2 flex items-center gap-2">
+                {step.title}
+                {currentStep === 0 && <Sparkles className="w-4 h-4 text-accent" />}
+              </h3>
+              <p id="okjt-tutorial-body" className="text-muted text-sm leading-relaxed">
+                {step.content}
+              </p>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        <div className="flex items-center justify-between px-6 py-4 border-t border-tone-100 bg-surface rounded-b-3xl">
+            <div className="flex gap-1.5">
+              <Button
+                size="icon"
+                icon={ChevronLeft}
+                aria-label="Previous step"
+                onClick={handleBack}
+                disabled={currentStep === 0}
+              />
+              <Button variant="secondary" onClick={handleNext}>
+                {currentStep === steps.length - 1 ? 'Finish Tour' : 'Next Step'}
+                <ChevronRight />
+              </Button>
+            </div>
+            
+            <button 
+              onClick={handleComplete}
+              className="text-xs text-tone-400 hover:text-accent transition-colors font-medium px-2"
+            >
+              Skip Tour
+            </button>
+        </div>
+        
+        {/* Triangle pointer */}
+        {coords && placement === 'right' && (
+            <div className="absolute right-full top-1/2 -translate-y-1/2 border-y-[8px] border-y-transparent border-r-[8px] border-r-white" />
+        )}
+        {coords && placement === 'left' && (
+            <div className="absolute left-full top-1/2 -translate-y-1/2 border-y-[8px] border-y-transparent border-l-[8px] border-l-white" />
+        )}
+        {coords && placement === 'bottom' && (
+            <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-x-[8px] border-x-transparent border-b-[8px] border-b-white" />
+        )}
+        {coords && placement === 'top' && (
+            <div className="absolute top-full left-1/2 -translate-x-1/2 border-x-[8px] border-x-transparent border-t-[8px] border-t-white" />
+        )}
+      </motion.div>
+    </div>
+  );
+}

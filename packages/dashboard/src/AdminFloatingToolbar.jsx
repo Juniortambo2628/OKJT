@@ -1,0 +1,211 @@
+import { useState } from 'react';
+import { createPortal } from 'react-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MoreHorizontal, ChevronUp, ChevronDown, SlidersHorizontal } from 'lucide-react';
+import AdminToolbarSearch from './AdminToolbarSearch.js';
+import AdminToolbarFilters, { countActiveFilters } from './AdminToolbarFilters.js';
+import { useSearch } from './SearchContext.js';
+import { Button, useVisibleActions } from '@okjt/ui';
+import BoldToolbar from './BoldToolbar.js';
+import { useComponentDefaults, useDashboard } from './DashboardProvider.js';
+import { toolbarBottomClass } from './tabBar.js';
+
+/**
+ * AdminFloatingToolbar — the shared, fixed bottom-center toolbar that every
+ * admin page uses for its search box, filters and page-level actions.
+ * AdminPageLayout renders it for you; it portals into document.body so it is
+ * never mis-positioned by an animated (transformed) ancestor.
+ *
+ * @param {Array} actions - Array of action objects:
+ *   {
+ *     id: string,
+ *     label: string,
+ *     icon: LucideIcon,
+ *     onClick: () => void,
+ *     variant?: 'primary' | 'secondary' | 'danger',  // see components/Button
+ *     disabled?: boolean,
+ *     hidden?: boolean,
+ *     readOnly?: boolean, // viewing/exporting only — every other action is hidden for viewers
+ *   }
+ * @param {React.ReactNode} children - optional custom controls rendered inside
+ *   the same bar, before the actions (e.g. the invitation designer's page and
+ *   undo/redo controls), so every floating control shares one toolbar.
+ * @param {boolean|string|object} search - show the shared search box: true, a
+ *   placeholder string, or { placeholder, value, onChange } for page-local search.
+ * @param {object} filters - filter/sort/view config, see AdminToolbarFilters.
+ * @param {string} z - z-index utility class for the fixed wrapper (default z-50).
+ * @param {string} wrapperClassName - extra classes for the fixed wrapper.
+ *
+ * variant="bold" (or componentDefaults.FloatingToolbar): one glass bar for
+ * dark dashboards, which also takes a view switch, a selection with its
+ * actions, filters as simple lists with saved views, and link actions —
+ * see BoldToolbar.jsx.
+ */
+export default function AdminFloatingToolbar(ownProps) {
+  const { variant = 'plain', ...props } = useComponentDefaults('FloatingToolbar', ownProps);
+  return variant === 'bold' ? <BoldToolbar {...props} /> : <PlainToolbar {...props} />;
+}
+
+function PlainToolbar({
+  actions = [],
+  children = null,
+  search = null,
+  filters = null,
+  z = 'z-50',
+  wrapperClassName = '',
+}) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [visible, setVisible] = useState(true);
+  // Phones: a page's custom controls (e.g. the designer's tools) open on demand.
+  const [toolsOpen, setToolsOpen] = useState(false);
+  const { searchQuery } = useSearch();
+  const bottom = toolbarBottomClass(!!useDashboard().shell.tabBar);
+
+  const visibleActions = useVisibleActions(actions).filter((a) => !a.hidden);
+  const searchProps = !search ? null
+    : typeof search === 'string' ? { placeholder: search }
+    : typeof search === 'object' ? search
+    : {};
+  const hasLeading = !!searchProps || !!filters;
+  if (visibleActions.length === 0 && !children && !hasLeading) return null;
+
+  // While hidden, flag that the list is still being narrowed.
+  const narrowed = (searchProps && (searchProps.value ?? searchQuery)) || countActiveFilters(filters) > 0;
+
+  // Show the first actions directly (fewer when search/filters share the bar,
+  // so it stays on one row); collapse the rest into a "More" menu.
+  const maxPrimary = hasLeading ? 2 : 4;
+  const primaryActions = visibleActions.slice(0, maxPrimary);
+  const overflowActions = visibleActions.slice(maxPrimary);
+  const hasOverflow = overflowActions.length > 0;
+
+  return createPortal(
+    <AnimatePresence>
+      {visible ? (
+        <motion.div
+          key="toolbar"
+          initial={{ opacity: 0, y: 30, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 20, scale: 0.96 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+          className={`fixed ${bottom} left-1/2 lg:left-[calc(50%+var(--okjt-sidebar-w,280px)/2)] -translate-x-1/2 ${z} w-max max-w-[calc(100vw-1rem)] sm:max-w-[calc(100vw-1.5rem)] lg:max-w-[calc(100vw-var(--okjt-sidebar-w,280px)-1.5rem)] ${wrapperClassName}`}
+        >
+          <div
+            // Phones: tighter spacing and smaller buttons (see .admin-floating-toolbar
+            // in index.css), so the bar takes one or two rows instead of four.
+            className="admin-floating-toolbar flex flex-wrap items-center justify-center gap-1 sm:gap-2 p-1.5 sm:p-2 rounded-2xl border shadow-2xl backdrop-blur-md"
+            // Naoa's warm glass by default; a dark dashboard sets the three
+            // --okjt-toolbar-* / --okjt-shadow variables in its CSS.
+            style={{
+              background: 'var(--okjt-toolbar-bg, rgba(255, 249, 245, 0.92))',
+              borderColor: 'var(--okjt-toolbar-border, rgba(255, 255, 255, 0.4))',
+              boxShadow: '0 12px 40px color-mix(in srgb, var(--okjt-shadow, var(--color-body)) 18%, transparent)',
+            }}
+          >
+            {searchProps && <AdminToolbarSearch {...searchProps} />}
+            {filters && <AdminToolbarFilters filters={filters} />}
+            {hasLeading && (children || visibleActions.length > 0) && (
+              <div className="hidden sm:block w-px h-6 bg-tone-200/70 mx-0.5" />
+            )}
+            {children && (
+              <Button
+                variant={toolsOpen ? 'secondary' : 'primary'}
+                icon={SlidersHorizontal}
+                onClick={() => setToolsOpen((v) => !v)}
+                aria-expanded={toolsOpen}
+                className="sm:hidden"
+              >
+                Tools
+              </Button>
+            )}
+            {children && <div className={toolsOpen ? 'contents' : 'hidden sm:contents'}>{children}</div>}
+            {children && visibleActions.length > 0 && (
+              <div className="hidden sm:block w-px h-6 bg-tone-200/70 mx-0.5" />
+            )}
+            {primaryActions.map((action) => (
+              <Button
+                key={action.id}
+                variant={action.variant}
+                icon={action.icon}
+                onClick={action.onClick}
+                disabled={action.disabled}
+                title={action.label}
+                aria-label={action.label}
+              >
+                {/* Custom controls (e.g. the designer's tools) need the room, so
+                    action labels then only show on very wide screens. */}
+                <span className={children ? 'hidden 2xl:inline' : 'hidden sm:inline'}>{action.label}</span>
+              </Button>
+            ))}
+
+            {hasOverflow && (
+              <div className="relative">
+                <Button icon={MoreHorizontal} onClick={() => setMenuOpen((v) => !v)} aria-label="More actions">
+                  <span className="hidden sm:inline">More</span>
+                </Button>
+
+                <AnimatePresence>
+                  {menuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                      className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 min-w-[10rem] bg-surface rounded-xl shadow-xl border border-tone-100 py-2 overflow-hidden"
+                    >
+                      {overflowActions.map((action) => {
+                        const Icon = action.icon;
+                        return (
+                          <button
+                            key={action.id}
+                            onClick={() => {
+                              action.onClick();
+                              setMenuOpen(false);
+                            }}
+                            disabled={action.disabled}
+                            className={`w-full text-left px-4 py-2.5 text-sm flex items-center gap-2 hover:bg-tone-50 transition-colors ${
+                              action.variant === 'danger' ? 'text-red-600' : 'text-tone-700'
+                            } ${action.disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          >
+                            {Icon && <Icon className="w-4 h-4" />}
+                            {action.label}
+                          </button>
+                        );
+                      })}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
+
+            {/* Visibility toggler */}
+            <button aria-label="Hide toolbar"
+              onClick={() => setVisible(false)}
+              className="p-2 rounded-xl text-tone-400 hover:text-tone-600 hover:bg-surface/60 transition-colors"
+              title="Hide toolbar"
+            >
+              <ChevronDown className="w-4 h-4" />
+            </button>
+          </div>
+        </motion.div>
+      ) : (
+        <motion.button
+          key="toolbar-toggle"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setVisible(true)}
+          className={`fixed ${bottom} left-1/2 lg:left-[calc(50%+var(--okjt-sidebar-w,280px)/2)] -translate-x-1/2 ${z} p-2.5 rounded-full bg-surface/90 border border-tone-200 shadow-lg text-accent hover:bg-surface transition-colors ${wrapperClassName}`}
+          title={narrowed ? 'Show toolbar (search or filters active)' : 'Show toolbar'}
+        >
+          <ChevronUp className="w-5 h-5" />
+          {narrowed && (
+            <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-accent" />
+          )}
+        </motion.button>
+      )}
+    </AnimatePresence>,
+    document.body
+  );
+}

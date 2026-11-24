@@ -1,0 +1,136 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+    # The site is built on the kit in packages/, so a kit change redeploys it
+    # too (with the kit at the same commit).
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  # Never cancel mid-deploy: a migration could be left half-run.
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  BACKEND_DIR: okjt-app/backend
+  FRONTEND_DIR: okjt-app/web
+
+jobs:
+  lint-and-fix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: bcmath, ctype, curl, fileinfo, intl, json, mbstring, openssl, pdo_mysql, tokenizer, xml, zip
+          tools: composer:v2
+          coverage: none
+
+      - name: Install backend dependencies (with dev)
+        working-directory: ${{ env.BACKEND_DIR }}
+        run: composer install --prefer-dist --optimize-autoloader --no-interaction
+
+      - name: Fix backend styling with Pint
+        working-directory: ${{ env.BACKEND_DIR }}
+        run: ./vendor/bin/pint
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: |
+            ${{ env.FRONTEND_DIR }}/package-lock.json
+            packages/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: ${{ env.FRONTEND_DIR }}
+        run: npm ci
+
+      - name: Verify the site and dashboard build
+        working-directory: ${{ env.FRONTEND_DIR }}
+        run: npm run build
+
+      - name: Commit automatic fixes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "style: Apply automatic formatting fixes [skip ci]"
+
+  test-backend:
+    needs: lint-and-fix
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.BACKEND_DIR }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: bcmath, ctype, curl, fileinfo, intl, json, mbstring, openssl, pdo_mysql, tokenizer, xml, zip
+          tools: composer:v2
+          coverage: none
+
+      - name: Copy .env
+        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+      - name: Install Dependencies
+        run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+      - name: Generate key
+        run: php artisan key:generate
+
+      - name: Directory Permissions
+        run: chmod -R 777 storage bootstrap/cache
+
+      - name: Create Database
+        run: |
+          mkdir -p database
+          touch database/database.sqlite
+
+      - name: Execute tests
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+        run: php artisan test
+
+  # One deploy (deploy-kit, deploy-kit/README.md): the Laravel API with the
+  # site and dashboard (okjt-app/web) built into its public/. nginx serves
+  # the app's files and PHP-FPM answers /api and each page's HTML, so no
+  # Node process runs on the VPS. The app lives in api.okjtech.co.ke's
+  # folder (its .env, uploads and releases); okjtech.co.ke and www are
+  # aliases of that web domain (DEPLOYMENT.md, "Moving off Next.js").
+  deploy:
+    needs: test-backend
+    uses: ./.github/workflows/deploy-laravel.yml
+    with:
+      domain: api.okjtech.co.ke
+      app_name: okjt-api
+      app_dir: okjt-app/backend
+      spa_dir: okjt-app/web
+      php_version: "8.3"
+      build_assets: false   # the backend has no Vite build of its own
+      queue: false          # nothing is queued: no worker process
+      scheduler: false      # nothing is scheduled: no scheduler process
+      health_path: /up
+    secrets:
+      VPS_HOST: ${{ secrets.VPS_HOST }}
+      VPS_PORT: ${{ secrets.VPS_PORT }}
+      VPS_USER: ${{ secrets.VPS_USER }}
+      VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+      VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+      ENV_FILE: ${{ secrets.BACKEND_ENV }}

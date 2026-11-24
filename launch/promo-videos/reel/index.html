@@ -1,0 +1,60 @@
+<title>OKJTech Reel Cards</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400;0,600;0,700;0,800;0,900;1,800;1,900&display=swap">
+<style>
+/* The reel's opening and closing cards: OKJTech's mark, then the four products,
+   on a dark ground lit in each product's own colour. Rendered frame by frame. */
+:root { --bg: #0b0b0d; --ink: #fff; --muted: #a3a3a3; --font: 'Figtree', system-ui, sans-serif; }
+html, body { margin: 0; height: 100%; background: var(--bg); }
+#stage { position: relative; width: 100vw; height: 100vh; overflow: hidden; container-type: size; background: var(--bg); font-family: var(--font); color: var(--ink); }
+.glow { position: absolute; width: 90cqw; height: 90cqw; border-radius: 50%; filter: blur(16cqw); opacity: .28; }
+#copy { position: absolute; left: 0; right: 0; text-align: center; padding: 0 7cqw; }
+.eyebrow { font: 700 2.6cqw/1 var(--font); letter-spacing: .34em; text-transform: uppercase; color: var(--muted); margin: 0 0 2.6cqw; }
+.big { font: 800 10cqw/1.02 var(--font); margin: 0; letter-spacing: -.02em; }
+.accent { font: 900 italic 10cqw/1.02 var(--font); margin: 0; letter-spacing: -.02em; }
+.accent .w { background: linear-gradient(90deg, #E0B48A, #ff3b44 55%, #FFD300); -webkit-background-clip: text; background-clip: text; color: transparent; padding-right: .06em; }
+.small { font: 400 3.2cqw/1.4 var(--font); color: var(--muted); margin-top: 3cqw; letter-spacing: .05em; }
+.w { display: inline-block; white-space: pre; }
+#mark { position: absolute; left: 50%; transform: translate(-50%, -50%); width: 34cqw; }
+#grid { position: absolute; left: 8cqw; right: 8cqw; display: grid; grid-template-columns: 1fr 1fr; gap: 6cqw 6cqw; align-items: center; justify-items: center; }
+#grid img { max-width: 38cqw; max-height: 21cqw; object-fit: contain; }
+</style>
+<div id="stage">
+  <div class="glow" style="left:-30cqw;top:-10cqh;background:#9B4621"></div>
+  <div class="glow" style="right:-35cqw;top:20cqh;background:#c8161d"></div>
+  <div class="glow" style="left:-25cqw;bottom:-20cqh;background:#9B1837"></div>
+  <div class="glow" style="right:-30cqw;bottom:-10cqh;background:#c9a300"></div>
+  <img id="mark" src="img/okjt.png" alt="">
+  <div id="grid">
+    <img src="img/naoa.png" alt=""><img src="img/najenga.webp" alt="">
+    <img src="img/tfe.png" alt=""><img src="img/tenafi.png" alt="">
+  </div>
+  <div id="copy"></div>
+</div>
+<script>
+const card = new URLSearchParams(location.search).get('card') || 'intro';
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+const ease = (t) => (t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+const COPY = card === 'intro'
+  ? { top: 58, rows: [['eyebrow', 'OKJTechnologies presents'], ['big', 'Four products.'], ['accent', 'One team.']] }
+  : { top: 66, rows: [['big', 'Built in Kenya,'], ['accent', 'for Africa.'], ['small', 'okjtech.co.ke']] };
+const copy = document.getElementById('copy'); copy.style.top = COPY.top + 'cqh';
+const words = [];
+COPY.rows.forEach(([cls, text]) => { const p = document.createElement('p'); p.className = cls; text.split(' ').forEach((w, i, a) => { const s = document.createElement('span'); s.className = 'w'; s.textContent = w + (i < a.length - 1 ? ' ' : ''); p.appendChild(s); words.push(s); }); copy.appendChild(p); });
+const mark = document.getElementById('mark'), grid = document.getElementById('grid'), glows = [...document.querySelectorAll('.glow')];
+mark.style.display = card === 'intro' ? 'block' : 'none'; grid.style.display = card === 'intro' ? 'none' : 'grid';
+mark.style.top = '34cqh'; grid.style.top = '16cqh';
+const logos = [...grid.children];
+window.__renderAt = (t) => {                       // t in seconds from the card's start
+  const dur = card === 'intro' ? 2.6 : 3.6;
+  const out = card === 'intro' ? ease(seg(t, dur - .4, dur)) : 0;
+  glows.forEach((g, i) => { g.style.transform = `translate(${Math.sin(t * .8 + i) * 4}cqw, ${Math.cos(t * .7 + i) * 3}cqw)`; });
+  const m = easeOut(seg(t, 0, .7));
+  mark.style.opacity = (m * (1 - out)).toFixed(3); mark.style.transform = `translate(-50%, -50%) scale(${(.9 + .1 * m).toFixed(3)})`;
+  logos.forEach((l, i) => { const k = easeOut(seg(t, .1 + i * .15, .7 + i * .15)); l.style.opacity = k.toFixed(3); l.style.transform = `translateY(${((1 - k) * 4).toFixed(2)}cqw)`; });
+  words.forEach((w, i) => { const p = easeOut(seg(t, .35 + i * .07, .85 + i * .07)); w.style.opacity = (p * (1 - out)).toFixed(3); w.style.transform = `translateY(${((1 - p) * 55 - out * 30).toFixed(1)}%)`; w.style.filter = `blur(${((1 - p) * 6 + out * 4).toFixed(1)}px)`; });
+};
+window.__ready = false;
+Promise.all([document.fonts.ready, ...[...document.images].map(i => i.decode().catch(() => {}))]).then(() => { window.__renderAt(0); window.__ready = true; });
+</script>

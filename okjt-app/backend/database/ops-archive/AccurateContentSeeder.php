@@ -1,0 +1,1274 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\Client;
+use App\Models\Insight;
+use App\Models\Project;
+use App\Models\SiteSetting;
+use App\Models\Stat;
+use App\Models\TeamMember;
+use App\Models\Testimonial;
+use App\Models\User;
+use App\Models\Value;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+
+/**
+ * AccurateContentSeeder
+ *
+ * Replaces the AI-generated placeholder content that shipped with the initial
+ * seed pass with facts drawn from documentation/PROJECT_CATALOG_ACCURATE.md.
+ *
+ * Rules (see the catalog document for the full framing):
+ * - OKJTechnologies is a one-person studio. Kevin Tambo is the only team member.
+ * - No fabricated stats, testimonials, or feature claims. Live URLs and stacks
+ *   are drawn from the real repos and confirmed by the user.
+ * - Idempotent: safe to run more than once (site_settings and clients use
+ *   updateOrCreate; everything else is fully rewritten each run). All wipes go
+ *   through withTrashed() so a row soft-deleted in the admin can't survive as a
+ *   ghost and later collide on a unique column (e.g. projects.slug).
+ *
+ * Run: `php artisan db:seed --class=AccurateContentSeeder`
+ */
+class AccurateContentSeeder extends Seeder
+{
+    public function run(): void
+    {
+        // withoutEvents: the CmsModelObserver fires a frontend revalidation HTTP
+        // call on every created/updated/deleted model. During a reseed that's
+        // ~100 blocking calls, and on a host where the frontend isn't reachable
+        // it previously aborted the whole transaction. Skip them here and do a
+        // single revalidation at the end instead.
+        Model::withoutEvents(function () {
+            DB::transaction(function () {
+                $this->reseedSiteSettings();
+                $this->reseedStats();
+                $this->reseedValues();
+                $this->reseedTeam();
+                $this->clearTestimonials();
+                $this->reseedClients();
+                $this->reseedProjects();
+                $this->reseedInsights();
+            });
+        });
+
+        // The API caches the settings/content responses; drop them so the
+        // reseed is visible without a manual `php artisan cache:clear`.
+        Cache::flush();
+
+        Log::info('AccurateContentSeeder: reseed complete.');
+    }
+
+    // ------------------------------------------------------------------
+    // Site settings — About page copy, ecosystem-mapping framing
+    // ------------------------------------------------------------------
+
+    private function reseedSiteSettings(): void
+    {
+        $settings = [
+            // --- About page ---------------------------------------------------
+            [
+                'key' => 'about_title',
+                'value' => "Design-led web engineering,\nbuilt around ecosystems.",
+                'type' => 'textarea',
+                'group' => 'about',
+            ],
+            [
+                'key' => 'about_tagline',
+                'value' => 'How the work gets done',
+                'type' => 'text',
+                'group' => 'about',
+            ],
+            [
+                'key' => 'about_story',
+                'value' => 'OKJTechnologies is a Nairobi web-application practice. The work is full-stack and end to end — concept, interface, engineering, deployment and ongoing administration — mostly in Laravel, Next.js / React and the classic LAMP stack, with AI-accelerated tooling in the loop. Every build starts by mapping the ecosystem the software has to live in, so each stakeholder — client, end user, regulator, adjacent partner — has an aligned reason to participate. It is a one-person studio, run by Kevin Tambo.',
+                'type' => 'textarea',
+                'group' => 'about',
+            ],
+            [
+                'key' => 'about_mission_title',
+                'value' => 'Ecosystem mapping before a line of code.',
+                'type' => 'text',
+                'group' => 'about',
+            ],
+            [
+                'key' => 'about_mission_text1',
+                'value' => 'Every engagement is shaped by an ecosystem-mapping practice from the Afrilabs capacity-building programme <em>Leveraging Stakeholder Relationships through Ecosystem Mapping and Building</em> (Addis Ababa, Ethiopia). Before scoping, the map covers every stakeholder who could be affected by or beneficial to the proposition — the paying client, the end user, the regulator, adjacent service providers, upstream and downstream data holders, the wider community.',
+                'type' => 'textarea',
+                'group' => 'about',
+            ],
+            [
+                'key' => 'about_mission_text2',
+                'value' => 'The solution is then designed so each of those stakeholders has a clearly aligned way to benefit from it. That mapping is what turns a website into a working system inside its own context — and, combined with AI-accelerated development, is how a one-person studio ships the same class of application a small team would take on.',
+                'type' => 'textarea',
+                'group' => 'about',
+            ],
+            [
+                'key' => 'about_team_title',
+                'value' => 'One continuous thread, concept to production',
+                'type' => 'text',
+                'group' => 'about',
+            ],
+            [
+                'key' => 'about_team_subtitle',
+                'value' => 'Every project is designed, built, deployed and administered as one continuous piece of work — no hand-offs between teams, no context dropped between phases, one point of accountability. OKJTechnologies is deliberately a one-person studio.',
+                'type' => 'textarea',
+                'group' => 'about',
+            ],
+            [
+                'key' => 'about_cta_title',
+                'value' => 'Have a system you want built end to end?',
+                'type' => 'text',
+                'group' => 'about',
+            ],
+            [
+                'key' => 'about_cta_subtitle',
+                'value' => "Whether it's a customer-facing application, an internal dashboard, or a national-scale concept still at problem-statement stage, I'd like to hear about it. Start with a short brief and we'll map the ecosystem together.",
+                'type' => 'textarea',
+                'group' => 'about',
+            ],
+
+            // --- Homepage hero — remove the "we"/plural framing ---------------
+            [
+                'key' => 'hero_tagline',
+                'value' => 'Design-led web engineering from Nairobi',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'hero_subtitle',
+                'value' => 'Bespoke, high-performance web applications, robust APIs and clean admin systems — designed and built end to end in Laravel, Next.js and React.',
+                'type' => 'textarea',
+                'group' => 'homepage',
+            ],
+            // Rotating headline — drop the abstract "Scale. / Impact. / Complexity."
+            // gimmick for something concrete about what actually gets shipped.
+            [
+                'key' => 'hero_title_line1',
+                'value' => 'Full-stack web',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'hero_rotating_words',
+                'value' => 'applications.,APIs.,admin systems.',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'hero_title_line2',
+                'value' => 'Built end to end.',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+
+            // --- Homepage "how I work" section (was: Three Pillars of Trusted Intelligence) ---
+            [
+                'key' => 'vp_section_tagline',
+                'value' => 'THE APPROACH',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'vp_section_title',
+                'value' => 'One continuous build, concept to production',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'vp_section_subtitle',
+                'value' => 'Design, engineering, deployment and ongoing administration run as one process — no hand-offs between teams, no context lost between phases.',
+                'type' => 'textarea',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'vp_pillar1_tag',
+                'value' => 'Build',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'vp_pillar1_title',
+                'value' => 'Web application engineering',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'vp_pillar1_description',
+                'value' => 'Laravel and Next.js / React applications built from the schema up — auth, admin, APIs, background jobs, plus deployment and ongoing cPanel and domain administration.',
+                'type' => 'textarea',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'vp_pillar2_tag',
+                'value' => 'Design',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'vp_pillar2_title',
+                'value' => 'Interface & experience design',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'vp_pillar2_description',
+                'value' => 'Design and implementation stay together — design system, motion, responsive layout and accessibility resolved as one piece of work, not thrown over a wall.',
+                'type' => 'textarea',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'vp_pillar3_tag',
+                'value' => 'Strategy',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'vp_pillar3_title',
+                'value' => 'Ecosystem-led strategy',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'vp_pillar3_description',
+                'value' => 'Every stakeholder the software touches — client, user, regulator, partner, community — is mapped before scoping, so each has an aligned reason to use it. An approach from the Afrilabs programme in Addis Ababa.',
+                'type' => 'textarea',
+                'group' => 'homepage',
+            ],
+
+            // --- Homepage section headings — match the bottom-bar labels ------
+            [
+                'key' => 'stats_tagline',
+                'value' => 'Snapshot',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'stats_title',
+                'value' => 'The studio at a glance',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'services_tagline',
+                'value' => 'Services',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'services_title',
+                'value' => 'What I build',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'insights_tagline',
+                'value' => 'Insights',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'insights_title',
+                'value' => 'Notes & articles',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'cta_badge',
+                'value' => 'GET IN TOUCH',
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'cta_title',
+                'value' => "Let's build the next one together.",
+                'type' => 'text',
+                'group' => 'homepage',
+            ],
+            [
+                'key' => 'cta_subtitle',
+                'value' => "Bring the brief — we'll map the ecosystem, scope the build and give you a realistic path to production.",
+                'type' => 'textarea',
+                'group' => 'homepage',
+            ],
+
+            // --- About page: Experience section (categorized capability) -----
+            [
+                'key' => 'about_experience_title',
+                'value' => 'Where the capability was built',
+                'type' => 'text',
+                'group' => 'about',
+            ],
+            [
+                'key' => 'about_experience_subtitle',
+                'value' => 'Selected work across the disciplines that shape every OKJTech engagement — each linked to the project it powers.',
+                'type' => 'textarea',
+                'group' => 'about',
+            ],
+            [
+                'key' => 'about_experience_categories',
+                'value' => json_encode([
+                    [
+                        'key' => 'digital-policy',
+                        'label' => 'Digital Policy',
+                        'items' => [
+                            ['title' => 'Lawyers Hub Digital Policy site', 'summary' => 'Cornerstone Kenya digital-policy resource — architecture, engineering, ongoing administration.', 'href' => '/projects', 'tag' => 'Platform'],
+                            ['title' => 'Africa Law Tech Festival platform', 'summary' => 'Online ticketing, live notifications, event mapping — annual festival, continental audience.', 'href' => '/projects', 'tag' => 'Event tech'],
+                            ['title' => 'ADPI training delivery', 'summary' => 'Delivered the Africa Data Protection Course and the CIPP/E certification programme.', 'href' => '/projects', 'tag' => 'Training'],
+                        ],
+                    ],
+                    [
+                        'key' => 'ui-ux',
+                        'label' => 'UI / UX',
+                        'items' => [
+                            ['title' => 'Najenga — construction coordination', 'summary' => 'Annotate architectural drawings, run project timelines, OCR PDFs, export to Excel, chat with @mentions.', 'href' => '/projects/najenga-construction-collaboration-platform', 'tag' => 'Product'],
+                            ['title' => 'Naoa — digital wedding platform', 'summary' => 'End-to-end experience: invitations, RSVPs, gifting, live guest updates.', 'href' => '/projects', 'tag' => 'Product'],
+                            ['title' => 'Tibu — HealthTech interface', 'summary' => 'Interface design for clinical workflows across desktop and mobile touchpoints.', 'href' => '/projects', 'tag' => 'Interface'],
+                        ],
+                    ],
+                    [
+                        'key' => 'engineering',
+                        'label' => 'Web Engineering',
+                        'items' => [
+                            ['title' => 'Laravel + Next.js flagship stack', 'summary' => 'Schema-first backends, typed APIs, App Router frontends — auth, admin, background jobs, deploys.', 'href' => '/services', 'tag' => 'Stack'],
+                            ['title' => 'Deployment & administration', 'summary' => 'cPanel + domain admin, CI to production, monitoring and ongoing maintenance.', 'href' => '/services', 'tag' => 'Ops'],
+                        ],
+                    ],
+                    [
+                        'key' => 'ecosystem',
+                        'label' => 'Ecosystem Strategy',
+                        'items' => [
+                            ['title' => 'Ecosystem mapping practice', 'summary' => 'Stakeholder mapping before scoping — client, user, regulator, partner, community — each with an aligned reason to participate.', 'href' => '/our-approach', 'tag' => 'Method'],
+                            ['title' => 'Boda-Boda Law Project', 'summary' => 'Co-organised field research in Kisumu and Namanga; contributed to the published report.', 'href' => '/projects', 'tag' => 'Research'],
+                        ],
+                    ],
+                ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                'type' => 'textarea',
+                'group' => 'about',
+            ],
+        ];
+
+        foreach ($settings as $row) {
+            SiteSetting::updateOrCreate(
+                ['key' => $row['key']],
+                ['value' => $row['value'], 'type' => $row['type'], 'group' => $row['group']],
+            );
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // Stats — replace the fabricated four with honest, defensible ones
+    // ------------------------------------------------------------------
+
+    private function reseedStats(): void
+    {
+        Stat::withTrashed()->forceDelete();
+
+        $stats = [
+            [
+                'label' => 'Sectors delivered in',
+                'value' => '11',
+                'description' => 'LegalTech, HealthTech, PropTech, FinTech, e-commerce, events, NGO, agritech, automotive, EdTech and marketplace work.',
+                'icon' => 'Layers',
+                'order' => 1,
+            ],
+            [
+                'label' => 'Projects shipped',
+                'value' => '20+',
+                'description' => 'Studio and client engagements taken from concept to production.',
+                'icon' => 'CheckCircle',
+                'order' => 2,
+            ],
+            [
+                'label' => 'Primary stack',
+                'value' => 'Laravel · Next.js · React',
+                'description' => 'Plus the classic LAMP stack for established client sites, with AI-accelerated tooling in the loop.',
+                'icon' => 'Code2',
+                'order' => 3,
+            ],
+            [
+                'label' => 'Delivering since',
+                'value' => '2021',
+                'description' => 'Continuous full-stack web delivery out of Nairobi.',
+                'icon' => 'Calendar',
+                'order' => 4,
+            ],
+        ];
+
+        foreach ($stats as $row) {
+            Stat::create($row);
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // Values — add "Ecosystem mapping" and drop team-plural language
+    // ------------------------------------------------------------------
+
+    private function reseedValues(): void
+    {
+        Value::withTrashed()->forceDelete();
+
+        $values = [
+            [
+                'icon' => 'Network',
+                'title' => 'Ecosystem mapping first',
+                'description' => 'Every stakeholder the software touches — client, end user, regulator, partner, community — is mapped before code, and the solution is designed so each has an aligned way to benefit. The Afrilabs stakeholder-mapping approach applied to software.',
+                'order' => 1,
+            ],
+            [
+                'icon' => 'User',
+                'title' => 'One thread of accountability',
+                'description' => 'The work is owned end to end — concept, interface, engineering, deployment, ongoing administration. No hand-offs, no dropped context, one point of contact.',
+                'order' => 2,
+            ],
+            [
+                'icon' => 'Zap',
+                'title' => 'AI-accelerated delivery',
+                'description' => 'Emerging AI tooling in the loop lets a one-person studio ship the same class of application a small team would take on, without cutting corners on architecture or design.',
+                'order' => 3,
+            ],
+            [
+                'icon' => 'Palette',
+                'title' => 'Design and function together',
+                'description' => 'Aesthetic clarity that supports the goal, not decoration. Every element earns its place.',
+                'order' => 4,
+            ],
+            [
+                'icon' => 'Shield',
+                'title' => 'Honest about scope',
+                'description' => "Every project is described by what has actually shipped — never by roadmap features or invented metrics. If it's a concept, it's labelled a concept.",
+                'order' => 5,
+            ],
+            [
+                'icon' => 'TrendingUp',
+                'title' => 'Built to be handed over',
+                'description' => 'Cleanly documented, deployed on infrastructure the client can operate, with admin surfaces that non-technical owners can drive themselves.',
+                'order' => 6,
+            ],
+        ];
+
+        foreach ($values as $row) {
+            Value::create($row);
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // Team — Kevin only. Delete the two fabricated members.
+    // ------------------------------------------------------------------
+
+    private function reseedTeam(): void
+    {
+        // Remove every existing team member (including soft-deleted fake ones
+        // "Eluid Kibet" and "Brenda Wanjiku") to make the reseed idempotent.
+        TeamMember::withTrashed()->forceDelete();
+
+        TeamMember::create([
+            'name' => 'Kevin Tambo',
+            'role' => 'Founder · Web Application Developer',
+            'bio' => "Founder of OKJTechnologies. The work spans full-stack web applications for clients across LegalTech, HealthTech, PropTech, FinTech, e-commerce, events and non-profit sectors — designed, built, deployed and administered solo in Laravel, Next.js / React and the classic LAMP stack.\n\nThe approach is shaped by an ecosystem-mapping practice from the Afrilabs capacity-building programme in Addis Ababa: before code, every stakeholder the software touches — client, end user, regulator, partner, community — is mapped, and the system is designed so each has an aligned reason to participate.\n\nBefore OKJTechnologies came the role of Software Developer, Justice Innovation at the Lawyers Hub — spearheading the Digital Policy site, designing the Africa Law Tech Festival and AI Policy Lab platforms, chairing a hackathon at ALTF 2023, and supporting delivery of the Africa Digital Policy Institute's data-protection trainings (Africa Data Protection Course and CIPP/E).",
+            'linkedin' => 'https://www.linkedin.com/in/kevin-tambo',
+            'image' => 'https://api.okjtech.co.ke/api/storage/uploads/kt-img-okjt-2_6a551f2fe55bc.webp',
+            'order' => 1,
+        ]);
+    }
+
+    // ------------------------------------------------------------------
+    // Testimonials — clear all. Every current row is fabricated.
+    // Real testimonials should only ever be inserted with the client's
+    // consent, in their own words, ideally with a link to them.
+    // ------------------------------------------------------------------
+
+    private function clearTestimonials(): void
+    {
+        Testimonial::withTrashed()->forceDelete();
+    }
+
+    // ------------------------------------------------------------------
+    // Clients — trimmed to real, delivered clients (upsert by name).
+    // ------------------------------------------------------------------
+
+    private function reseedClients(): void
+    {
+        $clients = [
+            ['name' => 'Lawyers Hub',                                  'website' => 'https://www.lawyershub.org',       'order' => 1],
+            ['name' => "Nyalife Women's Clinic",                       'website' => 'https://nyalifewomensclinic.net',  'order' => 2],
+            ['name' => 'South Ring Autos',                             'website' => 'https://southringautos.com',       'order' => 3],
+            ['name' => 'Dickson, Gitonga Advocates LLP',               'website' => 'https://dglegal.co.ke',            'order' => 4],
+            ['name' => 'Global Harmony Initiative',                    'website' => 'https://globalharmonyinitiative.com', 'order' => 5],
+            ['name' => 'Wisdom Capital',                               'website' => 'https://wisdomcapital.co.ke',      'order' => 6],
+            ['name' => 'Reytati Communications',                       'website' => 'http://reytaticomms.com',          'order' => 7],
+            ['name' => 'TAMCON Consulting Engineers',                  'website' => 'https://tamconsonsult.com',        'order' => 8],
+            ['name' => 'Mizizi Sugarcane Juice',                       'website' => 'https://mizizi.okjtech.co.ke',     'order' => 9],
+            ['name' => 'Tena',                                         'website' => 'https://tena.host',                'order' => 10],
+            ['name' => 'OmniSpace 3D Events',                          'website' => 'https://omnispace3d.com',          'order' => 11],
+            ['name' => 'Terik Tours',                                  'website' => 'https://tfe.okjtech.co.ke',        'order' => 12],
+            ['name' => 'Hekima University College Alumni Association', 'website' => 'https://alumni.hekima.ac.ke',      'order' => 13],
+            ['name' => 'Najenga',                                      'website' => 'https://najenga.okjtech.co.ke',    'order' => 14],
+            ['name' => 'Nissi Insights',                               'website' => 'https://nissi-insights.com',       'order' => 15],
+            ['name' => 'Silversky',                                    'website' => 'https://shop.silversky.co.ke',     'order' => 16],
+            ['name' => 'GM Coaching',                                  'website' => 'https://gm-coaching.com',          'order' => 17],
+        ];
+
+        foreach ($clients as $row) {
+            // withTrashed so a previously soft-deleted client with the same name
+            // is reused (and un-deleted) rather than colliding on the unique name.
+            $client = Client::withTrashed()->updateOrCreate(
+                ['name' => $row['name']],
+                [
+                    'website' => $row['website'],
+                    'category' => null,
+                    'is_active' => true,
+                    'order' => $row['order'],
+                ],
+            );
+
+            if ($client->trashed()) {
+                $client->restore();
+            }
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // Projects — full reseed from the accurate catalog.
+    // ------------------------------------------------------------------
+
+    private function reseedProjects(): void
+    {
+        Project::withTrashed()->forceDelete();
+
+        foreach ($this->projectRows() as $order => $row) {
+            Project::create(array_merge($row, [
+                'slug' => Str::slug($row['title']),
+                'order' => $order,
+                'is_active' => true,
+                'is_featured' => $row['is_featured'] ?? false,
+                'significant_figure' => null, // No fabricated hero metrics.
+                'testimonial_quote' => null,
+                'testimonial_author' => null,
+                'gallery' => null,
+                'bg_image' => $row['bg_image'] ?? null,
+            ]));
+        }
+    }
+
+    private function projectRows(): array
+    {
+        return [
+            // ---- Lawyers Hub era (employer projects) --------------------
+            [
+                'type' => 'client',
+                'title' => 'Lawyers Hub Digital Policy Website',
+                'client_name' => 'Lawyers Tech Hub',
+                'tagline' => 'Kenya\'s flagship LegalTech knowledge hub.',
+                'category' => 'LegalTech',
+                'technologies' => ['PHP', 'MySQL', 'LAMP', 'CMS'],
+                'description' => 'I spearheaded development of the Lawyers Hub Digital Policy website — the cornerstone LegalTech resource for Kenya\'s AI-policy, digital-trade and Africa digital-economy conversation. Built and maintained during my tenure as Software Developer, Justice Innovation at Lawyers Tech Hub.',
+                'problem' => 'Kenya\'s digital-policy community needed a single institutional home for policy briefs, festival programming, capacity-building resources, and daily bulletins covering LegalTech developments across the continent.',
+                'methodology' => 'Built on a LAMP stack with a WordPress-style CMS layer so the Hub\'s editorial team could publish daily bulletins, policy maps, festival material and reports directly.',
+                'outcome' => 'The site is the primary distribution channel for the Lawyers Hub\'s daily bulletins, policy maps, festival programming and downloadable reports (including the Boda-Boda Law report I co-authored).',
+                'image' => null,
+                'url' => 'https://www.lawyershub.org',
+                'is_featured' => true,
+            ],
+            [
+                'type' => 'client',
+                'title' => 'Africa Law Tech Festival — Event Platform',
+                'client_name' => 'Lawyers Tech Hub',
+                'tagline' => 'Ticketing, live notifications, and event mapping for the annual festival.',
+                'category' => 'LegalTech · Events',
+                'technologies' => ['PHP', 'MySQL', 'LAMP'],
+                'description' => 'I designed the Africa Law Tech Festival platform — the site that runs online ticketing, live notifications and event mapping for the annual festival, which has hosted more than 11,000 attendees across editions per lawyershub.org.',
+                'problem' => 'The festival needed a single web platform to run ticketing, session mapping and attendee notifications reliably across successive annual editions.',
+                'methodology' => 'LAMP application designed to be re-themed and re-programmed each year without rebuilding the underlying ticketing and mapping engine.',
+                'outcome' => 'The same platform has powered the 2022, 2023, 2024 and 2025 festival editions.',
+                'image' => null,
+                'url' => 'https://www.africalawtech.com',
+                'is_featured' => true,
+            ],
+            [
+                'type' => 'client',
+                'title' => 'AI Policy Lab',
+                'client_name' => 'Lawyers Tech Hub / Africa Digital Policy Institute',
+                'tagline' => 'Virtual learning facility for AI-policy capacity building across Europe and Africa.',
+                'category' => 'LegalTech · EdTech',
+                'technologies' => ['UI/UX'],
+                'description' => 'I contributed to UI/UX design for the AI Policy Lab — a virtual learning facility for AI-policy capacity building across Europe and Africa, introduced at the 2024 festival edition (Artificial Intelligence and the Year of Education, Aug 26–27 2024).',
+                'problem' => 'AI-policy training for legal professionals had no dedicated online home that worked across European and African cohorts.',
+                'methodology' => 'UI/UX design work in close collaboration with the Hub\'s policy team.',
+                'outcome' => 'Live at aipolicy.africa, hosting the Institute\'s AI-policy programming.',
+                'image' => null,
+                'url' => 'https://www.aipolicy.africa/',
+                'is_featured' => false,
+            ],
+            [
+                'type' => 'client',
+                'title' => 'Africa Digital Policy Institute — Course Platform',
+                'client_name' => 'Lawyers Tech Hub / ADPI',
+                'tagline' => 'Course home for the Africa Digital Policy Institute (originally Africa Law Tech University).',
+                'category' => 'LegalTech · EdTech',
+                'technologies' => ['LAMP'],
+                'description' => 'I designed what began as the Africa Law Tech University platform. The direction was folded into the Africa Digital Policy Institute course platform, which centralises the Institute\'s capacity-building programmes — including the Africa Data Protection Course and CIPP/E training I helped support.',
+                'problem' => 'ADPI\'s trainings needed a single course home for the Data Protection Course, CIPP/E, and related programmes.',
+                'methodology' => 'Course catalog + registration site within the Lawyers Hub property.',
+                'outcome' => 'Live at lawyershub.org/adpi-courses, running the Institute\'s course catalogue.',
+                'image' => null,
+                'url' => 'https://www.lawyershub.org/adpi-courses',
+                'is_featured' => false,
+            ],
+            [
+                'type' => 'client',
+                'title' => 'Digital Trade Hackathon Site',
+                'client_name' => 'Lawyers Tech Hub · ALTF 2023',
+                'tagline' => 'Landing site for the AfCFTA-focused hackathon I chaired.',
+                'category' => 'LegalTech · Events',
+                'technologies' => ['HTML', 'CSS', 'JavaScript', 'Bootstrap', 'jQuery'],
+                'description' => 'I shipped the landing site for the Digital Trade tech-policy hackathon at ALTF 2023 (I also chaired the hackathon on the justice-innovation team). Built on a Bootstrap template with an interactive Africa map to surface participating countries. Event brief: Digital Trade in Africa: The AfCFTA and the Single Digital Market, Nairobi, Jul 12–13 2023.',
+                'problem' => 'The hackathon needed a public site to announce the brief, surface participating countries and route registrations.',
+                'methodology' => 'Static site on a themed Bootstrap base with the CSS Africa Map plugin for the interactive continental view.',
+                'outcome' => 'Delivered — event ran with 11 shortlisted innovations. Site now archived; hackathon coverage lives on the Lawyers Hub festival page.',
+                'image' => null,
+                'url' => null, // archived
+                'is_featured' => false,
+            ],
+            [
+                'type' => 'client',
+                'title' => 'Boda-Boda Law Project — Website & Report',
+                'client_name' => 'Lawyers Tech Hub',
+                'tagline' => 'Legal advisory and education platform for boda-boda operators and cross-border traders.',
+                'category' => 'LegalTech · Advocacy',
+                'technologies' => ['HTML', 'CSS', 'JavaScript', 'Bootstrap', 'Typeform'],
+                'description' => 'I contributed to the Boda-Boda Law Project — a legal advisory initiative for boda-boda operators and cross-border traders. I co-organised the field data collection in Kisumu and Namanga, contributed to the published report, coordinated in-person capacity-building trainings, and shipped the project website with a Typeform intake for real-time legal advisory requests.',
+                'problem' => 'Boda-boda operators faced police harassment and had no accessible legal advisory channel; there was no consolidated field research documenting the pattern.',
+                'methodology' => 'Combined field data collection (Kisumu, Namanga), in-person capacity-building training, and a web platform with an embedded Typeform intake for advisory requests.',
+                'outcome' => 'Published report lives in the Lawyers Hub reports library. Website is archived; the report continues to inform advocacy work.',
+                'image' => null,
+                'url' => 'https://www.lawyershub.org/Resources/reports',
+                'is_featured' => false,
+            ],
+
+            // ---- OKJTechnologies era -----------------------------------
+            [
+                'type' => 'client',
+                'title' => 'Dickson, Gitonga Advocates LLP',
+                'client_name' => 'Dickson, Gitonga Advocates LLP',
+                'tagline' => 'Corporate site with admin and client dashboards for a Nairobi law firm.',
+                'category' => 'LegalTech',
+                'technologies' => ['PHP 8.1', 'Bootstrap 5', 'Vite', 'MySQL', 'Phinx', 'PHPStan'],
+                'description' => 'I designed and built the website for Dickson, Gitonga Advocates LLP. It ships a public marketing site plus two authenticated portals: an admin dashboard (consultation requests, blog posts, team members, publications, firm activity) and a client dashboard (case management, correspondence, file uploads, notifications). The publications page has search, filter and pagination over the firm\'s legal PDFs.',
+                'problem' => 'The firm needed a professional public presence plus a private workspace for handling consultations, client correspondence and publications.',
+                'methodology' => 'Custom PHP application with reusable components, Bootstrap 5 UI, Vite tooling, and a dedicated admin/client split with role-based auth.',
+                'outcome' => 'Live production site with admin and client portals in daily use by the firm.',
+                'image' => 'https://api.okjtech.co.ke/api/storage/uploads/Ogugu-Gitonga-Advocates_6a5527fd853d2.webp',
+                'url' => 'https://dglegal.co.ke',
+                'is_featured' => true,
+            ],
+            [
+                'type' => 'client',
+                'title' => 'TAMCON Consulting Engineers',
+                'client_name' => 'TAMCON Consulting Engineers',
+                'tagline' => 'Public portfolio site and CMS for a civil / infrastructure engineering consultancy.',
+                'category' => 'Engineering · Corporate',
+                'technologies' => ['Laravel', 'React 19', 'Vite', 'Tailwind CSS 4', 'Framer Motion', 'Recharts', 'FilePond', 'Swiper'],
+                'description' => 'I designed and built a public portfolio site and a companion admin CMS for TAMCON Consulting Engineers. The interactive front end uses Framer Motion for scroll animations and Swiper for project galleries; the client can publish new projects and media through the CMS without touching code.',
+                'problem' => 'The firm\'s civil-engineering portfolio needed a fluid public presentation and a lightweight admin the team could operate themselves.',
+                'methodology' => 'Laravel API + React SPA with scroll-linked animations and a media-optimised admin dashboard.',
+                'outcome' => 'Live site with the firm managing project publications directly.',
+                'image' => 'https://api.okjtech.co.ke/api/storage/uploads/TAMCON-logo_6a55291ab869b.webp',
+                'url' => 'https://tamconsonsult.com',
+                'is_featured' => true,
+            ],
+            [
+                'type' => 'client',
+                'title' => 'South Ring Autos Workshop Management',
+                'client_name' => 'South Ring Autos',
+                'tagline' => 'Bookings, vehicle service tracking, and client comms for a Nairobi workshop.',
+                'category' => 'Automotive',
+                'technologies' => ['Laravel', 'Vite', 'MySQL', 'Blade'],
+                'description' => 'I built an integrated workshop management system for South Ring Autos covering online bookings, vehicle service tracking, service reminders and digital documentation, with a role-based admin area for the workshop team.',
+                'problem' => 'The workshop needed a single system for bookings, vehicle status tracking and client notifications, without depending on off-the-shelf SaaS.',
+                'methodology' => 'Laravel application with role-based dashboards and automated notification queues.',
+                'outcome' => 'Live production system in daily use.',
+                'image' => 'https://api.okjtech.co.ke/api/storage/uploads/SR-Logo-White-BG_6a55297424582.webp',
+                'url' => 'https://southringautos.com',
+                'is_featured' => true,
+            ],
+            [
+                'type' => 'client',
+                'title' => "Nyalife Women's Health Clinic — Website",
+                'client_name' => "Nyalife Women's Health Clinic",
+                'tagline' => 'Clinic marketing site for a women\'s health facility in Nairobi.',
+                'category' => 'HealthTech',
+                'technologies' => ['PHP', 'MySQL', 'LAMP'],
+                'description' => 'I designed and shipped the public website for Nyalife Women\'s Health Clinic — services overview, doctor profiles, appointment intake and contact.',
+                'problem' => 'The clinic needed a professional public presence with an appointment intake channel.',
+                'methodology' => 'LAMP site with cPanel deployment.',
+                'outcome' => 'Live at nyalifewomensclinic.net.',
+                'image' => 'https://api.okjtech.co.ke/api/storage/uploads/Nyalife-Logo_6a4e8b573d303.webp',
+                'url' => 'https://nyalifewomensclinic.net',
+                'is_featured' => false,
+            ],
+            [
+                'type' => 'client',
+                'title' => 'Nyalife Hospital Management System — first live instance of Tibu',
+                'client_name' => "Nyalife Women's Health Clinic",
+                'tagline' => 'Clinical administration portal, running as the first live instance of the Tibu product.',
+                'category' => 'HealthTech',
+                'technologies' => ['Laravel', 'Vite', 'MySQL', 'Playwright', 'PHPUnit', 'Rector'],
+                'description' => 'I built a private clinical administration system for Nyalife Women\'s Health Clinic — patient records, appointment scheduling, clinical file handling, role-based access — with Playwright end-to-end tests and a cPanel deployment pipeline. This system is the first live instance of the Tibu product concept: the strategy is to onboard facilities one at a time through this HMS and use the growing network as the substrate for cross-facility patient-record sharing across all tiers of the Kenyan health system.',
+                'problem' => 'Clinical operations needed to move off physical files to a secure, searchable system with role-based access — while remaining operable by clinic staff, not developers.',
+                'methodology' => 'Laravel application with a domain-specific patient/appointment/clinical-file schema, RBAC, and end-to-end tests to protect the flows the clinic depends on daily.',
+                'outcome' => 'In production at Nyalife. First working instance of the Tibu ecosystem strategy — the same product will be adapted for each new facility that joins.',
+                'image' => 'https://api.okjtech.co.ke/api/storage/uploads/Nyalife-Logo_6a4e8b573d303.webp',
+                'url' => 'https://nyalifewomensclinic.net',
+                'is_featured' => true,
+            ],
+            [
+                'type' => 'client',
+                'title' => 'HUCAA — Hekima University College Alumni Association',
+                'client_name' => 'Hekima University College Alumni Association',
+                'tagline' => 'Alumni networking portal for Hekima University College.',
+                'category' => 'EdTech · Community',
+                'technologies' => ['Laravel', 'React', 'MySQL'],
+                'description' => 'I built the alumni networking portal for the Hekima University College Alumni Association. It\'s live at alumni.hekima.ac.ke and I\'m iterating on it as a personal portfolio project using my current stack (Laravel + React).',
+                'problem' => 'The alumni association needed a dedicated network home separate from the university\'s public site.',
+                'methodology' => 'Laravel + React application with directory, events and communications surfaces, deployed on the alumni subdomain.',
+                'outcome' => 'Live at alumni.hekima.ac.ke. Iteration ongoing.',
+                'image' => 'https://api.okjtech.co.ke/api/storage/uploads/Hekima-University-College_6a552abd784d6.webp',
+                'url' => 'https://alumni.hekima.ac.ke',
+                'is_featured' => false,
+            ],
+            [
+                'type' => 'client',
+                'title' => 'Global Harmony Initiative',
+                'client_name' => 'Global Harmony Initiative',
+                'tagline' => 'NGO website with programme content, secure donations and admin.',
+                'category' => 'NGO · Non-profit',
+                'technologies' => ['Laravel 13', 'Inertia', 'React', 'Stripe', 'WebAuthn Passkeys', 'DomPDF', 'Intervention Image'],
+                'description' => 'I designed and built the Global Harmony Initiative website — a nonprofit platform combining programme content, secure Stripe-backed donations, WebAuthn passkey admin login, and admin tooling for content and correspondence.',
+                'problem' => 'The initiative needed a public presence with a trustworthy donation channel and a secure admin the team could log into from anywhere.',
+                'methodology' => 'Laravel 13 + Inertia + React with Stripe checkout for donations, DomPDF receipts, Intervention Image for uploads, and WebAuthn passkeys for phishing-resistant admin login.',
+                'outcome' => 'Live at globalharmonyinitiative.com.',
+                'image' => 'https://api.okjtech.co.ke/api/storage/uploads/Square-White-GHIBG_6a5f39db0c010.webp',
+                'url' => 'https://globalharmonyinitiative.com',
+                'is_featured' => true,
+            ],
+            [
+                'type' => 'client',
+                'title' => 'Wisdom Capital Agricultural Products — E-commerce',
+                'client_name' => 'Wisdom Capital',
+                'tagline' => 'D2C storefront and admin dashboard for a Kenyan agricultural producer.',
+                'category' => 'Agritech · E-commerce',
+                'technologies' => ['PHP', 'MySQL', 'React', 'LAMP', 'SMTP'],
+                'description' => 'I built an ordering and delivery site for Wisdom Capital\'s agricultural products, plus an admin dashboard for sales, payment status and regional distribution tracking.',
+                'problem' => 'The producer needed direct-to-consumer sales channels with clear tracking of orders, payments and regional distribution.',
+                'methodology' => 'LAMP application with a React front-end layer for the storefront and a PHP admin dashboard for operations.',
+                'outcome' => 'Live at wisdomcapital.co.ke.',
+                'image' => 'https://api.okjtech.co.ke/api/storage/uploads/wisdom-capital-logo_6a5f38c09ed8e.webp',
+                'url' => 'https://wisdomcapital.co.ke',
+                'is_featured' => false,
+            ],
+            [
+                'type' => 'client',
+                'title' => 'Reytati Communications',
+                'client_name' => 'Reytati Communications',
+                'tagline' => 'Single-page agency site with lead-capture and admin.',
+                'category' => 'Marketing · Corporate',
+                'technologies' => ['PHP', 'MySQL', 'React', 'LAMP'],
+                'description' => 'I built a single-page interactive site for Reytati Communications with a lead-capture form, dynamic service catalog and admin panel for updating testimonials and service copy.',
+                'problem' => 'The agency needed a polished single-page presence with a lead-capture channel and a manageable content back-end.',
+                'methodology' => 'LAMP application with a React front end and a PHP admin panel.',
+                'outcome' => 'Live at reytaticomms.com.',
+                'image' => 'https://api.okjtech.co.ke/api/storage/uploads/Reytati Communications_6a5527ec68946.webp',
+                'url' => 'http://reytaticomms.com',
+                'is_featured' => false,
+            ],
+            [
+                'type' => 'client',
+                'title' => 'Mizizi Sugarcane Juice — D2C',
+                'client_name' => 'Mizizi Sugarcane Juice',
+                'tagline' => 'D2C ordering with a Leaflet + OpenStreetMap delivery picker.',
+                'category' => 'Food & Beverage · E-commerce',
+                'technologies' => ['PHP', 'MySQL', 'jQuery', 'Bootstrap', 'Leaflet', 'OpenStreetMap'],
+                'description' => 'I built the Mizizi sugarcane-juice ordering site — product showcase, guest and registered checkout, user profiles, order tracking, and an interactive Leaflet + OpenStreetMap picker so buyers pin the exact delivery location. Precise lat/lon is stored per order and shown on the admin\'s tracking view.',
+                'problem' => 'Delivery-address accuracy is the largest source of D2C failure in Nairobi. The client needed something better than a free-text address field.',
+                'methodology' => 'Leaflet + Nominatim map picker with reverse-geocoded pre-fill; lat/lon stored alongside the order for the delivery team.',
+                'outcome' => 'Live at mizizi.okjtech.co.ke with the map-picker flow in daily use.',
+                'image' => 'https://api.okjtech.co.ke/api/storage/uploads/Mizizi-Logo_6a4e892fc2032.webp',
+                'url' => 'https://mizizi.okjtech.co.ke',
+                'is_featured' => false,
+            ],
+            [
+                'type' => 'client',
+                'title' => 'OKJTechnologies — Studio Site (okjtech.co.ke)',
+                'client_name' => 'OKJTechnologies',
+                'tagline' => 'This site. Next.js 16 + Laravel 12, ISR with webhook-based revalidation.',
+                'category' => 'Studio · Portfolio',
+                'technologies' => ['Next.js 16', 'React 19', 'TypeScript', 'Tailwind CSS', 'SWR', 'Framer Motion', 'Radix UI', 'Laravel 12', 'Sanctum', 'MySQL'],
+                'description' => 'OKJTechnologies\' own studio site — a decoupled application: a Next.js 16 App Router front end that consumes a Laravel 12 API, with an admin CMS for every content type on the site. ISR (60s revalidate) plus a webhook so CMS edits trigger cache invalidation on the front end. Automatic WebP conversion for uploaded images.',
+                'problem' => 'I needed a studio site I could maintain and reseed myself without redeploying, with public content that stays fresh via ISR.',
+                'methodology' => 'Decoupled Next.js + Laravel with a unified AdminResourceTemplate across every CRUD surface and a revalidation webhook from the backend.',
+                'outcome' => 'Live at okjtech.co.ke.',
+                'image' => 'https://api.okjtech.co.ke/api/storage/uploads/OKJTechLogo-Black_BG-favicon_6a5528621499c.webp',
+                'url' => 'https://okjtech.co.ke',
+                'is_featured' => true,
+            ],
+            [
+                'type' => 'flagship',
+                'title' => 'The Football Experience (in partnership with Terik Tours)',
+                'client_name' => 'The Football Experience · Terik Tours',
+                'tagline' => 'Travel platform helping fans in Africa access global football events.',
+                'category' => 'Travel · Sports',
+                'technologies' => ['Laravel', 'Vite'],
+                'description' => 'A travel platform for The Football Experience — helping African fans attend international football events — built in partnership with Terik Tours. Scope covers event catalog, itinerary planning, payment tracking and social discovery.',
+                'problem' => 'African fans wanting to travel to international matches have no dedicated planning + payment platform, and the operator needs one place to run inventory, bookings and payment tracking.',
+                'methodology' => 'Laravel backend with a Vite/React front end; scope built out incrementally with Terik Tours as the domain partner.',
+                'outcome' => 'In development. Staging live at tfe.okjtech.co.ke.',
+                'image' => 'https://api.okjtech.co.ke/api/storage/uploads/TFE-logo-1_6a552777b4c46.webp',
+                'url' => 'https://tfe.okjtech.co.ke',
+                'is_featured' => true,
+            ],
+            [
+                'type' => 'client',
+                'title' => 'Tena — Digital Onboarding Platform',
+                'client_name' => 'Tena',
+                'tagline' => 'Progressive-disclosure onboarding with admin analytics and passkey login.',
+                'category' => 'FinTech · KYC',
+                'technologies' => ['Laravel', 'Inertia', 'React 18', 'TypeScript', 'Tailwind CSS 4', 'WebAuthn Passkeys', 'TanStack Table', 'Recharts', 'FilePond', 'React-Email'],
+                'description' => 'I built the Tena onboarding platform — a progressive-disclosure registration flow, an admin analytics dashboard with Recharts, WebAuthn passkey login, tabular data management with TanStack Table, and transactional email built with React-Email components.',
+                'problem' => 'A long single-page KYC form was killing completion rates and the operator needed real visibility into where drop-off was happening.',
+                'methodology' => 'Progressive-disclosure form architecture, WebAuthn passkeys for phishing-resistant admin login, and Recharts dashboards showing per-step completion metrics.',
+                'outcome' => 'Live at tena.host.',
+                'image' => 'https://api.okjtech.co.ke/api/storage/uploads/Tena-logo-square_6a5f38e6c199c.webp',
+                'url' => 'https://tena.host',
+                'is_featured' => true,
+            ],
+            [
+                'type' => 'flagship',
+                'title' => 'Najenga — Construction Collaboration Platform',
+                'client_name' => 'Najenga',
+                'tagline' => 'Blueprint annotation and coordination bridging site engineers, architects, PMs and clients.',
+                'category' => 'PropTech · Construction',
+                'technologies' => ['Laravel', 'Inertia', 'React 18', 'Tailwind', 'Framer Motion', '@annotorious/react', 'AG-Grid', 'react-pdf', 'Tesseract.js', 'Swiper', 'xlsx'],
+                'description' => 'Construction-project coordination platform — annotate architectural drawings directly (Annotorious over PDFs and images), work through interactive project timelines, run OCR over documents (Tesseract.js), export to Excel, and coordinate in a chat with @mentions.',
+                'problem' => 'Site engineers, architects, PMs and clients kept losing context between them because drawings, schedules and chat lived in different tools.',
+                'methodology' => 'One workspace with spatial annotation on drawings, an interactive timeline, OCR-indexed documents, and an @mentions chat, all bound to the same project record.',
+                'outcome' => 'In development. Staging live at najenga.okjtech.co.ke.',
+                'image' => 'https://api.okjtech.co.ke/api/storage/uploads/Najenga-Logo-md-redbg_6a5527c52d180.webp',
+                'bg_image' => 'https://api.okjtech.co.ke/api/storage/uploads/Screenshot 2026-09-01 095339_6a9676b62fd15.webp',
+                'url' => 'https://najenga.okjtech.co.ke',
+                'is_featured' => true,
+            ],
+            [
+                'type' => 'flagship',
+                'title' => 'Naoa — Digital Wedding Platform (evolved from DnT Wedding)',
+                'client_name' => 'Naoa',
+                'tagline' => 'Live gallery, QR guest check-in, and a downloadable digital scrapbook.',
+                'category' => 'Events · Weddings',
+                'technologies' => ['React 19', 'Vite', 'Tailwind CSS 4', 'TanStack Query', 'i18next', 'Leaflet', 'FilePond', 'html5-qrcode', 'jsPDF', 'html-to-image', 'Laravel Echo', 'Pusher', 'Playwright'],
+                'description' => 'Wedding platform with live photo galleries, QR guest check-in, an interactive venue map, real-time updates via Laravel Echo + Pusher, and a downloadable "digital scrapbook" export assembled client-side (html-to-image / jsPDF / jszip). Front end is internationalised with i18next.',
+                'problem' => 'Wedding memory-keeping today is scattered across guests\' phones and social platforms. Couples need one live, ownable record of the day.',
+                'methodology' => 'Real-time gallery + guest check-in on the couple\'s subdomain, with a client-side export path so the couple owns their own memory book afterwards.',
+                'outcome' => 'In development. Current demo instance live at dntwed.okjtech.co.ke. Public SaaS landing planned at naoa.okjtech.co.ke.',
+                'image' => 'https://api.okjtech.co.ke/api/storage/uploads/Naoa-logo_6a5f3a1aa2cd7.webp',
+                'url' => 'https://dntwed.okjtech.co.ke',
+                'is_featured' => true,
+            ],
+            [
+                'type' => 'client',
+                'title' => 'Kuba Home Services — Marketplace',
+                'client_name' => 'Kuba',
+                'tagline' => 'Vetted home & business services marketplace across 13 categories.',
+                'category' => 'Marketplace',
+                'technologies' => ['Next.js 16', 'React 19', 'TypeScript', 'Tailwind CSS 4', 'Radix UI', 'Stripe', 'Laravel Echo', 'Pusher', 'FilePond', 'React Calendly', 'Laravel', 'Sanctum'],
+                'description' => 'Service-provider marketplace with client and provider dashboards, quote-request flows, in-platform real-time messaging (Laravel Echo + Pusher), Stripe payments and Calendly booking. Deploys via cPanel with GitHub Actions.',
+                'problem' => 'Finding vetted service providers in Nairobi is fragmented across WhatsApp groups and referrals; providers have no shared quoting or booking surface.',
+                'methodology' => 'One platform with matched client / provider dashboards, real-time chat, Stripe checkout and Calendly for scheduling — bookings and payments settled inside the platform.',
+                'outcome' => 'In development. Preparing live launch at kuba.co.ke.',
+                'image' => null,
+                'url' => 'https://kuba.co.ke',
+                'is_featured' => true,
+            ],
+            [
+                'type' => 'client',
+                'title' => 'Silversky — E-commerce',
+                'client_name' => 'Silversky',
+                'tagline' => 'Custom e-commerce build with WebAuthn passkey login.',
+                'category' => 'E-commerce',
+                'technologies' => ['Laravel', 'Inertia', 'React 18', 'Tailwind', 'WebAuthn Passkeys', 'Leaflet'],
+                'description' => 'Silversky e-commerce build — full brand-system implementation (8 vector logo variants documented and matched to the brand guide), WebAuthn passkey login, Leaflet-based location features.',
+                'problem' => 'Silversky needed an on-brand storefront with a modern, phishing-resistant authentication path.',
+                'methodology' => 'Laravel + Inertia + React with WebAuthn passkeys and a rigorously implemented brand system.',
+                'outcome' => 'In development at shop.silversky.co.ke.',
+                'image' => null,
+                'url' => 'https://shop.silversky.co.ke',
+                'is_featured' => false,
+            ],
+            [
+                'type' => 'client',
+                'title' => 'OmniShop — Solar & Storage Live Kenya 2026 Exhibitor Catalog',
+                'client_name' => 'OmniSpace 3D Events Ltd',
+                'tagline' => 'Standalone ordering site for a trade show, deployable by a non-developer.',
+                'category' => 'Events · E-commerce',
+                'technologies' => ['Python', 'PayPal', 'CSV'],
+                'description' => 'OmniShop is the exhibitor ordering site for Solar and Storage Live Kenya 2026. Exhibitors browse a 190-product catalog, place orders and get a receipt; the admin panel handles order status (Pending → Approved → Invoiced → Fulfilled), prints category-grouped packing lists, and exports orders to CSV. Packaged for a non-technical client with a plain-English guide and a one-click .bat launcher.',
+                'problem' => 'The event needed a purpose-built ordering site, but the client had to be able to operate and (later) redeploy it without a developer.',
+                'methodology' => 'Standalone Python server bundled with everything the client needs — a plain-English README and a one-click launcher — plus an admin panel simple enough for the events team to run themselves.',
+                'outcome' => 'Delivered — running under the client\'s own domain (omnispace3d.com) for the event.',
+                'image' => null,
+                'url' => 'https://omnispace3d.com',
+                'is_featured' => false,
+            ],
+            [
+                'type' => 'client',
+                'title' => 'Nissi Insights — Content Platform',
+                'client_name' => 'Nissi Insights',
+                'tagline' => 'Content publication platform with a Tiptap editor and SWR admin.',
+                'category' => 'Content · Publishing',
+                'technologies' => ['Next.js 16', 'React 19', 'TypeScript', 'Tailwind', 'Radix UI', 'Framer Motion', 'Tiptap', 'SWR'],
+                'description' => 'Nissi Insights — a Next.js content platform with a Tiptap rich editor, tag / category management, image uploads with dropzone + browser compression, and an SWR-backed admin dashboard.',
+                'problem' => 'Nissi needed a modern content platform with a proper rich editor and a fast, live admin — not another WordPress install.',
+                'methodology' => 'Next.js + Tiptap for editing, SWR for live admin data, and image dropzone with client-side compression before upload.',
+                'outcome' => 'In development at nissi-insights.com.',
+                'image' => null,
+                'url' => 'https://nissi-insights.com',
+                'is_featured' => false,
+            ],
+            [
+                'type' => 'client',
+                'title' => 'GM Coaching — Full-stack Platform',
+                'client_name' => 'GM Coaching',
+                'tagline' => 'Coaching / consulting platform with payments and scheduling.',
+                'category' => 'SaaS · Consulting',
+                'technologies' => ['Next.js 16', 'React 19', 'TypeScript', 'Tailwind', 'Radix UI', 'Recharts', 'Stripe', 'React Calendly', 'Laravel Echo', 'Pusher', 'FilePond'],
+                'description' => 'Full-stack platform with a Next.js front end and Laravel backend — Stripe checkout, Calendly booking, real-time updates via Pusher, dashboards with Recharts, file uploads through FilePond.',
+                'problem' => 'The coaching practice needed one integrated surface for bookings, payments, real-time updates and client materials.',
+                'methodology' => 'Next.js + Laravel with Stripe, Calendly and Pusher wired directly into the client and admin dashboards.',
+                'outcome' => 'In development at gm-coaching.com.',
+                'image' => null,
+                'url' => 'https://gm-coaching.com',
+                'is_featured' => false,
+            ],
+            [
+                'type' => 'flagship',
+                'title' => 'Tibu — HealthTech Product (parent of Nyalife HMS)',
+                'client_name' => 'OKJTechnologies',
+                'tagline' => 'The product Nyalife HMS is running on. Ecosystem-by-adoption at national scale.',
+                'category' => 'HealthTech · Interoperability',
+                'technologies' => ['Laravel', 'MySQL', 'React'],
+                'description' => 'Tibu is the parent product concept; the Nyalife HMS is its first live instance. The strategy is ecosystem-by-adoption: onboard facilities one at a time via the HMS — each facility gets a fully useful clinical administration system on day one — and as more facilities adopt it, the underlying data schema becomes the substrate for cross-facility patient-record sharing across all tiers of the Kenyan health system.',
+                'problem' => 'Kenyan hospitals still rely heavily on paper records; there\'s no shared awareness of bed availability, specialists or patient history across facilities, and referrals slow down as a result. Underprivileged patients suffer the most from this gap.',
+                'methodology' => 'Ecosystem-mapping approach: build one facility\'s HMS so well that adoption is self-motivating, then use the growing network as the substrate for cross-facility record sharing, referrals and consolidated national health insights.',
+                'outcome' => 'First live instance in production as the Nyalife HMS. Additional facility rollouts and the cross-facility layer are the next milestones.',
+                'image' => 'https://api.okjtech.co.ke/api/storage/uploads/tibu-logo_6a5f3a770ea74.webp',
+                'url' => null,
+                'is_featured' => true,
+            ],
+        ];
+    }
+
+    // ------------------------------------------------------------------
+    // Insights — 10 real article topics; first two drafted in full.
+    // ------------------------------------------------------------------
+
+    private function reseedInsights(): void
+    {
+        Insight::withTrashed()->forceDelete();
+
+        $adminId = User::query()->orderBy('id')->value('id') ?? 1;
+        $now = now();
+
+        foreach ($this->insightRows() as $order => $row) {
+            Insight::create([
+                'title' => $row['title'],
+                'slug' => Str::slug($row['title']),
+                'category' => $row['category'],
+                'excerpt' => $row['excerpt'],
+                'content' => $row['content'],
+                'image' => null,
+                'user_id' => $adminId,
+                'is_published' => $row['is_published'] ?? true,
+                'published_at' => $now->copy()->subDays($order),
+            ]);
+        }
+    }
+
+    private function insightRows(): array
+    {
+        return [
+            [
+                'title' => 'Ecosystem mapping before you write a line of code',
+                'category' => 'Strategy',
+                'excerpt' => 'The Afrilabs stakeholder-mapping framework, why I run it before scoping any build, and how it changes what I build.',
+                'content' => <<<'HTML'
+<h2>Why mapping the ecosystem is the first commit</h2>
+<p>The single most useful thing I ever learned about building software wasn't taught in a Computer Science lecture. It came from the <em>Leveraging Stakeholder Relationships through Ecosystem Mapping and Building</em> programme run by Afrilabs in Addis Ababa, which I attended while working with the Lawyers Hub. The premise is simple: before you build anything, map every stakeholder who could be affected by or beneficial to the proposition, and design the solution so each one has a clearly aligned way to benefit from it.</p>
+
+<h3>The five kinds of stakeholder I always map</h3>
+<ol>
+    <li><strong>The paying client.</strong> Who signed the contract. Their reason to say yes is usually the loudest — but often the shallowest.</li>
+    <li><strong>The end user.</strong> Frequently a different person from the client. If their interaction is annoying, adoption dies quietly.</li>
+    <li><strong>The regulator and the standards body.</strong> On LegalTech and HealthTech work in Kenya especially, ignoring this stakeholder is how "innovation" ends up illegal.</li>
+    <li><strong>Adjacent partners and data holders.</strong> Anyone the system reads from or writes to. Their willingness to share is a design constraint, not a technical afterthought.</li>
+    <li><strong>The wider community.</strong> Even a small internal tool has a wider community — the receptionist who fields the phone calls, the accountant who has to reconcile it, the compliance officer who has to sign off.</li>
+</ol>
+
+<h3>What the mapping gives you</h3>
+<p>Once each stakeholder has a name on the whiteboard, the next question is <strong>"what does this system have to give each of them, to make participating a rational choice?"</strong> If the answer is "nothing" for anyone on the list, you have a design flaw that no amount of code will fix. Fix it in the map, not in the sprint.</p>
+
+<h3>Applied: Tibu and the Nyalife HMS</h3>
+<p>Tibu — the HealthTech product I'm building — is the clearest example of this in my own portfolio. The vision is a national system where a patient's history follows them across every facility they present at. On paper that's a top-down interoperability project. Ecosystem mapping says otherwise: no hospital adopts a system whose main sales pitch is "you will one day be interoperable with everyone else." So the first live instance is a fully useful Hospital Management System for a single clinic (Nyalife) that pays for itself on day one — and the interoperability substrate is what emerges as more facilities adopt the same system for their own local reasons. Every stakeholder gets a reason to participate before we ask any of them to.</p>
+
+<h3>The 30-minute version</h3>
+<p>If you're building anything and want to try the Afrilabs approach compressed into 30 minutes: draw six columns on a page — Client, User, Regulator, Partners, Community, Yourself — write every named entity in each column, and for each write one sentence answering <em>"what do they get by participating?"</em> If you cannot answer for one of them, that is the work.</p>
+HTML,
+            ],
+            [
+                'title' => "Two years inside Africa's LegalTech engine room — what I learned at the Lawyers Hub",
+                'category' => 'LegalTech',
+                'excerpt' => 'Daily bulletins, policy maps, festival platforms, ADPI trainings, boda-boda field research. What the LegalTech sector actually needs technically — from someone who was in the engine room.',
+                'content' => <<<'HTML'
+<h2>What "LegalTech" actually looks like in practice</h2>
+<p>From February 2023 to December 2024 I was Software Developer, Justice Innovation at the Lawyers Hub in Nairobi. Two years in the engine room of what is, quietly, the busiest LegalTech shop on the continent. Here's what that job actually involved and what I learned.</p>
+
+<h3>The Digital Policy website — everything anchors to it</h3>
+<p>I spearheaded development of the <a href="https://www.lawyershub.org">Lawyers Hub Digital Policy website</a>, which is the primary distribution channel for the Hub's daily bulletins, policy maps, festival programming and reports. LegalTech infrastructure is boring on the inside: it's a good CMS, an editorial team that publishes every day, and URLs that are still there five years later. That's the whole game.</p>
+
+<h3>Africa Law Tech Festival — the platform outlasts the year</h3>
+<p>I designed the platform for the <a href="https://www.africalawtech.com">Africa Law Tech Festival</a>: ticketing, live notifications, event mapping. The important lesson wasn't technical — it was that a festival platform has to be re-programmable each year without being rebuilt. The 2022, 2023, 2024 and 2025 editions all ran on the same substrate. That's what platform actually means.</p>
+
+<h3>AI Policy Lab & Africa Digital Policy Institute</h3>
+<p>At ALTF 2024 I contributed to UI/UX design for the <a href="https://www.aipolicy.africa/">AI Policy Lab</a> and to the Africa Digital Policy Institute's <a href="https://www.lawyershub.org/adpi-courses">course platform</a>, which grew out of the earlier Africa Law Tech University direction. ADPI runs the flagship data-protection trainings on the continent — the Africa Data Protection Course and the CIPP/E. I supported delivery of both. Sitting in on those trainings while also building the platforms they run on is where I got most of my practical data-protection literacy — which shows up now in the way I build authentication, access control and audit logging on every client project.</p>
+
+<h3>Chairing a hackathon at ALTF 2023</h3>
+<p>Under the justice-innovation team I chaired the digital-trade hackathon at ALTF 2023 (<em>Digital Trade in Africa: The AfCFTA and the Single Digital Market</em>, Nairobi, 12–13 July 2023). Eleven teams shortlisted. What I learned watching them: policy hackathons succeed when the problem statement is narrow enough that a working prototype is possible in 48 hours, and they fail when it's a "boil the ocean" AfCFTA framing. That lesson has since shaped how I scope client projects — the first shipped version has to be a real thing, not a step toward a real thing.</p>
+
+<h3>Boda-Boda Law Project — field research, not just a website</h3>
+<p>The Boda-Boda Law Project is the LegalTech engagement I'm proudest of. I co-organised field data collection in Kisumu and Namanga, contributed to writing the report (published in the Lawyers Hub <a href="https://www.lawyershub.org/Resources/reports">reports library</a>), coordinated in-person capacity-building trainings for riders on traffic regulations and their rights, and shipped the <em>Boda-Boda Law</em> project website with a Typeform intake for real-time legal advisory requests. The website was the smallest part. The people work was the point.</p>
+
+<h3>ALTF 2022 — media team delegate</h3>
+<p>The year before as a software-developer trainee I was on the media team at ALTF 2022 (<em>Africa-Europe Artificial Intelligence Policy Dialogue</em>, 2–18 June 2022). Delegate and event support. That was where I saw firsthand that the Hub's community is genuinely continental — the policy conversations aren't Nairobi-centric, and the tools that support them can't be either.</p>
+
+<h3>Three technical takeaways I still apply</h3>
+<ol>
+    <li><strong>Editorial cadence is a first-class requirement.</strong> If the CMS can't support publishing every weekday, it's the wrong CMS. Everything else negotiates around that.</li>
+    <li><strong>Data-protection literacy has to be in the developer, not the checklist.</strong> RBAC, ACL, WebAuthn passkeys, careful logging — these are habits, not features to add later.</li>
+    <li><strong>Interoperability is a distribution problem, not a technical one.</strong> The technical layer is the easy half. The stakeholder-mapping half — who benefits from sharing, who loses control by sharing — is where LegalTech projects live or die.</li>
+</ol>
+HTML,
+            ],
+            [
+                'title' => 'Chairing a hackathon on digital trade at ALTF 2023',
+                'category' => 'LegalTech · Events',
+                'excerpt' => 'What I saw watching 11 teams try to solve AfCFTA problems in 48 hours; where policy hackathons succeed and where they don\'t.',
+                'content' => <<<'HTML'
+<h2>The brief: solve the Single Digital Market in a weekend</h2>
+<p>At the 2023 Africa Law Tech Festival — <em>Digital Trade in Africa: The AfCFTA and the Single Digital Market</em>, Nairobi, 12&ndash;13 July 2023 — I chaired the hackathon under the Lawyers Hub justice-innovation team. Eleven teams were shortlisted. Chairing it meant setting the problem framing, keeping the judging honest, and spending two days watching very smart people run at a very big problem with very little time.</p>
+
+<h3>What the teams actually built</h3>
+<p>The strongest entries were narrow. A tool to check whether a given good qualified for AfCFTA preferential tariff treatment under the rules of origin. A directory that mapped which member states had actually domesticated which parts of the digital-trade protocol. A dispute-logging prototype for cross-border e-commerce returns. None of them "solved digital trade in Africa" — they each took one concrete friction a trader or a regulator hits and made it ten minutes shorter.</p>
+<p>The weaker entries tried to be platforms. A single portal for all intra-African trade. A continental digital-identity layer. Ideas that are genuinely needed, and genuinely impossible to prototype meaningfully in 48 hours, so the demos were mockups narrating a future rather than software doing a thing.</p>
+
+<h3>The pattern: scope is the whole game</h3>
+<p>The split was almost perfectly predictable from the problem statement each team wrote on day one. Teams that could finish the sentence "by Sunday, a user will be able to ___" shipped something you could click. Teams whose sentence was "by Sunday, we will have designed a system that ___" shipped slides.</p>
+<p>That is not a knock on ambition. The platform-scale problems are the important ones. But a hackathon rewards the teams who find the smallest true version of a big problem, and policy hackathons in particular tend to attract framings that are too big to test.</p>
+
+<h3>What I took back to client work</h3>
+<p>I now scope every client project the same way I wish more of those teams had. The first shipped version has to be <strong>a real thing</strong>, not a step toward a real thing. On <a href="https://najenga.okjtech.co.ke">Najenga</a> that meant "an engineer can annotate a PDF drawing and an architect sees the pin" before any of the timeline, OCR or chat features. On the Nyalife HMS it meant "this one clinic runs its whole day on this" before any talk of cross-facility interoperability. Ship the narrow true thing; earn the right to the platform.</p>
+
+<h3>Where policy hackathons genuinely work</h3>
+<p>They are excellent at three things: surfacing which frictions practitioners actually feel (the tariff and domestication tools came from people who had hit those walls personally), building a small bench of people who now understand the protocol in detail, and giving policymakers in the room concrete artefacts to point at. They are bad at producing deployable systems, and they should stop being judged as if that were the goal.</p>
+HTML,
+            ],
+            [
+                'title' => 'CIPP/E, ADPI and building for data protection in Kenyan LegalTech',
+                'category' => 'LegalTech · Data Protection',
+                'excerpt' => 'Supporting delivery of the Africa Data Protection Course and CIPP/E training taught me the compliance surface. Here\'s how I bake it into small-team builds.',
+                'content' => <<<'HTML'
+<h2>Where my data-protection literacy actually came from</h2>
+<p>While I was at the Lawyers Hub I supported delivery of the Africa Digital Policy Institute's two flagship data-protection trainings: the Africa Data Protection Course (data protection, compliance and data security) and the Certified Information Privacy Professional/Europe (CIPP/E) certification. Supporting delivery meant handling the platform and operations, but it also meant sitting in the room for the content. That is where a lot of what I now do by reflex on client builds comes from.</p>
+
+<h3>The compliance surface, briefly</h3>
+<p>Kenya's Data Protection Act, 2019 tracks the GDPR closely enough that the CIPP/E material maps over cleanly: lawful basis for processing, purpose limitation, data minimisation, the rights of the data subject (access, rectification, erasure, portability), breach notification timelines, and the special care owed to sensitive categories &mdash; health data above all. If you have built for GDPR, you have most of what the Kenyan Act asks for; the differences are in the details of registration with the Office of the Data Protection Commissioner and cross-border transfer conditions.</p>
+
+<h3>How it shows up in code</h3>
+<p>I do not treat compliance as a document you write at the end. It shows up as engineering habits from the first migration:</p>
+<ul>
+    <li><strong>Role-based access control and per-record ACLs as a default</strong>, not a later hardening pass. On <a href="https://globalharmonyinitiative.org">Global Harmony Initiative</a> and the Tena onboarding platform, no screen renders data the current role has no lawful reason to see.</li>
+    <li><strong>WebAuthn passkey login</strong> where the data warrants it. GHI, Tena and the Silversky build all use passkeys &mdash; phishing-resistant, no shared secret to leak, and a better answer to "was this really the authorised user" than an SMS code.</li>
+    <li><strong>Audit logging that records who read what, not only who changed what.</strong> For health and legal data, access is the event that matters. Spatie Activitylog on the Laravel projects; a dedicated table where it needs to be queryable.</li>
+    <li><strong>Data minimisation in the schema.</strong> If a field is not needed for the stated purpose, it does not get a column. The cheapest way to protect data you were never asked to hold is to not collect it.</li>
+    <li><strong>Real deletion paths.</strong> Soft deletes for operational safety, but a genuine erasure route that actually removes the record and its derivatives when a data subject is entitled to it.</li>
+</ul>
+
+<h3>Why a solo studio should care about this at all</h3>
+<p>Small builds are where corners get cut, and health and legal clients are exactly the ones who cannot afford the cut corner. Being the person who supported CIPP/E and the Africa Data Protection Course &mdash; rather than the person who read a blog post about the GDPR &mdash; is a large part of why LegalTech and HealthTech clients are comfortable handing a one-person studio their most sensitive data.</p>
+HTML,
+            ],
+            [
+                'title' => 'A solo-founder stack: Laravel + Next.js + AI-accelerated development',
+                'category' => 'Engineering Practice',
+                'excerpt' => 'The exact tooling and workflow that lets one person ship the same class of application a small team would take on.',
+                'content' => <<<'HTML'
+<h2>One person, the same class of application</h2>
+<p>OKJTechnologies is a one-person studio. The projects in the portfolio &mdash; hospital management, a construction-coordination platform, KYC onboarding with analytics, several e-commerce builds &mdash; are the kind of work usually staffed by a small team. This is the stack and the discipline that make that possible without the quality quietly slipping.</p>
+
+<h3>The stack</h3>
+<ul>
+    <li><strong>Backend: Laravel.</strong> Almost every recent project is Laravel 11 or 12 &mdash; Sanctum for auth, Eloquent, queues, the scheduler, Spatie packages (Activitylog, Media Library, Tags) where they earn their place. The framework does the boring 80% so my time goes on the domain-specific 20%.</li>
+    <li><strong>Frontend: Next.js / React, or Inertia + React.</strong> Next.js with the App Router for public sites that need ISR and SEO; Laravel + Inertia + React where the app is behind a login and there is no SEO argument. Tailwind throughout, Framer Motion for movement, Radix for accessible primitives.</li>
+    <li><strong>Classic LAMP</strong> is still the right call for some client work &mdash; a cPanel-hosted PHP + MySQL site the client's existing host can run without me in the loop.</li>
+    <li><strong>Deployment: cPanel and GitHub Actions.</strong> Unglamorous, well understood, and something the client can be handed.</li>
+</ul>
+
+<h3>Where AI accelerates &mdash; and where it doesn't</h3>
+<p>AI tooling in the loop is a real multiplier on the parts of the job that are broad but shallow: scaffolding CRUD, writing the first pass of a migration and its model, generating test fixtures, translating a Figma-ish description into a Tailwind component, explaining an unfamiliar library's API, and doing the tedious 20-file rename that a refactor implies.</p>
+<p>It does <strong>not</strong> replace judgement on the parts that are narrow but deep: the data model for a domain I am still learning, the ecosystem map, the security boundaries, the "should this even be a feature" call, and the debugging of a problem that only shows up in production. Those are still the job. AI makes the surrounding work fast enough that I have more time for them, not less.</p>
+
+<h3>The discipline that stands in for a second engineer</h3>
+<ol>
+    <li><strong>Static analysis is not optional.</strong> PHPStan / Larastan, PHP-CS-Fixer, ESLint and TypeScript in strict-ish mode. The tools are the colleague who reviews the mechanical half of every change.</li>
+    <li><strong>Tests where they buy confidence.</strong> Playwright end-to-end on the flows that would embarrass me if they broke (the Nyalife HMS and Naoa both ship with Playwright suites); PHPUnit on the domain logic. Not 100% coverage &mdash; coverage of the things that matter.</li>
+    <li><strong>Review my own diffs as a stranger.</strong> Every change gets read once more on the branch, out of the editor, before it merges.</li>
+    <li><strong>Operational routine.</strong> Backups (Spatie Backup on the Laravel projects), a known deploy path, and a written runbook for each client so "the developer is unavailable" is an inconvenience, not a crisis.</li>
+</ol>
+
+<h3>The honest limit</h3>
+<p>What one person plus AI tooling cannot do is be in two places at once during an incident, or bring a second genuinely independent perspective to a hard design call. I am candid with clients about that. For everything up to that line &mdash; which covers the large majority of what small and mid-size organisations need built &mdash; the solo stack ships the same class of application, and ships it faster.</p>
+HTML,
+            ],
+            [
+                'title' => 'Designing for HealthTech in Kenya — Tibu, and the problem statement behind it',
+                'category' => 'HealthTech',
+                'excerpt' => 'Why the Nyalife HMS is not a client site but the first live instance of a national-scale product concept.',
+                'content' => <<<'HTML'
+<h2>The problem statement</h2>
+<p>Kenyan healthcare still runs largely on paper. A patient's history lives in a physical file at whichever facility created it. When that patient presents at a different hospital &mdash; a referral, a move, an emergency away from home &mdash; the receiving clinicians start from nothing: no medication history, no allergies, no prior imaging, no idea what has already been ruled out. There is no shared, real-time picture of bed availability or specialist coverage across facilities, so referrals are made by phone and hope. The patients who lose the most from this are the ones with the least ability to advocate for themselves.</p>
+<p>Tibu is my concept for addressing that: a patient-record system designed to work across facility levels 3 to 6, so a person's record follows them rather than staying in a filing cabinet. Right now it is a problem statement and a design brief, not shipped software &mdash; and it should be described that way.</p>
+
+<h3>Why top-down interoperability doesn't get built</h3>
+<p>The obvious shape for Tibu is a national interoperability project: define the standard, mandate it, connect everyone. That is also the shape that almost never ships. No individual hospital adopts a system whose primary pitch is "one day you will be interoperable with everyone else." The benefit is collective and deferred; the cost &mdash; migrating records, retraining staff, changing every workflow &mdash; is local and immediate. So nobody moves first.</p>
+
+<h3>Ecosystem-by-adoption instead</h3>
+<p>The approach I am taking flips it. Build a Hospital Management System that is completely worth running for a single facility, on its own terms, on day one &mdash; patient records, scheduling, clinical file handling, role-based access, billing. A facility adopts it because it makes <em>their</em> Tuesday better, not because of a network they cannot see yet.</p>
+<p>Then, as more facilities independently adopt the same system for the same local reasons, the shared substrate is simply <em>already there</em>. Cross-facility record sharing, referrals and consolidated public-health insight become a configuration step on top of an installed base, not a greenfield megaproject. The network is an emergent property of a genuinely useful product, not a precondition for it.</p>
+
+<h3>The first live instance: Nyalife</h3>
+<p>The <a href="https://nyalifewomen.co.ke">Nyalife Women's Clinic</a> Hospital Management System is that first instance &mdash; in production, running the clinic's real operations. Built on Laravel 11 with Playwright end-to-end tests and a cPanel deployment pipeline. It is a real client system that pays for itself as a client system. It is also, architecturally, the first node: patient identity, encounter and clinical-record models are designed so that a future sharing layer is an addition, not a rewrite.</p>
+
+<h3>What has to be true before Tibu is more than a concept</h3>
+<ol>
+    <li>Several facilities running the same HMS, each for their own reasons.</li>
+    <li>A patient-identity approach that works without assuming a national digital ID is universally present.</li>
+    <li>A data-protection and consent model that satisfies the Data Protection Act for the most sensitive category of data there is &mdash; designed in from the start, covered in a separate article.</li>
+    <li>Clinician trust that the shared record is accurate and current, which is a product and process problem at least as much as a technical one.</li>
+</ol>
+<p>Until those hold, Tibu is presented as what it is: a concept, with one live instance proving the first step.</p>
+HTML,
+            ],
+            [
+                'title' => 'Building an alumni network from scratch — HUCAA design decisions in the wireframe stage',
+                'category' => 'EdTech · Process',
+                'excerpt' => 'Behind-the-scenes of how I scope a system I have not yet built — the questions I ask before writing a migration.',
+                'content' => <<<'HTML'
+<h2>Scoping a system before writing a migration</h2>
+<p>The Hekima University College Alumni Association project started, like everything here, on a whiteboard rather than in an editor. This is what that stage actually looks like &mdash; the questions I work through before a single table exists.</p>
+
+<h3>Who are the stakeholders, and what does each one get?</h3>
+<p>Running the Afrilabs ecosystem-mapping exercise on an alumni network surfaces four groups with genuinely different needs:</p>
+<ul>
+    <li><strong>Alumni</strong> want to find each other, keep a directory entry that is theirs to control, hear about events worth attending, and not be spammed. Their reason to keep a profile current has to be selfish &mdash; a useful directory &mdash; not "the association would like you to."</li>
+    <li><strong>The association / administration</strong> wants an accurate, reachable membership, a way to run events and communications, and ideally a giving pipeline. Their risk is building a database that decays because nobody has a reason to update it.</li>
+    <li><strong>Current students</strong> are future alumni and near-term beneficiaries &mdash; mentorship, opportunities. Designing them in early avoids a painful bolt-on later.</li>
+    <li><strong>Faculty</strong> sit across both worlds and are often the actual social glue between cohorts.</li>
+</ul>
+
+<h3>The decisions that fall out of that</h3>
+<ol>
+    <li><strong>The directory is the product.</strong> Everything else &mdash; events, news, giving &mdash; hangs off a directory that alumni maintain because it is genuinely useful to them. If the directory is an afterthought, the data rots.</li>
+    <li><strong>Alumni own their record.</strong> Granular privacy controls per field, a real export, and self-service edits. The association gets reach; the alumnus keeps control. Both stakeholders are satisfied at once.</li>
+    <li><strong>Claim, don't invite-only.</strong> Seed the directory from existing records as unclaimed stubs, let people claim and verify their own entry. Lower friction than pure invitation, more accurate than a free-for-all.</li>
+    <li><strong>Model cohorts and faculties as first-class.</strong> The way alumni actually navigate a network is "my year" and "my department", so those are structural, not tags.</li>
+    <li><strong>Keep the first release small.</strong> Directory, claim/verify, profile privacy, basic events. Mentorship matching, giving campaigns and a jobs board are clearly on the map but explicitly out of release one.</li>
+</ol>
+
+<h3>Where it stands</h3>
+<p>HUCAA is at the wireframe stage &mdash; the flows above are drawn, the data model follows from them, and the build comes next. The current live claim of a real-time chat with thousands of alumni connected is not accurate; that has not been built. What exists is a well-scoped design, which in my experience is the part that most determines whether the finished system is used or abandoned. Related, live: I have been iterating on a personal alumni portfolio build at <a href="https://alumni.hekima.ac.ke">alumni.hekima.ac.ke</a>.</p>
+HTML,
+            ],
+            [
+                'title' => 'OmniShop: a plain-English e-commerce site you can run from a .bat file',
+                'category' => 'E-commerce · Delivery Practice',
+                'excerpt' => 'Building software for a non-technical client who has to operate it themselves.',
+                'content' => <<<'HTML'
+<h2>When the operator can't open a terminal</h2>
+<p>OmniShop is the exhibitor ordering site I built for <a href="https://okjtech.co.ke">OmniSpace 3D Events</a> for Solar &amp; Storage Live Kenya 2026: a roughly 190-product catalogue, cart, checkout, and an admin panel that moves an order through Pending &rarr; Approved &rarr; Invoiced &rarr; Fulfilled, prints category-grouped packing lists and exports to CSV. The constraint that shaped every decision: the person running it during the show is not a developer and will not have me on call.</p>
+
+<h3>What changes when the client operates it themselves</h3>
+<ul>
+    <li><strong>"Deploy" has to mean "double-click".</strong> The whole thing ships as a self-contained Python application with a one-click <code>.bat</code> launcher. Start it, a local server comes up, the catalogue and admin are in the browser. No runtime to install, no environment variables, no build step.</li>
+    <li><strong>The manual is part of the product.</strong> A plain-English guide written for someone who has never seen an admin panel &mdash; screenshots, "if X happens, do Y", and the three things that are genuinely important not to get wrong. It shipped in the same repo as the code and got as much review attention.</li>
+    <li><strong>Fewer moving parts beats elegant architecture.</strong> A standalone server with a file-backed store is not how I would build a scalable SaaS. For a fixed catalogue, a six-week timeline and a non-technical operator, it is exactly right: nothing to misconfigure, trivial to back up (copy the folder), and it runs on the laptop that is already at the stand.</li>
+    <li><strong>Every destructive action asks twice</strong>, and the states are named in words the operator uses, not in status codes.</li>
+</ul>
+
+<h3>The trade-offs I made on purpose</h3>
+<p>No live payment capture in the core flow &mdash; PayPal checkout for those who want it, but the real workflow is order now, invoice later, because that is how trade-show procurement actually happens. No user accounts for buyers beyond what an order needs. No cloud dependency, so it works even if the venue Wi-Fi does not. Each of these would be the wrong call for a permanent storefront and the right call for a six-week event tool.</p>
+
+<h3>The general lesson</h3>
+<p>"Who operates this, and what can they do unaided at 9am on the busiest day" is a design input, not a support afterthought. When the honest answer is "a non-technical person, alone", the architecture, the defaults and the documentation all have to bend toward that &mdash; and a smaller, blunter system that the operator fully understands beats a sophisticated one they are afraid to touch.</p>
+HTML,
+            ],
+            [
+                'title' => 'Real-time coordination on construction sites — Najenga\'s spatial annotation architecture',
+                'category' => 'PropTech',
+                'excerpt' => 'Annotorious over PDFs, coordinate timelines, Tesseract OCR — why we chose each piece and what still needs testing.',
+                'content' => <<<'HTML'
+<h2>The coordination problem Najenga is built for</h2>
+<p><a href="https://najenga.okjtech.co.ke">Najenga</a> is a construction-project coordination platform. The problem it addresses is that four roles &mdash; the site engineer, the architect, the project manager and the client &mdash; all need to talk about the same drawing, and they are almost never in the same room, the same software, or the same level of technical fluency. Today that conversation happens over WhatsApp photos, marked-up printouts and email threads where "the beam near the entrance" means four different beams to four people.</p>
+
+<h3>Why spatial annotation beats a comment thread</h3>
+<p>The core move is to attach the conversation to a coordinate on the drawing, not to a line in a thread. Najenga uses <strong>Annotorious</strong> over rendered PDF and image drawings: you draw a box or drop a pin on the actual location, and the discussion, photos and status hang off that point. "The beam near the entrance" becomes an unambiguous pin at (x, y) on sheet A-201 rev C. When the drawing is revised, annotations carry their coordinates so you can see what a given spot looked like three revisions ago and what was said about it then.</p>
+
+<h3>The pieces, and why each one is there</h3>
+<ul>
+    <li><strong>Annotorious + react-pdf</strong> &mdash; render the drawing in the browser and let any role annotate it without CAD software. The lowest-friction way to get a client and a site engineer marking up the same artefact.</li>
+    <li><strong>A coordinate-anchored timeline</strong> &mdash; every annotation is an event with a position and a time, so the project history is navigable both "what happened when" and "what happened here".</li>
+    <li><strong>Tesseract.js OCR over uploaded documents</strong> &mdash; specs, RFIs and old drawings come in as scans. OCR makes them searchable, so "find every document that mentions this grid reference" works instead of scrolling a folder.</li>
+    <li><strong>AG&#8209;Grid and xlsx export</strong> &mdash; QSs and PMs live in spreadsheets; the data has to leave the platform cleanly.</li>
+    <li><strong>Chat with @mentions</strong> (react-mentions, react-chat-elements) scoped to a project or an annotation, so notifications are about a place, not a channel.</li>
+</ul>
+
+<h3>Where it is, and what still needs testing</h3>
+<p>Najenga is in development with a staging environment live. The parts I am still hardening: annotation-to-coordinate stability across drawing revisions when a sheet is re-scaled or re-cropped; OCR accuracy on poor-quality site scans (Tesseract is good, not magic); and the permissions model for the client role &mdash; enough visibility to stay informed, not so much that every in-progress engineering conversation is exposed. Those are the questions a real pilot on a live project has to answer before I would call it done.</p>
+HTML,
+            ],
+            [
+                'title' => 'Booking with Kenyan farmers — the Wisdom Capital delivery stack',
+                'category' => 'Agritech · E-commerce',
+                'excerpt' => 'Order lifecycle, payment reconciliation, regional distribution tracking for an agricultural producer.',
+                'content' => <<<'HTML'
+<h2>Why an agricultural storefront isn't just a storefront</h2>
+<p>Wisdom Capital is a Kenyan agricultural producer I built an ordering and delivery platform for &mdash; a LAMP stack with a React front end and an admin dashboard for sales, payment status and regional distribution. On the surface it is e-commerce. In practice a direct-to-consumer agricultural stack has to handle several things a normal online shop never thinks about.</p>
+
+<h3>What's different</h3>
+<ul>
+    <li><strong>Supply is a schedule, not a number.</strong> Availability is governed by harvest and processing cycles, so "in stock" is really "will be available in this window". The catalogue has to express future availability without either overselling or hiding a product that will be ready on Thursday.</li>
+    <li><strong>Delivery is regional and batched.</strong> Orders are not shipped one-by-one the moment they are placed &mdash; they are consolidated into distribution runs by region and day. The order lifecycle has an extra state between "paid" and "shipped": assigned to a run.</li>
+    <li><strong>Payment reconciliation spans channels.</strong> Money arrives by mobile money and by bank transfer, sometimes in part payments, sometimes referencing the wrong order. The admin needs a reconciliation view that matches incoming payments to orders and flags the ones that do not line up, rather than assuming a clean one-payment-one-order world.</li>
+</ul>
+
+<h3>How that shaped the admin dashboard</h3>
+<p>The dashboard is built around three questions the operator asks every morning: <em>what has been ordered and paid for</em>, <em>what goes on which distribution run</em>, and <em>which payments still need chasing or matching</em>. Orders can be filtered and grouped by region and by run; payment status is its own column with an explicit "unreconciled" state; and the distribution view is effectively a manifest per region per day that doubles as the driver's list.</p>
+
+<h3>The general point</h3>
+<p>An off-the-shelf store assumes instant stock, per-order shipping and clean payments. Sell perishable produce direct to consumers in Kenya and none of those three hold. The interesting engineering is in modelling the producer's actual operating rhythm &mdash; harvest windows, regional runs, messy multi-channel payments &mdash; and making the admin tool match how the business already works rather than forcing the business to work like the software.</p>
+HTML,
+            ],
+        ];
+    }
+}

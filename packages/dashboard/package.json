@@ -1,0 +1,55 @@
+{
+  "name": "@okjt/dashboard",
+  "version": "0.17.0",
+  "description": "Dashboard pages for OKJTech projects: page layout, hero, summary cards, floating toolbar with search and filters, side panel, lists, bulk actions, one way to save, and working together: presence, version history, sharing; the dashboard shell, sign-in pages and account menu",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Juniortambo2628/OKJT.git",
+    "directory": "packages/dashboard"
+  },
+  "exports": {
+    ".": "./dist/index.js",
+    "./toolbar-glass.css": "./dist/toolbar-glass.css",
+    "./table": "./dist/AdminDataTable.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "sideEffects": [
+    "*.css"
+  ],
+  "scripts": {
+    "build": "node build.mjs",
+    "prepack": "node build.mjs",
+    "test": "node build.mjs && vitest run"
+  },
+  "dependencies": {
+    "@okjt/ui": "^0.8.0"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": ">=5",
+    "date-fns": ">=3",
+    "framer-motion": ">=11",
+    "lucide-react": ">=0.400.0",
+    "react": ">=18",
+    "react-dom": ">=18",
+    "react-hook-form": ">=7",
+    "react-hot-toast": ">=2",
+    "react-router-dom": ">=6.4",
+    "@tanstack/react-table": ">=8"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@tanstack/react-table": "^8.21.3"
+  },
+  "peerDependenciesMeta": {
+    "@tanstack/react-table": {
+      "optional": true
+    }
+  }
+}

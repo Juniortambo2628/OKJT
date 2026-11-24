@@ -1,0 +1,97 @@
+# @okjt/ui
+
+Theme tokens and shared building blocks for OKJTech sites and dashboards. A project sets its colours and
+fonts once, in `okjt.config.js`; the kit's pages and components use them by
+name (`text-ink`, `bg-accent`, `border-tone-200`, `font-display`).
+
+## Use it
+
+```bash
+npm i -D @okjt/ui
+```
+
+`okjt.config.js`, at the app's root:
+
+```js
+export default {
+  theme: {
+    colors: {
+      ink: '#2B221C', inkDeep: '#1F1813', body: '#4A3F35', soft: '#6B5D52', muted: '#8B7B6B', faint: '#A68B76',
+      accent: '#A67B5B', accentStrong: '#A06A47', accentDark: '#8B5E3C', accentSoft: '#C8A68E',
+      line: '#E8DDD3', lineStrong: '#D9CBBE', tint: '#F3EDE7', paper: '#FBF8F5', paperWarm: '#FAF7F2',
+      positive: '#7C8B6A', positiveDark: '#56634A',
+      tone: 'stone', // or 'slate', 'gray', 'zinc', 'neutral', or { 50: …, 100: …, …, 950: … }
+    },
+    fonts: { sans: "'Lato', sans-serif", display: "'Manrope Variable', 'Lato', sans-serif" },
+  },
+};
+```
+
+Generate the theme, and import it straight after Tailwind:
+
+```bash
+npx okjt-theme            # writes src/okjt-theme.css
+npx okjt-theme --check    # in CI: fails if the file is out of date
+```
+
+```css
+@import "tailwindcss";
+@import "./okjt-theme.css";
+```
+
+A missing or misspelt token fails `okjt-theme` with its name, instead of
+rendering as no colour at all.
+
+## The tokens
+
+| Token | For |
+|---|---|
+| `ink`, `inkDeep` | Headlines, the darkest text, dark buttons; darker panels and footers |
+| `body`, `soft`, `muted`, `faint` | Body text, secondary text, hints and captions, the lightest readable text |
+| `accent`, `accentStrong`, `accentDark`, `accentSoft` | The brand colour, its hover, its pressed state, its decorative use |
+| `line`, `lineStrong` | Borders and dividers; borders that must show |
+| `tint`, `paper`, `paperWarm` | The palest coloured surface; the page; a second off-white |
+| `positive`, `positiveDark` | Confirmations; positive text on pale surfaces |
+| `surface`, `contrast`, `action` (optional) | Cards, panels, menus (white); what hovers shade toward (black); solid action buttons (accent) |
+| `onInk`, `panel` (optional) | Text on filled controls (white); dark panels with light text, like the footer (`ink`) |
+| `fill`, `fillHover` (optional) | Filled controls: dark buttons, the chosen tab or chip (`ink`), and their hover (`body`) |
+| `tone-50` … `tone-950` | The grey ramp, step for step like Tailwind's |
+
+Status colours (errors, warnings, success badges) stay Tailwind's red, amber
+and green.
+
+## Proving a styling change changed nothing
+
+`tools/style-snapshot.mjs` records the computed colours and fonts of every
+visible element of a page in a Playwright test, and compares two recordings.
+Colours compare as the pixels they paint, so `#A67B5B` and
+`var(--color-accent)` are equal.
+
+```js
+import { captureStyles } from '@okjt/ui/tools/style-snapshot';
+await writeFile(`${dir}/${name}.json`, JSON.stringify(await captureStyles(page)));
+```
+
+```bash
+node node_modules/@okjt/ui/tools/style-snapshot.mjs compare before/ after/
+```
+
+## Building blocks (React)
+
+| Export | What it is |
+|---|---|
+| `Button`, `buttonClass` | The one button: `primary`, `secondary`, `danger`; `edit` or `action` hide it for viewers |
+| `Modal`, `Overlay`, `PortalWhen` | Dialogs and the layer under them. `Modal` takes `tabs`, a `footer` per tab, `fixedHeight` and `sheet` (a bottom sheet on phones) |
+| `SegmentedControl` | A row of options, one chosen |
+| `ContextMenu`, `useDismiss` | A right-click or "more" menu; close on outside click or Escape |
+| `Skeleton`, `CardSkeleton`, `TimelineSkeleton`, `MessageSkeleton`, `Loader`, `Spinner` | Loading states |
+| `confirmAction`, `promptAction`, `notifySuccess`, `notifyError`, `notifyUndo`, `ConfirmHost` | Styled confirm and prompt dialogs (mount `ConfirmHost` once) and toasts |
+| `undoable`, `useUndoableRemoval`, `scheduleUndoable` | Undo instead of "are you sure?": the item goes at once and the request is sent only when the 5 s Undo window closes |
+| `StepFlow` | A numbered run of steps, `inline` in a wizard or `docked` at the bottom of a page; progress only when there is some |
+| `formatNumber`, `formatDateTime`, `statusLabel`, `titleCase` | Numbers, dates and status words written the same way everywhere (locale pinned, en-US by default); also in `@okjt/ui/helpers` |
+| `PermissionsProvider`, `usePermissions`, `useVisibleActions` | What the signed-in person may do: `{ role, isOwner, canEdit }`; everything allowed outside a provider |
+
+Peer dependencies for these (not for the theme command): `react`,
+`react-dom`, `framer-motion`, `lucide-react`, `react-hot-toast`. Add
+`@source "../node_modules/@okjt/ui/dist";` after the theme import so Tailwind
+sees their classes.

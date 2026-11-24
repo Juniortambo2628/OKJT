@@ -1,0 +1,376 @@
+<?php
+
+/*
+ * The OKJT kit's server settings. Publish with
+ *   php artisan vendor:publish --tag=okjt-config
+ */
+return [
+
+    'user_model' => env('OKJT_USER_MODEL', 'App\\Models\\User'),
+
+    /*
+     * The record people work on together: a project, a wedding, a site. Every
+     * model using BelongsToWorkspace is scoped to the current one.
+     */
+    'workspace' => [
+        // Implements Okjt\Kit\Workspace\Workspace.
+        'model' => 'App\\Models\\Project',
+
+        // The column on workspace-owned tables, and the table of who belongs
+        // to which workspace with what role (workspace column, user_id, role).
+        'foreign_key' => 'project_id',
+        'members_table' => 'project_user',
+
+        // The name of the global scope (for withoutGlobalScope()).
+        'scope' => 'workspace',
+
+        // How a request names its workspace: a header, or a query parameter
+        // for plain links (downloads, calendar files).
+        'header' => 'X-Workspace',
+        'query' => 'workspace',
+
+        // Uploads of the current workspace go under "{folder}/{id}/{kind}".
+        'folder' => 'projects',
+
+        // API routes that work without a workspace (signing in, your account,
+        // your list of workspaces). Every other route is refused without one.
+        'open_routes' => [
+            'api/login',
+            'api/logout',
+            'api/register',
+            'api/user',
+        ],
+    ],
+
+    /*
+     * Roles in a workspace, most to least capable. The owner role may do
+     * everything; the viewer role may only read, except for the writes listed
+     * in viewer_writes (their own session, account security, presence).
+     */
+    'roles' => [
+        'owner' => 'owner',
+        'viewer' => 'viewer',
+        'all' => ['owner', 'editor', 'viewer'],
+        'viewer_writes' => [
+            'api/logout',
+        ],
+    ],
+
+    /*
+     * Accounts and teams (HasTeam, HasAccounts, TeamController): an account
+     * (a business, a family) owns workspaces. Its people are owners or staff;
+     * staff work on all its workspaces (new ones too) or on chosen ones, with
+     * one role across them. `fields` names those settings, both as columns
+     * of the members table and in the team API.
+     */
+    'accounts' => [
+        'model' => 'App\\Models\\Account',
+        'members_table' => 'account_user',
+        'foreign_key' => 'account_id',
+        'owner_role' => 'owner',
+        'staff_role' => 'staff',
+        // The roles staff can be given in the workspaces.
+        'staff_workspace_roles' => ['editor', 'viewer', 'owner'],
+        'fields' => [
+            'all' => 'all_workspaces',
+            'role' => 'workspace_role',
+            'ids' => 'workspace_ids',
+            'list' => 'workspaces',
+        ],
+    ],
+
+    /*
+     * What people are told when they are turned away. ":workspace" is the
+     * workspace's name for people ("project").
+     */
+    'label' => 'project',
+    'messages' => [
+        'not_found' => 'This :workspace could not be found.',
+        'unavailable' => 'This :workspace isn’t available.',
+        'unpublished' => 'This :workspace isn’t published yet.',
+        'none_selected' => 'No :workspace selected.',
+        'no_access' => 'You don\'t have access to this :workspace.',
+        'inactive' => 'This :workspace is not active.',
+        'owners_only' => 'Only owners can do this.',
+        'view_only' => 'You have view-only access.',
+        'superadmin_only' => 'Only administrators can do this.',
+        'team_owners_only' => 'Only an account’s owners manage its team.',
+        'no_account' => 'You don’t own an account.',
+        'plan_limit' => 'Your plan includes up to :max :limit. Upgrade to add more.',
+        'trial_limit' => 'The trial includes up to :max :limit. Contact us for full access.',
+        'confirm_address' => 'Type the :workspace’s web address exactly to confirm.',
+        'sign_in_expired' => 'That sign-in link expired — try again.',
+        'account_not_found' => 'Account not found.',
+        'bad_credentials' => 'The provided credentials are incorrect.',
+        'passkey_failed' => 'This passkey couldn’t be used. Sign in another way, then add the passkey again from your account.',
+    ],
+
+    /*
+     * Working together (CollaborationController): presence counts for
+     * online_seconds after a heartbeat; invitation links last invite_days;
+     * badge_modules are the dashboard modules (revision modules) that show a
+     * "new changes" badge, tracked per person in visits_table.
+     */
+    'collaboration' => [
+        'online_seconds' => 60,
+        'invite_days' => 7,
+        'default_role' => 'editor',
+        'badge_modules' => [],
+        'visits_table' => 'module_visits',
+        'token_name' => 'dashboard',
+    ],
+
+    /*
+     * Signing in (AuthController and the other sign-in controllers).
+     *
+     * mode: 'token' answers with a Sanctum bearer token (an app on another
+     * origin); 'session' signs in with Laravel's session cookie on `guard`
+     * (an app served from the API's own origin; its first page load then
+     * knows who is signed in). token_name names the tokens.
+     *
+     * Wrong passwords are throttled (throttle.attempts per decay_seconds,
+     * per email and address). A two-step sign-in's challenge lasts
+     * challenge_minutes. two_factor.secrets_encrypted: secrets and recovery
+     * codes stored encrypted as Laravel Fortify stores them (for an app
+     * moving from Fortify). login_codes: sign-in codes by email
+     * (LoginCodeController). password_reset.path: where the emailed reset
+     * link opens ({app.frontend_url}{path}/{token}?email=…). link_to_app:
+     * true always sends the link there (an app on another origin), false
+     * leaves it to Laravel (your own `password.reset` route), null (the
+     * default) sends it there only when there is no `password.reset` route.
+     *
+     * welcome is what a new sign-up is told. Signing in with Google
+     * (SocialAuthController) sends the browser back to
+     * {app.frontend_url}{social.return_path} with a code that lasts
+     * social.code_minutes; new_user_name is for accounts without a name.
+     */
+    'auth' => [
+        'mode' => env('OKJT_AUTH_MODE', 'token'),
+        'guard' => 'web',
+        'token_name' => 'dashboard',
+        'throttle' => ['attempts' => 5, 'decay_seconds' => 60],
+        // False lets people sign in before verifying their address (an app that
+        // doesn't ask for verification).
+        'verified_to_sign_in' => true,
+        'challenge_minutes' => 5,
+        'two_factor' => ['secrets_encrypted' => false],
+        'login_codes' => ['minutes' => 10, 'verify_attempts' => 6, 'verify_window' => 900],
+        'password_reset' => ['path' => '/reset-password', 'link_to_app' => null],
+        'welcome' => 'Welcome — check your inbox to verify your email.',
+        'new_user_name' => 'New user',
+        'social' => [
+            'return_path' => '/auth/google',
+            'code_minutes' => 5,
+        ],
+    ],
+
+    'notifications' => [
+        'model' => Okjt\Kit\Notifications\Notification::class,
+    ],
+
+    /*
+     * Billing, optional (Plans, Limits, BillingService, BillingController):
+     * plans per account, limits checked before adding what a plan counts,
+     * and payments through Paystack. While billing is off every account is
+     * on the trial (trial_limits) and nothing can be bought; the console can
+     * give a plan by hand. Accounts need `plan` and `plan_expires_at`
+     * (the billing migration). A project keeping these settings in its own
+     * config file names it in settings_from / paystack_from.
+     */
+    'billing' => [
+        'settings_from' => null,
+        'paystack_from' => null,
+        'enabled' => (bool) env('BILLING_ENABLED', false),
+        'currency' => env('BILLING_CURRENCY', 'KES'),
+        // The plan every account is on until it pays (and returns to when a paid plan runs out).
+        'default_plan' => 'free',
+        // What every account may do while billing is off (null or missing = unlimited).
+        'trial_limits' => ['workspaces' => 3, 'collaborators' => 2],
+        /*
+         * Prices in the currency's main unit (null = not for sale). period:
+         * 'one-off' or a number of months. for: the account types that may
+         * buy it (empty = any). Limits: workspaces per account, the rest
+         * per workspace; null = unlimited.
+         */
+        'plans' => [
+            'free' => ['name' => 'Free', 'for' => [], 'price' => null, 'period' => null, 'limits' => ['workspaces' => 1, 'collaborators' => 2]],
+        ],
+        // How limits are named in messages.
+        'limit_names' => ['workspaces' => 'workspaces', 'collaborators' => 'collaborators'],
+        'channels' => ['card', 'mobile_money'],
+        'reference_prefix' => 'pay_',
+        'return_path' => '/billing',
+        // A Mailable taking the payment, sent once it succeeds; null = none.
+        'receipt_mail' => null,
+        'payment_model' => Okjt\Kit\Billing\Payment::class,
+        // Limits, or a subclass counting the project's own limits.
+        'limits' => Okjt\Kit\Billing\Limits::class,
+        'paystack' => [
+            'secret_key' => env('PAYSTACK_SECRET_KEY'),
+            'public_key' => env('PAYSTACK_PUBLIC_KEY'),
+            'base_url' => env('PAYSTACK_BASE_URL', 'https://api.paystack.co'),
+        ],
+    ],
+
+    /*
+     * Site settings (Okjt\Kit\Content\SiteSettings + SiteSettingController,
+     * from okjt-app): the words, pictures and switches the pages read, edited
+     * in the admin. `table`: where they live (okjt-app and TFE already have
+     * site_settings in this shape). `public_groups`: the groups signed-out
+     * pages may read (publicIndex); nothing else is public.
+     */
+    'site_settings' => [
+        'table' => 'site_settings',
+        'public_groups' => [],
+    ],
+
+    /*
+     * Page copy (Okjt\Kit\Content\PageCopy + PageCopyController, from TFE's
+     * LandingContent and Naoa's PageContent): `config` names the config tree
+     * holding the default words (each top-level key a section, e.g.
+     * 'landing_v2'); the admin's edits are saved over it. Only text can be
+     * edited, never a value under a `structural` key (wiring, not wording).
+     * per_workspace: each workspace has its own copy (Naoa's weddings).
+     */
+    'page_copy' => [
+        'config' => null,
+        'structural' => ['id', 'icon', 'area', 'action', 'types', 'image', 'phone', 'desktop', 'background', 'href', 'url', 'route', 'key', 'slug'],
+        'per_workspace' => false,
+    ],
+
+    /*
+     * Page photos (Okjt\Kit\Content\PagePhotos + PagePhotoController, from
+     * Naoa): which pictures a place on the site shows instead of its default
+     * (built-in photo keys or "media-{id}" from the media library), several
+     * cross-fading in order, at most `max`. per_workspace: each workspace
+     * chooses its own.
+     */
+    'page_photos' => ['max' => 8, 'per_workspace' => false],
+
+    /*
+     * The media library (Okjt\Kit\Media\MediaLibrary + MediaController, from
+     * TFE): uploads are scaled down to max_edge px and re-encoded at quality,
+     * stored on `disk` under `folder`, and recorded in `table`, so a photo can
+     * be picked again instead of uploaded twice. list_limit: how many the API
+     * lists. SVG is never accepted.
+     */
+    'media' => [
+        'disk' => 'public',
+        'folder' => 'assets/library',
+        'table' => 'media_assets',
+        'max_edge' => 1920,
+        'quality' => 82,
+        'list_limit' => 200,
+    ],
+
+    /*
+     * Browser errors (ClientErrorController, from TFE), sent by @okjt/ui's
+     * installErrorReporter. skip_paths: pages whose errors are never kept
+     * (paths without the leading slash, e.g. 'fan/bank-savings'). channel:
+     * the log channel; the kit adds 'okjt_client' (a daily file,
+     * storage/logs/client-errors.log, kept 7 days) when the project hasn't
+     * defined it.
+     */
+    'client_errors' => ['skip_paths' => [], 'channel' => 'okjt_client'],
+
+    /*
+     * Stale cookies (ForgetShadowedCookies, from TFE): when a cookie's name
+     * arrives twice (an old copy left under another domain, e.g. after
+     * SESSION_DOMAIN changed), the copies on other domains are expired so
+     * sign-in stops answering 419. `shadowed`: the cookies it watches; empty
+     * means the session cookie and XSRF-TOKEN.
+     */
+    'cookies' => ['shadowed' => []],
+
+    /*
+     * On/off switches (Okjt\Kit\Switches\Switches): features shipped switched
+     * off and turned on from the admin when ready. Declare each one; only
+     * declared switches can be flipped (SwitchController, superadmins only,
+     * written to the console audit log). Read one with Switches::on('key');
+     * guard a feature's routes with RequireSwitch::class.':key' (404 while
+     * off). `public` => true lets signed-out pages ask (publicIndex).
+     *
+     *   'mpesa_extras' => [
+     *       'label' => 'Sell extras with M-Pesa',
+     *       'description' => 'Guests can pay for extras on the splash page.',
+     *       'default' => env('OKJT_SWITCH_MPESA_EXTRAS', false),
+     *   ],
+     */
+    'switches' => [],
+
+    /*
+     * The console (ConsoleController), for platform staff: the statuses a
+     * workspace can be given, and the model of the audit log of what staff
+     * did there (Okjt\Kit\Console\AuditLog or a subclass).
+     */
+    'console' => [
+        'statuses' => ['active', 'suspended', 'archived'],
+        'audit_model' => Okjt\Kit\Console\AuditLog::class,
+    ],
+
+    /*
+     * Backups (BackupService, BackupController, backups:create and
+     * backups:verify), kept in storage/app/backups. auto switches the safety
+     * copies taken before risky bulk changes (snapshot()). Scheduled backups
+     * can be copied off-site (backups:create --offsite) to a filesystem disk
+     * and/or by email (mail is the Mailable sent). A project extending
+     * BackupService names its class in service.
+     */
+    'backups' => [
+        'service' => Okjt\Kit\Backups\BackupService::class,
+        'auto' => env('AUTO_BACKUPS', true),
+        'mail' => Okjt\Kit\Backups\BackupCreated::class,
+        'offsite' => [
+            'disk' => env('BACKUP_OFFSITE_DISK') ?: null,
+            'path' => env('BACKUP_OFFSITE_PATH', 'backups'),
+            'email' => env('BACKUP_OFFSITE_EMAIL') ?: null,
+            'email_max_mb' => (float) env('BACKUP_OFFSITE_EMAIL_MAX_MB', 15),
+        ],
+        // Runtime state rather than anyone's data.
+        'skipped_tables' => [
+            'migrations', 'personal_access_tokens', 'sessions', 'cache', 'cache_locks',
+            'jobs', 'job_batches', 'failed_jobs', 'password_reset_tokens',
+        ],
+    ],
+
+    /*
+     * Security headers (Http\Middleware\SecurityHeaders), on every response
+     * once the project appends the middleware. A header set to null is not
+     * sent. csp is the base policy, a directive set to null is left out;
+     * csp_extra adds sources to it, e.g.
+     *   'csp_extra' => ['connect-src' => ['data:', 'blob:']]
+     * so the project keeps getting the kit's base policy.
+     */
+    'security_headers' => [
+        'enabled' => true,
+        'headers' => [
+            'X-Frame-Options' => 'SAMEORIGIN',
+            'X-XSS-Protection' => '1; mode=block',
+            'X-Content-Type-Options' => 'nosniff',
+            'Referrer-Policy' => 'strict-origin-when-cross-origin',
+            'Strict-Transport-Security' => 'max-age=31536000; includeSubDomains',
+        ],
+        'csp' => [
+            'default-src' => ["'self'"],
+            'script-src' => ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://fonts.googleapis.com'],
+            'style-src' => ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+            'font-src' => ["'self'", 'https://fonts.gstatic.com'],
+            'img-src' => ["'self'", 'data:', 'https:', 'blob:'],
+            'connect-src' => ["'self'", 'https:', 'wss:'],
+        ],
+        'csp_extra' => [],
+        // Send the policy as Content-Security-Policy-Report-Only, to try a stricter one.
+        'csp_report_only' => false,
+    ],
+
+    /*
+     * Version history (RecordsRevisions): rapid edits by one person to one
+     * record merge into one version; versions older than keep_days are pruned
+     * by model:prune.
+     */
+    'revisions' => [
+        'model' => Okjt\Kit\Revisions\Revision::class,
+        'coalesce_minutes' => 10,
+        'keep_days' => 180,
+    ],
+];

@@ -1,0 +1,327 @@
+@import "tailwindcss";
+@import "./okjt-theme.css";
+
+/* Let Tailwind see the kit's class names. */
+@source "../../../packages/ui/dist";
+@source "../../../packages/site/dist";
+@source "../../../packages/dashboard/dist";
+
+/* "fit": desktop viewports tall enough for the dashboard's fixed-height
+   lists (AdminPageLayout `fill`), where only the rows scroll. */
+@custom-variant fit (@media (min-width: 64rem) and (min-height: 40rem));
+
+:root {
+  color-scheme: dark;
+  /* The sign-in fields' tones (see @okjt/dashboard AuthLayout). */
+  --okjt-auth-glow: #c9a45c;
+  --okjt-auth-focus: #ebc882;
+  --okjt-auth-placeholder: #7a6a4c;
+  /* Shadows on the public pages: black, not the (light) ink. */
+  --okjt-shadow: #000000;
+  /* The dashboard's floating toolbar: cream, like its cards. */
+  --okjt-toolbar-bg: rgba(246, 238, 219, 0.96);
+  --okjt-toolbar-border: rgba(255, 250, 235, 0.7);
+}
+
+html {
+  background: var(--color-paper);
+}
+
+/* The public pages on desktop, at the density of the browser's 80% zoom:
+   text, spacing and widths are in rem, so a smaller root size scales the
+   whole page. Breakpoints are in rem of the browser's own size and don't
+   move. Only pages in the site layout (.okjt-site): phones, tablets, the
+   dashboard and its sign-in page are unchanged. */
+@media (min-width: 80rem) {
+  html:has(.okjt-site) { font-size: 80%; }
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-body);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-accent) 35%, transparent);
+  color: var(--color-ink);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--color-accent) 25%, transparent) transparent;
+}
+
+/* The page: deep brown with warm light from above and a fine grain, so it
+   has depth instead of a flat fill (SiteLayout's .okjt-site). */
+.okjt-site {
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgb(235 200 130 / 0.08), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 100% 35%, rgb(201 164 92 / 0.045), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 0% 70%, rgb(156 133 88 / 0.045), transparent 70%),
+    linear-gradient(180deg, #0b0806 0%, #070504 40%, #040302 100%);
+}
+.okjt-site::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: url(/brand/grain.svg);
+  opacity: 0.07;
+  mix-blend-mode: overlay;
+}
+
+/* Photo cards: a deeper shade so their words read on any picture. */
+.okjt-card-shade {
+  background: linear-gradient(to top, rgb(6 4 2 / 0.96) 0%, rgb(6 4 2 / 0.78) 38%, rgb(6 4 2 / 0.35) 72%, rgb(6 4 2 / 0.15) 100%);
+}
+
+/* The top bar, once it has a background, and the sticky bar of sections:
+   cream, with dark brown words; the section chips white. */
+.okjt-site-nav-solid, .okjt-section-nav {
+  --color-tint: #f6eedb;
+  --color-line: #e3d6b9;
+  --color-line-strong: #cdbb96;
+  --color-surface: #ffffff;
+  --color-ink: #1d160d;
+  --color-body: #3b2f1f;
+  --color-soft: #3b2f1f;
+  --color-muted: #75654a;
+  --color-faint: #96866a;
+  --color-accent: #8a6526;
+  --color-accent-strong: #6e4f1c;
+  --color-fill: #ffffff;
+  --color-on-ink: #1d160d;
+  color: var(--color-body);
+}
+.okjt-site-nav-solid { background: rgb(246 238 219 / 0.96); border-color: #e3d6b9; }
+.okjt-section-nav {
+  background: rgb(231 218 189 / 0.94);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+  border-color: rgb(255 250 235 / 0.35);
+}
+.okjt-section-nav a, .okjt-section-nav button { box-shadow: 0 1px 2px rgb(29 22 13 / 0.08); }
+.okjt-section-nav [aria-current] { box-shadow: inset 0 0 0 1.5px #1d160d; }
+
+/* Buttons: cream with dark brown words, or clear glass. On cream (the top
+   bar, a card) they turn dark brown so they still stand out. */
+.okjt-pill-dark, .okjt-pill-light {
+  background: #f3ead5;
+  color: #1d160d;
+  box-shadow: 0 10px 30px -12px rgb(0 0 0 / 0.7);
+}
+.okjt-pill-dark:hover, .okjt-pill-light:hover { background: #fbf6ea; }
+.okjt-pill-outline, .okjt-pill-glass {
+  background: rgb(255 255 255 / 0.06);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgb(255 255 255 / 0.28);
+  color: #faf5e8;
+}
+.okjt-pill-outline:hover, .okjt-pill-glass:hover { background: rgb(255 255 255 / 0.14); }
+:is(.okjt-site-nav-solid, .glass, .glass-strong, .okjt-card) .okjt-pill {
+  background: #241c11;
+  color: #f3d9a0;
+  border-color: transparent;
+}
+:is(.okjt-site-nav-solid, .glass, .glass-strong, .okjt-card) .okjt-pill:hover { background: #3a2e1d; }
+
+/* Links and buttons in title case, not capitals (labels stay small caps). */
+.okjt-site :is(a, button).uppercase, .okjt-pill {
+  text-transform: none;
+  letter-spacing: 0.01em;
+}
+
+/* Logos are monochrome: white on dark, dark brown on light, their own
+   colours on hover. (.logo-light / .logo-dark on any logo image.) */
+.logo-light, .logo-dark { transition: filter 0.25s ease, opacity 0.25s ease; }
+.logo-light { filter: brightness(0) invert(1); }
+.logo-dark { filter: brightness(0) invert(12%) sepia(30%) saturate(600%); }
+:is(a, button, li, div):hover > .logo-light, .logo-light:hover,
+:is(a, button, li, div):hover > .logo-dark, .logo-dark:hover { filter: none; }
+/* The kit's logo in the top bar: white over the hero, dark brown on cream. */
+.okjt-site-nav-over img { filter: brightness(0) invert(1); transition: filter 0.25s ease; }
+.okjt-site-nav-solid img { filter: brightness(0) invert(12%) sepia(30%) saturate(600%); transition: filter 0.25s ease; }
+.okjt-site-nav a:hover > img { filter: none; }
+/* The footer's logos sit on the dark panel. */
+footer img { filter: brightness(0) invert(1); transition: filter 0.25s ease; }
+footer a:hover > img { filter: none; }
+
+/* The flagship logos sliding under the hero (LogoCarousel): two copies
+   in a row, moved by half their width, so the loop never shows a seam. */
+.logo-marquee { animation: logo-marquee 38s linear infinite; }
+.logo-marquee:hover { animation-play-state: paused; }
+@keyframes okjt-appear { from { opacity: 0; } to { opacity: 1; } }
+/* A loading message that only shows once a wait is noticeable. */
+.okjt-appear-late { animation: okjt-appear 0.25s ease-out 0.4s both; }
+@media (prefers-reduced-motion: reduce) { .okjt-appear-late { animation-duration: 0.01s; } }
+/* The page-change bar (RouteProgress): waits 200 ms, then a segment sweeps across. */
+.okjt-route-progress { animation: okjt-appear 0.2s ease-out 0.2s both; padding-top: env(safe-area-inset-top, 0px); }
+.okjt-route-progress > div { animation: okjt-route-sweep 1.1s ease-in-out infinite; }
+@keyframes okjt-route-sweep { from { transform: translateX(-100%); } to { transform: translateX(300%); } }
+@media (prefers-reduced-motion: reduce) { .okjt-route-progress > div { animation: none; width: 100%; opacity: 0.6; } }
+@keyframes logo-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* The highlight figures on a tab's photo (FeatureExplorer): the figure
+   first, large and gold, its words under it. */
+[role='tabpanel'] > dl > div { display: flex; flex-direction: column-reverse; justify-content: flex-end; }
+[role='tabpanel'] > dl dd { margin: 0 0 0.35rem; font-size: clamp(1.75rem, 3.2vw, 2.75rem); line-height: 1.05; color: #f3d9a0; }
+[role='tabpanel'] > dl dt { font-size: 0.8125rem; line-height: 1.35; color: rgb(255 255 255 / 0.78); }
+
+/* A bigger top bar: larger logo and links. */
+.okjt-site-nav img { height: 3rem; }
+.okjt-site-nav nav :is(a, button) { font-size: 0.875rem; }
+.okjt-site-nav > div > div :is(a) { font-size: 0.875rem; }
+@media (min-width: 64rem) { .okjt-site-nav img { height: 3.5rem; } }
+
+/* Filled controls get a gold hairline so they read on the dark page. */
+.bg-fill {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-accent) 30%, transparent);
+}
+/* …but not where the fill is dropped on desktop (FeatureExplorer's tabs). */
+@media (min-width: 64rem) {
+  .bg-fill.lg\:bg-transparent { box-shadow: none; }
+}
+
+@layer components {
+  /* Cards: solid cream with dark brown words, on the near-black page. Inside
+     a card the theme's colours flip, so every text, line, field and pill in
+     it reads dark on cream without each page restyling it. Also the kit's
+     own cards (.okjt-card: the explorer's summary, questions, legal text). */
+  .glass, .glass-strong, .okjt-card,
+  .admin-theme :is([class~="bg-surface"], [class~="bg-surface/50"], [class~="bg-surface/80"], [class~="bg-surface/90"], [class~="bg-surface/95"], .admin-floating-toolbar) {
+    --color-ink: #1d160d;
+    --color-body: #3b2f1f;
+    --color-soft: #57472f;
+    --color-muted: #75654a;
+    --color-faint: #96866a;
+    --color-accent: #8a6526;
+    --color-accent-strong: #6e4f1c;
+    --color-accent-dark: #5a4016;
+    --color-accent-soft: #b08a4c;
+    --color-line: #e3d6b9;
+    --color-line-strong: #cdbb96;
+    --color-tint: #efe4cb;
+    --color-paper: #f6eedb;
+    --color-paper-warm: #efe4cb;
+    --color-surface: #fbf6ea;
+    --color-tone-50: #f6eedb;
+    --color-tone-100: #efe4cb;
+    --color-tone-200: #e3d6b9;
+    --color-tone-300: #cdbb96;
+    --color-tone-400: #96866a;
+    --color-tone-500: #75654a;
+    --color-tone-600: #57472f;
+    --color-tone-700: #3b2f1f;
+    --color-tone-800: #2a2116;
+    --color-tone-900: #1d160d;
+    --color-fill: #241c11;
+    --color-fill-hover: #3a2e1d;
+    --color-on-ink: #f3d9a0;
+    --color-positive: #4d6b2e;
+    --color-positive-dark: #3b5323;
+    --color-action: #241c11;
+  }
+  /* The public cards' own look (dashboard cards keep the kit's shape). */
+  .glass, .glass-strong, .okjt-card {
+    color: var(--color-body);
+    background: linear-gradient(160deg, #fbf6ea 0%, #f3e9d3 100%);
+    border: 1px solid rgb(255 250 235 / 0.7);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6), 0 40px 80px -40px rgb(0 0 0 / 0.95), 0 0 0 1px rgb(0 0 0 / 0.25);
+  }
+  .glass-strong {
+    background: linear-gradient(160deg, #fbf6ea 0%, #efe3c8 100%);
+  }
+  /* On photo cards (anywhere, even inside a cream card) badges are dark
+     pills with light words over the picture. */
+  .okjt-card-shade ~ :not(.okjt-card) { --color-surface: #241c11; --color-ink: #faf5e8; }
+  /* Kit cards that set their own see-through surface take the cream too. */
+  .okjt-card.bg-surface\/75, .okjt-card.bg-surface\/50 { background: linear-gradient(160deg, #fbf6ea 0%, #f3e9d3 100%); }
+}
+
+
+/* A hole in a cream card: the page's dark brown shows through, sunk in
+   with an inner shadow, and the words go back to the dark-page colours. */
+.okjt-hole {
+  --color-ink: #faf5e8;
+  --color-body: #dcc89a;
+  --color-soft: #bba67e;
+  --color-muted: #978561;
+  --color-accent: #ebc882;
+  --color-accent-soft: #c9a45c;
+  --color-line: #3a3221;
+  color: var(--color-body);
+  background: radial-gradient(circle at 80% 0%, rgb(235 200 130 / 0.07), transparent 60%), #0e0b07;
+  border: 1px solid rgb(0 0 0 / 0.55);
+  box-shadow: inset 0 10px 28px -6px rgb(0 0 0 / 0.95), inset 0 -1px 0 rgb(255 250 235 / 0.06), 0 1px 0 rgb(255 255 255 / 0.55);
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+.okjt-hole:hover { border-color: rgb(235 200 130 / 0.4); }
+
+/* A photo that can't load shows the brand's dark placeholder, not the
+   kit's warm gradient (Photo's .okjt-photo). */
+.okjt-photo {
+  background: #1a1610 url(/brand/placeholder.svg) center / cover no-repeat;
+}
+
+/* Rich text from the CMS (services, insights, pillars, legal documents). */
+.prose-okjt {
+  line-height: 1.75;
+  color: var(--color-body);
+}
+.prose-okjt > * + * { margin-top: 1.1em; }
+.prose-okjt h2, .prose-okjt h3, .prose-okjt h4 {
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  margin-top: 1.8em;
+}
+.prose-okjt h2 { font-size: 1.6rem; }
+.prose-okjt h3 { font-size: 1.3rem; }
+.prose-okjt a { color: var(--color-accent); text-decoration: underline; text-underline-offset: 3px; }
+.prose-okjt ul { list-style: disc; padding-left: 1.4em; }
+.prose-okjt ol { list-style: decimal; padding-left: 1.4em; }
+.prose-okjt li + li { margin-top: 0.4em; }
+.prose-okjt blockquote { border-left: 2px solid var(--color-accent); padding-left: 1em; color: var(--color-soft); font-style: italic; }
+.prose-okjt img { border-radius: 1rem; }
+.prose-okjt figure img { width: 100%; height: auto; }
+.prose-okjt figcaption { margin-top: 0.6em; font-size: 0.85rem; color: var(--color-soft); }
+.prose-okjt strong { color: var(--color-ink); }
+.prose-okjt code { background: var(--color-surface); padding: 0.1em 0.35em; border-radius: 0.35em; }
+
+/* ---- The dashboard (DashboardShell sets .admin-theme on <html>) ---- */
+/* Cards, lists, dialogs, menus and the toolbar are cream with dark brown
+   words (the colour flip above, on every surface); buttons in them are
+   dark brown so they show. The page and sidebar stay dark. */
+.admin-theme [class~="bg-surface"] { box-shadow: 0 20px 50px -30px rgb(0 0 0 / 0.9); }
+.admin-theme .admin-floating-toolbar button[class*="bg-surface"] { background: #fbf6ea; }
+.admin-theme :focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.admin-theme fieldset:disabled :is(input, select, textarea, button, label) {
+  cursor: not-allowed;
+}
+
+/* Responsive: grid columns may shrink below their content (long words,
+   address chips), and no page scrolls sideways on a phone. */
+.okjt-site { overflow-x: clip; }
+.okjt-site .grid > * { min-width: 0; }
+.okjt-site h1, .okjt-site h2, .okjt-site h3 { overflow-wrap: break-word; hyphens: manual; }

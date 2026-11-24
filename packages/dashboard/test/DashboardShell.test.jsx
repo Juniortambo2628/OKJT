@@ -1,0 +1,93 @@
+import { render, screen, fireEvent, within } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { Wallet, PieChart } from 'lucide-react'
+import { DashboardProvider, DashboardShell } from '../dist/index.js'
+
+const api = { post: vi.fn(async () => ({ data: { presence: [], badges: { expenses: 2 } } })), get: vi.fn(async () => ({ data: [] })) }
+const shell = {
+  logo: { src: '/logo.png', alt: 'Najenga', to: '/' },
+  nav: [{ title: 'Money', items: [{ path: '/app/expenses', icon: Wallet, label: 'Expenses', id: 'sidebar-expenses' }] }],
+  quickLinks: [{ path: '/app/analytics', icon: PieChart, label: 'Analytics', id: 'header-analytics' }],
+  Banner: () => <div>Not published yet</div>,
+  Notifications: () => <button type="button">Bell</button>,
+  AccountMenu: ({ compactLinks }) => <div>Account ({compactLinks.length} links)</div>,
+}
+
+function renderShell(path = '/app/expenses', extra = {}) {
+  return render(
+    <MemoryRouter initialEntries={[path]}>
+      <QueryClientProvider client={new QueryClient()}>
+        <DashboardProvider dashboard={{ api, modules: [{ key: 'expenses', path: '/app/expenses', label: 'Expenses' }], home: { label: 'Home', path: '/app' }, shell: { ...shell, ...extra } }}>
+          <DashboardShell><p>Page body</p></DashboardShell>
+        </DashboardProvider>
+      </QueryClientProvider>
+    </MemoryRouter>,
+  )
+}
+
+describe('DashboardShell', () => {
+  it("frames the page with the project's sidebar, header and slots", async () => {
+    renderShell()
+    expect(screen.getByText('Page body')).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'Najenga' })).toHaveAttribute('src', '/logo.png')
+    expect(screen.getByText('Money')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Expenses' })).toHaveAttribute('aria-current', 'page')
+    expect(screen.getByRole('link', { name: 'Analytics' })).toHaveAttribute('href', '/app/analytics')
+    expect(screen.getByText('Not published yet')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Bell' })).toBeInTheDocument()
+    expect(screen.getByText('Account (1 links)')).toBeInTheDocument()
+    expect(document.documentElement).toHaveClass('admin-theme')
+  })
+
+  it('works with no shell settings at all', () => {
+    render(<MemoryRouter><DashboardShell><p>Bare</p></DashboardShell></MemoryRouter>, {
+      wrapper: ({ children }) => <QueryClientProvider client={new QueryClient()}><DashboardProvider dashboard={{ api }}>{children}</DashboardProvider></QueryClientProvider>,
+    })
+    expect(screen.getByText('Bare')).toBeInTheDocument()
+  })
+
+  it('folds to a rail of icons on wide screens when collapsible, and remembers it', () => {
+    window.matchMedia = vi.fn(() => ({ matches: true, addEventListener() {}, removeEventListener() {} }))
+    localStorage.removeItem('okjt.sidebar.collapsed')
+    const { unmount } = renderShell('/app/expenses', { collapsible: true, sidebarWidth: 256 })
+    expect(document.documentElement.style.getPropertyValue('--okjt-sidebar-w')).toBe('256px')
+    expect(screen.getByText('Money')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /Open sidebar menu/ }))
+    expect(screen.queryByText('Money')).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Expenses/ })).toHaveAttribute('title', 'Expenses')
+    expect(document.documentElement.style.getPropertyValue('--okjt-sidebar-w')).toBe('80px')
+    expect(localStorage.getItem('okjt.sidebar.collapsed')).toBe('1')
+    unmount()
+
+    renderShell('/app/expenses', { collapsible: true })
+    expect(screen.queryByText('Money')).not.toBeInTheDocument()
+    delete window.matchMedia
+  })
+
+  it("takes the project's header pieces and its own history and share panels", () => {
+    const HistoryDrawer = ({ open }) => (open ? <div>Our history</div> : null)
+    const ShareModal = ({ open }) => (open ? <div>Our sharing</div> : null)
+    renderShell('/app/expenses', {
+      HeaderStart: () => <button type="button">All projects</button>,
+      Search: () => <input aria-label="Search everything" />,
+      headerActions: ['history', 'share', () => <button type="button">Our button</button>],
+      HistoryDrawer,
+      ShareModal,
+    })
+    const header = within(document.getElementById('header'))
+    expect(header.getByRole('button', { name: 'All projects' })).toBeInTheDocument()
+    expect(header.getByRole('textbox', { name: 'Search everything' })).toBeInTheDocument()
+    expect(header.queryByRole('button', { name: 'Restart Dashboard Tour' })).not.toBeInTheDocument()
+    const [first, second] = header.getAllByRole('button', { name: /Version history|Share dashboard/ })
+    expect(first).toHaveAccessibleName('Version history')
+    expect(second).toHaveAccessibleName('Share dashboard')
+    expect(header.getByRole('button', { name: 'Our button' })).toBeInTheDocument()
+
+    fireEvent.click(first)
+    expect(screen.getByText('Our history')).toBeInTheDocument()
+    fireEvent.click(second)
+    expect(screen.getByText('Our sharing')).toBeInTheDocument()
+  })
+})
