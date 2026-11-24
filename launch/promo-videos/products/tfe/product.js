@@ -1,0 +1,55 @@
+/* The Football Experience: football trips planned in one place, for fans and
+   the partners who serve them. Theme from TFE's brand: #08080a pitch-black,
+   TFE red #c8161d, Figtree; pitch markings in the background. */
+(function () {
+  window.PROMO = {
+    title: 'TFE Promo',
+    brand: { logo: 'logo.png', logoH: 2.7 },
+    theme: {
+      bg: ['#16080A', '#050506'],
+      glow: ['#E2232B', '#7A0C12'], glowAmt: .14,
+      pattern: 'pitch', patternColor: '#ffffff', patternAmt: .05,
+      dust: '#ff4b52', dustAmt: .7, dustAdditive: true,
+      metal: 0x2c2c2e, rim: '#ff6a6f',
+      screenBg: '#08080a',
+      shadow: 'rgba(0,0,0,.7)', vignette: .14,
+      tapColor: 'rgba(255,75,82,A)',
+      fontsHref: 'https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400;0,600;0,700;0,800;0,900;1,800;1,900&display=swap',
+      fontLoads: ['900 40px Figtree', '800 40px Figtree', '400 20px Figtree'],
+      css: {
+        '--frame': '#000', '--bg': '#0b0b0d', '--ink': '#FFFFFF', '--accent': '#ff3b44', '--eyebrow': '#ff6a6f', '--muted': '#9ca3af',
+        '--font-display': "'Figtree', system-ui, sans-serif", '--font-accent': "'Figtree', system-ui, sans-serif", '--font-body': "'Figtree', system-ui, sans-serif",
+        '--accent-style': 'italic', '--accent-weight': '900', '--accent-size': '9.4cqw', '--display-weight': '800', '--display-size': '8.6cqw',
+        '--chip-bg': 'rgba(255,255,255,.07)', '--chip-line': 'rgba(255,59,68,.4)', '--track': 'rgba(255,255,255,.18)',
+      },
+    },
+    shots: ['planner', 'book', 'finance', 'partner_dashboard', 'partner_requests', 'partner_listings', 'school_dashboard', 'learn', 'd_home_00',
+      'plan_phone', 'tickets_phone', 'community_phone', 'book_phone', 'm_listings_11_00', 'm_tribes_harambee_stars_travellers_00'],
+    scenes: [
+      { id: 'intro', name: 'TFE', t0: 0, t1: 2.15, pos: 'bottom', eyebrow: 'Football travel, planned in one place', lines: [['serif', 'Follow your team.'], ['script', 'We plan the rest.']] },
+      { id: 'planner', device: 'laptop', name: 'Plan', t0: 2.5, t1: 5, eyebrow: 'Plan', lines: [['serif', 'Pick your matches,'], ['script', 'build your trip.']], chips: ['World Cup', 'AFCON', 'Euro'] },
+      { id: 'price', device: 'phone', name: 'Budget', t0: 5, t1: 7.5, eyebrow: 'Budget', lines: [['serif', 'One price for'], ['script', 'the whole trip.']] },
+      { id: 'book', device: 'laptop', name: 'Book', t0: 7.5, t1: 10, eyebrow: 'Book', lines: [['serif', 'Book with'], ['script', 'verified partners.']], chips: ['Flights', 'Stays', 'Tickets'] },
+      { id: 'tickets', device: 'phone', name: 'Seats', t0: 10, t1: 12.5, eyebrow: 'Tickets', lines: [['serif', 'Choose your seats,'], ['script', 'see the view.']] },
+      { id: 'finance', device: 'laptop', name: 'Pay', t0: 12.5, t1: 15, eyebrow: 'Pay your way', lines: [['serif', 'Pay now, or'], ['script', 'spread the cost.']], chips: ['M-Pesa', 'Savings goals', 'Financing'] },
+      { id: 'tribes', device: 'phone', name: 'Tribes', t0: 15, t1: 17.5, eyebrow: 'Tribes', lines: [['serif', 'Travel with'], ['script', 'your tribe.']] },
+      { id: 'packages', device: 'phone', name: 'Packages', t0: 17.5, t1: 20, eyebrow: 'Ready to book', lines: [['serif', 'Trips you can book'], ['script', 'for AFCON 2027.']] },
+      { id: 'partners', device: 'laptop', name: 'Partners', t0: 20, t1: 22.5, eyebrow: 'For partners', lines: [['serif', 'Reach fans while'], ['script', 'they’re planning.']], chips: ['Travel agents', 'Hotels', 'Airlines', 'Finance'] },
+      { id: 'listings', device: 'laptop', name: 'Publish', t0: 22.5, t1: 25, eyebrow: 'Publish', lines: [['serif', 'Publish your offers,'], ['script', 'answer requests.']], chips: ['Packages', 'Tours', 'Offers'] },
+      { id: 'schools', device: 'laptop', name: 'Schools', t0: 25, t1: 27.8, eyebrow: 'Schools & clubs', lines: [['serif', 'Coach, teach,'], ['script', 'play better.']], chips: ['Schools', 'Academies', 'Coaches'] },
+      { id: 'outro', name: 'TFE', t0: 28.2, t1: 29.75, pos: 'bottom', chapter: false, lines: [['serif', 'Let’s build your matchday.'], ['small', 'tfe.okjtech.co.ke']] },
+    ],
+    screens: {
+      planner: (c, u, h) => h.pan(c, 'planner', u, 1.1),
+      price: (c, u, h) => h.scroll(c, 'plan_phone', h.seg(u, .2, .95)),
+      book: (c, u, h) => h.pan(c, 'book', u, 1.1),
+      tickets: (c, u, h) => h.scroll(c, 'tickets_phone', h.seg(u, .2, .95)),
+      finance: (c, u, h) => h.pan(c, 'finance', u, 1.1),
+      tribes: (c, u, h) => { const k = h.ease(h.seg(u, .45, .57)); if (k <= 0) h.scroll(c, 'community_phone', h.seg(u, .1, .45)); else if (k < 1) h.slideX(c, k, 'community_phone', 'm_tribes_harambee_stars_travellers_00'); else h.cover(c, 'm_tribes_harambee_stars_travellers_00'); },
+      packages: (c, u, h) => h.cover(c, 'm_listings_11_00'),
+      partners: (c, u, h) => h.pan2(c, 'partner_dashboard', 'partner_requests', u, .42, .62, 1.08),
+      listings: (c, u, h) => h.pan(c, 'partner_listings', u, 1.1),
+      schools: (c, u, h) => h.pan2(c, 'school_dashboard', 'learn', u, .42, .62, 1.08),
+    },
+  };
+})();

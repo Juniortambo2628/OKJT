@@ -1,0 +1,55 @@
+/* Najenga: construction project management for homeowners, managers and
+   contractors. Theme from Najenga's brand: warm off-white #F5F1EE,
+   near-black #1D1717, wine-crimson accent, Figtree; a site-plan grid. */
+(function () {
+  window.PROMO = {
+    title: 'Najenga Promo',
+    brand: { logo: 'logo.webp', logoH: 1.9 },
+    theme: {
+      bg: ['#FBF8F6', '#EDE6E0'],
+      glow: ['#F2C9A8', '#9B1837'], glowAmt: .08,
+      pattern: 'grid', patternColor: '#8C7B70', patternAmt: .1,
+      dust: '#9B1837', dustAmt: .55,
+      metal: 0x8e8a86, rim: '#ffffff',
+      screenBg: '#1D1717',
+      shadow: 'rgba(29,23,23,.36)',
+      tapColor: 'rgba(155,24,55,A)',
+      fontsHref: 'https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400;0,600;0,700;0,800;1,800&display=swap',
+      fontLoads: ['800 40px Figtree', '600 40px Figtree', '400 20px Figtree'],
+      css: {
+        '--frame': '#1D1717', '--bg': '#F5F1EE', '--ink': '#1D1717', '--accent': '#9B1837', '--eyebrow': '#9B1837', '--muted': '#7A6E68',
+        '--font-display': "'Figtree', system-ui, sans-serif", '--font-accent': "'Figtree', system-ui, sans-serif", '--font-body': "'Figtree', system-ui, sans-serif",
+        '--accent-style': 'normal', '--accent-weight': '800', '--accent-size': '9cqw', '--display-weight': '400', '--display-size': '8.6cqw',
+        '--chip-bg': 'rgba(255,255,255,.8)', '--chip-line': 'rgba(29,23,23,.12)', '--track': 'rgba(29,23,23,.16)',
+      },
+    },
+    shots: ['overview', 'expenses', 'timeline', 'analytics', 'settings_projects', 'projects', 'd_home_00', 'd_for_homeowners_00', 'd_for_contractors_00',
+      'expenses_phone', 'm_home_04', 'm_home_06', 'm_home_03'],
+    scenes: [
+      { id: 'intro', name: 'Najenga', t0: 0, t1: 2.15, pos: 'bottom', eyebrow: 'Construction project management', lines: [['serif', 'Build it right.'], ['script', 'Keep every shilling in sight.']] },
+      { id: 'overview', device: 'laptop', name: 'Overview', t0: 2.5, t1: 5, eyebrow: 'Your project', lines: [['serif', 'Every build,'], ['script', 'at a glance.']], chips: ['Budget used', 'Latest work', 'The team'] },
+      { id: 'expenses', device: 'laptop', name: 'Money', t0: 5, t1: 7.5, eyebrow: 'Money', lines: [['serif', 'Every shilling,'], ['script', 'accounted for.']], chips: ['Receipts', 'M-Pesa codes', 'Bank & cash'] },
+      { id: 'phone', device: 'phone', name: 'On site', t0: 7.5, t1: 10, eyebrow: 'On site', lines: [['serif', 'Record costs'], ['script', 'from your phone.']] },
+      { id: 'timeline', device: 'laptop', name: 'Site', t0: 10, t1: 12.5, eyebrow: 'The site', lines: [['serif', 'The site,'], ['script', 'week by week.']], chips: ['Photos dated for you', 'Pins on photos', 'Milestones'] },
+      { id: 'anywhere', device: 'phone', name: 'Anywhere', t0: 12.5, t1: 15, eyebrow: 'From anywhere', lines: [['serif', 'Watch it go up,'], ['script', 'wherever you are.']] },
+      { id: 'analytics', device: 'laptop', name: 'Insight', t0: 15, t1: 17.5, eyebrow: 'Insight', lines: [['serif', 'Know where'], ['script', 'the project stands.']], chips: ['By category', 'Over time', 'Weekly summary'] },
+      { id: 'team', device: 'laptop', name: 'Team', t0: 17.5, t1: 20, eyebrow: 'Team', lines: [['serif', 'The right say'], ['script', 'for everyone.']], chips: ['Owner', 'Editor', 'Viewer'] },
+      { id: 'audiences', device: 'laptop', name: 'Who it’s for', t0: 20, t1: 22.5, eyebrow: 'For everyone building', lines: [['serif', 'Homeowners'], ['script', '& contractors.']], chips: ['One project', 'Every site', 'One sign-in'] },
+      { id: 'safe', device: 'phone', name: 'Kept safe', t0: 22.5, t1: 25, eyebrow: 'Kept safe', lines: [['serif', 'Every change kept,'], ['script', 'nothing lost.']] },
+      { id: 'pocket', device: 'laptop', name: 'Najenga', t0: 25, t1: 27.8, eyebrow: 'Najenga', lines: [['serif', 'One build,'], ['script', 'every detail.']], chips: ['Receipts', 'Photos', 'Plans', 'People'] },
+      { id: 'outro', name: 'Najenga', t0: 28.2, t1: 29.75, pos: 'bottom', chapter: false, lines: [['serif', 'Start your first project'], ['small', 'najenga.okjtech.co.ke']] },
+    ],
+    screens: {
+      overview: (c, u, h) => h.pan(c, 'overview', u, 1.1),
+      expenses: (c, u, h) => h.pan(c, 'expenses', u, 1.12),
+      phone: (c, u, h) => h.scroll(c, 'expenses_phone', h.seg(u, .2, .95)),
+      timeline: (c, u, h) => h.pan(c, 'timeline', u, 1.1),
+      anywhere: (c, u, h) => { const k = h.ease(h.seg(u, .45, .57)); if (k <= 0) h.cover(c, 'm_home_04'); else if (k < 1) h.slideX(c, k, 'm_home_04', 'm_home_03'); else h.cover(c, 'm_home_03'); },
+      analytics: (c, u, h) => h.pan(c, 'analytics', u, 1.1),
+      team: (c, u, h) => h.pan2(c, 'settings_projects', 'projects', u, .42, .62, 1.08),
+      audiences: (c, u, h) => h.pan2(c, 'd_for_homeowners_00', 'd_for_contractors_00', u, .42, .62, 1.06),
+      safe: (c, u, h) => h.cover(c, 'm_home_06'),
+      pocket: (c, u, h) => h.pan(c, 'd_home_00', u, 1.08),
+    },
+  };
+})();
