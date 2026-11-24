@@ -239,6 +239,15 @@ return [
     ],
 
     /*
+     * Page photos (Okjt\Kit\Content\PagePhotos + PagePhotoController, from
+     * Naoa): which pictures a place on the site shows instead of its default
+     * (built-in photo keys or "media-{id}" from the media library), several
+     * cross-fading in order, at most `max`. per_workspace: each workspace
+     * chooses its own.
+     */
+    'page_photos' => ['max' => 8, 'per_workspace' => false],
+
+    /*
      * The media library (Okjt\Kit\Media\MediaLibrary + MediaController, from
      * TFE): uploads are scaled down to max_edge px and re-encoded at quality,
      * stored on `disk` under `folder`, and recorded in `table`, so a photo can

@@ -60,9 +60,15 @@ class MediaController extends Controller
         return $this->createdResponse($assets, $assets->count() === 1 ? 'Uploaded' : "{$assets->count()} files uploaded");
     }
 
+    /** Delete a file, unless a place on the site still shows it (page photos). */
     public function destroy(string $id): JsonResponse
     {
-        $this->media->delete(MediaAsset::findOrFail($id));
+        $asset = MediaAsset::findOrFail($id);
+        $usedIn = \Okjt\Kit\Content\PagePhotos::placesUsing($asset->id);
+        if ($usedIn) {
+            return $this->errorResponse('This picture is still on the site: '.implode(', ', $usedIn).'. Swap it out first.', 422);
+        }
+        $this->media->delete($asset);
 
         return $this->successResponse(null, 'Deleted');
     }
