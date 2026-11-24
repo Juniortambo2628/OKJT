@@ -13,7 +13,12 @@ set -euo pipefail
 . "$(dirname "$0")/lib.sh"
 
 : "${APP_ROOT:?}" "${RELEASE:?}"
-APP_NAME="${APP_NAME:-$(basename "$APP_ROOT")}"
+# APP_NAME arrives from the deploy workflow as the *deploy* name (e.g. "ghi").
+# Keep it for PM2 process names but strip it from the environment: phpdotenv
+# never overrides real env vars, so a leaked APP_NAME gets baked into
+# `artisan config:cache` as app.name, overriding APP_NAME from .env.
+PM2_PREFIX="${APP_NAME:-$(basename "$APP_ROOT")}"
+unset APP_NAME
 PHP_BIN="${PHP_BIN:-php}"
 FPM_SERVICE="${FPM_SERVICE:-php8.3-fpm}"
 REL="$APP_ROOT/releases/$RELEASE"
@@ -69,14 +74,14 @@ if command -v pm2 >/dev/null 2>&1; then
   # One at a time: pm2 stops at a name it doesn't know (an app without a
   # queue), which left the old scheduler running beside each new one.
   # Deleting by name removes every process of that name.
-  pm2 delete "$APP_NAME-queue" >/dev/null 2>&1 || true
-  pm2 delete "$APP_NAME-scheduler" >/dev/null 2>&1 || true
+  pm2 delete "$PM2_PREFIX-queue" >/dev/null 2>&1 || true
+  pm2 delete "$PM2_PREFIX-scheduler" >/dev/null 2>&1 || true
   if [[ "${QUEUE:-1}" == 1 ]]; then
-    pm2 start "$PHP_BIN" --name "$APP_NAME-queue" --interpreter none --cwd "$REL" --kill-timeout 60000 \
+    pm2 start "$PHP_BIN" --name "$PM2_PREFIX-queue" --interpreter none --cwd "$REL" --kill-timeout 60000 \
       -- -d disable_functions= "$REL/artisan" queue:work --sleep=3 --tries=3 --max-time=3600
   fi
   if [[ "${SCHEDULER:-1}" == 1 ]]; then
-    pm2 start "$PHP_BIN" --name "$APP_NAME-scheduler" --interpreter none --cwd "$REL" \
+    pm2 start "$PHP_BIN" --name "$PM2_PREFIX-scheduler" --interpreter none --cwd "$REL" \
       -- -d disable_functions= "$REL/artisan" schedule:work
   fi
   pm2 save
