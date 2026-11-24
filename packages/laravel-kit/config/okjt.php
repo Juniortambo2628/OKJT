@@ -225,6 +225,20 @@ return [
     ],
 
     /*
+     * Page copy (Okjt\Kit\Content\PageCopy + PageCopyController, from TFE's
+     * LandingContent and Naoa's PageContent): `config` names the config tree
+     * holding the default words (each top-level key a section, e.g.
+     * 'landing_v2'); the admin's edits are saved over it. Only text can be
+     * edited, never a value under a `structural` key (wiring, not wording).
+     * per_workspace: each workspace has its own copy (Naoa's weddings).
+     */
+    'page_copy' => [
+        'config' => null,
+        'structural' => ['id', 'icon', 'area', 'action', 'types', 'image', 'phone', 'desktop', 'background', 'href', 'url', 'route', 'key', 'slug'],
+        'per_workspace' => false,
+    ],
+
+    /*
      * The media library (Okjt\Kit\Media\MediaLibrary + MediaController, from
      * TFE): uploads are scaled down to max_edge px and re-encoded at quality,
      * stored on `disk` under `folder`, and recorded in `table`, so a photo can

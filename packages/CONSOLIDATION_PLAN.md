@@ -458,7 +458,7 @@ Notes from kit 0.12:
 - [x] S3 clearing stale cookies (kit 0.12: `ForgetShadowedCookies`, lifted from TFE with its tests)
 - [x] S4 front-end error log (kit 0.13: `installErrorReporter` in `@okjt/ui/helpers`, `ClientErrorController` + `okjt_client` log channel; lifted from TFE with its tests)
 - [x] S5 + F13 image optimisation, media library and picker (kit 0.14: `MediaLibrary`, `MediaAsset`, `MediaController`; `AdminMediaLibrary`, `MediaPicker`; `MEDIA_ACCEPT`; lifted from TFE with its tests)
-- [ ] S6 + F14 editable site content and settings page, in steps: settings → page copy → page photos → FAQs → contact form. Step 1, settings, done in kit 0.15 (`SiteSettings`, `SiteSettingController`, `AdminSiteSettings`, `SettingField`; from okjt-app). Found: okjt-app's public `GET /settings` returns every group, email templates included; the kit's public read is opt-in by group.
+- [ ] S6 + F14 editable site content and settings page, in steps: settings → page copy → page photos → FAQs → contact form. Step 1, settings, done in kit 0.15; step 2, page copy, in kit 0.16 (`PageCopy`, `PageCopyController`, `AdminPageCopy`: TFE's text-only overrides over config defaults, with Naoa's per-section visibility and per-workspace copy) (`SiteSettings`, `SiteSettingController`, `AdminSiteSettings`, `SettingField`; from okjt-app). Found: okjt-app's public `GET /settings` returns every group, email templates included; the kit's public read is opt-in by group.
 - [ ] S7 privacy: retention schedule and requests to delete data
 - [ ] Consumers: Naoa first (it has the most to delete), then okjt-app, Najenga, Tena-host (server pieces only, through Inertia), TFE (server pieces only)
 
