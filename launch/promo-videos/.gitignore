@@ -1,0 +1,12 @@
+# Made by tools/render.sh and tools/reel.sh; regenerated on each run.
+products/*/index.html
+products/*/fonts.css
+products/*/fonts/
+products/*/music.wav
+reel/fonts.css
+reel/fonts/
+reel/music.wav
+reel/frames_*/
+tools/node_modules/
+tools/prev/
+tools/frames_*/
