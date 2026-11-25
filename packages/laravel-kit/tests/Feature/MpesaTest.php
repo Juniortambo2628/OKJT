@@ -226,11 +226,21 @@ class MpesaTest extends TestCase
         $this->assertSame('cancelled', $payment->fresh()->status);
     }
 
-    public function test_the_kit_runs_reconcile_every_minute_unless_told_not_to(): void
+    public function test_the_kit_runs_reconcile_every_minute_where_m_pesa_is_declared(): void
     {
-        $commands = fn () => collect(app(Schedule::class)->events())->map->command->filter(fn ($c) => str_contains((string) $c, 'okjt:mpesa-reconcile'));
-        $this->assertCount(1, $commands());
-        $this->assertSame('* * * * *', collect(app(Schedule::class)->events())->first(fn ($e) => str_contains((string) $e->command, 'okjt:mpesa-reconcile'))->expression);
+        $event = collect(app(Schedule::class)->events())->first(fn ($e) => str_contains((string) $e->command, 'okjt:mpesa-reconcile'));
+        $this->assertSame('* * * * *', $event?->expression);
+    }
+
+    public function test_a_project_without_the_m_pesa_switch_or_with_reconcile_off_schedules_nothing(): void
+    {
+        foreach ([['okjt.switches', []], ['okjt.mpesa.reconcile', false]] as [$key, $value]) {
+            config()->set('okjt.switches', ['mpesa' => ['label' => 'M-Pesa', 'default' => true]]);
+            config()->set('okjt.mpesa.reconcile', true);
+            config()->set($key, $value);
+            app()->forgetInstance(Schedule::class);
+            $this->assertNull(collect(app(Schedule::class)->events())->first(fn ($e) => str_contains((string) $e->command, 'okjt:mpesa-reconcile')), $key);
+        }
     }
 
     // Following a prompt

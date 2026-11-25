@@ -1,5 +1,13 @@
 # Upgrading
 
+## 0.22.0 → 0.22.1 (laravel-kit 0.22.1)
+
+The kit schedules `okjt:mpesa-reconcile` only in projects that declare the
+M-Pesa switch (`okjt.mpesa.switch`, default `mpesa`, in `okjt.switches`).
+In 0.21 and 0.22.0 it was scheduled everywhere, so a project not using
+M-Pesa started a PHP process every minute that did nothing. Nothing to do;
+`composer update okjt/laravel-kit`.
+
 ## 0.21 → 0.22 (laravel-kit 0.22.0, create-okjt-app 0.1.21)
 
 The parser for pasted M-Pesa and bank messages (R5), lifted from Naoa with its
