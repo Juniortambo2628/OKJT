@@ -1,5 +1,60 @@
 # Upgrading
 
+## 0.20 → 0.21 (dashboard 0.21.0, laravel-kit 0.21.0, create-okjt-app 0.1.20)
+
+M-Pesa prompts (R5), from Naoa, naoa-dt and Tena-host. Nothing changes and
+nothing is sent until you switch it on. `npm i @okjt/dashboard@^0.21.0` and
+`composer require okjt/laravel-kit:^0.21.0`, then publish and run the
+migrations (new `okjt_mpesa_accounts` and `okjt_mpesa_payments` tables).
+`@okjt/ui` and `@okjt/site` are unchanged.
+
+- **Switch it on**: declare the switch in `okjt.switches`
+  (`'mpesa' => ['label' => 'M-Pesa payments', 'default' => false]`) and turn
+  it on in `<AdminSwitches />`. `Mpesa::start()` refuses while it is off;
+  answers to prompts already sent are still recorded.
+- **Keys and paybill**: `<AdminMpesaSettings />` (saved encrypted, never
+  returned) or `.env`: `OKJT_MPESA_ENV`, `OKJT_MPESA_CONSUMER_KEY`,
+  `OKJT_MPESA_CONSUMER_SECRET`, `OKJT_MPESA_SHORTCODE`, `OKJT_MPESA_TYPE`
+  (`paybill`/`till`), `OKJT_MPESA_TILL_NUMBER`, `OKJT_MPESA_PASSKEY`. What is
+  saved in the admin wins.
+- **Routes**: `POST /mpesa/callback/{token}` → `MpesaController@callback`
+  (outside auth and CSRF; must match `okjt.mpesa.callback_path`, default
+  `api/mpesa/callback`; set `OKJT_MPESA_CALLBACK_BASE` if the API isn't at
+  `APP_URL`); signed in, `GET /mpesa/payments/{id}` → `@show`; behind your
+  superadmin middleware `GET`/`PUT /admin/mpesa` →
+  `MpesaSettingsController@show`/`@update`.
+- **Starting a prompt** is your endpoint, since it knows what is paid for:
+  `app(Mpesa::class)->start($phone, $amount, 'ORDER42', 'Extras', $order, [], $user->id)`
+  returns the `MpesaPayment` (`present()` for the page). An `MpesaException`
+  answers with its own message and status (422, 429, 502, 503).
+- **Applying a payment**: listen for `MpesaPaymentSettled` and check
+  `$e->payment->isPaid()` and `$e->payment->payable`. It is sent once per
+  payment, except that a timeout the kit inferred can later be followed by
+  `paid` (the money moved).
+- **What is checked**: each prompt has its own callback address; an answer
+  counts only if its CheckoutRequestID matches, and a paid answer only if
+  its amount equals the prompt's (otherwise it is recorded as `failed`,
+  "Amount mismatch"). Logs hold the payment id, never the body.
+- **Lost answers**: the kit schedules `okjt:mpesa-reconcile` every minute
+  (your scheduler must run; `okjt.mpesa.reconcile = false` to stop it). It
+  asks M-Pesa about prompts pending for over a minute and times out those
+  left unanswered after `pending_timeout` (300 s).
+- **Each workspace's own paybill**: `okjt.mpesa.per_workspace = true` (off
+  by default). A workspace's owners save theirs (`GET`/`PUT /mpesa/shortcode`
+  → `@workspaceShow`/`@workspaceUpdate`); staff approve it (`POST
+  /admin/mpesa/workspaces/{workspace}/approve`, `/revoke`). Prompts go only
+  to an approved paybill of the workspace's own, never the app's.
+- **Page**: `<StkPrompt send={...} amount={...} payee="..." onPaid={...} />`
+  from `@okjt/dashboard`.
+- **Tests**: `$this->app->instance(MpesaGateway::class, $fake = new FakeMpesaGateway)`;
+  `$fake->callbackBody()` builds M-Pesa's answer to the last prompt.
+- Naoa: `StkPushService` → the kit with `per_workspace` (vendors'
+  storefronts become workspace rows; `stk_status` live → approved);
+  `BudgetPayment` from `MpesaPaymentSettled`. naoa-dt: stays as it is
+  (live wedding). Tena-host: subscriptions, events and extras through
+  `start()` and `MpesaPaymentSettled`; it doesn't use laravel-kit yet
+  (Needs Kevin).
+
 ## 0.19 → 0.20 (site 0.5.0, dashboard 0.20.0, laravel-kit 0.20.0, create-okjt-app 0.1.19)
 
 Privacy (S7, the last of R4), from Naoa and Tena-host: requests from people
