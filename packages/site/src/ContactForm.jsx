@@ -1,4 +1,5 @@
 import { useId, useState } from 'react';
+import postJson from './postJson.js';
 
 /**
  * ContactForm: the site's contact form, for laravel-kit's
@@ -20,24 +21,6 @@ import { useId, useState } from 'react';
  * @param {object} [labels]  { name, email, topic, subject, message, send, sending }
  */
 const DEFAULT_LABELS = { name: 'Your name', email: 'Email', topic: 'What is it about?', subject: 'Subject', message: 'Message', send: 'Send message', sending: 'Sending…' };
-
-function xsrfToken() {
-  const match = typeof document !== 'undefined' && document.cookie.match(/(?:^|; )XSRF-TOKEN=([^;]+)/);
-  return match ? decodeURIComponent(match[1]) : null;
-}
-
-async function postJson(endpoint, data) {
-  const token = xsrfToken();
-  const res = await fetch(endpoint, {
-    method: 'POST',
-    credentials: 'same-origin',
-    headers: { 'Content-Type': 'application/json', Accept: 'application/json', ...(token ? { 'X-XSRF-TOKEN': token } : {}) },
-    body: JSON.stringify(data),
-  });
-  const body = await res.json().catch(() => ({}));
-  if (!res.ok) throw { status: res.status, errors: body.errors, message: body.message };
-  return body;
-}
 
 const fieldClass = 'w-full rounded-xl border border-line-strong bg-surface px-4 py-3 text-body placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20';
 

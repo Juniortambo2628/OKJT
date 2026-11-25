@@ -277,6 +277,39 @@ return [
     ],
 
     /*
+     * Privacy (Okjt\Kit\Privacy, from Naoa): requests from people to delete
+     * their data, and how long data is kept. erasure_days: how long a request
+     * may take (it gets a due date). erasers: what removes one person's data
+     * (Okjt\Kit\Privacy\Eraser); a project adds its own after the kit's.
+     * retention: how long each kind of data is kept (RetentionRule), applied
+     * by `php artisan okjt:retention` (schedule it daily). auto_complete:
+     * that command also erases requests left past their date; off, it only
+     * lists them, and nothing is erased without a person. notify_email: who
+     * hears of a request (else the contact_email site setting).
+     */
+    'privacy' => [
+        'erasure_days' => 14,
+        'erasers' => [Okjt\Kit\Privacy\ContactMessageEraser::class],
+        'retention' => [Okjt\Kit\Privacy\ContactMessagesRetention::class],
+        'auto_complete' => false,
+        'notify_email' => env('OKJT_PRIVACY_EMAIL'),
+        'honeypot' => 'website',
+        'thanks' => null,
+        'per_workspace' => false,
+        'received_notification' => Okjt\Kit\Privacy\ErasureRequested::class,
+    ],
+
+    /*
+     * Confirmed links (Route::confirmedLink, from Tena-host's unsubscribe):
+     * the page that asks before a link in an email changes anything. view:
+     * a project's own page (it gets title, message, button, action, brand).
+     */
+    'confirmed_link' => [
+        'view' => 'okjt::confirmed-link',
+        'brand' => null,
+    ],
+
+    /*
      * The media library (Okjt\Kit\Media\MediaLibrary + MediaController, from
      * TFE): uploads are scaled down to max_edge px and re-encoded at quality,
      * stored on `disk` under `folder`, and recorded in `table`, so a photo can
