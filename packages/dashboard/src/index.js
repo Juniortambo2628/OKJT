@@ -84,4 +84,5 @@ export { default as MediaPicker } from './MediaPicker.js';
 export { default as AdminSiteSettings } from './AdminSiteSettings.js';
 export { default as AdminPageCopy } from './AdminPageCopy.js';
 export { default as AdminPagePhotos } from './AdminPagePhotos.js';
+export { default as AdminFaqs } from './AdminFaqs.js';
 export { default as SettingField, readList, writeList } from './SettingField.js';

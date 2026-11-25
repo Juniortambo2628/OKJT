@@ -1,5 +1,26 @@
 # Upgrading
 
+## 0.17 → 0.18 (dashboard 0.18.0, laravel-kit 0.18.0, create-okjt-app 0.1.17)
+
+FAQs (S6, step 4), from Naoa. Nothing changes until you use them.
+`npm i @okjt/dashboard@^0.18.0` and `composer require
+okjt/laravel-kit:^0.18.0`, then publish and run the migrations (a `faqs`
+table; if you have one, only a `group` column is added). `@okjt/ui` stays
+at 0.8.
+
+- **Server**: `Okjt\Kit\Content\Faq` (question, answer, order, group; in
+  the version history as module `faqs`). Routes: `GET /faqs` →
+  `FaqController@index` (public, `?group=pricing` for one page's list);
+  behind your admin middleware `POST /faqs` → `@store`, `PUT
+  /faqs/reorder` → `@reorder` (`ids` first to last), `PUT /faqs/{id}` →
+  `@update`, `DELETE /faqs/{id}` → `@destroy`. Register `reorder` before
+  `{id}`.
+- **Screen**: `<AdminFaqs />`, or `<AdminFaqs group="pricing" />`.
+- **Per workspace**: `okjt.faqs.per_workspace => true` (Naoa's weddings;
+  set `okjt.faqs.table` if yours isn't `faqs`).
+- Naoa: `App\Models\Faq` / `FaqController` → the kit's, same table; its
+  reorder sends `ids` in order instead of id/order pairs.
+
 ## 0.16 → 0.17 (dashboard 0.17.0, laravel-kit 0.17.0, create-okjt-app 0.1.16)
 
 Page photos (S6, step 3), from Naoa. Nothing changes until you use them.
