@@ -8,8 +8,10 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Okjt\Kit\Backups\BackupService;
+use Okjt\Kit\Console\ApplyRetention;
 use Okjt\Kit\Console\CreateBackup;
 use Okjt\Kit\Console\VerifyBackup;
+use Okjt\Kit\Http\Controllers\ConfirmedLinkController;
 use Okjt\Kit\Revisions\Revision;
 
 class KitServiceProvider extends ServiceProvider
@@ -68,8 +70,19 @@ class KitServiceProvider extends ServiceProvider
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'okjt');
 
+        // A link in an email that changes something (unsubscribe) opens a page
+        // asking first; the change happens on the button. Link scanners that
+        // open every link change nothing. From Tena-host.
+        //   Route::confirmedLink('/u/{token}', Unsubscribe::class, 'unsubscribe');
+        Route::macro('confirmedLink', function (string $uri, string $action, ?string $name = null) {
+            $show = Route::get($uri, [ConfirmedLinkController::class, 'show'])->defaults('okjt_action', $action)->middleware('signed');
+            Route::post($uri, [ConfirmedLinkController::class, 'confirm'])->defaults('okjt_action', $action)->middleware('signed');
+
+            return $name ? $show->name($name) : $show;
+        });
+
         if ($this->app->runningInConsole()) {
-            $this->commands([CreateBackup::class, VerifyBackup::class]);
+            $this->commands([CreateBackup::class, VerifyBackup::class, ApplyRetention::class]);
         }
 
         // Migrations change rows in bulk: those aren't versions anyone made.
