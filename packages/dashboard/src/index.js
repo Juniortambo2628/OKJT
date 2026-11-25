@@ -87,4 +87,6 @@ export { default as AdminPagePhotos } from './AdminPagePhotos.js';
 export { default as AdminFaqs } from './AdminFaqs.js';
 export { default as AdminContactMessages } from './AdminContactMessages.js';
 export { default as AdminPrivacy } from './AdminPrivacy.js';
+export { default as AdminMpesaSettings } from './AdminMpesaSettings.js';
+export { default as StkPrompt } from './StkPrompt.js';
 export { default as SettingField, readList, writeList } from './SettingField.js';

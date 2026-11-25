@@ -2,6 +2,7 @@
 
 namespace Okjt\Kit;
 
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Events\MigrationsEnded;
 use Illuminate\Database\Events\MigrationsStarted;
 use Illuminate\Support\Facades\Event;
@@ -10,8 +11,12 @@ use Illuminate\Support\ServiceProvider;
 use Okjt\Kit\Backups\BackupService;
 use Okjt\Kit\Console\ApplyRetention;
 use Okjt\Kit\Console\CreateBackup;
+use Okjt\Kit\Console\ReconcileMpesa;
 use Okjt\Kit\Console\VerifyBackup;
 use Okjt\Kit\Http\Controllers\ConfirmedLinkController;
+use Okjt\Kit\Payments\Mpesa\DarajaGateway;
+use Okjt\Kit\Payments\Mpesa\MpesaGateway;
+use Okjt\Kit\Payments\Mpesa\MpesaSettings;
 use Okjt\Kit\Revisions\Revision;
 
 class KitServiceProvider extends ServiceProvider
@@ -26,6 +31,10 @@ class KitServiceProvider extends ServiceProvider
 
             return $service === BackupService::class ? $app->build($service) : $app->make($service);
         });
+
+        // M-Pesa: one settings reader per request, and the gateway the config names.
+        $this->app->scoped(MpesaSettings::class);
+        $this->app->bind(MpesaGateway::class, fn ($app) => $app->make(config('okjt.mpesa.gateway', DarajaGateway::class)));
     }
 
     public function boot(): void
@@ -81,8 +90,15 @@ class KitServiceProvider extends ServiceProvider
             return $name ? $show->name($name) : $show;
         });
 
+        // The safety net for M-Pesa answers that never came; it does nothing while M-Pesa is off.
+        $this->callAfterResolving(Schedule::class, function (Schedule $schedule) {
+            if (config('okjt.mpesa.reconcile')) {
+                $schedule->command('okjt:mpesa-reconcile')->everyMinute()->withoutOverlapping()->runInBackground();
+            }
+        });
+
         if ($this->app->runningInConsole()) {
-            $this->commands([CreateBackup::class, VerifyBackup::class, ApplyRetention::class]);
+            $this->commands([CreateBackup::class, VerifyBackup::class, ApplyRetention::class, ReconcileMpesa::class]);
         }
 
         // Migrations change rows in bulk: those aren't versions anyone made.
