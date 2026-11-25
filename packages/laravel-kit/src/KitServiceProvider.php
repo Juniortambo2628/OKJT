@@ -90,9 +90,10 @@ class KitServiceProvider extends ServiceProvider
             return $name ? $show->name($name) : $show;
         });
 
-        // The safety net for M-Pesa answers that never came; it does nothing while M-Pesa is off.
+        // The safety net for M-Pesa answers that never came, for projects that
+        // declare the M-Pesa switch (it does nothing while the switch is off).
         $this->callAfterResolving(Schedule::class, function (Schedule $schedule) {
-            if (config('okjt.mpesa.reconcile')) {
+            if (config('okjt.mpesa.reconcile') && array_key_exists((string) config('okjt.mpesa.switch', 'mpesa'), (array) config('okjt.switches', []))) {
                 $schedule->command('okjt:mpesa-reconcile')->everyMinute()->withoutOverlapping()->runInBackground();
             }
         });
