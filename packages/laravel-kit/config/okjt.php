@@ -310,6 +310,39 @@ return [
     ],
 
     /*
+     * M-Pesa prompts (Okjt\Kit\Payments\Mpesa, from Naoa, naoa-dt and
+     * Tena-host). Off until the S2 switch named here is declared in
+     * okjt.switches and turned on. The keys and paybill can be saved in the
+     * admin (encrypted, they win) or come from .env (OKJT_MPESA_*).
+     * per_workspace: each workspace has its own paybill or till, used once
+     * staff approve it (Naoa's vendors); never the app's. reconcile: the kit
+     * runs okjt:mpesa-reconcile every minute (asks M-Pesa about prompts whose
+     * answer never came; times out unanswered ones after pending_timeout
+     * seconds). gateway: the class that talks to M-Pesa.
+     */
+    'mpesa' => [
+        'switch' => 'mpesa',
+        'env' => env('OKJT_MPESA_ENV', 'sandbox'),
+        'consumer_key' => env('OKJT_MPESA_CONSUMER_KEY'),
+        'consumer_secret' => env('OKJT_MPESA_CONSUMER_SECRET'),
+        'shortcode' => env('OKJT_MPESA_SHORTCODE'),
+        'type' => env('OKJT_MPESA_TYPE', 'paybill'),
+        'till_number' => env('OKJT_MPESA_TILL_NUMBER'),
+        'passkey' => env('OKJT_MPESA_PASSKEY'),
+        'callback_base' => env('OKJT_MPESA_CALLBACK_BASE'),
+        'callback_path' => 'api/mpesa/callback',
+        'reference' => null,
+        'description' => 'Payment',
+        'min_amount' => 1,
+        'max_amount' => 250000,
+        'pending_timeout' => 300,
+        'http_timeout' => 20,
+        'per_workspace' => false,
+        'reconcile' => true,
+        'gateway' => Okjt\Kit\Payments\Mpesa\DarajaGateway::class,
+    ],
+
+    /*
      * The media library (Okjt\Kit\Media\MediaLibrary + MediaController, from
      * TFE): uploads are scaled down to max_edge px and re-encoded at quality,
      * stored on `disk` under `folder`, and recorded in `table`, so a photo can
