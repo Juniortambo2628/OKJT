@@ -528,7 +528,7 @@ Daraja never sees it; it stays on Paystack.
 team directly and fixed in Tena-host first (high risk, Needs Kevin),
 separately from the kit.
 - [x] `Okjt\Kit\Payments\Mpesa`: Daraja STK push behind a gateway interface, callback signature and amount checks, idempotent recording, settings encrypted and edited in the admin, a fake gateway for tests. Done in kit 0.21 as the comparison set out. Decided: each workspace's own paybill is an option (`per_workspace`, off by default, staff approve each one, never falls back to the app's); `okjt:mpesa-reconcile` is scheduled by the kit and on by default. Changed from Naoa: callbacks are recorded even while the switch is off (a prompt sent before may have moved money). Found: Daraja's `TransactionDate` was saved three hours off (Nairobi time stored as UTC) in the first draft; the kit converts it.
-- [ ] Message parser for pasted M-Pesa and bank SMS (from Naoa, with its tests)
+- [x] Message parser for pasted M-Pesa and bank SMS (from Naoa, with its tests): kit 0.22, `Okjt\Kit\Payments\MessageParser`. Matching records to what was owed stays each project's. Najenga's OCR-tolerant `Receipts/PaymentMessages` (several readings of one photo, labels between messages) is a candidate for later.
 - [x] `StkPrompt` in `@okjt/dashboard` (from Naoa), kit 0.21, with `AdminMpesaSettings`
 - [x] Off by default; each project switches it on with S2 (the `mpesa` switch, `okjt.mpesa.switch`)
 - [ ] Consumers: Naoa, then naoa-dt (if 4c (b)), then Tena-host. This is high risk for Tena-host, so it goes in its own PR, marked "Needs Kevin".

@@ -1,5 +1,27 @@
 # Upgrading
 
+## 0.21 → 0.22 (laravel-kit 0.22.0, create-okjt-app 0.1.21)
+
+The parser for pasted M-Pesa and bank messages (R5), lifted from Naoa with its
+tests. `composer require okjt/laravel-kit:^0.22.0`; no migration. The npm
+packages are unchanged.
+
+- `app(Okjt\Kit\Payments\MessageParser::class)->parse($pasted)` splits
+  pasted text into messages and returns one record each: `kind`, `amount`,
+  `payee`, `phone`, `paybill`/`till`/`account`, `bank`/`bank_account`,
+  `mpesa_ref`/`bank_ref`, `at` (`Y-m-d H:i`, or `Y-m-d` without a time),
+  `cost`, `raw`. `parseOne($message)` reads one. Kinds: Safaricom's own
+  (`mpesa_send`, `mpesa_till`, `mpesa_paybill`, `mpesa_to_bank`), banks'
+  (`bank_debit`, `bank_to_mpesa`, `bank_to_paybill`, `bank_to_till`,
+  `pesalink`), `transfer_slip`, `reversal` (with `reverses`), `info`
+  (Fuliza) and `unknown` (left for a person). No AI and no network.
+- Matching the records to what was owed stays the project's (Naoa's
+  `MessageReconciler` is about a wedding budget).
+- Naoa: delete `Services/Payments/MessageParser.php` and use the kit's.
+  Najenga's `Receipts/PaymentMessages` reads OCR text from photos (several
+  readings, labels between messages) and stays Najenga's for now; it is a
+  kit candidate for a later release.
+
 ## 0.20 → 0.21 (dashboard 0.21.0, laravel-kit 0.21.0, create-okjt-app 0.1.20)
 
 M-Pesa prompts (R5), from Naoa, naoa-dt and Tena-host. Nothing changes and
