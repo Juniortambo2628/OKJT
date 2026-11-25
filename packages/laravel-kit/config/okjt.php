@@ -256,6 +256,27 @@ return [
     'faqs' => ['table' => 'faqs', 'per_workspace' => false],
 
     /*
+     * The contact form (Okjt\Kit\Content\ContactMessage +
+     * ContactMessageController, from Naoa and Tena-host). Messages are
+     * personal data: no IP address is kept, and keep_days prunes old ones
+     * (php artisan model:prune; null keeps them). notify_email: who hears of
+     * a new message (else the contact_email site setting; neither, nobody).
+     * topics: the choices a form may send (empty: any short text).
+     * honeypot: the hidden field bots fill in. The notifications can be a
+     * project's own classes.
+     */
+    'contact' => [
+        'notify_email' => env('OKJT_CONTACT_EMAIL'),
+        'topics' => [],
+        'keep_days' => null,
+        'honeypot' => 'website',
+        'thanks' => "Thanks, we'll get back to you shortly.",
+        'per_workspace' => false,
+        'received_notification' => Okjt\Kit\Content\ContactMessageReceived::class,
+        'reply_notification' => Okjt\Kit\Content\ContactReply::class,
+    ],
+
+    /*
      * The media library (Okjt\Kit\Media\MediaLibrary + MediaController, from
      * TFE): uploads are scaled down to max_edge px and re-encoded at quality,
      * stored on `disk` under `folder`, and recorded in `table`, so a photo can
