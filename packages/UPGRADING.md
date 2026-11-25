@@ -1,5 +1,58 @@
 # Upgrading
 
+## 0.19 → 0.20 (site 0.5.0, dashboard 0.20.0, laravel-kit 0.20.0, create-okjt-app 0.1.19)
+
+Privacy (S7, the last of R4), from Naoa and Tena-host: requests from people
+to delete their data, how long data is kept, and links in emails that ask
+before they change anything. Nothing changes until you use it, and nothing
+is erased without a person unless you choose that.
+`npm i @okjt/site@^0.5.0 @okjt/dashboard@^0.20.0` and
+`composer require okjt/laravel-kit:^0.20.0`, then publish and run the
+migrations (a new `okjt_erasure_requests` table). `@okjt/ui` stays at 0.8.
+
+- **Routes**: `POST /erasure-requests` → `PrivacyController@request` with a
+  throttle (`->middleware('throttle:5,60')`), outside any auth group;
+  behind your admin middleware `GET /admin/privacy` → `@index`, `POST
+  /admin/privacy/erasure-requests` → `@store`, `POST
+  /admin/privacy/erasure-requests/{id}/complete` → `@complete`.
+- **What erasing removes**: each `Okjt\Kit\Privacy\Eraser` in
+  `okjt.privacy.erasers`. The kit's own deletes contact messages from the
+  person's email. Add one class per place your app keeps people's data:
+  `erase($request)` gets the name, email, phone and `subject_id` (your own
+  record's id, which the admin can give when erasing) and returns a short
+  line for the outcome, or null. They run in one transaction, so one that
+  fails erases nothing and leaves the request open. Anonymise rows other
+  records count on, and write with `DB::table` where a model records
+  versions, or the history keeps a copy.
+- **How long data is kept**: each `RetentionRule` in
+  `okjt.privacy.retention` (label, period in words, how many are due,
+  purge). The kit's follows `okjt.contact.keep_days`. Schedule
+  `Schedule::command('okjt:retention')->daily();` (`--dry-run` to see).
+- **Overdue requests**: by default the daily run lists them and leaves them
+  to a person. `okjt.privacy.auto_complete = true` erases them at the
+  deadline, as Naoa does today.
+- **Who hears of a request**: `OKJT_PRIVACY_EMAIL`, else the
+  `contact_email` site setting (`okjt.privacy.received_notification` to
+  send your own). `erasure_days` (14) sets the due date.
+- **Public form**: `<ErasureRequestForm />` from `@okjt/site` (posts to
+  `/api/erasure-requests`; `phone={false}` for email only, `submit`,
+  `labels`), for the privacy page.
+- **Admin**: `<AdminPrivacy />` from `@okjt/dashboard`. Erasing and declining
+  go in the audit log by request number only.
+- **Confirmed links**: `Route::confirmedLink('/u/{token}', Unsubscribe::class,
+  'unsubscribe')` with a class implementing `ConfirmedAction` (`prompt`
+  says what the page asks, or null for a bad token; `act` does it). The GET
+  asks and the button POSTs to the same signed address; mail it with
+  `URL::signedRoute('unsubscribe', ['token' => ...])`. The page is
+  self-contained (`okjt.confirmed_link.view` for your own).
+- Naoa: `ErasureRequest` and the request half of `PrivacyController` → the
+  kit's (`per_workspace` for weddings, `auto_complete` on); `GuestEraser`
+  becomes an `Eraser`, and the guest and financial dates become
+  `RetentionRule`s (warning owners first stays Naoa's). Its open requests
+  need a one-off copy. Tena-host: the campaign and review unsubscribe
+  pages can move onto `confirmedLink`, but it doesn't use laravel-kit yet,
+  so that waits on adding it (Needs Kevin).
+
 ## 0.18 → 0.19 (site 0.4.0, dashboard 0.19.0, laravel-kit 0.19.0, create-okjt-app 0.1.18)
 
 The contact form (S6, step 5, the last), from Naoa and Tena-host. Nothing
