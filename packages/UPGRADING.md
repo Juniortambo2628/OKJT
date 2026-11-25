@@ -1,5 +1,35 @@
 # Upgrading
 
+## 0.18 → 0.19 (site 0.4.0, dashboard 0.19.0, laravel-kit 0.19.0, create-okjt-app 0.1.18)
+
+The contact form (S6, step 5, the last), from Naoa and Tena-host. Nothing
+changes until you use it. `npm i @okjt/site@^0.4.0 @okjt/dashboard@^0.19.0`
+and `composer require okjt/laravel-kit:^0.19.0`, then publish and run the
+migrations (a new `okjt_contact_messages` table). `@okjt/ui` stays at 0.8.
+
+- **Routes**: `POST /contact` → `ContactMessageController@store` with a
+  throttle (`->middleware('throttle:5,5')`), outside any auth group; behind
+  your admin middleware `GET /admin/contact-messages` → `@index`,
+  `GET /admin/contact-messages/{id}` → `@show`, `POST
+  /admin/contact-messages/{id}/reply` → `@reply`, `PATCH
+  /admin/contact-messages/{id}` → `@update`, `DELETE
+  /admin/contact-messages/{id}` → `@destroy`.
+- **Who hears of a message**: `OKJT_CONTACT_EMAIL` (or
+  `okjt.contact.notify_email`), else the `contact_email` site setting. A
+  failed email never loses the message. The two emails are notifications
+  you can replace (`okjt.contact.received_notification`,
+  `reply_notification`); replies need working mail.
+- **Personal data**: no IP address is kept. Set `okjt.contact.keep_days`
+  (e.g. 365) and schedule `php artisan model:prune` to delete old messages.
+- **Public form**: `<ContactForm />` from `@okjt/site` (posts to
+  `/api/contact`; `topics`, `subject`, `submit`, `labels`). Set
+  `okjt.contact.topics` to the same values to refuse others.
+- **Inbox**: `<AdminContactMessages />` from `@okjt/dashboard`.
+- Tena-host: `ContactController` (email only, nothing kept) → the kit's,
+  which keeps the message too. Naoa: `Enquiry` → the kit's
+  (`okjt.contact.per_workspace` for its weddings); its old enquiries need
+  a one-off copy. TFE: `ContactMessage` (`contact_submissions`) likewise.
+
 ## 0.17 → 0.18 (dashboard 0.18.0, laravel-kit 0.18.0, create-okjt-app 0.1.17)
 
 FAQs (S6, step 4), from Naoa. Nothing changes until you use them.
