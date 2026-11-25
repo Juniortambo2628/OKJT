@@ -464,7 +464,69 @@ Notes from kit 0.12:
 
 ### R5: M-Pesa (laravel-kit 0.6, dashboard 1.3): about 2 weeks, **needs Kevin**
 
-- [ ] Compare the five implementations line by line and write the result here before writing any code: which checks each does on the callback, and how each stores the settings and secrets
+- [x] Compare the five implementations line by line and write the result here before writing any code: which checks each does on the callback, and how each stores the settings and secrets
+
+#### R5 comparison (2026-11-25)
+
+Only three of the five talk to Daraja. **Najenga** reads M-Pesa
+confirmations out of receipts (`Receipts/PaymentMessages`, OCR-tolerant,
+several readings of one image) and starts no payments. **TFE** charges
+M-Pesa through Paystack's `mobile_money` channel (`PaystackService`), so
+Daraja never sees it; it stays on Paystack.
+
+**Starting a prompt (STK push)**
+
+| | Naoa `StkPush/*` | naoa-dt `MpesaService` | Tena-host `MpesaService` |
+|---|---|---|---|
+| Gateway behind an interface, fake for tests | yes (`StkPushGateway`, `Unavailable…` when off) | no (Http faked in tests) | no |
+| Whose shortcode | each vendor's own (Level 1: money goes to the vendor) | one (the couple's) | one (TenaFi's) |
+| Paybill / till | `type` per shortcode | `transaction_type` + `till_number` | `account_type` |
+| Phone check | `msisdn()`: 2547… / 2541… | `normalizePhone()`: same | `Phone::toE164` + Safaricom regex |
+| Amount bounds | 1 to the line's balance | `min_amount`/`max_amount` | the plan quote |
+| Repeat guard | one pending prompt per line per 2 min | idempotency key from the page | none |
+| Token cache | 50 min | until 2 min before expiry, under a lock | per call (check) |
+| Lost callbacks | none | `mpesa:reconcile` every minute: STK Query, then times out after 5 min | none |
+
+**The callback**
+
+| Check | Naoa | naoa-dt | Tena-host |
+|---|---|---|---|
+| Secret in the URL | per request (`callback_token`, 48 chars) | one shared token, `hash_equals` | being reviewed in Tena-host |
+| Matched on | token, then CheckoutRequestID must equal the request's | CheckoutRequestID | MerchantRequestID (subscriptions), CheckoutRequestID (extras) |
+| Amount checked | no (takes `Amount` from the callback) | must equal the prompt exactly, else failed | against the quote |
+| Applied once | status check, no row lock | row lock (`lockForUpdate`) + status; a late success overturns a timeout we inferred | status check, no lock |
+| Unknown request | ignored, answered "Accepted" | logged, answered "Accepted" | answered `ResultCode 1` |
+| Logging | none of the body | the body on unknown/mismatch | being reviewed in Tena-host |
+| Result codes | 0 paid, 1032 cancelled, 1037 timed out, else failed with M-Pesa's words | mapped by `statusForResultCode` | 0 or failed |
+
+**Settings and secrets**
+
+| | Naoa | naoa-dt | Tena-host |
+|---|---|---|---|
+| Daraja app key/secret | `.env` only | `.env`, or the admin (`integration_credentials`, one encrypted JSON payload; admin wins) | `.env`, or the admin (`settings`; key plain, secret and passkey `Crypt::encryptString`) |
+| Passkey | per vendor, `encrypted` cast, `$hidden` | with the rest | encrypted setting |
+| Returned by the API | never | never | never (only "set") |
+| Sandbox defaults | sandbox URL | sandbox URL by `env` | sandbox shortcode and passkey built in |
+| On/off | `naoa.stk_push.enabled` + per vendor `stk_status` (staff mark it live) | configured or not | `mpesa_extras_enabled` setting (on by default) |
+
+**For the kit, taking the strongest of each:**
+- Naoa's gateway interface and fake, and its per-request callback token
+  (a URL shared by every payment is the weakest point).
+- Check both: token **and** CheckoutRequestID **and** amount equal to the
+  prompt (naoa-dt). A mismatch is recorded as failed, never as paid.
+- naoa-dt's recorder: row lock, apply once, a late success overturns a
+  timeout we inferred, and a late callback can add the receipt number.
+- naoa-dt's reconcile command (STK Query for prompts whose callback never
+  came) and its locked token fetch.
+- Settings: naoa-dt's single encrypted payload, editable in the admin,
+  never returned; `.env` as the fallback. Shortcodes per workspace (Naoa's
+  vendors) are an option, not the default.
+- Log the result code and our request id, never the body (phone numbers).
+- Off by default (S2 switch); a project starts no prompt until it is on.
+
+**Tena-host** has findings of its own on the callback, reported to the
+team directly and fixed in Tena-host first (high risk, Needs Kevin),
+separately from the kit.
 - [ ] `Okjt\Kit\Payments\Mpesa`: Daraja STK push behind a gateway interface, callback signature and amount checks, idempotent recording, settings encrypted and edited in the admin, a fake gateway for tests
 - [ ] Message parser for pasted M-Pesa and bank SMS (from Naoa, with its tests)
 - [ ] `StkPrompt` in `@okjt/dashboard` (from Naoa)
