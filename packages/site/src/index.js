@@ -19,3 +19,4 @@ export { default as LegalPage } from './LegalPage.js';
 export { RollingWord } from './RollingWord.js';
 export { default as useRolling } from './useRolling.js';
 export { default as useScrollSpy } from './useScrollSpy.js';
+export { default as ContactForm } from './ContactForm.js';
