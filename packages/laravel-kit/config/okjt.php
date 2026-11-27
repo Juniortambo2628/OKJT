@@ -340,6 +340,9 @@ return [
         'per_workspace' => false,
         'reconcile' => true,
         'gateway' => Okjt\Kit\Payments\Mpesa\DarajaGateway::class,
+        // Where each payment's money goes when a project pays more than one
+        // place (Mpesa::start's payee): a PayeeShortcodes class.
+        'payees' => Okjt\Kit\Payments\Mpesa\SettingsPayeeShortcodes::class,
     ],
 
     /*

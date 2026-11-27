@@ -17,6 +17,8 @@ use Okjt\Kit\Http\Controllers\ConfirmedLinkController;
 use Okjt\Kit\Payments\Mpesa\DarajaGateway;
 use Okjt\Kit\Payments\Mpesa\MpesaGateway;
 use Okjt\Kit\Payments\Mpesa\MpesaSettings;
+use Okjt\Kit\Payments\Mpesa\PayeeShortcodes;
+use Okjt\Kit\Payments\Mpesa\SettingsPayeeShortcodes;
 use Okjt\Kit\Revisions\Revision;
 
 class KitServiceProvider extends ServiceProvider
@@ -35,6 +37,7 @@ class KitServiceProvider extends ServiceProvider
         // M-Pesa: one settings reader per request, and the gateway the config names.
         $this->app->scoped(MpesaSettings::class);
         $this->app->bind(MpesaGateway::class, fn ($app) => $app->make(config('okjt.mpesa.gateway', DarajaGateway::class)));
+        $this->app->bind(PayeeShortcodes::class, fn ($app) => $app->make(config('okjt.mpesa.payees', SettingsPayeeShortcodes::class)));
     }
 
     public function boot(): void

@@ -243,6 +243,54 @@ class MpesaTest extends TestCase
         }
     }
 
+    // Paying more than one place
+
+    public function test_a_named_payee_is_paid_at_its_own_paybill_and_asked_there_later(): void
+    {
+        $this->app->instance(\Okjt\Kit\Payments\Mpesa\PayeeShortcodes::class, new VendorPaybills);
+        $payment = $this->mpesa()->start('0712345678', 700, 'NAOA3', 'Wedding', null, [], null, 'storefront:12');
+
+        $this->assertSame(['888880', 'vendor-12-passkey'], [$this->fake->pushes[0]['to']->number, $this->fake->pushes[0]['to']->passkey]);
+        $this->assertSame('storefront:12', $payment->payee);
+
+        $seen = null;
+        $this->fake->answers[$payment->checkout_request_id] = ['pending' => false, 'result_code' => '0', 'result_desc' => 'Paid'];
+        $gateway = new class($this->fake, $seen) implements MpesaGateway
+        {
+            public function __construct(private FakeMpesaGateway $fake, public ?string &$seen) {}
+
+            public function push(Shortcode $to, string $phone, int $amount, string $reference, string $description, string $callbackUrl): array
+            {
+                return $this->fake->push($to, $phone, $amount, $reference, $description, $callbackUrl);
+            }
+
+            public function query(Shortcode $to, string $checkoutRequestId): ?array
+            {
+                $this->seen = $to->number;
+
+                return $this->fake->query($to, $checkoutRequestId);
+            }
+        };
+        $this->app->instance(MpesaGateway::class, $gateway);
+        $this->travel(2)->minutes();
+        $this->mpesa()->reconcile();
+
+        $this->assertSame('888880', $seen);
+        $this->assertSame('paid', $payment->fresh()->status);
+    }
+
+    public function test_without_a_projects_payee_class_a_named_payee_is_refused_not_sent_to_the_apps_paybill(): void
+    {
+        $this->assertMpesaRefuses(fn () => $this->mpesa()->start('0712345678', 700, null, null, null, [], null, 'storefront:12'), 503, "isn't set up");
+        $this->assertSame([], $this->fake->pushes);
+    }
+
+    public function test_a_payee_that_cant_be_paid_now_is_refused(): void
+    {
+        $this->app->instance(\Okjt\Kit\Payments\Mpesa\PayeeShortcodes::class, new VendorPaybills);
+        $this->assertMpesaRefuses(fn () => $this->mpesa()->start('0712345678', 700, null, null, null, [], null, 'storefront:99'), 503, "isn't set up");
+    }
+
     // Following a prompt
 
     public function test_only_whoever_sent_a_prompt_can_follow_it(): void
@@ -359,5 +407,13 @@ class MpesaTest extends TestCase
             $this->assertSame($status, $e->status);
             $this->assertStringContainsString($says, $e->getMessage());
         }
+    }
+}
+
+class VendorPaybills implements \Okjt\Kit\Payments\Mpesa\PayeeShortcodes
+{
+    public function shortcodeFor(?string $payee, ?int $workspaceId): ?Shortcode
+    {
+        return $payee === 'storefront:12' ? new Shortcode('888880', 'vendor-12-passkey') : null;
     }
 }
