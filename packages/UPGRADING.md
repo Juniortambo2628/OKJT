@@ -1,5 +1,26 @@
 # Upgrading
 
+## 0.22 → 0.23 (laravel-kit 0.23.0, create-okjt-app 0.1.22)
+
+M-Pesa can pay more than one place (R5, found moving Naoa onto the kit:
+its couples pay each vendor's own paybill, which neither the app's paybill
+nor `per_workspace` covers). `composer require okjt/laravel-kit:^0.23.0`,
+then publish and run the migrations (a `payee` column on
+`okjt_mpesa_payments`). The npm packages are unchanged.
+
+- `Mpesa::start(..., payee: 'storefront:12')` names where the money goes,
+  in your own words. It is kept on the payment, so the reconcile command
+  asks the same paybill later.
+- Your class implementing `Okjt\Kit\Payments\Mpesa\PayeeShortcodes`
+  (`shortcodeFor($payee, $workspaceId)`: a `Shortcode`, or null when that
+  payee can't be paid now) goes in `okjt.mpesa.payees`. The kit's own
+  (`SettingsPayeeShortcodes`) answers only for no payee: the paybill in the
+  settings. It refuses a named payee rather than send that money to the
+  app's paybill.
+- Nothing changes for a project that starts prompts without a payee.
+- `MpesaSettings::hasKeys()` says whether Daraja's keys are set (what
+  `start()` checks now, beside the payee's paybill).
+
 ## 0.22.0 → 0.22.1 (laravel-kit 0.22.1)
 
 The kit schedules `okjt:mpesa-reconcile` only in projects that declare the
