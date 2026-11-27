@@ -26,22 +26,24 @@ use Okjt\Kit\Workspace\CurrentWorkspace;
  */
 class Mpesa
 {
-    public function __construct(private MpesaGateway $gateway, private MpesaSettings $settings) {}
+    public function __construct(private MpesaGateway $gateway, private MpesaSettings $settings, private PayeeShortcodes $payees) {}
 
     /**
      * Send the prompt. $payable is what it pays for; $reference shows on the
-     * payer's statement (12 letters and numbers at most).
+     * payer's statement (12 letters and numbers at most). $payee names where
+     * the money goes when a project pays more than one place (see
+     * PayeeShortcodes); left out, it goes to the paybill in the settings.
      *
      * @throws MpesaException
      */
-    public function start(string $phone, int $amount, ?string $reference = null, ?string $description = null, ?Model $payable = null, array $meta = [], ?int $requestedBy = null): MpesaPayment
+    public function start(string $phone, int $amount, ?string $reference = null, ?string $description = null, ?Model $payable = null, array $meta = [], ?int $requestedBy = null, ?string $payee = null): MpesaPayment
     {
         if (! $this->settings->isOn()) {
             throw new MpesaException('M-Pesa payments are switched off.', 503);
         }
         $workspaceId = config('okjt.mpesa.per_workspace') ? CurrentWorkspace::id() : null;
-        $to = $this->settings->shortcode($workspaceId);
-        if (! $to || ! $this->settings->isConfigured($workspaceId)) {
+        $to = $this->payees->shortcodeFor($payee, $workspaceId);
+        if (! $to || ! $this->settings->hasKeys()) {
             throw new MpesaException("M-Pesa isn't set up here yet.", 503);
         }
         $msisdn = self::msisdn($phone);
@@ -60,6 +62,7 @@ class Mpesa
             'payable_type' => $payable?->getMorphClass(),
             'payable_id' => $payable?->getKey(),
             'requested_by' => $requestedBy,
+            'payee' => $payee,
             'phone' => $msisdn,
             'amount' => $amount,
             'account_reference' => self::reference($reference),
@@ -201,7 +204,7 @@ class Mpesa
                 continue;
             }
             $payment->update(['last_queried_at' => now()]);
-            $to = $this->settings->shortcode($payment->workspace_id);
+            $to = $this->payees->shortcodeFor($payment->payee, $payment->workspace_id);
             $answer = $to ? $this->gateway->query($to, $payment->checkout_request_id) : null;
             if ($answer && ! $answer['pending'] && $answer['result_code'] !== null) {
                 $this->record($payment, $answer['result_code'], $answer['result_desc']);

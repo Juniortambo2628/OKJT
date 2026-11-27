@@ -63,12 +63,18 @@ class MpesaSettings
         return new Shortcode((string) $number, (string) $passkey, ($row?->type ?: config('okjt.mpesa.type')) === 'till' ? 'till' : 'paybill', $row?->till_number ?: config('okjt.mpesa.till_number'));
     }
 
-    /** The keys are there, and so is somewhere for this workspace's money to go. */
-    public function isConfigured(?int $workspaceId = null): bool
+    /** Daraja's keys are there. */
+    public function hasKeys(): bool
     {
         $app = $this->app();
 
-        return filled($app['consumer_key']) && filled($app['consumer_secret']) && $this->shortcode($workspaceId) !== null;
+        return filled($app['consumer_key']) && filled($app['consumer_secret']);
+    }
+
+    /** The keys are there, and so is somewhere for this workspace's money to go. */
+    public function isConfigured(?int $workspaceId = null): bool
+    {
+        return $this->hasKeys() && $this->shortcode($workspaceId) !== null;
     }
 
     public function callbackUrl(string $token): string
